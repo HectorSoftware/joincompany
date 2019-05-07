@@ -12,7 +12,7 @@ class _MytaskPageState extends State<taskHomePage> {
     return new Scaffold(
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
-        title: new Text('Distancia maxima $kmActual Km'),
+        title: new Text(' '),
         bottom: getTabBar(),
       ),
       body: getTabBarView(),
