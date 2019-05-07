@@ -5,7 +5,7 @@ void main() async {
   runApp(MyApp());
 }
 
-const PrimaryColor = const Color( 0xff006981);
+const PrimaryColor = const Color(0xff006981);
 
 var routes = <String, WidgetBuilder>{
   "/App": (BuildContext context) =>App(),

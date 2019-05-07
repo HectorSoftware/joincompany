@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
 class taskHomePage extends StatefulWidget {
-
-
-  String _valueMarca;
-
   _MytaskPageState createState() => _MytaskPageState();
 }
 
