@@ -18,6 +18,9 @@ dependencies:
   google_maps_flutter: ^0.5.13
   geolocator: ^4.0.3
 
+  #BASEDEDATOS
+  sqflite: ^1.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
