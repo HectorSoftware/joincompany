@@ -5,13 +5,13 @@ void main() async {
   runApp(MyApp());
 }
 
-const PrimaryColor = const Color(0xff006981);
+const PrimaryColor = const Color(0xff80d8ff);
 
 var routes = <String, WidgetBuilder>{
   "/App": (BuildContext context) =>App(),
 };
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
