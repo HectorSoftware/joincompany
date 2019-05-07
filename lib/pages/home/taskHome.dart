@@ -5,7 +5,20 @@ class taskHomePage extends StatefulWidget {
   _MytaskPageState createState() => _MytaskPageState();
 }
 
-class _MytaskPageState extends State<taskHomePage> {
+class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStateMixin{
+  TabController _controller;
+
+  @override
+  Future initState() {
+    _controller = TabController(length: 2, vsync:this );
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +35,8 @@ class _MytaskPageState extends State<taskHomePage> {
   TabBar getTabBar(){
     return TabBar(
       tabs: <Tab>[
-        Tab(icon: Icon(Icons.directions_car)),
-        Tab(icon: Icon(Icons.bookmark)),
-        Tab(icon: Icon(Icons.attach_money)),
-        Tab(icon: Icon(Icons.star)),
+        Tab(text: "Tareas"),
+        Tab(text: "Mapa"),
       ],
       controller: _controller,
     );
@@ -34,10 +45,8 @@ class _MytaskPageState extends State<taskHomePage> {
   TabBarView getTabBarView(){
     return TabBarView(
       children: <Widget>[
-        marcador_distancia(mapController: widget.mapController, markerMap: widget.markerMap,kmActual: kmActual,tiposGasActual: tipoGasActual,MelatLng: MelatLng,),
-        marcador_marca(mapController: widget.mapController, markerMap: widget.markerMap,kmActual: kmActual,MelatLng: MelatLng,TipoGasActual: tipoGasActual,),
-        marcador_precio(mapController: widget.mapController, markerMap: widget.markerMap,kmActual: kmActual,MelatLng: MelatLng,tgActual: tipoGasActual,),
-        marcador_fav(mapController: widget.mapController, markerMap: widget.markerMap,kmActual: kmActual,MelatLng: MelatLng,),
+        null,
+        null
       ],
       controller: _controller,
     );
