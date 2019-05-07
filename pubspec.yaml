@@ -10,7 +10,13 @@ dependencies:
   flutter:
     sdk: flutter
 
+  #ICINOS
   cupertino_icons: ^0.1.2
+
+  #MAPAS
+  google_maps: ">=3.0.0 <4.0.0"
+  google_maps_flutter: ^0.5.13
+  geolocator: ^4.0.3
 
 dev_dependencies:
   flutter_test:
