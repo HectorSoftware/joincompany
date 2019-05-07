@@ -32,7 +32,6 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       ),
       body: getTabBarView(),
     );
-
   }
   TabBar getTabBar(){
     return TabBar(
@@ -57,7 +56,5 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       controller: _controller,
     );
   }
-
-
 
 }
