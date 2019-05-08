@@ -34,11 +34,16 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+    double por = 0.7;
+    if (mediaQueryData.orientation == Orientation.portrait) {
+      por = 0.8;
+    }
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2.0),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.8,
+        height: MediaQuery.of(context).size.height * por,
         child: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: _kGooglePlex,
