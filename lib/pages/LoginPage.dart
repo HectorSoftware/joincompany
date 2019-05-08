@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/User.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
-
+import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -11,12 +13,23 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  User saveUser;
+  User userVe;
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final companyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
-
+@override
+  void dispose() {
+  passwordController.dispose();
+  nameController.dispose();
+  companyController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                         ]
                     ),
                     child: TextField(
+                      controller: nameController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         icon: Icon(Icons.email,
@@ -125,6 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                         ]
                     ),
                     child: TextField(
+                      obscureText: true,
+                      controller: passwordController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         icon: Icon(Icons.vpn_key,
@@ -154,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                         ]
                     ),
                     child: TextField(
+                      controller: companyController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         icon: Icon(Icons.business,
@@ -189,7 +206,25 @@ class _LoginPageState extends State<LoginPage> {
                       splashColor: Colors.white,
 
                       onPressed: () async {
-                        Navigator.pushReplacementNamed(context, '/vistap');
+                     /*  final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
+                       try{
+
+                         saveUser = User(idTable:1,name: nameController.text.toString(),password: passwordController.text.toString(),company: companyController.text.toString());
+                         ClientDatabaseProvider.db.saveUser(saveUser);
+                         userVe = await ClientDatabaseProvider.db.getCodeId('1');
+
+                         //PETICIONES A HTTP@ CONSUTANDO Y ENVIANDO ESTOS DATOS
+
+                       }catch(error, stackTrace){
+                         await sentry.captureException(
+                           exception: error,
+                           stackTrace: stackTrace,
+                         );
+                       }*/
+
+
+
+                     Navigator.pushReplacementNamed(context, '/vistap');
                       },
                       child: Center(
                           child: Center(

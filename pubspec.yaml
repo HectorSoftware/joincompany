@@ -20,6 +20,10 @@ dependencies:
 
   #BASEDEDATOS
   sqflite: ^1.1.5
+  path_provider: ^1.0.0
+
+  #Manejo de errores
+  sentry: ^2.2.0
 
 dev_dependencies:
   flutter_test:
