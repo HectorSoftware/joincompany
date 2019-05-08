@@ -10,6 +10,9 @@ class taskHomePage extends StatefulWidget {
 
 class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStateMixin{
   TabController _controller;
+  bool CondicionalTarea = false;
+  bool CondicionalMapa = true;
+  bool CondicionalHome = true;
 
   @override
   Future initState() {
@@ -30,34 +33,60 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
         title: new Text(' '),
-        bottom: getTabBar(),
       ),
-      body: getTabBarView(),
+      body: Column(
+        children: <Widget>[
+          TabBarButton(),
+          Container(child: CondicionalHome ? taskHomeTask() : taskHomeMap())
+        ],
+      )
     );
   }
 
-
-  TabBar getTabBar(){
-    return TabBar(
-      labelColor: Colors.white,
-      unselectedLabelColor: Colors.white,
-      labelStyle: TextStyle(fontSize: 20),
-      indicatorColor: Colors.lightBlue,
-      tabs: <Tab>[
-        Tab(text: "Tarea"),
-        Tab(text: "Mapa"),
-      ],
-      controller: _controller,
-    );
-  }
-
-  TabBarView getTabBarView(){
-    return TabBarView(
-      children: <Widget>[
-        taskHomeTask(),
-        taskHomeMap(),
-      ],
-      controller: _controller,
+  Container TabBarButton(){
+    return Container(
+      margin: EdgeInsets.only(top: 0),
+      padding: EdgeInsets.only(top: 0),
+      child: Row(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.07,
+              child: RaisedButton(
+                elevation: 10,
+                color: CondicionalTarea? Colors.lightBlue[700] : Colors.red[300],
+                child: Text('Tarea'),
+                onPressed: (){
+                  CondicionalTarea = false;CondicionalMapa = true; CondicionalHome = true;
+                  setState(() {
+                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                  });
+                },
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.07,
+              child: RaisedButton(
+                elevation: 10,
+                color: CondicionalMapa? Colors.lightBlue[700] : Colors.red[300],
+                child: Text('Mapa'),
+                onPressed: (){
+                  CondicionalTarea = true;CondicionalMapa = false;CondicionalHome = false;
+                  setState(() {
+                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                  });
+                },
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 

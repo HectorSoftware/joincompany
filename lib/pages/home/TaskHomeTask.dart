@@ -22,12 +22,14 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
 
-    return new Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: (){
-        Navigator.pushReplacementNamed(context, '/formularioTareas');
-    },
+    return Container(
 
-      ),
+    );
+
+  }
+  FloatingActionButton floating(){
+    return FloatingActionButton(
+      onPressed: (){},
     );
   }
 }
