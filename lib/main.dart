@@ -7,7 +7,7 @@ void main() async {
   runApp(MyApp());
 }
 
-const PrimaryColor = const Color( 0xff29a0c7);
+const PrimaryColor = const Color(0xff29a0c7);
 const SecondaryColor = const Color(0xff29a0c7);
 
 

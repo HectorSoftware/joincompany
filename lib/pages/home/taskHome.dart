@@ -60,6 +60,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
 
  Drawer getDrawer() {
     return Drawer(
+      elevation: 12,
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(

@@ -45,8 +45,8 @@ class _LoginPageState extends State<LoginPage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xff80d8ff),
-                      Color(0xff80d8ff)
+                      Color(0xff29a0c7),
+                      Color(0xff29a0c7)
                     ],
                   ),
                   borderRadius: BorderRadius.only(
@@ -74,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: Text('Login',
                         style: TextStyle(
+                          fontStyle: FontStyle.italic,
                             color: Colors.black,
                             fontSize: 18
                         ),
