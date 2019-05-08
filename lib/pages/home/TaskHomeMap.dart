@@ -9,7 +9,7 @@ class taskHomeMap extends StatefulWidget {
 
 class _MytaskPageMapState extends State<taskHomeMap> {
 
-  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
 
   @override
   Future initState() {
@@ -44,12 +44,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(10.5464951,-63.1958677),
-    zoom: 15,
+    zoom: 0.1,
   );
 
   void onMapCreated(controller) {
     setState(() {
-      _controller.complete(controller);
+      mapController = controller;
     });
   }
 }
