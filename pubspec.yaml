@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  #ICINOS
+  #ICONOS
   cupertino_icons: ^0.1.2
 
   #MAPAS
