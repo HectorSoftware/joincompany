@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/app.dart';
+import 'package:joincompany/pages/home/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
+import 'package:joincompany/widgets/formulario_tareas.dart';
 
 void main() async {
   runApp(MyApp());
@@ -18,6 +20,8 @@ class MyApp extends StatelessWidget{
       routes: {
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>taskHomePage(),
+        "/formularioTareas": (context) =>FormTask(),
+        "/cliente": (context) =>Cliente(),
       },
       theme: ThemeData(
         primaryColor: PrimaryColor,

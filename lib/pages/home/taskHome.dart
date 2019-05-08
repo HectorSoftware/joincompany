@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
+import 'package:joincompany/pages/home/clientes.dart';
 
 class taskHomePage extends StatefulWidget {
   _MytaskPageState createState() => _MytaskPageState();
@@ -25,7 +26,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: getDrawer(),
+      drawer: buildDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
         title: new Text(' '),
@@ -34,6 +35,8 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       body: getTabBarView(),
     );
   }
+
+
   TabBar getTabBar(){
     return TabBar(
       labelColor: Colors.white,
@@ -58,7 +61,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
     );
   }
 
- Drawer getDrawer() {
+ Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
       child: new ListView(
@@ -91,6 +94,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             trailing: new Icon(Icons.business),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new  Cliente()));
             },
           ),
           new ListTile(

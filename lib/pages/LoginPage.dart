@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                        try{
 
                          saveUser = User(idTable:1,name: nameController.text.toString(),password: passwordController.text.toString(),company: companyController.text.toString());
-                         ClientDatabaseProvider.db.saveUser(saveUser);
+                         ClientDatabaseProvider.db.saveUser(saveUser);12
                          userVe = await ClientDatabaseProvider.db.getCodeId('1');
 
                          //PETICIONES A HTTP@ CONSUTANDO Y ENVIANDO ESTOS DATOS

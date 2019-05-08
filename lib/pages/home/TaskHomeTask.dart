@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/widgets/formulario_tareas.dart';
 
 class taskHomeTask extends StatefulWidget {
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
@@ -22,7 +23,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
     return new Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        Navigator.pushReplacementNamed(context, '/formularioTareas');
+    },
 
+      ),
     );
   }
 }
