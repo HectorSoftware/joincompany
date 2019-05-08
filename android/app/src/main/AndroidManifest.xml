@@ -14,6 +14,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="joincompany"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAK2rFF6pdDZxvNmUrXHEc4cHnIFYAWcvE"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
