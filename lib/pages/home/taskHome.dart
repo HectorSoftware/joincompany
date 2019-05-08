@@ -25,6 +25,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      drawer: getDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
         title: new Text(' '),
@@ -56,5 +57,62 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       controller: _controller,
     );
   }
+
+ Drawer getDrawer() {
+    return Drawer(
+      child: new ListView(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(
+            decoration: new BoxDecoration(color: SecondaryColor,
+            ),
+            accountName: new Text('Nombre de la empresa:',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+            accountEmail : Text('Nombre de Usuario',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 17,
+              ),),),
+          new ListTile(
+            trailing: new Icon(Icons.assignment),
+            title: new Text('Tareas'),
+
+            onTap: () {
+              Navigator.of(context).pop();
+
+            },
+          ),
+          new ListTile(
+            title: new Text("Clientes"),
+            trailing: new Icon(Icons.business),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          new ListTile(
+            title: new Text("Contactos"),
+            trailing: new Icon(Icons.contacts),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          Divider(
+            height: 30.0,
+          ),
+          new ListTile(
+            title: new Text("Configuracion"),
+            trailing: new Icon(Icons.filter_vintage),
+            onTap: () {
+             // Navigator.pushReplacementNamed(context, "/intro");
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+ }
 
 }

@@ -7,7 +7,8 @@ void main() async {
   runApp(MyApp());
 }
 
-const PrimaryColor = const Color(0xff80d8ff);
+const PrimaryColor = const Color( 0xff29a0c7);
+const SecondaryColor = const Color(0xff29a0c7);
 
 
 class MyApp extends StatelessWidget{
