@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 
 class App extends StatelessWidget {
@@ -8,7 +9,7 @@ class App extends StatelessWidget {
     return new Scaffold(
         body: Stack(
             children: <Widget>[
-              taskHomePage(),
+              LoginPage(),
             ]
         )
     );
