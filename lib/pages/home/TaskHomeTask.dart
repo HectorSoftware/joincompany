@@ -31,7 +31,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
         body: ListViewTareas(),
-        floatingActionButton: FloatingActionButton(onPressed: (){
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: (){
           Navigator.pushReplacementNamed(context, '/formularioTareas');
 
         }),
@@ -41,11 +43,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   ListView ListViewTareas(){
     List<String> li = new List<String>();
-    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
-    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
-    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
-    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
-    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
+    li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
     return ListView.builder(
       itemCount: li.length,
       itemBuilder: (context, index) {

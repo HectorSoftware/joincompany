@@ -98,7 +98,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //*********************
     Place marker = Place(id: 1, customer: 'cliente 1', address: 'direccion 1',latitude: -33.4544232,longitude: -70.6308331, status: 0);
     listMarker.add(marker);
-    marker = Place(id: 2, customer: 'cliente 2', address: 'direccion 2',latitude: -33.4568714,longitude: -70.6297065, status: 1);
+    marker = Place(id: 2, customer: 'cliente 2', address: 'direccion 2',latitude: -33.4568714,longitude: -70.6297065, status: 0);
     listMarker.add(marker);
     marker = Place(id: 3, customer: 'cliente 3', address: 'direccion 3',latitude: -33.4548931,longitude: -70.6323136, status: 1);
     listMarker.add(marker);
@@ -132,7 +132,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     _polyLines.add(Polyline(polylineId: PolylineId(_lastPosition.toString()),
         width: 10,
         points: convertToLatLng(decodePoly(route)),
-        color: Colors.black));
+        color: Colors.red[200]));
   }
 
   BitmapDescriptor ColorMarker(Place mark){
@@ -161,13 +161,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     int index=0;
     int len= poly.length;
     int c=0;
-// repeating until all attributes are decoded
     do
     {
       var shift=0;
       int result=0;
-
-      // for decoding value of one attribute
       do
       {
         c=list[index]-63;
@@ -175,7 +172,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         index++;
         shift++;
       }while(c>=32);
-      /* if value is negetive then bitwise not the value */
       if(result & 1==1)
       {
         result=~result;
@@ -183,12 +179,8 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       var result1 = (result >> 1) * 0.00001;
       lList.add(result1);
     }while(index<len);
-
-/*adding to previous value as done in encoding */
     for(var i=2;i<lList.length;i++)
       lList[i]+=lList[i-2];
-
-    print(lList.toString());
 
     return lList;
   }
