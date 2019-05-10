@@ -21,23 +21,21 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   Widget build(BuildContext context) {
 
     final mediaQueryData = MediaQuery.of(context);
-    double por = 0.7;
+    double aument = 0.7;
     if (mediaQueryData.orientation == Orientation.portrait) {
-      por = 0.8;
+      aument = 0.8;
     }
 
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * por,
+      height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
         body: ListViewTareas(),
-        floatingActionButton: FloatingActionButton(onPressed: (){}),
+        floatingActionButton: FloatingActionButton(onPressed: (){
+          Navigator.pushReplacementNamed(context, '/formularioTareas');
+
+        }),
       ),
-    );
-  }
-  FloatingActionButton floating(){
-    return FloatingActionButton(
-      onPressed: (){},
     );
   }
 
