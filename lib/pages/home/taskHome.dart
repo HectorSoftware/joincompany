@@ -36,17 +36,17 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
           IconButton(
             icon: Icon(Icons.search),
             tooltip: 'Eliminar Cliente',
-            iconSize: 35,
+            iconSize: 25,
             onPressed: (){
               //FUNCION DE BUSQUEDA EN TAREAS
             },
 
           ),
           IconButton(
-            icon: Icon(Icons.keyboard),
+            icon: Icon(Icons.calendar_today),
             //ICONO DE ALMANAQUE NO LO ENCUENTRO
             tooltip: 'Eliminar Cliente',
-            iconSize: 35,
+            iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
             },
