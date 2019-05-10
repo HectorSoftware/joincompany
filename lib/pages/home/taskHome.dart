@@ -16,13 +16,12 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
 
   @override
   Future initState() {
-    _controller = TabController(length: 2, vsync:this );
+
     super.initState();
   }
 
   @override
   void dispose(){
-    _controller.dispose();
     super.dispose();
   }
 
@@ -32,7 +31,28 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       drawer: buildDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
-        title: new Text(' '),
+        title: new Text('Join'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            tooltip: 'Eliminar Cliente',
+            iconSize: 35,
+            onPressed: (){
+              //FUNCION DE BUSQUEDA EN TAREAS
+            },
+
+          ),
+          IconButton(
+            icon: Icon(Icons.keyboard),
+            //ICONO DE ALMANAQUE NO LO ENCUENTRO
+            tooltip: 'Eliminar Cliente',
+            iconSize: 35,
+            onPressed: (){
+              //FUNCION DE FILTRO POR FECHA
+            },
+
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -114,8 +134,8 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             title: new Text('Tareas'),
 
             onTap: () {
-              Navigator.of(context).pop();
-
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/vistap');
             },
           ),
           new ListTile(

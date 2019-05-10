@@ -23,9 +23,12 @@ dependencies:
   #BASEDEDATOS
   sqflite: ^1.1.5
   path_provider: ^1.0.0
+  json_to_form: ^0.0.2
 
   #Manejo de errores
   sentry: ^2.2.0
+  #PATRON BLoC
+  rxdart: ^0.21.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/User.dart';
+import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:sentry/sentry.dart' as sentryr;
@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  User saveUser;
-  User userVe;
+  UserDataBase saveUser;
+  UserDataBase userVe;
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final companyController = TextEditingController();
@@ -214,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                          ClientDatabaseProvider.db.saveUser(saveUser);12
                          userVe = await ClientDatabaseProvider.db.getCodeId('1');
 
-                         //PETICIONES A HTTP@ CONSUTANDO Y ENVIANDO ESTOS DATOS
+                         //PETICIONES A HTTP@ CONSULTANDO Y ENVIANDO ESTOS DATOS
 
                        }catch(error, stackTrace){
                          await sentry.captureException(

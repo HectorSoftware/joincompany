@@ -1,4 +1,4 @@
-class User{
+class UserDataBase{
 
   int idTable;
   String name;
@@ -6,10 +6,10 @@ class User{
   String company;
 
 
-  User ({this.idTable,this.name,this.password,this.company});
+  UserDataBase ({this.idTable,this.name,this.password,this.company});
 
 
-  User.map(dynamic obj) {
+  UserDataBase.map(dynamic obj) {
     this.idTable = obj["idTable"];
     this.name = obj["name"];
     this.password = obj["password"];
@@ -27,7 +27,7 @@ class User{
   };
   //to receive the data we need to pass it from Map to json
   //para recibir los datos necesitamos pasarlo de Map a json
-  factory User.fromMap(Map<String, dynamic> json) => new User(
+  factory UserDataBase.fromMap(Map<String, dynamic> json) => new UserDataBase(
     idTable: json["idTable"],
     name: json["name"],
     password: json["password"],
