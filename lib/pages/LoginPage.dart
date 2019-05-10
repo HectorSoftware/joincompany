@@ -214,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                          ClientDatabaseProvider.db.saveUser(saveUser);12
                          userVe = await ClientDatabaseProvider.db.getCodeId('1');
 
-                         //PETICIONES A HTTP@ CONSUTANDO Y ENVIANDO ESTOS DATOS
+                         //PETICIONES A HTTP@ CONSULTANDO Y ENVIANDO ESTOS DATOS
 
                        }catch(error, stackTrace){
                          await sentry.captureException(
