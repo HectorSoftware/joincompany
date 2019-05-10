@@ -6,6 +6,8 @@ import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/prueba/mapa.dart';
 import 'package:joincompany/widgets/formulario_tareas.dart';
 
+import 'pages/BuscarRuta/BuscarDireccion.dart';
+
 void main() async {
   runApp(MyApp());
 }
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget{
       routes: {
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>taskHomePage(),
-        //"/vistap": (context) =>MyHomePagePrueba(title: 'Uber clone'),
+        //"/vistap": (context) =>MyHomePagePrueba(),
         "/formularioTareas": (context) =>FormTask(),
         "/cliente": (context) =>Cliente(),
       },
