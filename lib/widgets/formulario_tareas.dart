@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/BuildViewClass.dart';
 
 class FormTask extends StatelessWidget {
 
   List<Widget> listWidget = List<Widget>();
   List<String> listElement = List<String>();
-  List<ViewClass> listClass = List<ViewClass>();
-  ViewClass elementAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +69,7 @@ class FormTask extends StatelessWidget {
      body: Column(
        children: <Widget>[
          Container(
-         child: container(),
+
          ),
 
 
@@ -104,7 +101,7 @@ class FormTask extends StatelessWidget {
 
   }
 
-  TextField textField (){
+  /*TextField textField (){
     return TextField(
       maxLines: 3,
     );
@@ -149,7 +146,7 @@ Widget buildView(){
 
 
 
-}
+}*/
 
 }
 

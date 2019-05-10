@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:joincompany/models/User.dart';
+import 'package:joincompany/models/UserDataBase.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -32,15 +32,15 @@ class ClientDatabaseProvider{
   }
 
   //muestra un solo cliente por el id la base de datos
-  Future<User> getCodeId(String codigo) async {
+  Future<UserDataBase> getCodeId(String codigo) async {
     final db = await database;
     var response = await db.query("User", where: "idTable = ?", whereArgs: [codigo]);
-    return response.isNotEmpty ? User.fromMap(response.first) : null;
+    return response.isNotEmpty ? UserDataBase.fromMap(response.first) : null;
   }
 
   //Insert
 
-  Future<int> saveUser(User user) async {
+  Future<int> saveUser(UserDataBase user) async {
     var dbClient = await database;
     int res = await dbClient.insert("User", user.toMap());
     return res;
