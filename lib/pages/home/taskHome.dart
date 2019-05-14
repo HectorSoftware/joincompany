@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/pages/home/clientes.dart';
@@ -39,6 +40,11 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE BUSQUEDA EN TAREAS
+              //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
+              Navigator.push(
+                context,
+                  MaterialPageRoute(builder: (context) => SearchAddress()),
+              );
             },
 
           ),

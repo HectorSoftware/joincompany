@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/api/rutahttp.dart';
+import 'package:joincompany/blocs/taskBloc.dart';
 import 'package:joincompany/models/Marker.dart';
 
 class taskHomeMap extends StatefulWidget {
@@ -23,7 +24,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   LatLng _lastPosition = _initialPosition;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
-  List<Place> listMarker = new List<Place>();
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
 
   @override
@@ -91,38 +91,38 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
-
-  void _addMarker(){
+  List<Place> listplace = new List<Place>();
+  Future _addMarker() {
     //*********************
     //EJEMPLOS PARA PRUEBAS
     //*********************
-    Place marker = Place(id: 1, customer: 'cliente 1', address: 'direccion 1',latitude: -33.4544232,longitude: -70.6308331, status: 0);
-    listMarker.add(marker);
-    marker = Place(id: 2, customer: 'cliente 2', address: 'direccion 2',latitude: -33.4568714,longitude: -70.6297065, status: 0);
-    listMarker.add(marker);
-    marker = Place(id: 3, customer: 'cliente 3', address: 'direccion 3',latitude: -33.4548931,longitude: -70.6323136, status: 1);
-    listMarker.add(marker);
-    marker = Place(id: 4, customer: 'cliente 4', address: 'direccion 4',latitude: -33.4544232,longitude: -70.6261232, status: 2);
-    listMarker.add(marker);
+    //final TaskBloc _Bloc = BlocProvider.of<TaskBloc>(context);
+    final TaskBloc _Bloc = new TaskBloc();
     //*********************
     //*********************
 
-    for(Place mark in listMarker){
-      _markers.add(
-          Marker(
-            markerId: MarkerId(mark.id.toString()),
-            position: LatLng(mark.latitude, mark.longitude),
-            infoWindow: InfoWindow(
-                title: mark.customer,
-                snippet: mark.address
-            ),
-            icon: ColorMarker(mark),
-          ));
-    }
-    setState((){
-      _markers;
-      _polyLines;
-    });
+    // ignore: cancel_subscriptions
+    StreamSubscription streamSubscription = _Bloc.outTask.listen((newVal)
+    => setState(() {
+      listplace = newVal;
+      for(Place mark in listplace){
+        _markers.add(
+            Marker(
+              markerId: MarkerId(mark.id.toString()),
+              position: LatLng(mark.latitude, mark.longitude),
+              infoWindow: InfoWindow(
+                  title: mark.customer,
+                  snippet: mark.address
+              ),
+              icon: ColorMarker(mark),
+            ));
+      }
+      setState((){
+        _markers;
+        _polyLines;
+      });
+
+    }));
   }
 
   Future createRoute(Place mark) async {
