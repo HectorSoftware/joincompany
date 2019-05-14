@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/blocs/bloc_task_form.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/BuildViewClass.dart';
 import 'dart:async';
@@ -11,12 +12,12 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  DateTime _date = new DateTime.now();
-  TimeOfDay _time = new TimeOfDay.now();
 
   List<Widget> listWidget = List<Widget>();
   List<String> listElement = List<String>();
   List<WidgetBuild> listnew = List<WidgetBuild>();
+
+
 
 @override
 
@@ -81,7 +82,7 @@ class _FormTaskState extends State<FormTask> {
          ],
        ),
 
-      body: dateTime(),
+        body:ContruirLista(context) ,
 
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
@@ -110,173 +111,44 @@ class _FormTaskState extends State<FormTask> {
     );
 
   }
-  Widget ContruirLista()
+  Widget ContruirLista(context)
   {
-    return  StreamBuilder<Object>(
-      stream: null,
-      builder: (context, snapshot) {
-        return ListView.builder
+   //
+    final BlocTaskForm _Bloc = new BlocTaskForm(context);
+
+    // ignore: cancel_subscriptions
+    StreamSubscription streamSubscription = _Bloc.outListWidget.listen((newVal)
+    => setState(() {
+
+      print('/////////////////////');
+
+      return  StreamBuilder<List<Widget>>(
+          stream: _Bloc.outListWidget,
+          builder: (context, snapshot) {
+            print('*********1234*********');
+            if (snapshot != null && snapshot.hasData) {
+              print('*********hghf*********');
+            }else{
+              print('*********hgh5555f*********');
+            }
+            return Container();
+            /*  return ListView.builder
           (
 
             itemCount: listWidget.length,
             itemBuilder: (BuildContext context, int index) => buildBody(context, index)
-        );
-      }
-    );
+        );*/
+          }
+      );
+    }));
   }
-
 
   Widget buildBody(BuildContext context, int index) {
 
     return  Container(
         child: listWidget[index]);
   }
-  TextField textField2 (){
-    return TextField(
-      maxLines: 3,
-    );
-  }
 
-
-  Text text(){
-    return Text('Titulo 1');
-  }
-
-Container container(){
-    return Container(
-      child: Column(
-        children: <Widget>[
-          text(),
-          textField2(),
-
-
-        ],
-      ),
-    );
-}
-
-//------------------------WIDGETS DES JSON-------------------------------------------
-
-Widget textArea(){
-  return
-    //-------------------------------------TEXTAREA---------------
-  Padding(
-    padding: const EdgeInsets.only(top: 200,left: 20),
-    child: Container(
-      width: MediaQuery.of(context).size.width/1.2,
-      height: 150,
-      padding: EdgeInsets.only(
-          top: 4,left: 16, right: 16, bottom: 4
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-              Radius.circular(20)
-          ),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5
-            )
-          ]
-      ),
-      child: TextField(
-        maxLines: 4,
-        //controller: nameController,
-        decoration: InputDecoration(
-
-          border: InputBorder.none,
-
-          hintText: '',
-        ),
-      ),
-    ),
-  );
-}
-
-Widget input(){
-  //-----------------------------------------INPUT----------------------------------
-  return Padding(
-    padding: const EdgeInsets.only(top: 200,left: 20),
-    child: Container(
-      width: MediaQuery.of(context).size.width/1.2,
-      height: 150,
-      padding: EdgeInsets.only(
-          top: 4,left: 16, right: 16, bottom: 4
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-              Radius.circular(20)
-          ),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5
-            )
-          ]
-      ),
-      child: TextField(
-        maxLines: 1,
-        //controller: nameController,
-        decoration: InputDecoration(
-
-          border: InputBorder.none,
-
-          hintText: '',
-        ),
-      ),
-    ),
-  );
-}
-
-Widget label(string){
-  //------------------------------------LABEL----------------------------
-  return Text(string);
-}
-
-Future<Null> selectDate(BuildContext context )async{
-  final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: new DateTime(2000),
-      lastDate: new DateTime(2020));
-
-  if(picked != null && picked != _date)
-    {
-      setState(() {
-        _date = picked;
-      });
-    }
-
-}
-Widget date(){
-  //------------------------------DATE--------------------------
-  return RaisedButton(
-    child: Text('Fecha: ${_date.toLocal()}'),
-    onPressed: (){selectDate(context);},
-  );
-}
-
-Future<Null> _selectTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-        context: context,
-        initialTime: _time
-    );
-
-    if(picked != null && picked != _time) {
-      setState((){
-        _time = picked;
-      });
-    }
-  }
-  Widget dateTime(){
-    //------------------------------DATE------------------------
-    return RaisedButton(
-      child: Text('Hora: ${_time.format(context)}'),
-      onPressed: (){_selectTime(context);},
-    );
-  }
 
 }
 
