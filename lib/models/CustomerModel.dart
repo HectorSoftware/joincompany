@@ -60,9 +60,9 @@ class Customer {
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "created_at": createdAt.toString(),
-    "updated_at": updatedAt.toString(),
-    "deleted_at": deletedAt.toString(),
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "deleted_at": deletedAt,
     "created_by_id": createdById,
     "updated_by_id": updatedById,
     "deleted_by_id": deletedById,
@@ -72,7 +72,7 @@ class Customer {
     "email": email,
     "contact_name": contactName,
     "details": details,
-    "pivot": pivot.toJson(),
+    //"pivot": pivot != null ? pivot.toJson() : null,
   };
 }
 

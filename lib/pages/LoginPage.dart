@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -218,24 +219,36 @@ class _LoginPageState extends State<LoginPage> {
                       final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
                        try{
 
-                         var v = await login('eibanez@duperu.com','123','duperu');
+                         String empresa = 'getkem';
+                         //var v = await login('eibanez@duperu.com','123',empresa);
+                         var v = await login('jgarcia@getkem.com','123',empresa);
+
                          Auth aur = authFromJson(v.body);
 
-                           //var tokken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2ViYXBwLmdldGtlbS5jb21cL2FwaVwvdjFcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNTU3ODM3NjA0LCJleHAiOjE1NTc5MjQwMDQsIm5iZiI6MTU1NzgzNzYwNCwianRpIjoiQTdSWFZKRjJXdjJYVmZJaiIsInN1YiI6NCwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiJ9.gMtVV-lu_bo9RLiVgik4o0AmcDzxS-I_FJEdfaW55pU';
-                           var tokken = aur.accessToken;
-                           print('-----------elwe--------');
-                           var b =   await  getCustomer('1','duperu',tokken);
-
-                           print(b.body);
-                           Customer c = customerFromJson(b.body);
-                           print(c.name);
+                         //var tokken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2ViYXBwLmdldGtlbS5jb21cL2FwaVwvdjFcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNTU3ODM3NjA0LCJleHAiOjE1NTc5MjQwMDQsIm5iZiI6MTU1NzgzNzYwNCwianRpIjoiQTdSWFZKRjJXdjJYVmZJaiIsInN1YiI6NCwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiJ9.gMtVV-lu_bo9RLiVgik4o0AmcDzxS-I_FJEdfaW55pU';
+                         var tokken = aur.accessToken;
+                         print('-----------elwe--------');
 
 
-                        /* saveUser = UserDataBase(idTable:1,name: nameController.text.toString(),password: passwordController.text.toString(),company: companyController.text.toString());
-                         ClientDatabaseProvider.db.saveUser(saveUser);
-                         userVe = await ClientDatabaseProvider.db.getCodeId('1');*/
 
-                         //PETICIONES A HTTP@ CONSULTANDO Y ENVIANDO ESTOS DATOS
+                        //LLAMAR CLIENTE
+                         /*var b =   await  getCustomer('2',empresa,tokken);
+                         print(b.body);
+                         Customer c = customerFromJson(b.body);
+                         //TODOS LOS CLIENTES
+                         var muchosresponse = await getAllCustomers(empresa,tokken);
+                         Customers muchos = customersFromJson(muchosresponse.body);
+                         //ACTUALIZAR CLIENTES
+                         c.name += '   rn';
+                         var actualizarRespose = await updateCustomer(c.id.toString(), c,empresa, tokken);
+                         print(actualizarRespose.statusCode);
+                         muchos = customersFromJson(muchosresponse.body);
+                         print(muchos.data[1].name);
+                         //CREAR NUEVO
+                         Customer nuevo = Customer(id: null, name: 'cl',code: '456',contactName: 'kn',createdAt: 'jn',createdById: null,deletedAt: 'p',deletedById: null,details: 'juhoji', email: '@g',phone: '5464', pivot: null, updatedAt: 'npk',updatedById: null);
+                         var nuevoResponse = await createCustomer(nuevo,empresa,tokken);
+                         print(nuevoResponse.statusCode);*/
+
 
                        }catch(error, stackTrace){
                          await sentry.captureException(
@@ -244,9 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                          );
                        }
 
-
-
-                     Navigator.pushReplacementNamed(context, '/vistap');
+                      Navigator.pushReplacementNamed(context, '/vistap');
                       },
                       child: Center(
                           child: Center(
