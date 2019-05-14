@@ -22,7 +22,7 @@ class Customer {
   String email;
   String contactName;
   String details;
-  //Pivot pivot;
+  PivotCustomer pivot;
 
   Customer({
     this.id,
@@ -38,7 +38,7 @@ class Customer {
     this.email,
     this.contactName,
     this.details,
-   // this.pivot,
+    this.pivot,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) => new Customer(
@@ -55,7 +55,7 @@ class Customer {
     email: json["email"],
     contactName: json["contact_name"],
     details: json["details"],
-  //  pivot: Pivot.fromJson(json["pivot"]),
+    pivot: json.containsKey('pivot') ? PivotCustomer.fromJson(json["pivot"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -76,16 +76,16 @@ class Customer {
   };
 }
 
-class Pivot {
+class PivotCustomer {
   int userId;
   int customerId;
 
-  Pivot({
+  PivotCustomer({
     this.userId,
     this.customerId,
   });
 
-  factory Pivot.fromJson(Map<String, dynamic> json) => new Pivot(
+  factory PivotCustomer.fromJson(Map<String, dynamic> json) => new PivotCustomer(
     userId: json["user_id"],
     customerId: json["customer_id"],
   );
