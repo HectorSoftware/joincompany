@@ -81,9 +81,7 @@ class _FormTaskState extends State<FormTask> {
          ],
        ),
 
-      body: ContruirLista(
-
-      ),
+      body: dateTime(),
 
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
@@ -233,10 +231,52 @@ Widget input(){
 }
 
 Widget label(string){
+  //------------------------------------LABEL----------------------------
   return Text(string);
 }
 
+Future<Null> selectDate(BuildContext context )async{
+  final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: new DateTime(2000),
+      lastDate: new DateTime(2020));
 
+  if(picked != null && picked != _date)
+    {
+      setState(() {
+        _date = picked;
+      });
+    }
+
+}
+Widget date(){
+  //------------------------------DATE--------------------------
+  return RaisedButton(
+    child: Text('Fecha: ${_date.toLocal()}'),
+    onPressed: (){selectDate(context);},
+  );
+}
+
+Future<Null> _selectTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: _time
+    );
+
+    if(picked != null && picked != _time) {
+      setState((){
+        _time = picked;
+      });
+    }
+  }
+  Widget dateTime(){
+    //------------------------------DATE------------------------
+    return RaisedButton(
+      child: Text('Hora: ${_time.format(context)}'),
+      onPressed: (){_selectTime(context);},
+    );
+  }
 
 }
 
