@@ -30,6 +30,9 @@ dependencies:
   #PATRON BLoC
   rxdart: ^0.21.0
 
+  #DATE TIME
+  date_format: ^1.0.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

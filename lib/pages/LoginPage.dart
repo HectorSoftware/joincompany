@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
   @override
@@ -22,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
+
     super.initState();
   }
 @override
@@ -207,13 +212,27 @@ class _LoginPageState extends State<LoginPage> {
                       textColor: Colors.black,
                       splashColor: Colors.white,
 
+
                       onPressed: () async {
-                     /*  final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
+
+                      final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
                        try{
 
-                         saveUser = User(idTable:1,name: nameController.text.toString(),password: passwordController.text.toString(),company: companyController.text.toString());
-                         ClientDatabaseProvider.db.saveUser(saveUser);12
-                         userVe = await ClientDatabaseProvider.db.getCodeId('1');
+                         //var v = await login('eibanez@duperu.com','123','duperu');
+                       //  Auth aur = authFromJson(v.body);
+                           //print(v.body);
+                         //  print(aur.accessToken);
+                           var tokken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2ViYXBwLmdldGtlbS5jb21cL2FwaVwvdjFcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNTU3ODM3NjA0LCJleHAiOjE1NTc5MjQwMDQsIm5iZiI6MTU1NzgzNzYwNCwianRpIjoiQTdSWFZKRjJXdjJYVmZJaiIsInN1YiI6NCwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiJ9.gMtVV-lu_bo9RLiVgik4o0AmcDzxS-I_FJEdfaW55pU';
+
+                           var b = funBar('1','duperu',tokken);
+                           print('-----------elwe--------');
+                          print(b.body);
+                         Customer auth = customerFromJson(b.body);
+                         print(auth.name);
+
+                        /* saveUser = UserDataBase(idTable:1,name: nameController.text.toString(),password: passwordController.text.toString(),company: companyController.text.toString());
+                         ClientDatabaseProvider.db.saveUser(saveUser);
+                         userVe = await ClientDatabaseProvider.db.getCodeId('1');*/
 
                          //PETICIONES A HTTP@ CONSULTANDO Y ENVIANDO ESTOS DATOS
 
@@ -222,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                            exception: error,
                            stackTrace: stackTrace,
                          );
-                       }*/
+                       }
 
 
 
@@ -243,5 +262,13 @@ class _LoginPageState extends State<LoginPage> {
       ),
       ),
     );
+
+
+  }
+  funBar(id,empresa, tokken)async {
+
+    var b =   await  getCustomer(id,empresa,tokken);
+
+    return b;
   }
 }
