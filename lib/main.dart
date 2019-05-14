@@ -3,7 +3,6 @@ import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/pages/home/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
-import 'package:joincompany/prueba/mapa.dart';
 import 'package:joincompany/widgets/formulario_tareas.dart';
 
 void main() async {
