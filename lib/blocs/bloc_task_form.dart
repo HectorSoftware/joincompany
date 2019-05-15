@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:joincompany/blocs/bloc_provider.dart';
 import 'package:joincompany/models/ModelUser.dart';
 import 'package:joincompany/models/lista_widgets.dart';
-import 'package:rxdart/rxdart.dart';
 
 
-class BlocTaskForm{
+class BlocTaskForm extends BlocBase{
 
   ListWidgets items = new ListWidgets();
   List<Widget> listWidget = List<Widget>();
   List<String> listStringG = List<String>();
 
 
-  final  _taskController   = StreamController<List<Widget>>();
+  final  _taskFormController   = StreamController<List<dynamic>>();
 
-  Stream<List<Widget>> get outListWidget => _taskController.stream;
-  Sink<List<Widget>> get _inListWidget => _taskController.sink;
+  Stream<List<dynamic>> get outListWidget => _taskFormController.stream;
+  Sink<List<dynamic>> get _inListWidget => _taskFormController.sink;
 
 
 
@@ -26,10 +26,14 @@ class BlocTaskForm{
     listString.add('input');
     listString.add('label');
     listString.add('date');
+
     for(String v in listString)
     {
       switch(v) {
         case 'TextArea': {
+          listWidget.add(items.label());
+          listWidget.add(items.label());
+          listWidget.add(items.label());
           listWidget.add(items.label());
         }
         break;
@@ -46,7 +50,6 @@ class BlocTaskForm{
       }
     }
     if(listWidget.length != 0) {
-      print(listWidget[0]);
       _inListWidget.add(listWidget);
     }
 
@@ -57,7 +60,7 @@ class BlocTaskForm{
 
   @override
   void dispose() {
-    _taskController.close();
+    _taskFormController.close();
   }
 
   BlocTaskForm(context){

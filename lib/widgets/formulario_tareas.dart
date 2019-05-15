@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/bloc_task_form.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/BuildViewClass.dart';
 import 'dart:async';
+import 'package:joincompany/models/lista_widgets.dart';
 class FormTask extends StatefulWidget {
   
 
@@ -13,9 +13,9 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
 
-  List<Widget> listWidget = List<Widget>();
+//  List<Widget> listWidget = List<Widget>();
   List<String> listElement = List<String>();
-  List<WidgetBuild> listnew = List<WidgetBuild>();
+  List<Widget> listWidgetMain = List<Widget>();
 
 
 
@@ -82,7 +82,7 @@ class _FormTaskState extends State<FormTask> {
          ],
        ),
 
-        body:ContruirLista(context) ,
+        body:ContruirLista(context),
 
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
@@ -113,40 +113,48 @@ class _FormTaskState extends State<FormTask> {
   }
   Widget ContruirLista(context)
   {
-   //
-    final BlocTaskForm _Bloc = new BlocTaskForm(context);
-
-    // ignore: cancel_subscriptions
-    StreamSubscription streamSubscription = _Bloc.outListWidget.listen((newVal)
-    => setState(() {
-
-      print('/////////////////////');
-
-      return  StreamBuilder<List<Widget>>(
-          stream: _Bloc.outListWidget,
+    //ListWidgets items = new ListWidgets();
+    final BlocTaskForm _bloc = new BlocTaskForm(context);
+      return  StreamBuilder<List<dynamic>>(
+          stream: _bloc.outListWidget,
           builder: (context, snapshot) {
-            print('*********1234*********');
-            if (snapshot != null && snapshot.hasData) {
-              print('*********hghf*********');
-            }else{
-              print('*********hgh5555f*********');
-            }
-            return Container();
-            /*  return ListView.builder
-          (
+            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('Not connected to the Stream or null');
+              case ConnectionState.waiting:
+                return Text('awaiting interaction');
+              case ConnectionState.active:
+                return Container(
+                child: RaisedButton(
+                  elevation: 10,
+                  color: Colors.red[300],
+                  child: Text(snapshot.data.length.toString()),
+                  onPressed: (){
 
-            itemCount: listWidget.length,
-            itemBuilder: (BuildContext context, int index) => buildBody(context, index)
-        );*/
+                    setState(() {
+
+                    });
+
+                  },
+                ),
+                );
+                //return Text('Stream has started but not finished  ${snapshot.data.length}');
+              case ConnectionState.done:
+                return Text('Stream has finished');
+            }
           }
+
+
       );
-    }));
+
   }
 
   Widget buildBody(BuildContext context, int index) {
 
     return  Container(
-        child: listWidget[index]);
+        child: listWidgetMain[index],
+    );
   }
 
 
