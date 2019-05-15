@@ -10,9 +10,15 @@ class ListWidgets{
   TimeOfDay _time = new TimeOfDay.now();
 
 
-  Widget label(){
+  Widget label(string){
     //------------------------------------LABEL----------------------------
-    return Text('hello');
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(string,style: TextStyle(
+          fontSize: 25,
+      ),
+      ),
+    );
   }
 
   Future<Null> selectDate(BuildContext context )async{
@@ -25,9 +31,12 @@ class ListWidgets{
   }
   Widget date(context){
     //------------------------------DATE--------------------------
-    return RaisedButton(
-      child: Text('Fecha: ${_date.toLocal()}'),
-      onPressed: (){selectDate(context);},
+    return Container(
+      width: MediaQuery.of(context).size.width ,
+      child: RaisedButton(
+        child: Text('Fecha: ${_date.toString().substring(0,10)}'),
+        onPressed: (){selectDate(context);},
+      ),
     );
   }
 
@@ -48,9 +57,48 @@ class ListWidgets{
   Widget textArea(context){
     return
       //-------------------------------------TEXTAREA---------------
-        Container(
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width/1.2,
+            height: 150,
+            padding: EdgeInsets.only(
+                top: 4,left: 16, right: 16, bottom: 4
+            ),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(20)
+                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            child: TextField(
+              maxLines: 4,
+              //controller: nameController,
+              decoration: InputDecoration(
+
+                border: InputBorder.none,
+
+                hintText: '',
+              ),
+            ),
+          ),
+        );
+
+  }
+
+  Widget input(context){
+    //-----------------------------------------INPUT----------------------------------
+    return  Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
           width: MediaQuery.of(context).size.width/1.2,
-          height: 150,
+          height: 40,
           padding: EdgeInsets.only(
               top: 4,left: 16, right: 16, bottom: 4
           ),
@@ -67,7 +115,7 @@ class ListWidgets{
               ]
           ),
           child: TextField(
-            maxLines: 4,
+            maxLines: 1,
             //controller: nameController,
             decoration: InputDecoration(
 
@@ -76,40 +124,7 @@ class ListWidgets{
               hintText: '',
             ),
           ),
-        );
-
-  }
-
-  Widget input(context){
-    //-----------------------------------------INPUT----------------------------------
-    return  Container(
-        width: MediaQuery.of(context).size.width/1.2,
-        height: 150,
-        padding: EdgeInsets.only(
-            top: 4,left: 16, right: 16, bottom: 4
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(
-                Radius.circular(20)
-            ),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        child: TextField(
-          maxLines: 1,
-          //controller: nameController,
-          decoration: InputDecoration(
-
-            border: InputBorder.none,
-
-            hintText: '',
-          ),
-        ),
+      ),
     );
   }
 }

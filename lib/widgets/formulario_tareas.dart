@@ -86,12 +86,12 @@ class _FormTaskState extends State<FormTask> {
 
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
-     /* persistentFooterButtons: <Widget>[
+     persistentFooterButtons: <Widget>[
         Container(
 
           child: RaisedButton(
             onPressed: () {
-              expansionTile();
+              //expansionTile();
             },
               color: PrimaryColor,
             child: Padding(
@@ -107,13 +107,13 @@ class _FormTaskState extends State<FormTask> {
           width: MediaQuery.of(context).size.width*0.95,
 
         ),
-      ],*/
+      ],
     );
 
   }
   Widget ContruirLista(context)
   {
-    //ListWidgets items = new ListWidgets();
+    ListWidgets items = new ListWidgets();
     final BlocTaskForm _bloc = new BlocTaskForm(context);
       return  StreamBuilder<List<dynamic>>(
           stream: _bloc.outListWidget,
@@ -125,19 +125,13 @@ class _FormTaskState extends State<FormTask> {
               case ConnectionState.waiting:
                 return Text('awaiting interaction');
               case ConnectionState.active:
-                return Container(
-                child: RaisedButton(
-                  elevation: 10,
-                  color: Colors.red[300],
-                  child: Text(snapshot.data.length.toString()),
-                  onPressed: (){
-
-                    setState(() {
-
-                    });
-
-                  },
-                ),
+                return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return new Container(
+                        child: snapshot.data[index],
+                      );
+                    }
                 );
                 //return Text('Stream has started but not finished  ${snapshot.data.length}');
               case ConnectionState.done:

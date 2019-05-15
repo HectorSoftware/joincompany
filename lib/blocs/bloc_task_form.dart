@@ -22,6 +22,7 @@ class BlocTaskForm extends BlocBase{
   void updateListWidget(context)
   {
     List<String> listString = List<String>();
+    listString.add('label');
     listString.add('TextArea');
     listString.add('input');
     listString.add('label');
@@ -30,19 +31,22 @@ class BlocTaskForm extends BlocBase{
     for(String v in listString)
     {
       switch(v) {
+        case 'label': {
+          listWidget.add(items.label('Hello'));
+        }
+        break;
+
+        case 'date': {
+          listWidget.add(items.dateTime(context));
+        }
+        break;
         case 'TextArea': {
-          listWidget.add(items.label());
-          listWidget.add(items.label());
-          listWidget.add(items.label());
-          listWidget.add(items.label());
+          listWidget.add(items.textArea(context));
         }
-        break;
-
-        case 'input': {
-          listWidget.add(items.label());
-        }
-        break;
-
+        break; case 'input': {
+        listWidget.add(items.input(context));
+         }
+         break;
         default: {
 
         }
