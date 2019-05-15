@@ -87,25 +87,39 @@ class _FormTaskState extends State<FormTask> {
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
      persistentFooterButtons: <Widget>[
-        Container(
+        Stack(
+         children: <Widget>[
+           RaisedButton(
+             onPressed: () {
+               _showModal();
+             },
+             color: PrimaryColor,
+             child: Padding(
+               padding: const EdgeInsets.only(left: 320),
+               child: Icon(
+                 Icons.keyboard_arrow_up,
+                 color: Colors.black,
+                 size: 35,
+               ),
+             ),
 
-          child: RaisedButton(
-            onPressed: () {
-              _seleccionarMapa();
-            },
-              color: PrimaryColor,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 320),
-              child: Icon(
-                Icons.keyboard_arrow_up,
-                color: Colors.black,
-                size: 35,
-              ),
-            ),
+           ),
+           RaisedButton(
+             onPressed: () {
+               _showModal();
+             },
+             color: PrimaryColor,
+             child: Padding(
+               padding: const EdgeInsets.only(left: 5),
+               child: Icon(
+                 Icons.keyboard_arrow_up,
+                 color: Colors.black,
+                 size: 35,
+               ),
+             ),
 
-          ),
-          width: MediaQuery.of(context).size.width*0.95,
-
+           ),
+         ],
         ),
       ],
     );
@@ -144,63 +158,42 @@ class _FormTaskState extends State<FormTask> {
 
   }
 
-  Future _seleccionarMapa() async {
-    //cambiar Nombre para funcion de ventan emerrgente
-    switch (
-    await showDialog(
+
+
+  void _showModal() {
+    showModalBottomSheet<void>(
         context: context,
-        /*it shows a popup with few options which you can select, for option we
-        created enums which we can use with switch statement, in this first switch
-        will wait for the user to select the option which it can use with switch cases*/
-        child: new SimpleDialog(
-
-          title: new Text('Tipo de mapa'),
-          children: <Widget>[
-            new SimpleDialogOption(
-              child: FlatButton(
-                splashColor: Colors.black,
-
-                padding: const EdgeInsets.all(12.0),
-                textColor: Colors.white,
-                color: PrimaryColor,
-                child: new Text("Satelital"),
-                onPressed: () {},
+        builder: (BuildContext context) {
+          return new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new ListTile(
+                leading: new Icon(Icons.business),
+                title: new Text('Gestion Comercial'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
+              new ListTile(
+                leading: new Icon(Icons.subject),
+                title: new Text('Encuesta'),
+                onTap: () {
 
-
-            ),
-            new SimpleDialogOption(
-
-              child: new FlatButton(
-                splashColor: Colors.black,
-                padding: const EdgeInsets.all(12.0),
-                textColor: Colors.white,
-                color: PrimaryColor,
-                child: new Text("Normal"),
-                onPressed: () {},
+                  Navigator.pop(context);
+                },
               ),
+              new ListTile(
+                leading: new Icon(Icons.label),
+                title: new Text('Tarea/ Nota Vacia'),
+                onTap: () {
 
-
-            ),
-            new SimpleDialogOption(
-              child: new FlatButton(
-                splashColor: Colors.black,
-                padding: const EdgeInsets.all(12.0),
-                textColor: Colors.white,
-                color: PrimaryColor,
-                child: new Text("Otro"),
-                onPressed: () {},
+                  Navigator.pop(context);
+                },
               ),
-
-            ),
-          ],
-        )
-    )
-    )
-    {
-
-    }
-    }
+            ],
+          );
+        });
+  }
 
   Widget buildBody(BuildContext context, int index) {
 

@@ -30,15 +30,12 @@ class BlocTaskForm extends BlocBase{
     listString.add('input');
     listString.add('input');
     listString.add('input');
-    listString.add('input');
-    listString.add('label');
-    listString.add('date');
 
     for(String v in listString)
     {
       switch(v) {
         case 'label': {
-          listWidget.add(items.label('Hello'));
+          listWidget.add(items.uploadImage());
         }
         break;
 

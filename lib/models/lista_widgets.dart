@@ -2,12 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
+import 'package:joincompany/main.dart';
 class ListWidgets{
 
 
   DateTime _date = new DateTime.now();
   TimeOfDay _time = new TimeOfDay.now();
+  File image;
 
 
   Widget label(string){
@@ -127,4 +131,36 @@ class ListWidgets{
       ),
     );
   }
+
+  picker() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+//    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      image = img;
+     // setState(() {});
+    }
+  }
+
+  Widget uploadImage(){
+    return Column(
+      children: <Widget>[
+        Container(
+          child: new Center(
+            child: image == null
+                ? new Text('No Image to Show ')
+                : new Image.file(image),
+          ),
+        ),
+        RaisedButton(
+          onPressed: picker,
+          child: Text('Imagen'),
+          color: PrimaryColor,
+        )
+      ],
+
+    );
+
+  }
 }
+
