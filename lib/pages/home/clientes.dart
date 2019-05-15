@@ -40,7 +40,6 @@ class Cliente extends StatelessWidget {
                 context,
                 new MaterialPageRoute(
                     builder: (BuildContext context) => new  AddClient()));
-
           },
 
         ),

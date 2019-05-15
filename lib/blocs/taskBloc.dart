@@ -23,6 +23,8 @@ class TaskBloc{
     listMarkerLocal.add(marker);
     marker = Place(id: 4, customer: 'cliente 4', address: 'direccion 4',latitude: -33.4544232,longitude: -70.6261232, status: 2);
     listMarkerLocal.add(marker);
+    marker = Place(id: 5, customer: 'cliente 5', address: 'direccion 5',latitude: -33.4531271,longitude: -70.5612654, status: 1);
+    listMarkerLocal.add(marker);
 
     _listMarker = listMarkerLocal;
     _taskcontroller.add(_listMarker);

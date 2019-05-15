@@ -216,23 +216,17 @@ class _LoginPageState extends State<LoginPage> {
 
                       onPressed: () async {
 
-                      final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
+                      /*final sentryr.SentryClient sentry = new sentryr.SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
                        try{
-
-                         String empresa = 'getkem';
+                         /*String empresa = 'getkem';
                          //var v = await login('eibanez@duperu.com','123',empresa);
                          var v = await login('jgarcia@getkem.com','123',empresa);
-
                          Auth aur = authFromJson(v.body);
-
                          //var tokken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2ViYXBwLmdldGtlbS5jb21cL2FwaVwvdjFcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNTU3ODM3NjA0LCJleHAiOjE1NTc5MjQwMDQsIm5iZiI6MTU1NzgzNzYwNCwianRpIjoiQTdSWFZKRjJXdjJYVmZJaiIsInN1YiI6NCwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiJ9.gMtVV-lu_bo9RLiVgik4o0AmcDzxS-I_FJEdfaW55pU';
                          var tokken = aur.accessToken;
                          print('-----------elwe--------');
-
-
-
                         //LLAMAR CLIENTE
-                         /*var b =   await  getCustomer('2',empresa,tokken);
+                         var b =   await  getCustomer('2',empresa,tokken);
                          print(b.body);
                          Customer c = customerFromJson(b.body);
                          //TODOS LOS CLIENTES
@@ -248,14 +242,12 @@ class _LoginPageState extends State<LoginPage> {
                          Customer nuevo = Customer(id: null, name: 'cl',code: '456',contactName: 'kn',createdAt: 'jn',createdById: null,deletedAt: 'p',deletedById: null,details: 'juhoji', email: '@g',phone: '5464', pivot: null, updatedAt: 'npk',updatedById: null);
                          var nuevoResponse = await createCustomer(nuevo,empresa,tokken);
                          print(nuevoResponse.statusCode);*/
-
-
                        }catch(error, stackTrace){
                          await sentry.captureException(
                            exception: error,
                            stackTrace: stackTrace,
                          );
-                       }
+                       }*/
 
                       Navigator.pushReplacementNamed(context, '/vistap');
                       },

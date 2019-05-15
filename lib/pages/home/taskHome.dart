@@ -17,14 +17,17 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
 
   @override
   Future initState() {
-
+    _controller = TabController(length: 2, vsync: this);
     super.initState();
   }
 
   @override
   void dispose(){
+    _controller.dispose();
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +46,9 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
               Navigator.push(
                 context,
-                  MaterialPageRoute(builder: (context) => SearchAddress()),
+                MaterialPageRoute(builder: (context) => SearchAddress()),
               );
             },
-
           ),
           IconButton(
             icon: Icon(Icons.calendar_today),
@@ -56,16 +58,34 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
             },
-
           ),
         ],
+        bottom: getTabBar(),
       ),
-      body: Column(
-        children: <Widget>[
-          TabBarButton(),
-          Container(child: CondicionalHome ? taskHomeTask() : taskHomeMap())
-        ],
-      )
+      body: getTabBarView(),
+    );
+  }
+  TabBar getTabBar(){
+    return TabBar(
+      indicatorColor : Colors.red,
+      labelColor: Colors.red,
+      unselectedLabelColor: Colors.white,
+      labelStyle: TextStyle(fontSize: 20),
+      tabs: <Tab>[
+        Tab(text: 'Tareas',),
+        Tab(text: 'Mapa',),
+      ],
+      controller: _controller,
+    );
+  }
+
+  TabBarView getTabBarView(){
+    return TabBarView(
+      children: <Widget>[
+        taskHomeTask(),
+        taskHomeMap(),
+      ],
+      controller: _controller,
     );
   }
 

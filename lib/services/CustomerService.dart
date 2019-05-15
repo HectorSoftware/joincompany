@@ -62,8 +62,8 @@ Future<http.Response> delteCustomer(String id, String customer, String authoriza
 
 
 
-//LLAMAR CLIENTE
-/*var b =   await  getCustomer('2',empresa,tokken);
+                        //LLAMAR CLIENTE
+                         /*var b =   await  getCustomer('2',empresa,tokken);
                          print(b.body);
                          Customer c = customerFromJson(b.body);
                          //TODOS LOS CLIENTES
