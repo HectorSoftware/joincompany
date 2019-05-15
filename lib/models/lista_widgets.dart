@@ -13,7 +13,7 @@ class ListWidgets{
   Widget label(string){
     //------------------------------------LABEL----------------------------
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(12.0),
       child: Text(string,style: TextStyle(
           fontSize: 25,
       ),
@@ -58,7 +58,7 @@ class ListWidgets{
     return
       //-------------------------------------TEXTAREA---------------
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(15.0),
           child: Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: 150,
@@ -104,7 +104,7 @@ class ListWidgets{
           ),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
-                  Radius.circular(20)
+                  Radius.circular(15)
               ),
               color: Colors.white,
               boxShadow: [

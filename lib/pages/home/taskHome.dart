@@ -3,7 +3,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
-import 'package:joincompany/pages/home/clientes.dart';
+import 'package:joincompany/Menu/clientes.dart';
 
 class taskHomePage extends StatefulWidget {
   _MytaskPageState createState() => _MytaskPageState();

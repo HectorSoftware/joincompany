@@ -91,7 +91,7 @@ class _FormTaskState extends State<FormTask> {
 
           child: RaisedButton(
             onPressed: () {
-              //expansionTile();
+              _seleccionarMapa();
             },
               color: PrimaryColor,
             child: Padding(
@@ -143,6 +143,64 @@ class _FormTaskState extends State<FormTask> {
       );
 
   }
+
+  Future _seleccionarMapa() async {
+    //cambiar Nombre para funcion de ventan emerrgente
+    switch (
+    await showDialog(
+        context: context,
+        /*it shows a popup with few options which you can select, for option we
+        created enums which we can use with switch statement, in this first switch
+        will wait for the user to select the option which it can use with switch cases*/
+        child: new SimpleDialog(
+
+          title: new Text('Tipo de mapa'),
+          children: <Widget>[
+            new SimpleDialogOption(
+              child: FlatButton(
+                splashColor: Colors.black,
+
+                padding: const EdgeInsets.all(12.0),
+                textColor: Colors.white,
+                color: PrimaryColor,
+                child: new Text("Satelital"),
+                onPressed: () {},
+              ),
+
+
+            ),
+            new SimpleDialogOption(
+
+              child: new FlatButton(
+                splashColor: Colors.black,
+                padding: const EdgeInsets.all(12.0),
+                textColor: Colors.white,
+                color: PrimaryColor,
+                child: new Text("Normal"),
+                onPressed: () {},
+              ),
+
+
+            ),
+            new SimpleDialogOption(
+              child: new FlatButton(
+                splashColor: Colors.black,
+                padding: const EdgeInsets.all(12.0),
+                textColor: Colors.white,
+                color: PrimaryColor,
+                child: new Text("Otro"),
+                onPressed: () {},
+              ),
+
+            ),
+          ],
+        )
+    )
+    )
+    {
+
+    }
+    }
 
   Widget buildBody(BuildContext context, int index) {
 

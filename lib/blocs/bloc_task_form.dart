@@ -25,6 +25,12 @@ class BlocTaskForm extends BlocBase{
     listString.add('label');
     listString.add('TextArea');
     listString.add('input');
+    listString.add('input');
+    listString.add('input');
+    listString.add('input');
+    listString.add('input');
+    listString.add('input');
+    listString.add('input');
     listString.add('label');
     listString.add('date');
 
