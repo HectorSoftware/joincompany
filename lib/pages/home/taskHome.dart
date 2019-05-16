@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/configCli.dart';
+import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
@@ -180,6 +182,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             trailing: new Icon(Icons.contacts),
             onTap: () {
               Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new  ContactView()));
             },
           ),
           new ListTile(
@@ -198,6 +204,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onTap: () {
              // Navigator.pushReplacementNamed(context, "/intro");
               Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new  ConfigCli()));
             },
           ),
         ],
