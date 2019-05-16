@@ -154,14 +154,14 @@ class _FormTaskState extends State<FormTask> {
 
 
   void _showModal(context) {
-    final TypeTaskBloc _blocType = new TypeTaskBloc(context);
+    final BlocTaskForm _bloc = new BlocTaskForm(context);
       showModalBottomSheet<String>(
         context: context,
         builder: (BuildContext context) {
 
           return StreamBuilder<dynamic>(
 
-            stream: _blocType.outTaskType,
+            stream: _bloc.outListWidget,
             builder: (context, snapshot) {
               return new Column(
 
@@ -171,7 +171,7 @@ class _FormTaskState extends State<FormTask> {
                     leading: new Icon(Icons.business),
                     title: new Text('Gestion Comercial'),
                     onTap: () {
-                      _blocType.formTypeTask('Gestion Comercial');
+                      _bloc.updateListWidget(context,'Gestion Comercial');
                       Navigator.pop(context);
                     },
                   ),
@@ -179,7 +179,8 @@ class _FormTaskState extends State<FormTask> {
                     leading: new Icon(Icons.subject),
                     title: new Text('Encuesta'),
                     onTap: () {
-                      _blocType.formTypeTask('Encuesta');
+
+                      _bloc.updateListWidget(context,'Encuesta');
 
                       Navigator.pop(context);
                     },
@@ -188,7 +189,7 @@ class _FormTaskState extends State<FormTask> {
                     leading: new Icon(Icons.label),
                     title: new Text('Tarea/ Nota Vacia'),
                     onTap: () {
-                      _blocType.formTypeTask('Nota Vacia');
+                      _bloc.updateListWidget(context,'Nota Vacia');
                       Navigator.pop(context);
                     },
                   ),

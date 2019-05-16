@@ -15,14 +15,16 @@ class BlocTaskForm {
 
   final  _taskFormController   = StreamController<List<dynamic>>();
 
+  var string;
+
   Stream<List<dynamic>> get outListWidget => _taskFormController.stream;
   Sink<List<dynamic>> get _inListWidget => _taskFormController.sink;
 
 
 
-  void updateListWidget(context)
+  void updateListWidget(context,string)
   {
-    //_taskBloc.formTypeTask(string);
+    print(string);
     List<String> listString = List<String>();
     listString.add('label');
     listString.add('input');
@@ -78,6 +80,6 @@ class BlocTaskForm {
   }
 
   BlocTaskForm(context) {
-    updateListWidget(context);
+    updateListWidget(context,string);
   }
 }
