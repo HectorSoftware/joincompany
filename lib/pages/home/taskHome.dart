@@ -3,7 +3,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
-import 'package:joincompany/pages/home/clientes.dart';
+import 'package:joincompany/Menu/clientes.dart';
 
 class taskHomePage extends StatefulWidget {
   _MytaskPageState createState() => _MytaskPageState();
@@ -178,6 +178,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
           new ListTile(
             title: new Text("Contactos"),
             trailing: new Icon(Icons.contacts),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
             onTap: () {
               Navigator.of(context).pop();
             },

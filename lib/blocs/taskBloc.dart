@@ -5,7 +5,7 @@ class TaskBloc{
   List<Place> _listMarker = new List<Place>();
 
   final _taskcontroller = StreamController<List<Place>>();
-  Sink<List<Place>> get _inTask => _taskcontroller.sink;
+ // Sink<List<Place>> get _inTask => _taskcontroller.sink;
   Stream<List<Place>> get outTask => _taskcontroller.stream;
 
   TaskBloc(){
