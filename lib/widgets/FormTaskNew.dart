@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:joincompany/blocs/bloc_task_form.dart';
+import 'package:joincompany/blocs/BlocTypeTask.dart';
+import 'package:joincompany/blocs/blocFaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'dart:async';
-import 'package:joincompany/models/lista_widgets.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 class FormTask extends StatefulWidget {
   
 
@@ -87,47 +88,39 @@ class _FormTaskState extends State<FormTask> {
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
      persistentFooterButtons: <Widget>[
-        Stack(
-         children: <Widget>[
-           RaisedButton(
-             onPressed: () {
-               _showModal();
-             },
-             color: PrimaryColor,
-             child: Padding(
-               padding: const EdgeInsets.only(left: 320),
-               child: Icon(
-                 Icons.keyboard_arrow_up,
-                 color: Colors.black,
-                 size: 35,
-               ),
-             ),
+       Container(
 
-           ),
-           RaisedButton(
-             onPressed: () {
-               _showModal();
-             },
-             color: PrimaryColor,
-             child: Padding(
-               padding: const EdgeInsets.only(left: 5),
-               child: Icon(
-                 Icons.keyboard_arrow_up,
-                 color: Colors.black,
-                 size: 35,
-               ),
-             ),
+         width: MediaQuery.of(context).size.width * 0.96,
+         child: BottomAppBar(
+           color: PrimaryColor,
+           child: new Row(
+             mainAxisSize: MainAxisSize.max,
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: <Widget>[
+               IconButton(
+                 icon: Icon(Icons.menu),
+                 onPressed: (){
+                   _showModalDateTimeAndDirections();
 
+                 },
+               ),
+               IconButton(
+                   icon: Icon(Icons.business),
+                   onPressed: () {
+                     _showModal(context);
+                   }
+               ),
+
+             ],
            ),
-         ],
-        ),
+         ),
+       )
       ],
     );
 
   }
   Widget ContruirLista(context)
   {
-    ListWidgets items = new ListWidgets();
     final BlocTaskForm _bloc = new BlocTaskForm(context);
       return  StreamBuilder<List<dynamic>>(
           stream: _bloc.outListWidget,
@@ -160,7 +153,53 @@ class _FormTaskState extends State<FormTask> {
 
 
 
-  void _showModal() {
+  void _showModal(context) {
+    final TypeTaskBloc _blocType = new TypeTaskBloc(context);
+      showModalBottomSheet<String>(
+        context: context,
+        builder: (BuildContext context) {
+
+          return StreamBuilder<dynamic>(
+
+            stream: _blocType.outTaskType,
+            builder: (context, snapshot) {
+              return new Column(
+
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  new ListTile(
+                    leading: new Icon(Icons.business),
+                    title: new Text('Gestion Comercial'),
+                    onTap: () {
+                      _blocType.formTypeTask('Gestion Comercial');
+                      Navigator.pop(context);
+                    },
+                  ),
+                  new ListTile(
+                    leading: new Icon(Icons.subject),
+                    title: new Text('Encuesta'),
+                    onTap: () {
+                      _blocType.formTypeTask('Encuesta');
+
+                      Navigator.pop(context);
+                    },
+                  ),
+                  new ListTile(
+                    leading: new Icon(Icons.label),
+                    title: new Text('Tarea/ Nota Vacia'),
+                    onTap: () {
+                      _blocType.formTypeTask('Nota Vacia');
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            }
+          );
+        });
+  }
+
+  void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -168,23 +207,15 @@ class _FormTaskState extends State<FormTask> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               new ListTile(
-                leading: new Icon(Icons.business),
-                title: new Text('Gestion Comercial'),
+                leading: new Icon(Icons.location_on),
+                title: new Text('Lugar'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               new ListTile(
-                leading: new Icon(Icons.subject),
-                title: new Text('Encuesta'),
-                onTap: () {
-
-                  Navigator.pop(context);
-                },
-              ),
-              new ListTile(
-                leading: new Icon(Icons.label),
-                title: new Text('Tarea/ Nota Vacia'),
+                leading: new Icon(Icons.access_time),
+                title: new Text('Hora'),
                 onTap: () {
 
                   Navigator.pop(context);
@@ -194,14 +225,6 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-
-  Widget buildBody(BuildContext context, int index) {
-
-    return  Container(
-        child: listWidgetMain[index],
-    );
-  }
-
 
 }
 

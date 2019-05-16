@@ -162,6 +162,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               Navigator.of(context).pop();
             },
           ),
+          new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
           Divider(
             height: 30.0,
           ),

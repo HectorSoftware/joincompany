@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:joincompany/blocs/bloc_provider.dart';
-import 'package:joincompany/models/ModelUser.dart';
-import 'package:joincompany/models/lista_widgets.dart';
+import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/blocs/BlocTypeTask.dart';
+import 'package:path/path.dart';
 
 
-class BlocTaskForm extends BlocBase{
+class BlocTaskForm {
+
+  TypeTaskBloc _taskBloc = TypeTaskBloc(context);
 
   ListWidgets items = new ListWidgets();
   List<Widget> listWidget = List<Widget>();
   List<String> listStringG = List<String>();
-
 
   final  _taskFormController   = StreamController<List<dynamic>>();
 
@@ -21,35 +22,41 @@ class BlocTaskForm extends BlocBase{
 
   void updateListWidget(context)
   {
+    //_taskBloc.formTypeTask(string);
     List<String> listString = List<String>();
     listString.add('label');
+    listString.add('input');
+    listString.add('label');
     listString.add('TextArea');
-    listString.add('input');
-    listString.add('input');
-    listString.add('input');
-    listString.add('input');
-    listString.add('input');
+    listString.add('label');
+    listString.add('date');
+    listString.add('image');
     listString.add('input');
 
     for(String v in listString)
     {
       switch(v) {
         case 'label': {
-          listWidget.add(items.uploadImage());
+          listWidget.add(items.label("Titulo "));
         }
         break;
 
-        case 'date': {
-          listWidget.add(items.dateTime(context));
+        case 'input': {
+          listWidget.add(items.input(context));
         }
         break;
         case 'TextArea': {
           listWidget.add(items.textArea(context));
         }
-        break; case 'input': {
-        listWidget.add(items.input(context));
+        break;
+        case 'date': {
+        listWidget.add(items.date(context));
          }
          break;
+        case 'image': {
+          listWidget.add(items.uploadImage(context));
+        }
+        break;
         default: {
 
         }
@@ -70,7 +77,7 @@ class BlocTaskForm extends BlocBase{
     _taskFormController.close();
   }
 
-  BlocTaskForm(context){
+  BlocTaskForm(context) {
     updateListWidget(context);
   }
 }
