@@ -130,15 +130,20 @@ class _FormTaskState extends State<FormTask> {
               case ConnectionState.none:
                 return Text('Not connected to the Stream or null');
               case ConnectionState.waiting:
-                return Text('awaiting interaction');
+                return Column(
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Text('awaiting interaction'),
+                  ],
+                );
               case ConnectionState.active:
                 return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return new Container(
-                        child: snapshot.data[index],
-                      );
-                    }
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return new Container(
+                      child: snapshot.data[index],
+                    );
+                  }
                 );
                 //return Text('Stream has started but not finished  ${snapshot.data.length}');
               case ConnectionState.done:
@@ -179,8 +184,7 @@ class _FormTaskState extends State<FormTask> {
                     leading: new Icon(Icons.subject),
                     title: new Text('Encuesta'),
                     onTap: () {
-
-                      _bloc.updateListWidget(context,'Encuesta');
+                      _bloc.updateListWidget(context,"Encuesta");
 
                       Navigator.pop(context);
                     },
