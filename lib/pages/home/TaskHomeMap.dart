@@ -99,6 +99,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
+      print(_initialPosition);
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
@@ -247,7 +248,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 subtitle: Text(listas_porhacer[index].address),
                 leading: Icon(Icons.location_on,color: Colors.red,),
                 onTap: (){
-                  print(listas_porhacer[index].latitude);
                   var center = LatLng(listas_porhacer[index].latitude, listas_porhacer[index].longitude);
                   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
                       target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));

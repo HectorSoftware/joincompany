@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:joincompany/models/Marker.dart';
 import 'package:sentry/sentry.dart';
 
 import '../../main.dart';
@@ -25,9 +26,11 @@ class _SearchAddressState extends State<SearchAddress> {
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
   SentryClient sentry;
+  bool llenadoListaEncontrador = false;
 
   @override
   Future initState() {
+    _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     super.initState();
@@ -45,29 +48,32 @@ class _SearchAddressState extends State<SearchAddress> {
     if (mediaQueryData.orientation == Orientation.portrait) {
       por = 0.807;
     }
-    return _initialPosition == null ?
-    Container(
-      alignment: Alignment.center,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),) :
-    Scaffold(
-        resizeToAvoidBottomPadding: false,
-        appBar: new AppBar(
-          backgroundColor: PrimaryColor,
-          title: new Text('Dirección'),
+
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      appBar: new AppBar(
+        backgroundColor: PrimaryColor,
+        title: new Text('Dirección'),
+      ),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: ListView(
+          children: <Widget>[
+            Botonbuscar(),
+            Mapa(),
+            Container(
+              child: llenadoListaEncontrador ?
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: listaLugaresEncontrados()) :
+              Container(child: Center(child: Text('No existe ubicación'),),) ,
+            )
+          ],
         ),
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: ListView(
-            children: <Widget>[
-              Botonbuscar(),
-              Mapa(),
-            ],
-          ),
-        ),
+      ),
     );
   }
 
@@ -88,6 +94,7 @@ class _SearchAddressState extends State<SearchAddress> {
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
@@ -117,35 +124,53 @@ class _SearchAddressState extends State<SearchAddress> {
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-          sendRequest(value);
+            //sendRequest(value);
         },
         onChanged: (text){
-
+          sendRequest(text);
         },
       ),
     );
   }
 
+  sendRequest(String intendedLocation) async {
+    List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
+    listPlacemark.clear();
+    _markers.clear();
+
+    var center = LatLng(_initialPosition.latitude, _initialPosition.longitude);
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: center == null ? LatLng(0, 0) : center, zoom: 14.0)));
+
+    if(placemark !=null){
+      for(int i=0; i < placemark.length;i++){
+        double latitude = placemark[i].position.latitude;
+        double longitude = placemark[i].position.longitude;
+        LatLng destination = LatLng(latitude, longitude);
+        _addMarker(destination, intendedLocation);
+        llenadoListaEncontrador = true;
+        listPlacemark.add(placemark[i]);
+      }
+      setState(() {
+        llenadoListaEncontrador;
+        listPlacemark;
+      });
+    }else{
+      llenadoListaEncontrador = false;
+      setState(() {
+        llenadoListaEncontrador;
+      });
+    }
+  }
+
   Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
-    List<Placemark> placemark = null;
+    List<Placemark> placemark ;
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
       print(e.toString());
     }
-
     return placemark;
-  }
-
-  Future sendRequest(String intendedLocation) async {
-    List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
-    if(placemark !=null){
-      double latitude = placemark[0].position.latitude;
-      double longitude = placemark[0].position.longitude;
-      LatLng destination = LatLng(latitude, longitude);
-      _addMarker(destination, intendedLocation);
-    }
-
   }
 
   void _addMarker(LatLng location, String address){
@@ -160,8 +185,14 @@ class _SearchAddressState extends State<SearchAddress> {
     });
   }
 
-  Card Mapa(){
-    return Card(
+  Mapa(){
+    return _initialPosition == null ?
+    Container(
+      alignment: Alignment.center,
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),) :
+    Card(
       margin: const EdgeInsets.symmetric(vertical: 2.0),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -170,13 +201,43 @@ class _SearchAddressState extends State<SearchAddress> {
           mapType: MapType.normal,
           initialCameraPosition: _kGooglePlex,
           onMapCreated: onMapCreated,
-          myLocationEnabled: true,
           compassEnabled: true,
+          myLocationEnabled: true,
           onCameraMove: _onCameraMove,
           markers: _markers,
           polylines: _polyLines,
         ),
       ),
+    );
+  }
+
+  List<Placemark> listPlacemark = new List<Placemark>();
+  // 0 : name - 1 : lat - 2 : log - 3 : direccion
+  listaLugaresEncontrados(){
+    return ListView.builder(
+      itemCount: listPlacemark.length,
+      itemBuilder: (context, index) {
+        return Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                  child: RaisedButton(
+                    onPressed: (){
+                      var center = LatLng(listPlacemark[index].position.latitude, listPlacemark[index].position.longitude);
+                      mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                          target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
+                      },
+                    child: Text(listPlacemark[index].name),
+                    color: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    elevation: 0,
+                  )
+              ),
+            ),
+            Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){})),
+          ],
+        );
+      },
     );
   }
 }
