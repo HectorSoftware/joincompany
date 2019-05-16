@@ -13,6 +13,7 @@ void main() async {
 
 const PrimaryColor = const Color(0xff29a0c7);
 const SecondaryColor = const Color(0xff29a0c7);
+const kGoogleApiKey = "AIzaSyDCs8ksRMNY73LlWa_VEyLzzDS24qKaaMw";
 
 
 class MyApp extends StatelessWidget{

@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:sentry/sentry.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 
 import '../../main.dart';
 
@@ -27,6 +29,8 @@ class _SearchAddressState extends State<SearchAddress> {
   final Set<Polyline> _polyLines = {};
   SentryClient sentry;
   bool llenadoListaEncontrador = false;
+  static const kGoogleApiKeyy = kGoogleApiKey;
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
 
   @override
   Future initState() {
@@ -124,13 +128,32 @@ class _SearchAddressState extends State<SearchAddress> {
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-            //sendRequest(value);
+          //sendRequest2(value);
         },
         onChanged: (text){
           sendRequest(text);
         },
       ),
     );
+  }
+
+  List<PlacesSearchResult> places = [];
+  sendRequest2(String value) async {
+    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
+    final result = await _places.searchNearbyWithRadius(location, 5000);
+
+    if (result.status == "OK") {
+      this.places = result.results;
+      String direccion = '';
+      result.results.forEach((f) {
+        direccion = f.name;
+        if(direccion.contains(value)){
+
+        }
+      });
+    } else {
+    }
+
   }
 
   sendRequest(String intendedLocation) async {
@@ -170,6 +193,8 @@ class _SearchAddressState extends State<SearchAddress> {
     }catch(e) {
       print(e.toString());
     }
+
+
     return placemark;
   }
 
@@ -227,7 +252,7 @@ class _SearchAddressState extends State<SearchAddress> {
                       mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
                           target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
                       },
-                    child: Text(listPlacemark[index].name),
+                    child: Text(listPlacemark[index].country+','+ listPlacemark[index].subAdministrativeArea+','+ listPlacemark[index].thoroughfare+','+ listPlacemark[index].name),
                     color: Colors.transparent,
                     splashColor: Colors.transparent,
                     elevation: 0,
