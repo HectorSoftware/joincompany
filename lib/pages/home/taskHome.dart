@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/configCli.dart';
+import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
@@ -44,10 +46,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onPressed: (){
               //FUNCION DE BUSQUEDA EN TAREAS
               //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              Navigator.push(
+              /*Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SearchAddress()),
-              );
+              );*/
             },
           ),
           IconButton(
@@ -180,15 +182,19 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             trailing: new Icon(Icons.contacts),
             onTap: () {
               Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new  ContactView()));
             },
           ),
-          new ListTile(
+          /*new ListTile(
             title: new Text("Negocios"),
             trailing: new Icon(Icons.poll),
             onTap: () {
               Navigator.of(context).pop();
             },
-          ),
+          ),*/
           Divider(
             height: 30.0,
           ),
@@ -198,6 +204,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onTap: () {
              // Navigator.pushReplacementNamed(context, "/intro");
               Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new  ConfigCli()));
             },
           ),
         ],

@@ -129,9 +129,10 @@ class _SearchAddressState extends State<SearchAddress> {
         ),
         onSubmitted: (value){
           //sendRequest2(value);
+          sendRequest(value);
         },
         onChanged: (text){
-          sendRequest(text);
+
         },
       ),
     );

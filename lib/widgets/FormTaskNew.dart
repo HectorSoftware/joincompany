@@ -4,6 +4,7 @@ import 'package:joincompany/blocs/blocFaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 class FormTask extends StatefulWidget {
   
 
@@ -17,6 +18,7 @@ class _FormTaskState extends State<FormTask> {
 //  List<Widget> listWidget = List<Widget>();
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
+  bool changedView = false;
 
 
 
@@ -137,14 +139,14 @@ class _FormTaskState extends State<FormTask> {
                   ],
                 );
               case ConnectionState.active:
-                return ListView.builder(
+                return  ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     return new Container(
                       child: snapshot.data[index],
                     );
                   }
-                );
+                ) ;
                 //return Text('Stream has started but not finished  ${snapshot.data.length}');
               case ConnectionState.done:
                 return Text('Stream has finished');
@@ -177,6 +179,10 @@ class _FormTaskState extends State<FormTask> {
                     title: new Text('Gestion Comercial'),
                     onTap: () {
                       _bloc.updateListWidget(context,'Gestion Comercial');
+                      changedView = true;
+                      setState(() {
+                        changedView;
+                      });
                       Navigator.pop(context);
                     },
                   ),
@@ -185,7 +191,10 @@ class _FormTaskState extends State<FormTask> {
                     title: new Text('Encuesta'),
                     onTap: () {
                       _bloc.updateListWidget(context,"Encuesta");
-
+                      changedView = true;
+                      setState(() {
+                        changedView;
+                      });
                       Navigator.pop(context);
                     },
                   ),
@@ -216,6 +225,11 @@ class _FormTaskState extends State<FormTask> {
                 title: new Text('Lugar'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchAddress()),
+                  );
+
                 },
               ),
               new ListTile(

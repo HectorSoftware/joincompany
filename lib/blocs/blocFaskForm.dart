@@ -24,20 +24,7 @@ class BlocTaskForm {
 
   void updateListWidget(context,str)
   {
-    if(strG != null && str != 'Nota vacia') {
-      strG = str;
-      switch (strG) {
-        case 'Nota vacia':
-          {
-            listWidget.add(items.label('Titulo 1'));
-            listWidget.add(items.textArea(context));
-          }
-          break;
-        case 'Encuesta':
-          {}
-          break;
-        case 'Gestion Comercial':
-          {
+
             List<String> listString = List<String>();
             listString.add('label');
             listString.add('input');
@@ -83,20 +70,14 @@ class BlocTaskForm {
                   break;
               }
             }
+            _inListWidget.add(listWidget);
 
             //fin de Gestion
           }
-          break;
 
-        default:
-          {
-            /*   listWidget.add(items.loadingTask());
-          _inListWidget.add(listWidget);*/
-          }
-      }
-      _inListWidget.add(listWidget);
-    }
-  }
+
+
+
 
 
   @override
