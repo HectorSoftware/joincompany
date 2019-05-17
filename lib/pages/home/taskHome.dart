@@ -74,9 +74,9 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
   }
   TabBar getTabBar(){
     return TabBar(
-      indicatorColor : Colors.red,
-      labelColor: Colors.red,
-      unselectedLabelColor: Colors.white,
+      indicatorColor : Colors.white,
+      labelColor: Colors.white,
+      unselectedLabelColor: Colors.white30,
       labelStyle: TextStyle(fontSize: 20),
       tabs: <Tab>[
         Tab(text: 'Tareas',),
@@ -112,12 +112,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalTarea? Colors.lightBlue[700] : Colors.red[300],
+                color: CondicionalTarea? Colors.grey : Colors.white,
                 child: Text('Tarea'),
                 onPressed: (){
-                  CondicionalTarea = false;CondicionalMapa = true; CondicionalHome = true;
                   setState(() {
-                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                    CondicionalTarea = false;
+                    CondicionalMapa = true;
+                    CondicionalHome = true;
                   });
                 },
               ),
@@ -130,12 +131,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalMapa? Colors.lightBlue[700] : Colors.red[300],
+                color: CondicionalTarea? Colors.grey : Colors.white,
                 child: Text('Mapa'),
                 onPressed: (){
-                  CondicionalTarea = true;CondicionalMapa = false;CondicionalHome = false;
                   setState(() {
-                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                    CondicionalTarea = true;
+                    CondicionalMapa = false;
+                    CondicionalHome = false;
                   });
                 },
               ),
