@@ -1,12 +1,4 @@
-// To parse this JSON data, do
-//
-//     final customer = customerFromJson(jsonString);
-
 import 'dart:convert';
-
-Customer customerFromJson(String str) => Customer.fromJson(json.decode(str));
-
-String customerToJson(Customer data) => json.encode(data.toJson());
 
 class Customer {
   int id;
@@ -22,7 +14,7 @@ class Customer {
   String email;
   String contactName;
   String details;
-  PivotCustomer pivot;
+  PivotCustomerUser pivot;
 
   Customer({
     this.id,
@@ -41,7 +33,11 @@ class Customer {
     this.pivot,
   });
 
-  factory Customer.fromJson(Map<String, dynamic> json) => new Customer(
+  factory Customer.fromJson(String str) => Customer.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory Customer.fromMap(Map<String, dynamic> json) => new Customer(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -55,10 +51,11 @@ class Customer {
     email: json["email"],
     contactName: json["contact_name"],
     details: json["details"],
-    pivot: json.containsKey('pivot') ? PivotCustomer.fromJson(json["pivot"]) : null,
+    pivot: json['pivot'] != null ? PivotCustomerUser.fromMap(json["pivot"]) : null,
   );
+  
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
     "id": id,
     "created_at": createdAt,
     "updated_at": updatedAt,
@@ -72,25 +69,29 @@ class Customer {
     "email": email,
     "contact_name": contactName,
     "details": details,
-    //"pivot": pivot != null ? pivot.toJson() : null,
+    "pivot": pivot != null ? pivot.toMap() : null,
   };
 }
 
-class PivotCustomer {
+class PivotCustomerUser {
   int userId;
   int customerId;
 
-  PivotCustomer({
+  PivotCustomerUser({
     this.userId,
     this.customerId,
   });
 
-  factory PivotCustomer.fromJson(Map<String, dynamic> json) => new PivotCustomer(
+  factory PivotCustomerUser.fromJson(String str) => PivotCustomerUser.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory PivotCustomerUser.fromMap(Map<String, dynamic> json) => new PivotCustomerUser(
     userId: json["user_id"],
     customerId: json["customer_id"],
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
     "user_id": userId,
     "customer_id": customerId,
   };
