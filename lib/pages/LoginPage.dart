@@ -25,9 +25,12 @@ class _LoginPageState extends State<LoginPage> {
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final companyController = TextEditingController();
+  bool TextViewVisible = true;
+  bool AgregarUser = false;
 
   @override
   void initState() {
+    ValidarUsrPrimeraVez();
     super.initState();
   }
 @override
@@ -105,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
                     child: TextField(
                       controller: nameController,
@@ -126,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
                     child: TextField(
                       obscureText: true,
@@ -148,9 +151,9 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
-                    child: TextField(
+                    child: TextViewVisible ? TextField(
                       controller: companyController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -159,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         hintText: 'Empresa',
                       ),
-                    ),
+                    ) : Container(),
                   ),
 
 
@@ -187,7 +190,9 @@ class _LoginPageState extends State<LoginPage> {
                       splashColor: Colors.white10,
 
                     onPressed: () async {
-                     Navigator.pushReplacementNamed(context, '/vistap');
+                       ValidarDatos(nameController.text,passwordController.text,companyController.text);
+
+
                       },
                       child: Center(
                           child: Center(
@@ -208,8 +213,29 @@ class _LoginPageState extends State<LoginPage> {
 
   }
 
-  ValidarDatos(){
+  ValidarDatos(String Usr, String pwd, String compy) async {
+    print(Usr);
+    print(pwd);
+    print(compy);
+    var loginResponse = await login(Usr, pwd, compy);
+    print(loginResponse.statusCode);
 
+    if(loginResponse.statusCode == 200){
+      Navigator.pushReplacementNamed(context, '/vistap');
+    }else{
+
+    }
+  }
+
+  ValidarUsrPrimeraVez() async {
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    if(UserActiv != null){
+      TextViewVisible = false;
+      AgregarUser = false;
+      setState(() {
+        TextViewVisible;AgregarUser;
+      });
+    }
   }
 
   testApi() async{
