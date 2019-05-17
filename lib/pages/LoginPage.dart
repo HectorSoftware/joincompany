@@ -55,53 +55,51 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height/2.5,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff29a0c7),
-                      Color(0xff29a0c7)
-                    ],
-                  ),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(90)
-                  )
-              ),
-              child: Column(
-                children: <Widget>[
-                  Spacer(),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Icon(Icons.person,
-                      size: 90,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Spacer(),
+      resizeToAvoidBottomPadding: false,
+      body: ListViewPrincipal(),
+    );
+  }
+
+  ListViewPrincipal(){
+    return ListView(
+      children: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.25,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xff29a0c7),
+                  Color(0xff29a0c7)
                 ],
               ),
-            ),
-            ContainerDentroColum(),
-          ],
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(90)
+              )
+          ),
+          child: Column(
+            children: <Widget>[
+              Spacer(),
+              Align(
+                alignment: Alignment.center,
+                child: Icon(Icons.person,
+                  size: 90,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      ),
+        ContainerDentroColum(),
+      ],
     );
-
-
   }
 
   ContainerDentroColum(){
     return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: MediaQuery.of(context).size.height * 0.75,
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.only(top: 62),
       child: Column(
@@ -184,7 +182,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ) : Container(),
           ),
-          Spacer(),
           Container(
             child: Circuleprogress ? CircularProgressIndicator() : null,
           ),
