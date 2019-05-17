@@ -46,10 +46,10 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onPressed: (){
               //FUNCION DE BUSQUEDA EN TAREAS
               //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              Navigator.push(
+              /*Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SearchAddress()),
-              );
+              );*/
             },
           ),
           IconButton(
@@ -188,13 +188,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
                       builder: (BuildContext context) => new  ContactView()));
             },
           ),
-          new ListTile(
+          /*new ListTile(
             title: new Text("Negocios"),
             trailing: new Icon(Icons.poll),
             onTap: () {
               Navigator.of(context).pop();
             },
-          ),
+          ),*/
           Divider(
             height: 30.0,
           ),
