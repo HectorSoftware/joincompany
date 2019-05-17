@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
   }
 }
 
+
 class _LoginPageState extends State<LoginPage> {
 
 
@@ -27,7 +28,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-
     super.initState();
   }
 @override
@@ -212,13 +212,10 @@ class _LoginPageState extends State<LoginPage> {
                       elevation: 15.0,
                       textColor: Colors.black,
                       splashColor: Colors.white,
-
-
                       onPressed: () async {
-
-
-                      testApi();
-                      //Navigator.pushReplacementNamed(context, '/vistap');
+                      //testApi();
+                      ValidarDatos();
+                      Navigator.pushReplacementNamed(context, '/vistap');
                       },
                       child: Center(
                           child: Center(
@@ -236,6 +233,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
+
+  }
+
+  ValidarDatos(){
 
   }
 

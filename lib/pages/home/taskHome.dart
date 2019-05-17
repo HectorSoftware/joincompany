@@ -20,6 +20,11 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
   @override
   Future initState() {
     _controller = TabController(length: 2, vsync: this);
+    _controller.addListener(
+          () {
+        setState(() {});
+      },
+    );
     super.initState();
   }
 
@@ -88,6 +93,9 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
         taskHomeMap(),
       ],
       controller: _controller,
+      physics: _controller.index == 0
+          ? AlwaysScrollableScrollPhysics()
+          : NeverScrollableScrollPhysics(),
     );
   }
 

@@ -122,14 +122,14 @@ class _SearchAddressState extends State<SearchAddress> {
       child: TextField(
         cursorColor: Colors.black,
         decoration: InputDecoration(
-          icon: Container(margin: EdgeInsets.only(left: 20, top: 5), width: 10, height: 10, child: Icon(Icons.location_on, color: Colors.black,),),
-          hintText: "Buscar . . .",
+          icon: Container(margin: EdgeInsets.only(left: 20, top: 5), width: 10, height: 10, child: Icon(Icons.location_on),),
+          hintText: "Buscar",
           border: InputBorder.none,
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-          //sendRequest2(value);
-          sendRequest(value);
+          sendRequest2(value);
+          //sendRequest(value);
         },
         onChanged: (text){
 
