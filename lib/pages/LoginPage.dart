@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   String ErrorTextFieldTextemail = '';
   String ErrorTextFieldTextpwd = '';
   String ErrorTextFieldTextcompany = '';
+  bool Circuleprogress = false;
 
   @override
   void initState() {
@@ -83,149 +84,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Spacer(),
-//
-//                  Align(
-//                    alignment: Alignment.bottomRight,
-//                    child: Padding(
-//                      padding: const EdgeInsets.only(
-//                          bottom: 32,
-//                          right: 32
-//                      ),
-//                      child: Text('Login',
-//                        style: TextStyle(
-//                          fontStyle: FontStyle.italic,
-//                            color: Colors.black,
-//                            fontSize: 18
-//                        ),
-//                      ),
-//                    ),
-//                  ),
                 ],
               ),
             ),
-
-            Container(
-              height: MediaQuery.of(context).size.height/2,
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.only(top: 62),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width/1.2,
-                    height: 45,
-                    padding: EdgeInsets.only(
-                        top: 4,left: 16, right: 16, bottom: 4
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                    ),
-                    child: StreamBuilder(
-                      stream: blocValidators.email,
-                      builder: (context,snapshot){
-                        return TextField(
-                          onChanged: blocValidators.changeEmail,
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.email,
-                              color: Colors.black,
-                            ),
-                            errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
-                            hintText: 'Usuario',
-                          ),
-                        );
-                      },
-                    )
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width/1.2,
-                    height: 45,
-                    margin: EdgeInsets.only(top: 32),
-                    padding: EdgeInsets.only(
-                        top: 4,left: 16, right: 16, bottom: 4
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                    ),
-                    child: StreamBuilder(
-                      stream: blocValidators.password,
-                      builder: (context,snapshot){
-                        return TextField(
-                          onChanged: blocValidators.changePassword,
-                          obscureText: true,
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.vpn_key,
-                              color: Colors.black,
-                            ),
-                            hintText: 'Password',
-                            errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width/1.2,
-                    height: 45,
-                    margin: EdgeInsets.only(top: 32),
-                    padding: EdgeInsets.only(
-                        top: 4,left: 16, right: 16, bottom: 4
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                    ),
-                    child: TextViewVisible ? TextField(
-                      controller: companyController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.business,
-                          color: Colors.black,
-                        ),
-                        errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
-                        hintText: 'Empresa',
-                      ),
-                    ) : Container(),
-                  ),
-
-
-                  Spacer(),
-
-                  Container(
-                    height: 40,
-                    width: MediaQuery.of(context).size.width/1.2,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xff80d8ff),
-                            Color(0xff80d8ff)
-                          ],
-                        ),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50)
-                        )
-                    ),
-                    child: RaisedButton(
-                      padding: const EdgeInsets.all(10.0),
-                      color: PrimaryColor,
-                      elevation: 15.0,
-                      textColor: Colors.white,
-                      splashColor: Colors.white10,
-
-                    onPressed: () async {
-                       ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                    },
-                      child: Center(
-                          child: Center(
-                              child: Text('Ingresar'.toUpperCase(),)
-                          )
-                      ),
-                  ),
-                  ),
-                ],
-              ),
-            )
+            ContainerDentroColum(),
           ],
         ),
       ),
@@ -235,13 +97,135 @@ class _LoginPageState extends State<LoginPage> {
 
   }
 
+  ContainerDentroColum(){
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.5,
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.only(top: 62),
+      child: Column(
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width/1.2,
+              height: 45,
+              padding: EdgeInsets.only(
+                  top: 4,left: 16, right: 16, bottom: 4
+              ),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: StreamBuilder(
+                stream: blocValidators.email,
+                builder: (context,snapshot){
+                  return TextField(
+                    onChanged: blocValidators.changeEmail,
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      icon: Icon(Icons.email,
+                        color: Colors.black,
+                      ),
+                      errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
+                      hintText: 'Usuario',
+                    ),
+                  );
+                },
+              )
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width/1.2,
+            height: 45,
+            margin: EdgeInsets.only(top: 32),
+            padding: EdgeInsets.only(
+                top: 4,left: 16, right: 16, bottom: 4
+            ),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+            ),
+            child: StreamBuilder(
+              stream: blocValidators.password,
+              builder: (context,snapshot){
+                return TextField(
+                  onChanged: blocValidators.changePassword,
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.vpn_key,
+                      color: Colors.black,
+                    ),
+                    hintText: 'Password',
+                    errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width/1.2,
+            height: 45,
+            margin: EdgeInsets.only(top: 32),
+            padding: EdgeInsets.only(
+                top: 4,left: 16, right: 16, bottom: 4
+            ),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+            ),
+            child: TextViewVisible ? TextField(
+              controller: companyController,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                icon: Icon(Icons.business,
+                  color: Colors.black,
+                ),
+                errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
+                hintText: 'Empresa',
+              ),
+            ) : Container(),
+          ),
+          Spacer(),
+          Container(
+            child: Circuleprogress ? CircularProgressIndicator() : null,
+          ),
+          Container(
+            height: 40,
+            width: MediaQuery.of(context).size.width/1.2,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xff80d8ff),
+                    Color(0xff80d8ff)
+                  ],
+                ),
+                borderRadius: BorderRadius.all(
+                    Radius.circular(50)
+                )
+            ),
+            child: RaisedButton(
+              padding: const EdgeInsets.all(10.0),
+              color: PrimaryColor,
+              elevation: 15.0,
+              textColor: Colors.white,
+              splashColor: Colors.white10,
+
+              onPressed: () async {
+                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+              },
+              child: Center(
+                  child: Center(
+                      child: Text('Ingresar'.toUpperCase(),)
+                  )
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   ValidarDatos(String Usr, String pwd, String compy) async {
 
     String companylocal = companyEstable;
-
     if(AgregarUser){
-      UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: compy);
-      int res = await ClientDatabaseProvider.db.saveUser(newuser);
       companylocal = compy;
     }
 
@@ -262,10 +246,7 @@ class _LoginPageState extends State<LoginPage> {
       var loginResponse;
       try{
         loginResponse = await login(Usr, pwd, companylocal);
-      }catch(e){
-        print('*************');
-        print(e.toString());
-      }
+      }catch(e){ }
 
       if(loginResponse != null){
         if(loginResponse.statusCode == 401){
@@ -283,6 +264,12 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
         if(loginResponse.statusCode == 200){
+
+          if(AgregarUser){
+            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal);
+            int res = await ClientDatabaseProvider.db.saveUser(newuser);
+          }
+
           Navigator.pushReplacementNamed(context, '/vistap');
         }
       }else{
