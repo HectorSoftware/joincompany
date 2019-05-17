@@ -4,9 +4,10 @@ class UserDataBase{
   String name;
   String password;
   String company;
+  String token;
 
 
-  UserDataBase ({this.idTable,this.name,this.password,this.company});
+  UserDataBase ({this.idTable,this.name,this.password,this.company,this.token});
 
 
   UserDataBase.map(dynamic obj) {
@@ -14,6 +15,7 @@ class UserDataBase{
     this.name = obj["name"];
     this.password = obj["password"];
     this.company = obj["company"];
+    this.company = obj["token"];
 
   }
 
@@ -24,6 +26,7 @@ class UserDataBase{
     "name": name,
     "password": password,
     "company": company,
+    "token": token,
   };
   //to receive the data we need to pass it from Map to json
   //para recibir los datos necesitamos pasarlo de Map a json
@@ -32,6 +35,7 @@ class UserDataBase{
     name: json["name"],
     password: json["password"],
     company: json["company"],
+    token: json["token"],
 
   );
 }

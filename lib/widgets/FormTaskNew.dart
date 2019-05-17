@@ -5,6 +5,7 @@ import 'package:joincompany/main.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/services/FormService.dart';
 class FormTask extends StatefulWidget {
   
 
@@ -26,6 +27,8 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   Widget build(BuildContext context) {
+  final BlocTaskForm _bloc = new BlocTaskForm(context);
+//  var getAllFormsResponse = getAllForms();
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -85,132 +88,133 @@ class _FormTaskState extends State<FormTask> {
          ],
        ),
 
-        body:ContruirLista(context),
+        body:Stack(
+          children: <Widget>[
+
+             StreamBuilder<List<dynamic>>(
+            stream: _bloc.outListWidget,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return Text('Not connected to the Stream or null');
+                case ConnectionState.waiting:
+                  {
+                    return Column(
+                      children: <Widget>[
+                        Center(
+                          child: Column(
+                            children: <Widget>[
+                              Center(child: CircularProgressIndicator()),
+                            ],
+                          ),
+                        ),
+                        Text('awaiting interaction'),
+                      ],
+                    );
+                  }
+                case ConnectionState.active:
+                  {
+
+                    final data = snapshot.data;
+
+                    return  ListView.builder(
+                        itemCount: data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return new Container(
+                            child: data[index],
+                          );
+                        }
+                    ) ;
+                  }
+
+              // return Text('Stream has started but not finished  ${snapshot.data.length}');
+                case ConnectionState.done:
+                  return Text('Stream has finished');
+              }
+            }
 
 
-        //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
-     persistentFooterButtons: <Widget>[
-       Container(
+        ),
+          ],
+        ),
+      bottomNavigationBar: BottomAppBar(
+        color: PrimaryColor,
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.menu,color: Colors.white,),
+              onPressed: (){
+                _showModalDateTimeAndDirections();
 
-         width: MediaQuery.of(context).size.width * 0.96,
-         child: BottomAppBar(
-           color: PrimaryColor,
-           child: new Row(
-             mainAxisSize: MainAxisSize.max,
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: <Widget>[
-               IconButton(
-                 icon: Icon(Icons.menu),
-                 onPressed: (){
-                   _showModalDateTimeAndDirections();
+              },
+            ),
+            IconButton(
+                icon: Icon(Icons.business,color: Colors.white,),
+                onPressed: () {
+                  showModalBottomSheet<String>(
+                      context: context,
+                      builder: (BuildContext context) {
+                              return new Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  new ListTile(
+                                    leading: new Icon(Icons.business),
+                                    title: new Text('Gestion Comercial'),
+                                    onTap: () {
+                                      _bloc.typeForm = 'Gestion Comercial';
+                                      _bloc.updateListWidget(context);
 
-                 },
-               ),
-               IconButton(
-                   icon: Icon(Icons.business),
-                   onPressed: () {
-                     _showModal(context);
-                   }
-               ),
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  new ListTile(
+                                    leading: new Icon(Icons.subject),
+                                    title: new Text('Encuesta'),
+                                    onTap: () {
+                                      _bloc.typeForm = 'Encuesta';
+                                      _bloc.updateListWidget(context);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  new ListTile(
+                                    leading: new Icon(Icons.label),
+                                    title: new Text('Tarea/ Nota Vacia'),
+                                    onTap: () {
+                                      _bloc.typeForm = 'Nota Vacia';
+                                      _bloc.updateListWidget(context);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                        );
+                }
+            ),
 
-             ],
-           ),
-         ),
-       )
-      ],
+          ],
+        ),
+      ),
     );
 
   }
-  Widget ContruirLista(context)
-  {
-    final BlocTaskForm _bloc = new BlocTaskForm(context);
-      return  StreamBuilder<List<dynamic>>(
-          stream: _bloc.outListWidget,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return Text('Not connected to the Stream or null');
-              case ConnectionState.waiting:
-                return Column(
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    Text('awaiting interaction'),
-                  ],
-                );
-              case ConnectionState.active:
-                return  ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return new Container(
-                      child: snapshot.data[index],
-                    );
-                  }
-                ) ;
-                //return Text('Stream has started but not finished  ${snapshot.data.length}');
-              case ConnectionState.done:
-                return Text('Stream has finished');
-            }
-          }
 
 
-      );
+ cl(_bloc){
+  // ignore: cancel_subscriptions
+  StreamSubscription streamSubscription = _bloc.outListWidget.listen((newVal)
+  => setState((){
+    print(newVal);
 
-  }
-
-
+  }));
+}
 
   void _showModal(context) {
     final BlocTaskForm _bloc = new BlocTaskForm(context);
-      showModalBottomSheet<String>(
-        context: context,
-        builder: (BuildContext context) {
 
-          return StreamBuilder<dynamic>(
-
-            stream: _bloc.outListWidget,
-            builder: (context, snapshot) {
-              return new Column(
-
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  new ListTile(
-                    leading: new Icon(Icons.business),
-                    title: new Text('Gestion Comercial'),
-                    onTap: () {
-                      _bloc.updateListWidget(context,'Gestion Comercial');
-                      changedView = true;
-                      setState(() {
-                        changedView;
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                  new ListTile(
-                    leading: new Icon(Icons.subject),
-                    title: new Text('Encuesta'),
-                    onTap: () {
-                      _bloc.updateListWidget(context,"Encuesta");
-                      changedView = true;
-                      setState(() {
-                        changedView;
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                  new ListTile(
-                    leading: new Icon(Icons.label),
-                    title: new Text('Tarea/ Nota Vacia'),
-                    onTap: () {
-                      _bloc.updateListWidget(context,'Nota Vacia');
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            }
-          );
-        });
   }
 
   void _showModalDateTimeAndDirections() {
@@ -224,7 +228,6 @@ class _FormTaskState extends State<FormTask> {
                 leading: new Icon(Icons.location_on),
                 title: new Text('Lugar'),
                 onTap: () {
-                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SearchAddress()),

@@ -5,11 +5,14 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/TaskService.dart';
 import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
   @override
@@ -17,7 +20,6 @@ class LoginPage extends StatefulWidget {
     return _LoginPageState();
   }
 }
-
 
 class _LoginPageState extends State<LoginPage> {
 
@@ -229,15 +231,15 @@ class _LoginPageState extends State<LoginPage> {
       companylocal = compy;
     }
 
-    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Es necesario insertar datos';
+    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
     setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
     });
     }else{ErrorTextFieldEmail = false;}
-    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Es necesario insertar datos';
+    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
     setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
     });
     }else{ErrorTextFieldpsd = false;}
-    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Es necesario insertar datos';
+    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
     setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
     });
     }else{ErrorTextFieldcompany = false;}
@@ -305,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
 
   testApi() async{
 
-    try{
+    try {
       print("---------------- Inicia test. ----------------------------");
 
       String email = 'eibanez@duperu.com';
@@ -316,29 +318,42 @@ class _LoginPageState extends State<LoginPage> {
       var loginResponse = await login(email, password, customer);
       Auth auth = Auth.fromJson(loginResponse.body);
       String authorization = auth.accessToken;
-//      print(auth.accessToken);
+      print(auth.tokenType);
 
       // Customer Get
-      var getCustomerResponse = await getCustomer('2', customer, authorization);
-      Customer customerObj = Customer.fromJson(getCustomerResponse.body);
-//      print(customerObj.name);
+      // var getCustomerResponse = await getCustomer('2', customer, authorization);
+      // Customer customerObj = Customer.fromJson(getCustomerResponse.body);
+      // print(customerObj.name);
 
       // Customer Update
-//      customerObj.name += ' rr';
-//      var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
-//      print(updateCustomerResponse.body);
+      // customerObj.name += ' rr';
+      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
+      // print(updateCustomerResponse.body);
 
       // Customer Create
-//      customerObj.name = 'Test';
-//      customerObj.code = '123456789';
-//      var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-//      print(createCustomerResponse.body);
+      // customerObj.name = 'Test';
+      // customerObj.code = '123456789';
+      // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
+      // print(createCustomerResponse.body);
 
       // Customer All
-      var getAllCustomerResponse = await getAllCustomers(customer, authorization);
-      Customers customers = Customers.fromJson(getAllCustomerResponse.body);
-//      print(customers.data[1].name);
+      // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
+      // Customers customers = Customers.fromJson(getAllCustomersResponse.body);
+      // print(customers.data[1].name);
 
+       //Task Get
+       var getTaskResponse = await getTask('2427', customer, authorization);
+       Task task = Task.fromJson(getTaskResponse.body);
+      print(task.name);
+      print(getTaskResponse.body);
+       print(task.responsibleId);
+      print(task.checkinLatitude);
+
+      // Task All
+//       var getAllTasksResponse = await getAllTasks(customer, authorization);
+//       Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
+//       print(tasks.data[0].name);
+//       print(tasks.data[0].responsibleId);
 
 
 
