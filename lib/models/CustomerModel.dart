@@ -10,9 +10,9 @@ String customerToJson(Customer data) => json.encode(data.toJson());
 
 class Customer {
   int id;
-  DateTime createdAt;
-  DateTime updatedAt;
-  DateTime deletedAt;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
   int createdById;
   int updatedById;
   int deletedById;
@@ -43,9 +43,9 @@ class Customer {
 
   factory Customer.fromJson(Map<String, dynamic> json) => new Customer(
     id: json["id"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    deletedAt: DateTime.parse(json["deleted_at"]),
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+    deletedAt: json["deleted_at"],
     createdById: json["created_by_id"],
     updatedById: json["updated_by_id"],
     deletedById: json["deleted_by_id"],
@@ -60,9 +60,9 @@ class Customer {
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "deleted_at": deletedAt.toIso8601String(),
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "deleted_at": deletedAt,
     "created_by_id": createdById,
     "updated_by_id": updatedById,
     "deleted_by_id": deletedById,
@@ -72,7 +72,7 @@ class Customer {
     "email": email,
     "contact_name": contactName,
     "details": details,
-  //  "pivot": pivot.toJson(),
+    //"pivot": pivot != null ? pivot.toJson() : null,
   };
 }
 

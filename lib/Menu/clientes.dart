@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
-import 'package:joincompany/widgets/Formulario_clientes.dart';
+import 'package:joincompany/widgets/FormClients.dart';
 
 class Cliente extends StatelessWidget {
   @override
@@ -40,7 +40,6 @@ class Cliente extends StatelessWidget {
                 context,
                 new MaterialPageRoute(
                     builder: (BuildContext context) => new  AddClient()));
-
           },
 
         ),

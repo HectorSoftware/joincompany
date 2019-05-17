@@ -3,7 +3,7 @@ import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
-import 'package:joincompany/widgets/formulario_tareas.dart';
+import 'package:joincompany/widgets/FormTaskNew.dart';
 
 import 'pages/BuscarRuta/BuscarDireccion.dart';
 
@@ -13,6 +13,7 @@ void main() async {
 
 const PrimaryColor = const Color(0xff29a0c7);
 const SecondaryColor = const Color(0xff29a0c7);
+const kGoogleApiKey = "AIzaSyDCs8ksRMNY73LlWa_VEyLzzDS24qKaaMw";
 
 
 class MyApp extends StatelessWidget{
@@ -31,9 +32,10 @@ class MyApp extends StatelessWidget{
         accentColor: PrimaryColor,
         textTheme: TextTheme(
             headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.w900),
-            title: TextStyle(fontSize: 14.0, fontFamily: 'RobotoMono'),
-            button: TextStyle(fontSize: 14.0, fontFamily: 'RobotoMono')
-        )
+            title: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
+            button: TextStyle(fontSize: 14.0, fontFamily: 'Roboto')
+        ),
+        fontFamily: 'Roboto'
       ),
       debugShowCheckedModeBanner: false,
       title: 'Join',

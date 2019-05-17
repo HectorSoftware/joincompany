@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/api/rutahttp.dart';
 import 'package:joincompany/blocs/taskBloc.dart';
+import 'package:joincompany/main.dart';
 import 'package:joincompany/models/Marker.dart';
 
 class taskHomeMap extends StatefulWidget {
@@ -25,6 +26,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
+  static const kGoogleApiKeyy = kGoogleApiKey;
 
   @override
   Future initState() {
@@ -52,20 +54,30 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       ),) :
     Card(
       margin: const EdgeInsets.symmetric(vertical: 2.0),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * por,
-        child: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: onMapCreated,
-          myLocationEnabled: true,
-          compassEnabled: true,
-          onCameraMove: _onCameraMove,
-          markers: _markers,
-          polylines: _polyLines,
-        ),
-      ),
+      child: Stack(
+        children: <Widget>[
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * por,
+            child: GoogleMap(
+              mapType: MapType.normal,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: onMapCreated,
+              myLocationEnabled: true,
+              compassEnabled: true,
+              zoomGesturesEnabled: false,
+              onCameraMove: _onCameraMove,
+              markers: _markers,
+              polylines: _polyLines,
+            ),
+          ),
+          Positioned(
+            right: 15.0,
+            bottom: 10.0,
+            child: ButtonListCLient(),
+          ),
+        ],
+      )
     );
   }
 
@@ -75,7 +87,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     });
   }
 
-  static final CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 15);
+  static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 15);
 
   void onMapCreated(controller) {
     setState(() {
@@ -88,11 +100,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
+      print(_initialPosition);
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
   List<Place> listplace = new List<Place>();
-  Future _addMarker() {
+  Future _addMarker() async {
     //*********************
     //EJEMPLOS PARA PRUEBAS
     //*********************
@@ -101,33 +114,39 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //*********************
     //*********************
 
-    // ignore: cancel_subscriptions
-    StreamSubscription streamSubscription = _Bloc.outTask.listen((newVal)
-    => setState(() {
-      listplace = newVal;
-      for(Place mark in listplace){
-        _markers.add(
-            Marker(
-              markerId: MarkerId(mark.id.toString()),
-              position: LatLng(mark.latitude, mark.longitude),
-              infoWindow: InfoWindow(
-                  title: mark.customer,
-                  snippet: mark.address
-              ),
-              icon: ColorMarker(mark),
-            ));
-      }
-      setState((){
-        _markers;
-        _polyLines;
-      });
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscription = _Bloc.outTask.listen((newVal)
+      => setState((){
+        listplace = newVal;
+        allmark(listplace);
+      }));
 
-    }));
+    }catch(e){ }
+  }
+
+  allmark(List<Place> listPlaces) async {
+    for(Place mark in listPlaces){
+      _markers.add(
+        Marker(
+            markerId: MarkerId(mark.id.toString()),
+            position: LatLng(mark.latitude, mark.longitude),
+            infoWindow: InfoWindow(
+                title: mark.customer,
+                snippet: mark.address
+            ),
+            icon: await ColorMarker(mark),
+      ));
+    }
+    setState((){
+    _markers;
+    _polyLines;
+    });
   }
 
   Future createRoute(Place mark) async {
     LatLng destination = LatLng(mark.latitude, mark.longitude);
-    String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination);
+    String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination,kGoogleApiKeyy);
 
     _polyLines.add(Polyline(polylineId: PolylineId(_lastPosition.toString()),
         width: 10,
@@ -135,11 +154,11 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         color: Colors.red[200]));
   }
 
-  BitmapDescriptor ColorMarker(Place mark){
-    if(mark.status == 0){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue); }
+  Future<BitmapDescriptor> ColorMarker(Place mark) async {
+    if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
     if(mark.status == 2){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
     if(mark.status == 1){
-      createRoute(mark);
+      //createRoute(mark);
     }
     return BitmapDescriptor.defaultMarker;
   }
@@ -185,4 +204,76 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     return lList;
   }
 
+  FloatingActionButton ButtonListCLient(){
+    return FloatingActionButton.extended(
+      onPressed: ListarListClientes,
+      icon: Icon(Icons.place),
+      label: Text("Tareas"),
+      backgroundColor: PrimaryColor,
+    );
+  }
+
+  Future ListarListClientes() async {
+    await showDialog(
+        context: context,
+        // ignore: deprecated_member_use
+        child: SimpleDialog(
+            title: Text('Tareas no realizadas :'),
+            children: <Widget>[
+              ListClientes(),
+            ]
+        )
+    );
+  }
+
+
+  ListClientes(){
+
+    List<Place> listas_porhacer = new List<Place>();
+    for(Place p in listplace){
+      if(p.status == 1){
+        listas_porhacer.add(p);
+      }
+    }
+
+    if(listas_porhacer.length != 0){
+      return new Container(
+        width: MediaQuery.of(context).size.width ,
+        height: MediaQuery.of(context).size.height *0.7,
+        child: Container(
+          child: ListView.builder(
+            itemCount: listas_porhacer.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(listas_porhacer[index].customer),
+                subtitle: Text(listas_porhacer[index].address),
+                leading: Icon(Icons.location_on,color: Colors.red,),
+                onTap: (){
+                  var center = LatLng(listas_porhacer[index].latitude, listas_porhacer[index].longitude);
+                  mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                      target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
+        ),
+      );
+    }else{
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Text('No existen Tareas no realizadas'),
+          Center(
+            child: Icon(
+              Icons.not_listed_location,
+              size: 150,
+              color: Colors.grey[300],
+            ),
+          ),
+        ],
+      );
+    }
+  }
 }

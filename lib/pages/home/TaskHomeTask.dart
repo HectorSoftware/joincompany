@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:joincompany/widgets/formulario_tareas.dart';
+import 'package:joincompany/widgets/FormTaskNew.dart';
 
 class taskHomeTask extends StatefulWidget {
   _MytaskPageTaskState createState() => _MytaskPageTaskState();

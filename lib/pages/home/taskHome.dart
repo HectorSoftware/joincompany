@@ -19,14 +19,17 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
 
   @override
   Future initState() {
-
+    _controller = TabController(length: 2, vsync: this);
     super.initState();
   }
 
   @override
   void dispose(){
+    _controller.dispose();
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +46,11 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onPressed: (){
               //FUNCION DE BUSQUEDA EN TAREAS
               //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              Navigator.push(
+              /*Navigator.push(
                 context,
-                  MaterialPageRoute(builder: (context) => SearchAddress()),
-              );
+                MaterialPageRoute(builder: (context) => SearchAddress()),
+              );*/
             },
-
           ),
           IconButton(
             icon: Icon(Icons.calendar_today),
@@ -58,16 +60,34 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
             },
-
           ),
         ],
+        bottom: getTabBar(),
       ),
-      body: Column(
-        children: <Widget>[
-          TabBarButton(),
-          Container(child: CondicionalHome ? taskHomeTask() : taskHomeMap())
-        ],
-      )
+      body: getTabBarView(),
+    );
+  }
+  TabBar getTabBar(){
+    return TabBar(
+      indicatorColor : Colors.white,
+      labelColor: Colors.white,
+      unselectedLabelColor: Colors.white30,
+      labelStyle: TextStyle(fontSize: 20),
+      tabs: <Tab>[
+        Tab(text: 'Tareas',),
+        Tab(text: 'Mapa',),
+      ],
+      controller: _controller,
+    );
+  }
+
+  TabBarView getTabBarView(){
+    return TabBarView(
+      children: <Widget>[
+        taskHomeTask(),
+        taskHomeMap(),
+      ],
+      controller: _controller,
     );
   }
 
@@ -84,12 +104,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalTarea? Colors.lightBlue[700] : Colors.red[300],
+                color: CondicionalTarea? Colors.grey : Colors.white,
                 child: Text('Tarea'),
                 onPressed: (){
-                  CondicionalTarea = false;CondicionalMapa = true; CondicionalHome = true;
                   setState(() {
-                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                    CondicionalTarea = false;
+                    CondicionalMapa = true;
+                    CondicionalHome = true;
                   });
                 },
               ),
@@ -102,12 +123,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalMapa? Colors.lightBlue[700] : Colors.red[300],
+                color: CondicionalTarea? Colors.grey : Colors.white,
                 child: Text('Mapa'),
                 onPressed: (){
-                  CondicionalTarea = true;CondicionalMapa = false;CondicionalHome = false;
                   setState(() {
-                    CondicionalTarea;CondicionalMapa;CondicionalHome;
+                    CondicionalTarea = true;
+                    CondicionalMapa = false;
+                    CondicionalHome = false;
                   });
                 },
               ),
@@ -168,6 +190,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
                       builder: (BuildContext context) => new  ContactView()));
             },
           ),
+          /*new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),*/
           Divider(
             height: 30.0,
           ),

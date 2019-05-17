@@ -19,6 +19,7 @@ dependencies:
   geolocator: ^4.0.3
   google_maps_webservice: ^0.0.14
   http: ^0.12.0+2
+  flutter_google_places: ^0.2.2
 
   #BASEDEDATOS
   sqflite: ^1.1.5
@@ -34,6 +35,7 @@ dependencies:
   date_format: ^1.0.6
   #IMAGEN
   image_cropper: ^1.0.1
+  image_picker: ^0.6.0+3
 
 dev_dependencies:
   flutter_test:
@@ -42,3 +44,22 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+  assets:
+  - assets/images/cliente.png
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Black.ttf
+        - asset: assets/fonts/Roboto-BlackItalic.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
+        - asset: assets/fonts/Roboto-Italic.ttf
+        - asset: assets/fonts/Roboto-Light.ttf
+        - asset: assets/fonts/Roboto-LightItalic.ttf
+        - asset: assets/fonts/Roboto-Medium.ttf
+        - asset: assets/fonts/Roboto-MediumItalic.ttf
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Thin.ttf
+        - asset: assets/fonts/Roboto-ThinItalic.ttf
+          weight: 700

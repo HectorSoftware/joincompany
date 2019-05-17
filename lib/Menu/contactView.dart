@@ -69,7 +69,7 @@ class _ContactViewState extends State<ContactView> {
 //          }
 //        },
 //      ),
-      body: contactCard("test"),
+      body: contactCard("Contacto 1"),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed:(){

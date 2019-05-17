@@ -2,12 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
+import 'package:joincompany/main.dart';
 class ListWidgets{
 
 
   DateTime _date = new DateTime.now();
   TimeOfDay _time = new TimeOfDay.now();
+  File image;
 
 
   Widget label(string){
@@ -31,11 +35,13 @@ class ListWidgets{
   }
   Widget date(context){
     //------------------------------DATE--------------------------
-    return Container(
-      width: MediaQuery.of(context).size.width ,
-      child: RaisedButton(
-        child: Text('Fecha: ${_date.toString().substring(0,10)}'),
-        onPressed: (){selectDate(context);},
+    return Padding(
+      padding: const EdgeInsets.only(right: 220),
+      child: Center(
+        child: RaisedButton(
+          child: Text('Fecha: ${_date.toString().substring(0,10)}'),
+          onPressed: (){selectDate(context);},
+        ),
       ),
     );
   }
@@ -48,9 +54,12 @@ class ListWidgets{
   }
   Widget dateTime(context){
     //------------------------------DATE------------------------
-    return RaisedButton(
-      child: Text('Hora: ${_time.format(context)}'),
-      onPressed: (){_selectTime(context);},
+    return Container(
+      width: MediaQuery.of(context).size.width*0.5,
+      child: RaisedButton(
+        child: Text('Hora: ${_time.format(context)}'),
+        onPressed: (){_selectTime(context);},
+      ),
     );
   }
 
@@ -127,4 +136,48 @@ class ListWidgets{
       ),
     );
   }
+
+  picker() async {
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+//    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      image = img;
+     // setState(() {});
+    }
+  }
+
+  Widget uploadImage(context){
+    return Column(
+      children: <Widget>[
+        Container(
+          child: new Center(
+            child: image == null
+                ? new Text('No Image to Show ')
+                : new Image.file(image),
+          ),
+        ),
+        RaisedButton(
+          onPressed: picker,
+          child: Text('Imagen'),
+          color: PrimaryColor,
+        )
+      ],
+
+    );
+
+  }
+  Widget loadingTask()
+  {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Text('Seleccione una Tarea'),
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
