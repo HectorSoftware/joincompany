@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -26,7 +28,14 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   final companyController = TextEditingController();
   bool TextViewVisible = true;
-  bool AgregarUser = false;
+  bool AgregarUser = true;
+  String companyEstable = '';
+  bool ErrorTextFieldEmail = false;
+  bool ErrorTextFieldpsd = false;
+  bool ErrorTextFieldcompany = false;
+  String ErrorTextFieldTextemail = '';
+  String ErrorTextFieldTextpwd = '';
+  String ErrorTextFieldTextcompany = '';
 
   @override
   void initState() {
@@ -110,16 +119,23 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: BoxDecoration(
                         color: Colors.transparent,
                     ),
-                    child: TextField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.email,
-                          color: Colors.black,
-                        ),
-                        hintText: 'Usuario',
-                      ),
-                    ),
+                    child: StreamBuilder(
+                      stream: blocValidators.email,
+                      builder: (context,snapshot){
+                        return TextField(
+                          onChanged: blocValidators.changeEmail,
+                          controller: nameController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            icon: Icon(Icons.email,
+                              color: Colors.black,
+                            ),
+                            errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
+                            hintText: 'Usuario',
+                          ),
+                        );
+                      },
+                    )
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width/1.2,
@@ -131,16 +147,23 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: BoxDecoration(
                         color: Colors.transparent,
                     ),
-                    child: TextField(
-                      obscureText: true,
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.vpn_key,
-                          color: Colors.black,
-                        ),
-                        hintText: 'Password',
-                      ),
+                    child: StreamBuilder(
+                      stream: blocValidators.password,
+                      builder: (context,snapshot){
+                        return TextField(
+                          onChanged: blocValidators.changePassword,
+                          obscureText: true,
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            icon: Icon(Icons.vpn_key,
+                              color: Colors.black,
+                            ),
+                            hintText: 'Password',
+                            errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Container(
@@ -160,6 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                         icon: Icon(Icons.business,
                           color: Colors.black,
                         ),
+                        errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                         hintText: 'Empresa',
                       ),
                     ) : Container(),
@@ -191,9 +215,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     onPressed: () async {
                        ValidarDatos(nameController.text,passwordController.text,companyController.text);
-
-
-                      },
+                    },
                       child: Center(
                           child: Center(
                               child: Text('Ingresar'.toUpperCase(),)
@@ -214,17 +236,72 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos(String Usr, String pwd, String compy) async {
-    print(Usr);
-    print(pwd);
-    print(compy);
-    var loginResponse = await login(Usr, pwd, compy);
-    print(loginResponse.statusCode);
 
+    String companylocal = companyEstable;
+
+    if(AgregarUser){
+      UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: compy);
+      int res = await ClientDatabaseProvider.db.saveUser(newuser);
+      companylocal = compy;
+    }
+
+    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Es necesario insertar datos';
+    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
+    });
+    }else{ErrorTextFieldEmail = false;}
+    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Es necesario insertar datos';
+    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
+    });
+    }else{ErrorTextFieldpsd = false;}
+    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Es necesario insertar datos';
+    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
+    });
+    }else{ErrorTextFieldcompany = false;}
+
+    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
+      var loginResponse;
+      try{
+        loginResponse = await login(Usr, pwd, companylocal);
+      }catch(e){
+        print('*************');
+        print(e.toString());
+      }
+
+      if(loginResponse != null){
+        if(loginResponse.statusCode == 401){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+        }
+        if(loginResponse.statusCode == 500){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+        }
+        if(loginResponse.statusCode == 200){
+          Navigator.pushReplacementNamed(context, '/vistap');
+        }
+      }else{
+        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+        });
+      }
+    }
+
+    /*
+
+    var loginResponse = await login(Usr, pwd, companylocal);
     if(loginResponse.statusCode == 200){
       Navigator.pushReplacementNamed(context, '/vistap');
     }else{
 
-    }
+    }*/
   }
 
   ValidarUsrPrimeraVez() async {
@@ -232,8 +309,9 @@ class _LoginPageState extends State<LoginPage> {
     if(UserActiv != null){
       TextViewVisible = false;
       AgregarUser = false;
+      companyEstable = UserActiv.company;
       setState(() {
-        TextViewVisible;AgregarUser;
+        TextViewVisible;AgregarUser;companyEstable;
       });
     }
   }
