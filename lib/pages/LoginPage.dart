@@ -214,6 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                       splashColor: Colors.white,
 
                     onPressed: () async {
+
                      Navigator.pushReplacementNamed(context, '/vistap');
                       },
                       child: Center(

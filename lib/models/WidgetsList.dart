@@ -166,5 +166,18 @@ class ListWidgets{
     );
 
   }
+  Widget loadingTask()
+  {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Text('Seleccione una Tarea'),
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
