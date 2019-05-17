@@ -278,19 +278,19 @@ class _LoginPageState extends State<LoginPage> {
       // Customers customers = Customers.fromJson(getAllCustomersResponse.body);
       // print(customers.data[1].name);
 
-      // Task Get
-      // var getTaskResponse = await getTask('2427', customer, authorization);
-      // Task task = Task.fromJson(getTaskResponse.body);
-      // print(task.name);
-      // print(task.responsibleId);
-      // print(task.checkinLatitude);
+       //Task Get
+       var getTaskResponse = await getTask('2427', customer, authorization);
+       Task task = Task.fromJson(getTaskResponse.body);
+      print(task.name);
+      print(getTaskResponse.body);
+       print(task.responsibleId);
+      print(task.checkinLatitude);
 
       // Task All
-      // var getAllTasksResponse = await getAllTasks(customer, authorization);
-      // Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
-      // print(tasks.data[0].name);
-      // print(tasks.data[0].responsibleId);
-
+//       var getAllTasksResponse = await getAllTasks(customer, authorization);
+//       Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
+//       print(tasks.data[0].name);
+//       print(tasks.data[0].responsibleId);
 
 
 
