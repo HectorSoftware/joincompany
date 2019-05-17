@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:sentry/sentry.dart' as sentryr;
+
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -70,23 +64,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Spacer(),
-
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 32,
-                          right: 32
-                      ),
-                      child: Text('Login',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                            color: Colors.black,
-                            fontSize: 18
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -104,9 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50)
-                        ),
+                        borderRadius: BorderRadius.zero,
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(

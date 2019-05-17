@@ -45,12 +45,35 @@ class AddContact extends StatelessWidget {
             customTextField("Telefono movil",a,1,false),
             customTextField("Emails",a,1,false),
             customTextField("Notas",a,4,false),
+            Container(
+              margin: EdgeInsets.all(12.0),
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("cliente"),
+                  Row(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: (){},
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.visibility),
+                          onPressed: (){},
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ),
           ],
         ),
-      ),
-      floatingActionButton: IconButton(
-        icon: Icon(Icons.add),
-        onPressed: (){},
       ),
     );
   }
