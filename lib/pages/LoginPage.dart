@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -27,10 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final companyController = TextEditingController();
+  bool TextViewVisible = true;
+  bool AgregarUser = true;
+  String companyEstable = '';
+  bool ErrorTextFieldEmail = false;
+  bool ErrorTextFieldpsd = false;
+  bool ErrorTextFieldcompany = false;
+  String ErrorTextFieldTextemail = '';
+  String ErrorTextFieldTextpwd = '';
+  String ErrorTextFieldTextcompany = '';
 
   @override
   void initState() {
-
+    ValidarUsrPrimeraVez();
     super.initState();
   }
 @override
@@ -74,23 +85,23 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Spacer(),
-
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 32,
-                          right: 32
-                      ),
-                      child: Text('Login',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                            color: Colors.black,
-                            fontSize: 18
-                        ),
-                      ),
-                    ),
-                  ),
+//
+//                  Align(
+//                    alignment: Alignment.bottomRight,
+//                    child: Padding(
+//                      padding: const EdgeInsets.only(
+//                          bottom: 32,
+//                          right: 32
+//                      ),
+//                      child: Text('Login',
+//                        style: TextStyle(
+//                          fontStyle: FontStyle.italic,
+//                            color: Colors.black,
+//                            fontSize: 18
+//                        ),
+//                      ),
+//                    ),
+//                  ),
                 ],
               ),
             ),
@@ -108,26 +119,53 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50)
-                        ),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
+                        color: Colors.transparent,
                     ),
-                    child: TextField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.email,
-                          color: Colors.black,
-                        ),
-                        hintText: 'Usuario',
-                      ),
+                    child: StreamBuilder(
+                      stream: blocValidators.email,
+                      builder: (context,snapshot){
+                        return TextField(
+                          onChanged: blocValidators.changeEmail,
+                          controller: nameController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            icon: Icon(Icons.email,
+                              color: Colors.black,
+                            ),
+                            errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
+                            hintText: 'Usuario',
+                          ),
+                        );
+                      },
+                    )
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width/1.2,
+                    height: 45,
+                    margin: EdgeInsets.only(top: 32),
+                    padding: EdgeInsets.only(
+                        top: 4,left: 16, right: 16, bottom: 4
+                    ),
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                    ),
+                    child: StreamBuilder(
+                      stream: blocValidators.password,
+                      builder: (context,snapshot){
+                        return TextField(
+                          onChanged: blocValidators.changePassword,
+                          obscureText: true,
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            icon: Icon(Icons.vpn_key,
+                              color: Colors.black,
+                            ),
+                            hintText: 'Password',
+                            errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Container(
@@ -138,58 +176,19 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50)
-                        ),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
+                        color: Colors.transparent,
                     ),
-                    child: TextField(
-                      obscureText: true,
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(Icons.vpn_key,
-                          color: Colors.black,
-                        ),
-                        hintText: 'Password',
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width/1.2,
-                    height: 45,
-                    margin: EdgeInsets.only(top: 32),
-                    padding: EdgeInsets.only(
-                        top: 4,left: 16, right: 16, bottom: 4
-                    ),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50)
-                        ),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
-                    ),
-                    child: TextField(
+                    child: TextViewVisible ? TextField(
                       controller: companyController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         icon: Icon(Icons.business,
                           color: Colors.black,
                         ),
+                        errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                         hintText: 'Empresa',
                       ),
-                    ),
+                    ) : Container(),
                   ),
 
 
@@ -213,16 +212,12 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.all(10.0),
                       color: PrimaryColor,
                       elevation: 15.0,
-                      textColor: Colors.black,
-                      splashColor: Colors.white,
+                      textColor: Colors.white,
+                      splashColor: Colors.white10,
 
                     onPressed: () async {
-
-
-                      testApi();
-                      //Navigator.pushReplacementNamed(context, '/vistap');
-                     Navigator.pushReplacementNamed(context, '/vistap');
-                      },
+                       ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                    },
                       child: Center(
                           child: Center(
                               child: Text('Ingresar'.toUpperCase(),)
@@ -240,6 +235,87 @@ class _LoginPageState extends State<LoginPage> {
     );
 
 
+  }
+
+  ValidarDatos(String Usr, String pwd, String compy) async {
+
+    String companylocal = companyEstable;
+
+    if(AgregarUser){
+      UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: compy);
+      int res = await ClientDatabaseProvider.db.saveUser(newuser);
+      companylocal = compy;
+    }
+
+    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
+    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
+    });
+    }else{ErrorTextFieldEmail = false;}
+    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
+    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
+    });
+    }else{ErrorTextFieldpsd = false;}
+    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
+    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
+    });
+    }else{ErrorTextFieldcompany = false;}
+
+    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
+      var loginResponse;
+      try{
+        loginResponse = await login(Usr, pwd, companylocal);
+      }catch(e){
+        print('*************');
+        print(e.toString());
+      }
+
+      if(loginResponse != null){
+        if(loginResponse.statusCode == 401){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+        }
+        if(loginResponse.statusCode == 500){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+        }
+        if(loginResponse.statusCode == 200){
+          Navigator.pushReplacementNamed(context, '/vistap');
+        }
+      }else{
+        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+        });
+      }
+    }
+
+    /*
+
+    var loginResponse = await login(Usr, pwd, companylocal);
+    if(loginResponse.statusCode == 200){
+      Navigator.pushReplacementNamed(context, '/vistap');
+    }else{
+
+    }*/
+  }
+
+  ValidarUsrPrimeraVez() async {
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    if(UserActiv != null){
+      TextViewVisible = false;
+      AgregarUser = false;
+      companyEstable = UserActiv.company;
+      setState(() {
+        TextViewVisible;AgregarUser;companyEstable;
+      });
+    }
   }
 
   testApi() async{

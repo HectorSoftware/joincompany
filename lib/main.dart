@@ -34,9 +34,10 @@ class MyApp extends StatelessWidget{
         accentColor: PrimaryColor,
         textTheme: TextTheme(
             headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.w900),
-            title: TextStyle(fontSize: 14.0, fontFamily: 'RobotoMono'),
-            button: TextStyle(fontSize: 14.0, fontFamily: 'RobotoMono')
-        )
+            title: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
+            button: TextStyle(fontSize: 14.0, fontFamily: 'Roboto')
+        ),
+        fontFamily: 'Roboto'
       ),
       debugShowCheckedModeBanner: false,
       title: 'Join',
