@@ -51,7 +51,7 @@ class Customer {
     email: json["email"],
     contactName: json["contact_name"],
     details: json["details"],
-    pivot: json.containsKey('pivot') ? PivotCustomerUser.fromMap(json["pivot"]) : null,
+    pivot: json['pivot'] != null ? PivotCustomerUser.fromMap(json["pivot"]) : null,
   );
   
 
