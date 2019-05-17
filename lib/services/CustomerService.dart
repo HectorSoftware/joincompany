@@ -1,10 +1,12 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
+// import 'package:joincompany/models/CustomersModel.dart';
 import 'dart:io';
+import 'package:joincompany/main.dart';
 
-String url = 'https://webapp.getkem.com/api/v1/customers';
+String finalPath = '/customers';
+String url = hostApi + versionApi + finalPath;
 
 Future<http.Response> getAllCustomers(String customer, String authorization) async{
   final response = await http.get('$url',
@@ -33,7 +35,7 @@ Future<http.Response> createCustomer(Customer customerObj, String customer, Stri
       'Authorization': 'Bearer $authorization',
       'Content-Type' : 'application/json',
     },
-    body: customerToJson(customerObj)
+  body: customerObj.toJson()
   );
   return response;
 }
@@ -45,11 +47,12 @@ Future<http.Response> updateCustomer(String id, Customer customerObj, String cus
       'Authorization': 'Bearer $authorization',
       'Content-Type' : 'application/json',
     },
-    body: customerToJson(customerObj)
+   body: customerObj.toJson()
   );
   return response;
 }
 
+/*
 Future<http.Response> delteCustomer(String id, String customer, String authorization) async{
   final response = await http.delete('$url/$id',
     headers: {
@@ -59,7 +62,7 @@ Future<http.Response> delteCustomer(String id, String customer, String authoriza
   );
   return response;
 }
-
+*/
 
 
                         //LLAMAR CLIENTE

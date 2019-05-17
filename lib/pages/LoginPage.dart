@@ -213,9 +213,12 @@ class _LoginPageState extends State<LoginPage> {
                       textColor: Colors.black,
                       splashColor: Colors.white,
 
-                    onPressed: () async {
 
-                     Navigator.pushReplacementNamed(context, '/vistap');
+                      onPressed: () async {
+
+
+                      testApi();
+                      //Navigator.pushReplacementNamed(context, '/vistap');
                       },
                       child: Center(
                           child: Center(
@@ -233,6 +236,56 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
+
+  }
+
+  testApi() async{
+
+    try{
+      print("---------------- Inicia test. ----------------------------");
+
+      String email = 'eibanez@duperu.com';
+      String password = '123';
+      String customer = 'duperu';
+
+      // login
+      var loginResponse = await login(email, password, customer);
+      Auth auth = Auth.fromJson(loginResponse.body);
+      String authorization = auth.accessToken;
+//      print(auth.accessToken);
+
+      // Customer Get
+      var getCustomerResponse = await getCustomer('2', customer, authorization);
+      Customer customerObj = Customer.fromJson(getCustomerResponse.body);
+//      print(customerObj.name);
+
+      // Customer Update
+//      customerObj.name += ' rr';
+//      var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
+//      print(updateCustomerResponse.body);
+
+      // Customer Create
+//      customerObj.name = 'Test';
+//      customerObj.code = '123456789';
+//      var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
+//      print(createCustomerResponse.body);
+
+      // Customer All
+      var getAllCustomerResponse = await getAllCustomers(customer, authorization);
+      Customers customers = Customers.fromJson(getAllCustomerResponse.body);
+//      print(customers.data[1].name);
+
+
+
+
+
+
+      print("---------------- Fin test. ----------------------------");
+    }catch(e, s){
+      print("----------------- Error ----------------");
+      print(e.toString());
+      print(s);
+    }
 
   }
 }

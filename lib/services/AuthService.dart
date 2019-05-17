@@ -1,9 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'package:joincompany/models/AuthModel.dart';
+// import 'package:joincompany/models/AuthModel.dart';
 import 'dart:io';
+import 'package:joincompany/main.dart';
 
-String url = 'https://webapp.getkem.com/api/v1/auth';
+String finalPath = '/auth';
+String url = hostApi + versionApi + finalPath;
 
 Future<http.Response> login(String email, String password, String customer) async{
   final response = await http.post('$url/login',

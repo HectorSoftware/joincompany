@@ -1,14 +1,6 @@
-// To parse this JSON data, do
-//
-//     final customers = customersFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:joincompany/models/CustomerModel.dart';
-
-Customers customersFromJson(String str) => Customers.fromJson(json.decode(str));
-
-String customersToJson(Customers data) => json.encode(data.toJson());
 
 class Customers {
   int currentPage;
@@ -20,7 +12,7 @@ class Customers {
   String nextPageUrl;
   String path;
   int perPage;
-  dynamic prevPageUrl;
+  String prevPageUrl;
   int to;
   int total;
 
@@ -39,9 +31,13 @@ class Customers {
     this.total,
   });
 
-  factory Customers.fromJson(Map<String, dynamic> json) => new Customers(
+  factory Customers.fromJson(String str) => Customers.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory Customers.fromMap(Map<String, dynamic> json) => new Customers(
     currentPage: json["current_page"],
-    data: new List<Customer>.from(json["data"].map((x) => Customer.fromJson(x))),
+    data: new List<Customer>.from(json["data"].map((x) => Customer.fromMap(x))),
     firstPageUrl: json["first_page_url"],
     from: json["from"],
     lastPage: json["last_page"],
@@ -54,9 +50,9 @@ class Customers {
     total: json["total"],
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
     "current_page": currentPage,
-    "data": new List<dynamic>.from(data.map((x) => x.toJson())),
+    "data": new List<Customer>.from(data.map((x) => x.toMap())),
     "first_page_url": firstPageUrl,
     "from": from,
     "last_page": lastPage,
