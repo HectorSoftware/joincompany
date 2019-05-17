@@ -26,9 +26,9 @@ class _LoginPageState extends State<LoginPage> {
 
   UserDataBase saveUser;
   UserDataBase userVe;
-  final nameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final companyController = TextEditingController();
+  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  final passwordController = TextEditingController(text : '123');
+  final companyController = TextEditingController(text : '');
   bool TextViewVisible = true;
   bool AgregarUser = true;
   String companyEstable = '';
@@ -267,8 +267,9 @@ class _LoginPageState extends State<LoginPage> {
         }
         if(loginResponse.statusCode == 200){
 
+          Auth auth = Auth.fromJson(loginResponse.body);
           if(AgregarUser){
-            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal);
+            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
             int res = await ClientDatabaseProvider.db.saveUser(newuser);
           }
 
