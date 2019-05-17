@@ -21,7 +21,11 @@ class ConfigCli extends StatefulWidget {
 
 class _ConfigCliState extends State<ConfigCli> {
 
-  String a;
+  //Const
+  static const int linesInputsBasic = 1;
+  static const int linesInputsTextAreaBasic = 4;
+
+  String a;//TODO: implement model setData
 
   void setDataForm(String data, type t){
 
@@ -58,16 +62,16 @@ class _ConfigCliState extends State<ConfigCli> {
       body:SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              customTextField("Nombre",type.NAME,1),
-              customTextField("Codigo",type.CODE,1),
-              customTextField("????",type.DEFAULT,1),
-              customTextField("Cargo",type.POSITIONS,1),
-              customTextField("Telefono fijo",type.TLF_F,1),
-              customTextField("Telefono movil",type.TLF_M,1),
-              customTextField("Emails",type.EMAIL,1),
-              customTextField("Notas",type.NOTE,4),
-              customTextField("Contraseña",type.PASSWORD,1),
-              customTextField("Repetir Contraseña",type.PASSWORD,1),
+              customTextField("Nombre",type.NAME,linesInputsBasic),
+              customTextField("Codigo",type.CODE,linesInputsBasic),
+              customTextField("????",type.DEFAULT,linesInputsBasic),
+              customTextField("Cargo",type.POSITIONS,linesInputsBasic),
+              customTextField("Telefono fijo",type.TLF_F,linesInputsBasic),
+              customTextField("Telefono movil",type.TLF_M,linesInputsBasic),
+              customTextField("Emails",type.EMAIL,linesInputsBasic),
+              customTextField("Notas",type.NOTE,linesInputsTextAreaBasic),
+              customTextField("Contraseña",type.PASSWORD,linesInputsBasic),
+              customTextField("Repetir Contraseña",type.PASSWORD,linesInputsBasic),
             ],
           ),
         ),

@@ -1,8 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
-import 'dart:io';
 
 String url = 'https://webapp.getkem.com/api/v1/customers';
 

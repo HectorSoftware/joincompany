@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       routes: {
         "/Login": (context) =>LoginPage(),
-        "/vistap": (context) =>taskHomePage(),
+        "/vistap": (context) =>TaskHomePage(),
         //"/vistap": (context) =>MyHomePagePrueba(),
         "/formularioTareas": (context) =>FormTask(),
         "/cliente": (context) =>Cliente(),

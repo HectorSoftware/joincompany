@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:joincompany/blocs/BlocTypeTask.dart';
 import 'package:joincompany/blocs/blocFaskForm.dart';
 import 'package:joincompany/main.dart';
-import 'dart:async';
-import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 class FormTask extends StatefulWidget {
   
@@ -85,7 +82,7 @@ class _FormTaskState extends State<FormTask> {
          ],
        ),
 
-        body:ContruirLista(context),
+        body:contruirLista(context),
 
 
         //AQUI ABAJO VAN LOS BOTONES DEL FOOTER
@@ -121,7 +118,7 @@ class _FormTaskState extends State<FormTask> {
     );
 
   }
-  Widget ContruirLista(context)
+  Widget contruirLista(context)
   {
     final BlocTaskForm _bloc = new BlocTaskForm(context);
       return  StreamBuilder<List<dynamic>>(
@@ -179,9 +176,8 @@ class _FormTaskState extends State<FormTask> {
                     title: new Text('Gestion Comercial'),
                     onTap: () {
                       _bloc.updateListWidget(context,'Gestion Comercial');
-                      changedView = true;
                       setState(() {
-                        changedView;
+                        changedView = true;
                       });
                       Navigator.pop(context);
                     },
@@ -191,9 +187,8 @@ class _FormTaskState extends State<FormTask> {
                     title: new Text('Encuesta'),
                     onTap: () {
                       _bloc.updateListWidget(context,"Encuesta");
-                      changedView = true;
                       setState(() {
-                        changedView;
+                        changedView = true;
                       });
                       Navigator.pop(context);
                     },

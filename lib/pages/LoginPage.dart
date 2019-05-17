@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:sentry/sentry.dart' as sentryr;
+
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {

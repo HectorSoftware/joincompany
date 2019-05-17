@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 
-class taskHomeTask extends StatefulWidget {
+class TaskHomeTask extends StatefulWidget {
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
 
-class _MytaskPageTaskState extends State<taskHomeTask> {
+class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   @override
   void initState() {
@@ -20,7 +20,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   @override
   Widget build(BuildContext context) {
-
     final mediaQueryData = MediaQuery.of(context);
     double aument = 0.7;
     if (mediaQueryData.orientation == Orientation.portrait) {
@@ -31,18 +30,17 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
-        body: ListViewTareas(),
+        body: listViewTareas(),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: (){
           Navigator.pushReplacementNamed(context, '/formularioTareas');
-
         }),
       ),
     );
   }
 
-  ListView ListViewTareas(){
+  ListView listViewTareas(){
     List<String> li = new List<String>();
     li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');li.add('Lista Ejemplo');
     return ListView.builder(

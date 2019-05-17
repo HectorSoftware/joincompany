@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/pages/LoginPage.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
 
 class AddClient extends StatelessWidget {
   @override
@@ -9,9 +7,9 @@ class AddClient extends StatelessWidget {
 
 
     final mediaQueryData = MediaQuery.of(context);
-     double aument = 250;
+    // double aument = 250;
     if (mediaQueryData.orientation == Orientation.portrait) {
-      aument = 0.8;
+      //aument = 0.8;
     }
     return new Scaffold(
       appBar: AppBar(
