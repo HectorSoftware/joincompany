@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Address {
+class AddressModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -23,7 +23,7 @@ class Address {
   String contactMobile;
   String contactEmail;
 
-  Address({
+  AddressModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -47,11 +47,11 @@ class Address {
     this.contactEmail,
   });
 
-  factory Address.fromJson(String str) => Address.fromMap(json.decode(str));
+  factory AddressModel.fromJson(String str) => AddressModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Address.fromMap(Map<String, dynamic> json) => new Address(
+  factory AddressModel.fromMap(Map<String, dynamic> json) => new AddressModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],

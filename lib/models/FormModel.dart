@@ -13,7 +13,7 @@ class FormModel {
   String name;
   bool withCheckinout;
   bool active;
-  List<Section> sections;
+  List<SectionModel> sections;
 
   FormModel({
     this.id,
@@ -44,7 +44,7 @@ class FormModel {
     name: json["name"],
     withCheckinout: json["with_checkinout"],
     active: json["active"],
-    sections: json["sections"] != null ? new List<Section>.from(json["sections"].map((x) => Section.fromMap(x))) : null,
+    sections: json["sections"] != null ? new List<SectionModel>.from(json["sections"].map((x) => SectionModel.fromMap(x))) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -58,6 +58,6 @@ class FormModel {
     "name": name,
     "with_checkinout": withCheckinout,
     "active": active,
-    "sections": sections != null ? new List<Section>.from(sections.map((x) => x.toMap())) : null,
+    "sections": sections != null ? new List<SectionModel>.from(sections.map((x) => x.toMap())) : null,
   };
 }
