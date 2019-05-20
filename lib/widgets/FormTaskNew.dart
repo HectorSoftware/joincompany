@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocTypeTask.dart';
 import 'package:joincompany/blocs/blocFaskForm.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/FormModel.dart' as Form;
+import 'package:joincompany/models/UserDataBase.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
+import 'package:http/http.dart' as http;
+import 'package:joincompany/Sqlite/database_helper.dart';
 class FormTask extends StatefulWidget {
   
 
@@ -21,14 +26,22 @@ class _FormTaskState extends State<FormTask> {
   List<Widget> listWidgetMain = List<Widget>();
   bool changedView = false;
 
+  UserDataBase userToken ;
+  String token;
+  String customer;
+  String user;
 
 
 @override
+void initState() {
 
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
   final BlocTaskForm _bloc = new BlocTaskForm(context);
-//  var getAllFormsResponse = getAllForms();
+  getAll();
+
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -90,7 +103,6 @@ class _FormTaskState extends State<FormTask> {
 
         body:Stack(
           children: <Widget>[
-
              StreamBuilder<List<dynamic>>(
             stream: _bloc.outListWidget,
             builder: (context, snapshot) {
@@ -157,38 +169,18 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                              return new Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new ListTile(
-                                    leading: new Icon(Icons.business),
-                                    title: new Text('Gestion Comercial'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Gestion Comercial';
-                                      _bloc.updateListWidget(context);
+                              return new ListView.builder(
+                               itemCount: 1,
+                                itemBuilder: (context, index){
+                                 return ListTile(
+                                   title: Text('Form $index'),
+                                   leading: Icon(Icons.label),
+                                   onTap: (){
 
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  new ListTile(
-                                    leading: new Icon(Icons.subject),
-                                    title: new Text('Encuesta'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Encuesta';
-                                      _bloc.updateListWidget(context);
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  new ListTile(
-                                    leading: new Icon(Icons.label),
-                                    title: new Text('Tarea/ Nota Vacia'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Nota Vacia';
-                                      _bloc.updateListWidget(context);
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
+                                   },
+
+                                 );
+                                },
                               );
                             }
                         );
@@ -201,19 +193,38 @@ class _FormTaskState extends State<FormTask> {
     );
 
   }
+  
+  getAll()async{
+  try{
+    await getElements();
+    http.Response getAllFormsResponse = await getAllForms(customer , token);
+    print(customer);
+    print(token);
+    if(getAllFormsResponse.statusCode == 200)
+    {
+      print('=====');
+    //  print(getAllFormsResponse.headers['content-type']);
+      Forms forms = Forms.fromJson(getAllFormsResponse.body);
+      print(getAllFormsResponse.body);
+      for(Form.Form form in forms.data){
+        print(form.name);
+        print(getAllFormsResponse.body);
 
+      }
+    }
+    print(getAllFormsResponse.statusCode);
+  }catch(e, r){
+    print(e.toString());
+    print(r);
+  }
 
- cl(_bloc){
-  // ignore: cancel_subscriptions
-  StreamSubscription streamSubscription = _bloc.outListWidget.listen((newVal)
-  => setState((){
-    print(newVal);
+  }
 
-  }));
-}
-
-  void _showModal(context) {
-    final BlocTaskForm _bloc = new BlocTaskForm(context);
+  getElements()async{
+    userToken = await ClientDatabaseProvider.db.getCodeId('1');
+  token = userToken.token;
+  customer = userToken.company;
+  user = userToken.name;
 
   }
 
