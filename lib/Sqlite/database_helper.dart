@@ -26,8 +26,6 @@ class ClientDatabaseProvider{
         onCreate: (Database db, int version) async {
           await db.execute(
               "CREATE TABLE User(idTable INT PRIMARY KEY, name TEXT, password TEXT , company TEXT, token TEXT)");
-
-
     });
   }
 
@@ -39,11 +37,16 @@ class ClientDatabaseProvider{
   }
 
   //Insert
-
   Future<int> saveUser(UserDataBase user) async {
     var dbClient = await database;
     int res = await dbClient.insert("User", user.toMap());
     return res;
+  }
+
+  Future<int> updatetoken(String token) async {
+    var dbClient = await  database;
+    return await dbClient.rawUpdate(
+        'UPDATE User SET token = \'${token}\' WHERE idTable = 1');
   }
 
 }

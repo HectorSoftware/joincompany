@@ -54,60 +54,65 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height/2.5,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff29a0c7),
-                      Color(0xff29a0c7)
-                    ],
-                  ),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(90)
-                  )
-              ),
-              child: Column(
-                children: <Widget>[
-                  Spacer(),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Icon(Icons.person,
-                      size: 90,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Spacer(),
+      resizeToAvoidBottomPadding: false,
+      body: Stack(
+        children: <Widget>[
+          ListViewPrincipal(),
+          Center(
+            child: Circuleprogress ? CircularProgressIndicator() : null,
+          ),
+        ],
+      )
+    );
+  }
+
+  ListViewPrincipal(){
+    return ListView(
+      children: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.25,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xff29a0c7),
+                  Color(0xff29a0c7)
                 ],
               ),
-            ),
-            ContainerDentroColum(),
-          ],
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(90)
+              )
+          ),
+          child: Column(
+            children: <Widget>[
+              Spacer(),
+              Align(
+                alignment: Alignment.center,
+                child: Icon(Icons.person,
+                  size: 90,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      ),
+        ContainerDentroColum(),
+      ],
     );
-
-
   }
 
   ContainerDentroColum(){
     return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: MediaQuery.of(context).size.height * 0.65,
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.only(top: 62),
       child: Column(
         children: <Widget>[
           Container(
               width: MediaQuery.of(context).size.width/1.2,
-              height: 45,
+              height: MediaQuery.of(context).size.height * 0.08,
               padding: EdgeInsets.only(
                   top: 4,left: 16, right: 16, bottom: 4
               ),
@@ -134,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Container(
             width: MediaQuery.of(context).size.width/1.2,
-            height: 45,
+            height: MediaQuery.of(context).size.height * 0.08,
             margin: EdgeInsets.only(top: 32),
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
@@ -163,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Container(
             width: MediaQuery.of(context).size.width/1.2,
-            height: 45,
+            height: MediaQuery.of(context).size.height * 0.08,
             margin: EdgeInsets.only(top: 32),
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
@@ -183,12 +188,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ) : Container(),
           ),
-          Spacer(),
           Container(
-            child: Circuleprogress ? CircularProgressIndicator() : null,
-          ),
-          Container(
-            height: 40,
+            height: MediaQuery.of(context).size.height * 0.08,
             width: MediaQuery.of(context).size.width/1.2,
             decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -225,6 +226,11 @@ class _LoginPageState extends State<LoginPage> {
 
   ValidarDatos(String Usr, String pwd, String compy) async {
 
+    Circuleprogress = true;
+    setState(() {
+      Circuleprogress;
+    });
+
     String companylocal = companyEstable;
     if(AgregarUser){
       companylocal = compy;
@@ -256,12 +262,18 @@ class _LoginPageState extends State<LoginPage> {
           setState(() {
             ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
           });
+          Circuleprogress = false; setState(() {
+            Circuleprogress;
+          });
         }
         if(loginResponse.statusCode == 500){
           ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
           ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
           setState(() {
             ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+          Circuleprogress = false; setState(() {
+            Circuleprogress;
           });
         }
         if(loginResponse.statusCode == 200){
@@ -270,6 +282,8 @@ class _LoginPageState extends State<LoginPage> {
           if(AgregarUser){
             UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
             int res = await ClientDatabaseProvider.db.saveUser(newuser);
+          }else{
+            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
           }
 
           Navigator.pushReplacementNamed(context, '/vistap');
@@ -279,6 +293,9 @@ class _LoginPageState extends State<LoginPage> {
         ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
         setState(() {
           ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false; setState(() {
+          Circuleprogress;
         });
       }
     }
@@ -342,12 +359,12 @@ class _LoginPageState extends State<LoginPage> {
       // print(customers.data[1].name);
 
        //Task Get
-       var getTaskResponse = await getTask('2427', customer, authorization);
-       Task task = Task.fromJson(getTaskResponse.body);
-      print(task.name);
-      print(getTaskResponse.body);
-       print(task.responsibleId);
-      print(task.checkinLatitude);
+//       var getTaskResponse = await getTask('2427', customer, authorization);
+//       Task task = Task.fromJson(getTaskResponse.body);
+//      print(task.name);
+//      print(getTaskResponse.body);
+//       print(task.responsibleId);
+//      print(task.checkinLatitude);
 
       // Task All
 //       var getAllTasksResponse = await getAllTasks(customer, authorization);
