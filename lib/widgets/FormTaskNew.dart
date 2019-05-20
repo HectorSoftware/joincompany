@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocTypeTask.dart';
-import 'package:joincompany/blocs/blocFaskForm.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
+import 'package:http/http.dart' as http;
+import 'package:joincompany/Sqlite/database_helper.dart';
+
+
 class FormTask extends StatefulWidget {
   
 
@@ -21,14 +30,22 @@ class _FormTaskState extends State<FormTask> {
   List<Widget> listWidgetMain = List<Widget>();
   bool changedView = false;
 
-
+  UserDataBase userToken ;
+  String token;
+  String customer;
+  String user;
+  Forms formType;
 
 @override
+void initState(){
+
+  initFormType();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
   final BlocTaskForm _bloc = new BlocTaskForm(context);
-//  var getAllFormsResponse = getAllForms();
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -90,7 +107,6 @@ class _FormTaskState extends State<FormTask> {
 
         body:Stack(
           children: <Widget>[
-
              StreamBuilder<List<dynamic>>(
             stream: _bloc.outListWidget,
             builder: (context, snapshot) {
@@ -157,38 +173,30 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                              return new Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  new ListTile(
-                                    leading: new Icon(Icons.business),
-                                    title: new Text('Gestion Comercial'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Gestion Comercial';
-                                      _bloc.updateListWidget(context);
+                              return new ListView.builder(
+                               itemCount: formType.data.length,//formType.data.length,
+                                itemBuilder: (context, index){
+                                 return ListTile(
 
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  new ListTile(
-                                    leading: new Icon(Icons.subject),
-                                    title: new Text('Encuesta'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Encuesta';
-                                      _bloc.updateListWidget(context);
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  new ListTile(
-                                    leading: new Icon(Icons.label),
-                                    title: new Text('Tarea/ Nota Vacia'),
-                                    onTap: () {
-                                      _bloc.typeForm = 'Nota Vacia';
-                                      _bloc.updateListWidget(context);
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
+                                   title: Text('${formType.data[index].name}'),
+                                   leading: Icon(Icons.label),
+                                   onTap: () async {
+
+                                         var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                         FormModel form = FormModel.fromJson(getFormResponse.body);
+                                         _bloc.idFormType = formType.data[index].id.toString();
+                                         _bloc.customer = customer;
+                                         _bloc.token = token;
+                                         _bloc.form = form;
+                                         _bloc.updateListWidget(context);
+                                          Navigator.pop(context);
+
+
+
+                                   },
+
+                                 );
+                                },
                               );
                             }
                         );
@@ -201,22 +209,41 @@ class _FormTaskState extends State<FormTask> {
     );
 
   }
+  
+  getAll()async{
+    Forms forms;
+    Forms formType;
+    await getElements();
+    http.Response getAllFormsResponse = await getAllForms(customer , token);
+  try{
+
+    if(getAllFormsResponse.statusCode == 200)
+    {
+    //  print(getAllFormsResponse.headers['content-type']);
+      forms = Forms.fromJson(getAllFormsResponse.body);
+      formType = forms;
+      for(FormModel form in forms.data){
 
 
- cl(_bloc){
-  // ignore: cancel_subscriptions
-  StreamSubscription streamSubscription = _bloc.outListWidget.listen((newVal)
-  => setState((){
-    print(newVal);
-
-  }));
-}
-
-  void _showModal(context) {
-    final BlocTaskForm _bloc = new BlocTaskForm(context);
+      }
+    }
+  }catch(e, r){
 
   }
+ return formType;
+  }
 
+  initFormType()async{
+  formType = await getAll();
+  }
+
+  getElements()async{
+    userToken = await ClientDatabaseProvider.db.getCodeId('1');
+  token = userToken.token;
+  customer = userToken.company;
+  user = userToken.name;
+
+  }
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
