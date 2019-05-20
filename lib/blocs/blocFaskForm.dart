@@ -12,7 +12,9 @@ class BlocTaskForm {
   List<String> listStringG = List<String>();
   String typeForm ;
   String validateTypeForm = 'Nota Vacia';
-
+  String token;
+  String customer;
+  String idFormType;
   bool pass ;
 
 
@@ -29,6 +31,9 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
+    print(token);
+    print(customer);
+    print(idFormType);
 
     listWidget.clear();
     inListWidget.add(listWidget);

@@ -175,12 +175,16 @@ void initState(){
                                itemCount: formType.data.length,//formType.data.length,
                                 itemBuilder: (context, index){
                                  return ListTile(
+
                                    title: Text('${formType.data[index].name}'),
                                    leading: Icon(Icons.label),
                                    onTap: () async {
 
                                          var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                          Form.Form form = Form.Form.fromJson(getFormResponse.body);
+                                         _bloc.idFormType = formType.data[index].id.toString();
+                                         _bloc.customer = customer;
+                                         _bloc.token = token;
                                           print(form.name);
                                           print(getFormResponse.body);
                                           Navigator.pop(context);
