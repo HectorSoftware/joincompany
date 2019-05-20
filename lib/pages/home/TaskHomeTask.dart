@@ -147,7 +147,10 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                                         children: <Widget>[
                                           Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                                           Text(address, style: TextStyle(fontSize: 10)),
-                                          IconButton(icon: Icon(Icons.delete), onPressed: (){}),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 200),
+                                            child: IconButton(icon: Icon(Icons.delete), onPressed: (){}),
+                                          ),
                                         ],
                                       ),
                                     ),
