@@ -8,21 +8,21 @@ import 'package:joincompany/services/TaskService.dart';
 
 class blocListTask {
 
-  List<Task> _listTask = List<Task>();
-  List<Task> _listTask_ordenar = List<Task>();
+  List<TaskModel> _listTask = List<TaskModel>();
+  List<TaskModel> _listTask_ordenar = List<TaskModel>();
 
-  var _tasksController = StreamController<List<Task>>();
-  Stream<List<Task>> get outListTaks => _tasksController.stream;
-  Sink<List<Task>> get inListTaks => _tasksController.sink;
+  var _tasksController = StreamController<List<TaskModel>>();
+  Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
+  Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
   Future updateListTask()
   async {
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token);
-    Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
+    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
     for(int i = 0; i < tasks.data.length; i++ ){
-      Task task = new Task(
+      TaskModel task = new TaskModel(
         id: tasks.data[i].id,
         createdAt:  tasks.data[i].createdAt,
         updatedAt: tasks.data[i].updatedAt,

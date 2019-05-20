@@ -22,7 +22,7 @@ class BlocTaskForm {
   String idFormType;
   bool pass ;
   FormModel form;
-  Field camposWidgets;
+  FieldModel camposWidgets;
 
 
 
@@ -46,9 +46,9 @@ class BlocTaskForm {
    if(idFormType != null)
      {
        print('========ENTRANDO AL UPDATE======');
-      for(Section v in form.sections)
+      for(SectionModel v in form.sections)
         {
-          for(Field k in v.fields)
+          for(FieldModel k in v.fields)
             {
               camposWidgets = k;
              print(k.toJson());

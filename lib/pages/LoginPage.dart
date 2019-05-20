@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
         }
         if(loginResponse.statusCode == 200){
 
-          Auth auth = Auth.fromJson(loginResponse.body);
+          AuthModel auth = AuthModel.fromJson(loginResponse.body);
           if(AgregarUser){
             UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
             int res = await ClientDatabaseProvider.db.saveUser(newuser);

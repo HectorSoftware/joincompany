@@ -67,9 +67,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   String DateTask = "2019-05-05 20:00:04Z";
   ListViewTareas(){
     blocListTask bloctasks = new blocListTask();
-    return StreamBuilder<List<Task>>(
+    return StreamBuilder<List<TaskModel>>(
       stream: bloctasks.outListTaks,
-      initialData: <Task>[],
+      initialData: <TaskModel>[],
       builder: (context, snapshot){
 
         var withinCardPadding = 2.0;
@@ -80,7 +80,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
               itemBuilder: (BuildContext context, int index) {
                 String _date = snapshot.data[index].createdAt;
                 String _title = snapshot.data[index].name;
-                Address _address = snapshot.data[index].address;
+                AddressModel _address = snapshot.data[index].address;
                 String voidFieldMessage = "Unknown";
 
                 var date;
