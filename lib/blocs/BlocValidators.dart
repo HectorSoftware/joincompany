@@ -16,8 +16,6 @@ class Bloc  with Validators{
   submit(){
     final validEmail = _emailController.value;
     final validPassord = _passwordController.value;
-    print('Email is $validEmail');
-    print('Password is $validPassord');
 
   }
 
