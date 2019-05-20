@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class AddContact extends StatelessWidget {
-  final String a = "";
+
+  final String a = "";//TODO: data contact, Object of Model Contacts
+
+
 
   Widget customTextField(String title,String savedData,int maxLines,bool isRequered){
     return Container(

@@ -13,7 +13,7 @@ class SearchAddress extends StatefulWidget {
 
 /*
 * ANDROID
-* AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
+* https://github.com/alfianlosari/flutter_placez.git
 * IOS
 * AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
 * */
@@ -31,7 +31,7 @@ class _SearchAddressState extends State<SearchAddress> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
 
   @override
-  Future initState() {
+  void initState() {
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -120,13 +120,13 @@ class _SearchAddressState extends State<SearchAddress> {
       child: TextField(
         cursorColor: Colors.black,
         decoration: InputDecoration(
-          icon: Container(margin: EdgeInsets.only(left: 20, top: 5), width: 10, height: 10, child: Icon(Icons.location_on, color: Colors.black,),),
-          hintText: "Buscar . . .",
+          icon: Container(margin: EdgeInsets.only(left: 20, top: 5), width: 10, height: 10, child: Icon(Icons.location_on),),
+          hintText: "Buscar",
           border: InputBorder.none,
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-          //sendRequest2(value);
+//          sendRequest2(value);
           sendRequest(value);
         },
         onChanged: (text){
@@ -137,6 +137,7 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   List<PlacesSearchResult> places = [];
+
   sendRequest2(String value) async {
     final location = Location(_initialPosition.latitude, _initialPosition.longitude);
     final result = await _places.searchNearbyWithRadius(location, 5000);
@@ -151,8 +152,8 @@ class _SearchAddressState extends State<SearchAddress> {
         }
       });
     } else {
-    }
 
+    }
   }
 
   sendRequest(String intendedLocation) async {
@@ -178,21 +179,20 @@ class _SearchAddressState extends State<SearchAddress> {
         listPlacemark;
       });
     }else{
-      llenadoListaEncontrador = false;
       setState(() {
-        llenadoListaEncontrador;
+        llenadoListaEncontrador = false;
       });
     }
   }
 
   Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
     List<Placemark> placemark ;
+
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
       print(e.toString());
     }
-
 
     return placemark;
   }

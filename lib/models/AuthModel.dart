@@ -1,12 +1,4 @@
-// To parse this JSON data, do
-//
-//     final auth = authFromJson(jsonString);
-
 import 'dart:convert';
-
-Auth authFromJson(String str) => Auth.fromJson(json.decode(str));
-
-String authToJson(Auth data) => json.encode(data.toJson());
 
 class Auth {
   String accessToken;
@@ -18,14 +10,18 @@ class Auth {
       this.tokenType,
       this.expiresIn,
   });
+  
+  factory Auth.fromJson(String str) => Auth.fromMap(json.decode(str));
+  
+  String toJson() => json.encode(toMap());
 
-  factory Auth.fromJson(Map<String, dynamic> json) => new Auth(
+  factory Auth.fromMap(Map<String, dynamic> json) => new Auth(
       accessToken: json["access_token"],
       tokenType: json["token_type"],
       expiresIn: json["expires_in"],
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
       "access_token": accessToken,
       "token_type": tokenType,
       "expires_in": expiresIn,

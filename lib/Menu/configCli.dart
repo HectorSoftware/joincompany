@@ -25,10 +25,22 @@ class _ConfigCliState extends State<ConfigCli> {
   static const int linesInputsBasic = 1;
   static const int linesInputsTextAreaBasic = 4;
 
-  String a;//TODO: implement model setData
+  TextEditingController name,code,defaults,pos,tlfF,tlfM,email,note,password;    //TODO: implement model setDataConfig
 
   void setDataForm(String data, type t){
+      //TODO
+  }
 
+  @override
+  void initState() {
+    //TODO
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    //TODO
+    super.dispose();
   }
 
   Widget customTextField(String title, type t, int maxLines){
@@ -48,8 +60,42 @@ class _ConfigCliState extends State<ConfigCli> {
           hintText: title,
           border: InputBorder.none
         ),
+        controller: getController(t),
       ),
     );
+  }
+
+  TextEditingController getController(type t){
+    switch (t){
+      case type.NAME:{
+        return name;
+      }
+      case type.CODE:{
+        return code;
+      }
+      case type.DEFAULT:{
+        return defaults;
+      }
+      case type.POSITIONS:{
+        return pos;
+      }
+      case type.TLF_F:{
+        return tlfF;
+      }
+      case type.TLF_M:{
+        return tlfM;
+      }
+      case type.EMAIL:{
+        return email;
+      }
+      case type.NOTE:{
+        return note;
+      }
+      case type.PASSWORD:{
+        return password;
+      }
+    }
+    return null;
   }
 
   @override

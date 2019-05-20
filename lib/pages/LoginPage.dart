@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -17,10 +23,12 @@ class _LoginPageState extends State<LoginPage> {
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final companyController = TextEditingController();
+  bool TextViewVisible = true;
+  bool AgregarUser = false;
 
   @override
   void initState() {
-
+    ValidarUsrPrimeraVez();
     super.initState();
   }
 @override
@@ -98,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
                     child: TextField(
                       controller: nameController,
@@ -119,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
                     child: TextField(
                       obscureText: true,
@@ -141,9 +149,9 @@ class _LoginPageState extends State<LoginPage> {
                         top: 4,left: 16, right: 16, bottom: 4
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.transparent,
                     ),
-                    child: TextField(
+                    child: TextViewVisible ? TextField(
                       controller: companyController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -152,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         hintText: 'Empresa',
                       ),
-                    ),
+                    ) : Container(),
                   ),
 
 
@@ -180,7 +188,9 @@ class _LoginPageState extends State<LoginPage> {
                       splashColor: Colors.white10,
 
                     onPressed: () async {
-                     Navigator.pushReplacementNamed(context, '/vistap');
+                       ValidarDatos(nameController.text,passwordController.text,companyController.text);
+
+
                       },
                       child: Center(
                           child: Center(
@@ -198,6 +208,81 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
+
+  }
+
+  ValidarDatos(String Usr, String pwd, String compy) async {
+//    print(Usr);
+//    print(pwd);
+//    print(compy);
+//    var loginResponse = await login(Usr, pwd, compy);
+//    print(loginResponse.statusCode);
+//
+//    if(loginResponse.statusCode == 200){
+      Navigator.pushReplacementNamed(context, '/vistap');
+//    }else{
+//
+//    }
+  }
+
+  ValidarUsrPrimeraVez() async {
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    if(UserActiv != null){
+      TextViewVisible = false;
+      AgregarUser = false;
+      setState(() {
+        TextViewVisible;AgregarUser;
+      });
+    }
+  }
+
+  testApi() async{
+
+    try{
+      print("---------------- Inicia test. ----------------------------");
+
+      String email = 'eibanez@duperu.com';
+      String password = '123';
+      String customer = 'duperu';
+
+      // login
+      var loginResponse = await login(email, password, customer);
+      Auth auth = Auth.fromJson(loginResponse.body);
+      String authorization = auth.accessToken;
+//      print(auth.accessToken);
+
+      // Customer Get
+      var getCustomerResponse = await getCustomer('2', customer, authorization);
+      Customer customerObj = Customer.fromJson(getCustomerResponse.body);
+//      print(customerObj.name);
+
+      // Customer Update
+//      customerObj.name += ' rr';
+//      var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
+//      print(updateCustomerResponse.body);
+
+      // Customer Create
+//      customerObj.name = 'Test';
+//      customerObj.code = '123456789';
+//      var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
+//      print(createCustomerResponse.body);
+
+      // Customer All
+      var getAllCustomerResponse = await getAllCustomers(customer, authorization);
+      Customers customers = Customers.fromJson(getAllCustomerResponse.body);
+//      print(customers.data[1].name);
+
+
+
+
+
+
+      print("---------------- Fin test. ----------------------------");
+    }catch(e, s){
+      print("----------------- Error ----------------");
+      print(e.toString());
+      print(s);
+    }
 
   }
 }
