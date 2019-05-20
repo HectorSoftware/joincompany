@@ -30,7 +30,7 @@ class Task {
  String status;
  List<CustomSection> customSections;
  List<CustomValue> customValues;
- Form form;
+ FormModel form;
  Address address;
  Customer customer;
  Responsible responsible;
@@ -95,7 +95,7 @@ class Task {
    status: json["status"],
    customSections: json['custom_sections'] != null ? new List<CustomSection>.from(json["custom_sections"].map((x) => CustomSection.fromMap(x))) : null,
    customValues: json['custom_values'] != null ? new List<CustomValue>.from(json["custom_values"].map((x) => CustomValue.fromMap(x))) : null,
-   form: json['form'] != null ? Form.fromMap(json["form"]) : null,
+   form: json['form'] != null ? FormModel.fromMap(json["form"]) : null,
    address: json['address'] != null ? Address.fromMap(json["address"]) : null,
    customer: json['customer'] != null ? Customer.fromMap(json["customer"]) : null,
    responsible: json['responsible'] != null ? Responsible.fromMap(json["responsible"]) : null,

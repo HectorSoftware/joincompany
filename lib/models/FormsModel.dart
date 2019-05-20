@@ -4,7 +4,7 @@ import 'package:joincompany/models/FormModel.dart';
 
 class Forms {
   int currentPage;
-  List<Form> data;
+  List<FormModel> data;
   String firstPageUrl;
   int from;
   int lastPage;
@@ -37,7 +37,7 @@ class Forms {
 
   factory Forms.fromMap(Map<String, dynamic> json) => new Forms(
     currentPage: json["current_page"],
-    data: json["data"] != null ? new List<Form>.from(json["data"].map((x) => Form.fromMap(x))) : null,
+    data: json["data"] != null ? new List<FormModel>.from(json["data"].map((x) => FormModel.fromMap(x))) : null,
     firstPageUrl: json["first_page_url"],
     from: json["from"],
     lastPage: json["last_page"],
@@ -52,7 +52,7 @@ class Forms {
 
   Map<String, dynamic> toMap() => {
     "current_page": currentPage,
-    "data": data != null ? new List<Form>.from(data.map((x) => x.toMap())) : null,
+    "data": data != null ? new List<FormModel>.from(data.map((x) => x.toMap())) : null,
     "first_page_url": firstPageUrl,
     "from": from,
     "last_page": lastPage,

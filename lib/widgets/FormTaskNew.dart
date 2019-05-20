@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocTypeTask.dart';
-import 'package:joincompany/blocs/blocFaskForm.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/FormModel.dart' as Form;
+import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
@@ -13,6 +13,8 @@ import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
+
+
 class FormTask extends StatefulWidget {
   
 
@@ -181,12 +183,12 @@ void initState(){
                                    onTap: () async {
 
                                          var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                         Form.Form form = Form.Form.fromJson(getFormResponse.body);
+                                         FormModel form = FormModel.fromJson(getFormResponse.body);
                                          _bloc.idFormType = formType.data[index].id.toString();
                                          _bloc.customer = customer;
                                          _bloc.token = token;
-                                          print(form.name);
-                                          print(getFormResponse.body);
+                                         _bloc.form = form;
+                                         _bloc.updateListWidget(context);
                                           Navigator.pop(context);
 
 
@@ -220,19 +222,18 @@ void initState(){
     //  print(getAllFormsResponse.headers['content-type']);
       forms = Forms.fromJson(getAllFormsResponse.body);
       formType = forms;
-      for(Form.Form form in forms.data){
+      for(FormModel form in forms.data){
 
 
       }
     }
   }catch(e, r){
-    print(e.toString());
+
   }
  return formType;
   }
 
   initFormType()async{
-  print('-----');
   formType = await getAll();
   }
 

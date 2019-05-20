@@ -31,12 +31,21 @@ class TaskBloc{
     marker = Place(id: 5, customer: 'cliente 5', address: 'direccion 5',latitude: -33.4531271,longitude: -70.5612654, status: 1);
     listMarkerLocal.add(marker);
 
-    /*UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    /*List<Place> listMarkerLocal = new List<Place>();
+
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token);
     Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
-    print(tasks.data[0].name);
-    print(tasks.data[0].responsibleId);*/
 
+    for(int i=0; i < tasks.data.length;i++){
+      Place marker;
+      String valadde = 'N/A';
+      if(tasks.data[i].address != null){
+        valadde = tasks.data[i].address.address;
+        marker = Place(id: i+1, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: 0);
+        listMarkerLocal.add(marker);
+      }
+    }*/
 
     _listMarker = listMarkerLocal;
     _taskcontroller.add(_listMarker);

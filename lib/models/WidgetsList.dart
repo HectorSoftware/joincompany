@@ -19,7 +19,7 @@ class ListWidgets{
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Text(string,style: TextStyle(
-          fontSize: 25,
+          fontSize: 20,
       ),
       ),
     );
@@ -63,7 +63,7 @@ class ListWidgets{
     );
   }
 
-  Widget textArea(context){
+  Widget textArea(context,placeholder){
     return
       //-------------------------------------TEXTAREA---------------
         Padding(
@@ -93,7 +93,7 @@ class ListWidgets{
 
                 border: InputBorder.none,
 
-                hintText: '',
+                hintText: placeholder,
               ),
             ),
           ),
@@ -101,7 +101,7 @@ class ListWidgets{
 
   }
 
-  Widget input(context){
+  Widget input(context,placeholder){
     //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -130,9 +130,44 @@ class ListWidgets{
 
               border: InputBorder.none,
 
-              hintText: '',
+              hintText: placeholder,
             ),
           ),
+      ),
+    );
+  }
+  Widget number(context,placeholder){
+    //-----------------------------------------INPUT----------------------------------
+    return  Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width/1.2,
+        height: 40,
+        padding: EdgeInsets.only(
+            top: 4,left: 16, right: 16, bottom: 4
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+                Radius.circular(15)
+            ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: TextField(
+          keyboardType: TextInputType.numberWithOptions(),
+          maxLines: 1,
+          //controller: nameController,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+
+            hintText: placeholder,
+          ),
+        ),
       ),
     );
   }
