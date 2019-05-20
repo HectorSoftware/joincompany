@@ -1,5 +1,10 @@
 import 'dart:async';
+import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/main.dart';
 import 'package:joincompany/models/Marker.dart';
+import 'package:joincompany/models/TasksModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/TaskService.dart';
 
 class TaskBloc{
   List<Place> _listMarker = new List<Place>();
@@ -12,7 +17,7 @@ class TaskBloc{
     getPLace();
   }
 
-  void getPLace(){
+  Future getPLace() async {
 
     List<Place> listMarkerLocal = new List<Place>();
     Place marker = Place(id: 1, customer: 'cliente 1', address: 'direccion 1',latitude: -33.4544232,longitude: -70.6308331, status: 0);
@@ -25,6 +30,13 @@ class TaskBloc{
     listMarkerLocal.add(marker);
     marker = Place(id: 5, customer: 'cliente 5', address: 'direccion 5',latitude: -33.4531271,longitude: -70.5612654, status: 1);
     listMarkerLocal.add(marker);
+
+    /*UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token);
+    Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
+    print(tasks.data[0].name);
+    print(tasks.data[0].responsibleId);*/
+
 
     _listMarker = listMarkerLocal;
     _taskcontroller.add(_listMarker);

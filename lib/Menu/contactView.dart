@@ -19,7 +19,10 @@ class _ContactViewState extends State<ContactView> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.all(12.0),
-            child: Align(alignment: Alignment.centerLeft,child: Text(dataContacts),),
+            child: Align(alignment: Alignment.centerLeft,child: Text(dataContacts, style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ),),),
           ),
           Container(
             margin: EdgeInsets.all(12.0),
@@ -69,7 +72,18 @@ class _ContactViewState extends State<ContactView> {
 //          }
 //        },
 //      ),
-      body: contactCard("Contacto 1"),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            contactCard("Contacto 1"),
+            contactCard("Contacto 2"),
+            contactCard("Contacto 3"),
+            contactCard("Contacto 4"),
+            contactCard("Contacto 5"),
+            contactCard("Contacto 6"),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed:(){

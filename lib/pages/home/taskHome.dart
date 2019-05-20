@@ -17,11 +17,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalHome = true;
 
   @override
-  Future initState() {
+  void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
-          () {
-        setState(() {});
+          () {setState((){});
       },
     );
     super.initState();
@@ -32,8 +31,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     _controller.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +68,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       body: getTabBarView(),
     );
   }
+
   TabBar getTabBar(){
     return TabBar(
       indicatorColor : Colors.white,

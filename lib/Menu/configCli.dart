@@ -31,15 +31,46 @@ class _ConfigCliState extends State<ConfigCli> {
       //TODO
   }
 
+  void initController(){
+    name = TextEditingController();
+    code = TextEditingController();
+    defaults = TextEditingController();
+    pos = TextEditingController();
+    tlfF = TextEditingController();
+    tlfM = TextEditingController();
+    email = TextEditingController();
+    note = TextEditingController();
+    password = TextEditingController();
+  }
+
+  void disposeController(){
+    name.dispose();
+    code.dispose();
+    defaults.dispose();
+    pos.dispose();
+    tlfF.dispose();
+    tlfM.dispose();
+    email.dispose();
+    note.dispose();
+    password.dispose();
+  }
+
+  void getConfig(){
+    //TODO
+  }
+
   @override
   void initState() {
     //TODO
+    initController();
+    getConfig();
     super.initState();
   }
 
   @override
   void dispose() {
     //TODO
+    disposeController();
     super.dispose();
   }
 

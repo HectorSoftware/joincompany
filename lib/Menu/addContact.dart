@@ -5,8 +5,6 @@ class AddContact extends StatelessWidget {
 
   final String a = "";//TODO: data contact, Object of Model Contacts
 
-
-
   Widget customTextField(String title,String savedData,int maxLines,bool isRequered){
     return Container(
       margin: EdgeInsets.all(12.0),
@@ -60,14 +58,40 @@ class AddContact extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: IconButton(
                           icon: Icon(Icons.add),
-                          onPressed: (){},
+                          onPressed: (){
+                            showDialog(context: context,
+                                builder: (BuildContext contex){
+                                  return AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text("SAVED"),//TODO
+                                      ],
+                                    ),
+                                  );
+                                }
+                            );
+                          },
                         ),
                       ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: IconButton(
                           icon: Icon(Icons.visibility),
-                          onPressed: (){},
+                          onPressed: (){
+                            showDialog(context: context,
+                                builder: (BuildContext contex){
+                                  return AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text("TODO"),//TODO
+                                      ],
+                                    ),
+                                  );
+                                }
+                            );
+                          },
                         ),
                       ),
                     ],
