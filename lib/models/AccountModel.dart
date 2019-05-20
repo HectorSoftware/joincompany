@@ -1,21 +1,21 @@
 import 'dart:convert';
 
-class Account {
+class AccountModel {
   String time;
-  CustomerAccount customer;
+  CustomerAccountModel customer;
 
-  Account({
+  AccountModel({
       this.time,
       this.customer,
   });
 
-  factory Account.fromJson(String str) => Account.fromMap(json.decode(str));
+  factory AccountModel.fromJson(String str) => AccountModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Account.fromMap(Map<String, dynamic> json) => new Account(
+  factory AccountModel.fromMap(Map<String, dynamic> json) => new AccountModel(
       time: json["time"],
-      customer: json['customer'] != null ? CustomerAccount.fromMap(json["customer"]) : null,
+      customer: json['customer'] != null ? CustomerAccountModel.fromMap(json["customer"]) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -24,7 +24,7 @@ class Account {
   };
 }
 
-class CustomerAccount {
+class CustomerAccountModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -40,7 +40,7 @@ class CustomerAccount {
   String receiverEmail;
   String receiverName;
 
-  CustomerAccount({
+  CustomerAccountModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -57,11 +57,11 @@ class CustomerAccount {
     this.receiverName,
   });
 
-  factory CustomerAccount.fromJson(String str) => CustomerAccount.fromMap(json.decode(str));
+  factory CustomerAccountModel.fromJson(String str) => CustomerAccountModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory CustomerAccount.fromMap(Map<String, dynamic> json) => new CustomerAccount(
+  factory CustomerAccountModel.fromMap(Map<String, dynamic> json) => new CustomerAccountModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],

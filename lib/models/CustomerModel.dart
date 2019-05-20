@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Customer {
+class CustomerModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -14,9 +14,9 @@ class Customer {
   String email;
   String contactName;
   String details;
-  PivotCustomerUser pivot;
+  PivotCustomerUserModel pivot;
 
-  Customer({
+  CustomerModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -33,11 +33,11 @@ class Customer {
     this.pivot,
   });
 
-  factory Customer.fromJson(String str) => Customer.fromMap(json.decode(str));
+  factory CustomerModel.fromJson(String str) => CustomerModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Customer.fromMap(Map<String, dynamic> json) => new Customer(
+  factory CustomerModel.fromMap(Map<String, dynamic> json) => new CustomerModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -51,7 +51,7 @@ class Customer {
     email: json["email"],
     contactName: json["contact_name"],
     details: json["details"],
-    pivot: json['pivot'] != null ? PivotCustomerUser.fromMap(json["pivot"]) : null,
+    pivot: json['pivot'] != null ? PivotCustomerUserModel.fromMap(json["pivot"]) : null,
   );
   
 
@@ -73,20 +73,20 @@ class Customer {
   };
 }
 
-class PivotCustomerUser {
+class PivotCustomerUserModel {
   int userId;
   int customerId;
 
-  PivotCustomerUser({
+  PivotCustomerUserModel({
     this.userId,
     this.customerId,
   });
 
-  factory PivotCustomerUser.fromJson(String str) => PivotCustomerUser.fromMap(json.decode(str));
+  factory PivotCustomerUserModel.fromJson(String str) => PivotCustomerUserModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory PivotCustomerUser.fromMap(Map<String, dynamic> json) => new PivotCustomerUser(
+  factory PivotCustomerUserModel.fromMap(Map<String, dynamic> json) => new PivotCustomerUserModel(
     userId: json["user_id"],
     customerId: json["customer_id"],
   );

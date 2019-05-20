@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:joincompany/models/SectionModel.dart';
 
-class Form {
+class FormModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -13,9 +13,9 @@ class Form {
   String name;
   bool withCheckinout;
   bool active;
-  List<Section> sections;
+  List<SectionModel> sections;
 
-  Form({
+  FormModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -29,11 +29,11 @@ class Form {
     this.sections,
   });
 
-  factory Form.fromJson(String str) => Form.fromMap(json.decode(str));
+  factory FormModel.fromJson(String str) => FormModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Form.fromMap(Map<String, dynamic> json) => new Form(
+  factory FormModel.fromMap(Map<String, dynamic> json) => new FormModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -44,7 +44,7 @@ class Form {
     name: json["name"],
     withCheckinout: json["with_checkinout"],
     active: json["active"],
-    sections: json["sections"] != null ? new List<Section>.from(json["sections"].map((x) => Section.fromMap(x))) : null,
+    sections: json["sections"] != null ? new List<SectionModel>.from(json["sections"].map((x) => SectionModel.fromMap(x))) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -58,6 +58,6 @@ class Form {
     "name": name,
     "with_checkinout": withCheckinout,
     "active": active,
-    "sections": sections != null ? new List<Section>.from(sections.map((x) => x.toMap())) : null,
+    "sections": sections != null ? new List<SectionModel>.from(sections.map((x) => x.toMap())) : null,
   };
 }

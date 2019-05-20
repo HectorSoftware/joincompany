@@ -3,6 +3,8 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
@@ -10,6 +12,7 @@ import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
@@ -279,19 +282,30 @@ class _LoginPageState extends State<LoginPage> {
       print("---------------- Inicia test. ----------------------------");
 
       String email = 'eibanez@duperu.com';
+      // String email = 'jgarcia@getkem.com';
       String password = '123';
       String customer = 'duperu';
 
       // login
       var loginResponse = await login(email, password, customer);
-      Auth auth = Auth.fromJson(loginResponse.body);
+      AuthModel auth = AuthModel.fromJson(loginResponse.body);
       String authorization = auth.accessToken;
       print(auth.tokenType);
+      // print(auth.accessToken);
+      // print(auth.accessToken.length);
+      // print(loginResponse.headers['content-type']);
+
+      // var logoutResponse = await logout(customer, authorization);
+      // print(logoutResponse.body);
+
+      // var refreshResponse = await refreshToken(customer, authorization);
+      // print(refreshResponse.body);
 
       // Customer Get
       // var getCustomerResponse = await getCustomer('2', customer, authorization);
-      // Customer customerObj = Customer.fromJson(getCustomerResponse.body);
+      // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
       // print(customerObj.name);
+      // print(getCustomerResponse.body);
 
       // Customer Update
       // customerObj.name += ' rr';
@@ -299,28 +313,42 @@ class _LoginPageState extends State<LoginPage> {
       // print(updateCustomerResponse.body);
 
       // Customer Create
-      // customerObj.name = 'Test';
-      // customerObj.code = '123456789';
+      // customerObj.name = 'TestTest Test';
+      // customerObj.code = '987654321';
       // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
       // print(createCustomerResponse.body);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
-      // Customers customers = Customers.fromJson(getAllCustomersResponse.body);
-      // print(customers.data[1].name);
+      // CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
+      // print(customers.data[0].name);
+      // print(getAllCustomersResponse.body);
 
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);
-      // Task task = Task.fromJson(getTaskResponse.body);
+      // TaskModel task = TaskModel.fromJson(getTaskResponse.body);
       // print(task.name);
       // print(task.responsibleId);
       // print(task.checkinLatitude);
 
       // Task All
       // var getAllTasksResponse = await getAllTasks(customer, authorization);
-      // Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
-      // print(tasks.data[0].name);
+      // TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+      // print(getAllTasksResponse.request);
+      // print(getAllTasksResponse.body);
+      // print(tasks.data.length);
       // print(tasks.data[0].responsibleId);
+
+      // Form Get
+      // var getFormResponse = await getForm('1', customer, authorization);
+      // FormModel form = FormModel.fromJson(getFormResponse.body);
+      // print(form.name);
+
+      // Form All
+      // var getAllFormsResponse = await getAllForms(customer, authorization);
+      // FormsModel forms = FormsModel.fromJson(getAllFormsResponse.body);
+      // print(forms.data[1].name);
+      
 
 
 

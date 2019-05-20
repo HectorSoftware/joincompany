@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Field {
+class FieldModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -19,12 +19,12 @@ class Field {
   String fieldDefaultValue;
   String fieldType;
   String fieldPlaceholder;
-  List<FieldOption> fieldOptions;
+  List<FieldOptionModel> fieldOptions;
   String fieldCollection;
   bool fieldRequired;
   int fieldWidth;
 
-  Field({
+  FieldModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -49,11 +49,11 @@ class Field {
     this.fieldWidth,
   });
 
-  factory Field.fromJson(String str) => Field.fromMap(json.decode(str));
+  factory FieldModel.fromJson(String str) => FieldModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Field.fromMap(Map<String, dynamic> json) => new Field(
+  factory FieldModel.fromMap(Map<String, dynamic> json) => new FieldModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -72,7 +72,7 @@ class Field {
     fieldDefaultValue: json["field_default_value"],
     fieldType: json["field_type"],
     fieldPlaceholder: json["field_placeholder"],
-    fieldOptions: json["field_options"] != null ? new List<FieldOption>.from(json["field_options"].map((x) => FieldOption.fromMap(x))) : null,
+    fieldOptions: json["field_options"] != null ? new List<FieldOptionModel>.from(json["field_options"].map((x) => FieldOptionModel.fromMap(x))) : null,
     fieldCollection: json["field_collection"],
     fieldRequired: json["field_required"],
     fieldWidth: json["field_width"],
@@ -97,7 +97,7 @@ class Field {
     "field_default_value": fieldDefaultValue,
     "field_type": fieldType,
     "field_placeholder": fieldPlaceholder,
-    "field_options": fieldOptions != null ? new List<dynamic>.from(fieldOptions.map((x) => x.toMap())) : null,
+    "field_options": fieldOptions != null ? new List<FieldOptionModel>.from(fieldOptions.map((x) => x.toMap())) : null,
     "field_collection": fieldCollection,
     "field_required": fieldRequired,
     "field_width": fieldWidth,
@@ -105,20 +105,20 @@ class Field {
 }
 
 
-class FieldOption {
+class FieldOptionModel {
   int value;
   String name;
 
-  FieldOption({
+  FieldOptionModel({
     this.value,
     this.name,
   });
 
-  factory FieldOption.fromJson(String str) => FieldOption.fromMap(json.decode(str));
+  factory FieldOptionModel.fromJson(String str) => FieldOptionModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory FieldOption.fromMap(Map<String, dynamic> json) => new FieldOption(
+  factory FieldOptionModel.fromMap(Map<String, dynamic> json) => new FieldOptionModel(
     value: json["value"],
     name: json["name"],
   );

@@ -1,21 +1,21 @@
 import 'dart:convert';
 
-class Auth {
+class AuthModel {
   String accessToken;
   String tokenType;
   int expiresIn;
 
-  Auth({
+  AuthModel({
       this.accessToken,
       this.tokenType,
       this.expiresIn,
   });
   
-  factory Auth.fromJson(String str) => Auth.fromMap(json.decode(str));
+  factory AuthModel.fromJson(String str) => AuthModel.fromMap(json.decode(str));
   
   String toJson() => json.encode(toMap());
 
-  factory Auth.fromMap(Map<String, dynamic> json) => new Auth(
+  factory AuthModel.fromMap(Map<String, dynamic> json) => new AuthModel(
       accessToken: json["access_token"],
       tokenType: json["token_type"],
       expiresIn: json["expires_in"],
