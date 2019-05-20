@@ -34,7 +34,7 @@ class _FormTaskState extends State<FormTask> {
   String token;
   String customer;
   String user;
-  Forms formType;
+  FormsModel formType;
 
 @override
 void initState(){
@@ -211,8 +211,8 @@ void initState(){
   }
   
   getAll()async{
-    Forms forms;
-    Forms formType;
+    FormsModel forms;
+    FormsModel formType;
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
   try{
@@ -220,7 +220,7 @@ void initState(){
     if(getAllFormsResponse.statusCode == 200)
     {
     //  print(getAllFormsResponse.headers['content-type']);
-      forms = Forms.fromJson(getAllFormsResponse.body);
+      forms = FormsModel.fromJson(getAllFormsResponse.body);
       formType = forms;
       for(FormModel form in forms.data){
 
