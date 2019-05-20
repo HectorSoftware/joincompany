@@ -12,6 +12,7 @@ class BlocTaskForm {
   List<String> listStringG = List<String>();
   String typeForm ;
   String validateTypeForm = 'Nota Vacia';
+
   bool pass ;
 
 

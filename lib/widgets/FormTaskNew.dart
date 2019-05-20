@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocTypeTask.dart';
 import 'package:joincompany/blocs/blocFaskForm.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/FormModel.dart' as Form;
 import 'package:joincompany/models/UserDataBase.dart';
@@ -30,18 +32,18 @@ class _FormTaskState extends State<FormTask> {
   String token;
   String customer;
   String user;
-
+  Forms formType;
 
 @override
-void initState() {
+void initState(){
 
+  initFormType();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
   final BlocTaskForm _bloc = new BlocTaskForm(context);
-  getAll();
-
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -170,12 +172,20 @@ void initState() {
                       context: context,
                       builder: (BuildContext context) {
                               return new ListView.builder(
-                               itemCount: 1,
+                               itemCount: formType.data.length,//formType.data.length,
                                 itemBuilder: (context, index){
                                  return ListTile(
-                                   title: Text('Form $index'),
+                                   title: Text('${formType.data[index].name}'),
                                    leading: Icon(Icons.label),
-                                   onTap: (){
+                                   onTap: () async {
+
+                                         var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                         Form.Form form = Form.Form.fromJson(getFormResponse.body);
+                                          print(form.name);
+                                          print(getFormResponse.body);
+                                          Navigator.pop(context);
+
+
 
                                    },
 
@@ -195,29 +205,31 @@ void initState() {
   }
   
   getAll()async{
-  try{
+    Forms forms;
+    Forms formType;
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
-    print(customer);
-    print(token);
+  try{
+
     if(getAllFormsResponse.statusCode == 200)
     {
-      print('=====');
     //  print(getAllFormsResponse.headers['content-type']);
-      Forms forms = Forms.fromJson(getAllFormsResponse.body);
-      print(getAllFormsResponse.body);
+      forms = Forms.fromJson(getAllFormsResponse.body);
+      formType = forms;
       for(Form.Form form in forms.data){
-        print(form.name);
-        print(getAllFormsResponse.body);
+
 
       }
     }
-    print(getAllFormsResponse.statusCode);
   }catch(e, r){
     print(e.toString());
-    print(r);
+  }
+ return formType;
   }
 
+  initFormType()async{
+  print('-----');
+  formType = await getAll();
   }
 
   getElements()async{
@@ -227,7 +239,6 @@ void initState() {
   user = userToken.name;
 
   }
-
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
