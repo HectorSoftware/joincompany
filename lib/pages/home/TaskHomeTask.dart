@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
+
+import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
@@ -19,6 +22,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   @override
   void dispose(){
     super.dispose();
+  }
+
+  bool _checked = false;
+  Widget returnCheckedCheckBox(){
+
   }
 
   @override
@@ -63,30 +71,102 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       stream: bloctasks.outListTaks,
       initialData: <Task>[],
       builder: (context, snapshot){
+
+        var withinCardPadding = 2.0;
+
         if(snapshot.data.isNotEmpty){
           return ListView.builder(
               itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index){
+              itemBuilder: (BuildContext context, int index) {
+                String _date = snapshot.data[index].createdAt;
+                String _title = snapshot.data[index].name;
+                Address _address = snapshot.data[index].address;
+                String voidFieldMessage = "Unknown";
 
-                String texto = snapshot.data[index].createdAt + '  ' + snapshot.data[index].name;
+                var date;
+                var title;
+                var address;
+
+                if (_date == null) {
+                  date = voidFieldMessage;
+                } else {
+                  date = _date;
+                }
+
+                if (_title == null) {
+                  title = voidFieldMessage;
+                } else {
+                   title = _title;
+                }
+
+                if (_address == null) {
+                  address = voidFieldMessage;
+                } else {
+                  if (_address.address == null) {
+                    address = voidFieldMessage;
+                  } else {
+                    address = _address.address;
+                  }
+                }
+
                 if((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[index].createdAt).day)||
                     (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[index].createdAt).month)||
                     (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[index].createdAt).year)){
                   DateTask = snapshot.data[index].createdAt;
-                  String textoFecha = DateTime.parse(snapshot.data[index].createdAt).day.toString() + ' ' + obtenerMes(DateTime.parse(snapshot.data[index].createdAt).day.toString()) + ' ' + DateTime.parse(snapshot.data[index].createdAt).year.toString();
+                  String date = DateTime.parse(snapshot.data[index].createdAt).day.toString() + ' ' + obtenerMes(DateTime.parse(snapshot.data[index].createdAt).day.toString()) + ' ' + DateTime.parse(snapshot.data[index].createdAt).year.toString();
+
+                  var padding = 25.0;
                   return Container(
                     child: Column(
                       children: <Widget>[
                         Container(
-                          color: Colors.blue,
-                          child: Text(textoFecha),
+                          padding: EdgeInsets.only(left: padding, right: padding, top: padding, bottom: padding),
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          color: PrimaryColor,
+                          child: Text(date, style: TextStyle(fontSize:16, color: Colors.white)),
                         ),
-                        Text(texto),
+                        Container(
+
+                        )
                       ],
                     ),
                   );
                 }else{
-                  return Text(texto);
+                  return Container(
+                    child: Column(
+                      children: <Widget>[
+                        Card(
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      child: Column(
+                                        children: <Widget>[
+                                          Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                                          Text(address, style: TextStyle(fontSize: 10)),
+                                          IconButton(icon: Icon(Icons.delete), onPressed: (){}),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  Checkbox(value: false, tristate: false),
+                                  Text(date),
+                                  Container(),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ]
+                    )
+                  );
                 }
               }
           );
