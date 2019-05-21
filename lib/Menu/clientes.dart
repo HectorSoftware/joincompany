@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -140,13 +142,9 @@ class _ClienteState extends State<Cliente> {
           ),
         ],
       ),
-      body: ListView(
+      body: Stack(
         children: <Widget>[
-          clientCard("cliente 1"),
-          clientCard("cliente 2"),
-          clientCard("cliente 3"),
-          clientCard("cliente 4"),
-          clientCard("cliente 5"),
+          ListViewTareas(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -163,5 +161,36 @@ class _ClienteState extends State<Cliente> {
 
       ),
     );
+  }
+
+  ListViewTareas(){
+    CustomersBloc _bloc = new CustomersBloc();
+
+    // ignore: missing_required_param
+    return StreamBuilder<List<CustomerModel>>(
+      stream: _bloc.outCustomers,
+      initialData: <CustomerModel>[],
+      builder: (context, snapshot) {
+      if (snapshot.data.isNotEmpty) {
+        return ListView.builder(
+          itemCount: snapshot.data.length,
+          itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
+                subtitle: Text(snapshot.data[index].code, style: TextStyle(fontSize: 12),),
+                onTap: (){},
+              );
+          }
+        );
+      }else{
+        return new Container(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      }
+    );
+
   }
 }
