@@ -191,7 +191,6 @@ class _SearchAddressState extends State<SearchAddress> {
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
-      print(e.toString());
     }
 
     return placemark;

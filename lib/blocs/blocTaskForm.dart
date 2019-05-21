@@ -23,6 +23,8 @@ class BlocTaskForm {
   bool pass ;
   FormModel form;
   FieldModel camposWidgets;
+  List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
+  List<String> elementDrop = List<String>();
 
 
 
@@ -45,16 +47,17 @@ class BlocTaskForm {
     inListWidget.add(listWidget);
    if(idFormType != null)
      {
-       print('========ENTRANDO AL UPDATE======');
       for(SectionModel v in form.sections)
         {
+          print(form);
           for(FieldModel k in v.fields)
             {
               camposWidgets = k;
-             print(k.toJson());
              switch(k.fieldType){
                case 'Combo':
                  {
+                   optionsElements = k.fieldOptions;
+                   listWidget.add(items.combo(optionsElements));
                  }
                break;
                case 'Text':
@@ -87,7 +90,6 @@ class BlocTaskForm {
         }
       inListWidget.add(listWidget);
      }else{
-     print('id null');
 
    }
 

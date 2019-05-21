@@ -68,7 +68,6 @@ class blocListTask {
             (now.month == DateTime.parse(_listTask[y].createdAt).month)&&
             (now.year == DateTime.parse(_listTask[y].createdAt).year)){
 //          _listTask_ordenar.add(_listTask[y]);
-          print('ENTRE');
         }
       }
       now = now.add(new Duration(days: -1));

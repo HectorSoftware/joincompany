@@ -340,7 +340,6 @@ class _LoginPageState extends State<LoginPage> {
       var loginResponse = await login(email, password, customer);
       AuthModel auth = AuthModel.fromJson(loginResponse.body);
       String authorization = auth.accessToken;
-      print(auth.tokenType);
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -405,11 +404,9 @@ class _LoginPageState extends State<LoginPage> {
 
 
 
-      print("---------------- Fin test. ----------------------------");
+
     }catch(e, s){
-      print("----------------- Error ----------------");
-      print(e.toString());
-      print(s);
+
     }
 
   }
