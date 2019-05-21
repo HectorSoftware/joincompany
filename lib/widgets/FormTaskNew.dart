@@ -122,10 +122,11 @@ void initState(){
                           child: Column(
                             children: <Widget>[
                               Center(child: CircularProgressIndicator()),
+                              Text('awaiting interaction'),
                             ],
                           ),
                         ),
-                        Text('awaiting interaction'),
+
                       ],
                     );
                   }
@@ -182,7 +183,7 @@ void initState(){
                                          _bloc.customer = customer;
                                          _bloc.token = token;
                                          _bloc.form = form;
-                                        getFormResponse.body.split(' ').forEach((word) => print(" " + word));
+                                       // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                          _bloc.updateListWidget(context);
                                           Navigator.pop(context);
 

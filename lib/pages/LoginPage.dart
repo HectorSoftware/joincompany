@@ -229,89 +229,89 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos(String Usr, String pwd, String compy) async {
-
-    Circuleprogress = true;
-    setState(() {
-      Circuleprogress;
-    });
-
-    String companylocal = companyEstable;
-    if(AgregarUser){
-      companylocal = compy;
-    }
-
-    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
-    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
-    });
-    }else{ErrorTextFieldEmail = false;}
-    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
-    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
-    });
-    }else{ErrorTextFieldpsd = false;}
-    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
-    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
-    });
-    }else{ErrorTextFieldcompany = false;}
-
-    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
-      var loginResponse;
-      try{
-        loginResponse = await login(Usr, pwd, companylocal);
-      }catch(e){ }
-
-      if(loginResponse != null){
-        if(loginResponse.statusCode == 401){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 500){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 200){
-
-          AuthModel auth = AuthModel.fromJson(loginResponse.body);
-          if(AgregarUser){
-            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-            int res = await ClientDatabaseProvider.db.saveUser(newuser);
-          }else{
-            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-          }
+//
+//    Circuleprogress = true;
+//    setState(() {
+//      Circuleprogress;
+//    });
+//
+//    String companylocal = companyEstable;
+//    if(AgregarUser){
+//      companylocal = compy;
+//    }
+//
+//    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
+//    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
+//    });
+//    }else{ErrorTextFieldEmail = false;}
+//    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
+//    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
+//    });
+//    }else{ErrorTextFieldpsd = false;}
+//    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
+//    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
+//    });
+//    }else{ErrorTextFieldcompany = false;}
+//
+//    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
+//      var loginResponse;
+//      try{
+//        loginResponse = await login(Usr, pwd, companylocal);
+//      }catch(e){ }
+//
+//      if(loginResponse != null){
+//        if(loginResponse.statusCode == 401){
+//          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+//          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
+//          setState(() {
+//            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+//          });
+//          Circuleprogress = false; setState(() {
+//            Circuleprogress;
+//          });
+//        }
+//        if(loginResponse.statusCode == 500){
+//          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+//          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+//          setState(() {
+//            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+//          });
+//          Circuleprogress = false; setState(() {
+//            Circuleprogress;
+//          });
+//        }
+//        if(loginResponse.statusCode == 200){
+//
+//          AuthModel auth = AuthModel.fromJson(loginResponse.body);
+//          if(AgregarUser){
+//            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+//            int res = await ClientDatabaseProvider.db.saveUser(newuser);
+//          }else{
+//            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+//          }
 
           Navigator.pushReplacementNamed(context, '/vistap');
-        }
-      }else{
-        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-        setState(() {
-          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-        });
-        Circuleprogress = false; setState(() {
-          Circuleprogress;
-        });
-      }
-    }
-
-    /*
-
-    var loginResponse = await login(Usr, pwd, companylocal);
-    if(loginResponse.statusCode == 200){
-      Navigator.pushReplacementNamed(context, '/vistap');
-    }else{
-
-    }*/
+//        }
+//      }else{
+//        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+//        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+//        setState(() {
+//          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+//        });
+//        Circuleprogress = false; setState(() {
+//          Circuleprogress;
+//        });
+//      }
+//    }
+//
+//    /*
+//
+//    var loginResponse = await login(Usr, pwd, companylocal);
+//    if(loginResponse.statusCode == 200){
+//      Navigator.pushReplacementNamed(context, '/vistap');
+//    }else{
+//
+//    }*/
   }
 
   ValidarUsrPrimeraVez() async {

@@ -23,6 +23,7 @@ class BlocTaskForm {
   List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
   List<String> elementDrop = List<String>();
   bool value =false;
+  String defaultValue = ' ';
 
 
   var  _taskFormController   = StreamController<List<dynamic>>();
@@ -40,6 +41,7 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
+    listWidget.clear();
     inListWidget.add(listWidget);
    if(idFormType != null  )
      {
@@ -62,7 +64,7 @@ class BlocTaskForm {
                case 'Text':
                  {
 
-                   listWidget.add(items.label(k.name));
+                   listWidget.add(items.label(defaultValue));
                  }
                  break;
                case 'Textarea':
@@ -78,7 +80,18 @@ class BlocTaskForm {
                  break;
                case 'Date':
                  {
-                   listWidget.add(items.date(context));
+                   listWidget.add(items.date(context,k.name));
+                 }
+                 break;
+               case 'table':
+                 {
+                   optionsElements = k.fieldOptions;
+                   listWidget.add(items.tab(context));
+                 }
+                 break;
+               case 'CanvanSignature':
+                 {
+                   listWidget.add(items.loadingTask(context));
                  }
                  break;
                default:

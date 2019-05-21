@@ -2,27 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/Menu/clientes.dart';
 
-class taskHomePage extends StatefulWidget {
-  _MytaskPageState createState() => _MytaskPageState();
+class TaskHomePage extends StatefulWidget {
+  _MyTaskPageState createState() => _MyTaskPageState();
 }
 
-class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStateMixin{
+class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStateMixin{
   TabController _controller;
-  bool CondicionalTarea = false;
-  bool CondicionalMapa = true;
-  bool CondicionalHome = true;
+  bool conditionalTask = false;
+  bool conditionalMap = true;
+  bool conditionalHome = true;
 
   @override
-  Future initState() {
+  void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
-          () {
-        setState(() {});
+          () {setState((){});
       },
     );
     super.initState();
@@ -33,8 +31,6 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
     _controller.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +68,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       body: getTabBarView(),
     );
   }
+
   TabBar getTabBar(){
     return TabBar(
       indicatorColor : Colors.white,
@@ -99,7 +96,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
     );
   }
 
-  Container TabBarButton(){
+  Container tabBarButton(){
     return Container(
       margin: EdgeInsets.only(top: 0),
       padding: EdgeInsets.only(top: 0),
@@ -112,13 +109,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalTarea? Colors.grey : Colors.white,
+                color: conditionalTask? Colors.grey : Colors.white,
                 child: Text('Tarea'),
                 onPressed: (){
                   setState(() {
-                    CondicionalTarea = false;
-                    CondicionalMapa = true;
-                    CondicionalHome = true;
+                    conditionalTask = false;
+                    conditionalMap = true;
+                    conditionalHome = true;
                   });
                 },
               ),
@@ -131,13 +128,13 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
               height: MediaQuery.of(context).size.height * 0.07,
               child: RaisedButton(
                 elevation: 10,
-                color: CondicionalTarea? Colors.grey : Colors.white,
+                color: conditionalTask? Colors.grey : Colors.white,
                 child: Text('Mapa'),
                 onPressed: (){
                   setState(() {
-                    CondicionalTarea = true;
-                    CondicionalMapa = false;
-                    CondicionalHome = false;
+                    conditionalTask = true;
+                    conditionalMap = false;
+                    conditionalHome = false;
                   });
                 },
               ),

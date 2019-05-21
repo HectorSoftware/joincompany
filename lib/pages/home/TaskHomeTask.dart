@@ -64,6 +64,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       ),
     );
   }
+
   String DateTask = "2019-05-05 20:00:04Z";
   ListViewTareas(){
     blocListTask bloctasks = new blocListTask();

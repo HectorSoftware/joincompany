@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:joincompany/models/Marker.dart';
 import 'package:sentry/sentry.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 
 import '../../main.dart';
 
@@ -15,7 +13,7 @@ class SearchAddress extends StatefulWidget {
 
 /*
 * ANDROID
-* AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
+* https://github.com/alfianlosari/flutter_placez.git
 * IOS
 * AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
 * */
@@ -33,7 +31,7 @@ class _SearchAddressState extends State<SearchAddress> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
 
   @override
-  Future initState() {
+  void initState() {
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -128,8 +126,8 @@ class _SearchAddressState extends State<SearchAddress> {
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-          sendRequest2(value);
-          //sendRequest(value);
+//          sendRequest2(value);
+          sendRequest(value);
         },
         onChanged: (text){
 
@@ -139,6 +137,7 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   List<PlacesSearchResult> places = [];
+
   sendRequest2(String value) async {
     final location = Location(_initialPosition.latitude, _initialPosition.longitude);
     final result = await _places.searchNearbyWithRadius(location, 5000);
@@ -153,8 +152,8 @@ class _SearchAddressState extends State<SearchAddress> {
         }
       });
     } else {
-    }
 
+    }
   }
 
   sendRequest(String intendedLocation) async {
@@ -180,20 +179,19 @@ class _SearchAddressState extends State<SearchAddress> {
         listPlacemark;
       });
     }else{
-      llenadoListaEncontrador = false;
       setState(() {
-        llenadoListaEncontrador;
+        llenadoListaEncontrador = false;
       });
     }
   }
 
   Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
     List<Placemark> placemark ;
+
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
     }
-
 
     return placemark;
   }

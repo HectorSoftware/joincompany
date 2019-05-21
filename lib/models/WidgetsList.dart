@@ -1,13 +1,20 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
-class ListWidgets{
+
+enum Method{
+  CAMERA,
+  GALLERY
+}
+
+class ListWidgets extends StatefulWidget {
 
 
   DateTime _date = new DateTime.now();
@@ -16,6 +23,42 @@ class ListWidgets{
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
+
+  Widget tab(List<FieldOptionModel> data){
+    return SingleChildScrollView(
+      child: Table(
+        columnWidths: {
+          0: FixedColumnWidth(80.0),
+          1: FixedColumnWidth(80.0),
+        },
+        border: TableBorder.all(width: 1.0),
+        children: data.map((item) {
+          return TableRow(
+              children:<Widget>[
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      item.name,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      item.value.toString(),
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                )
+              ]);
+        }).toList(),
+      ),
+    );
+  }
+
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -28,7 +71,7 @@ class ListWidgets{
     );
   }
 
-  Future<Null> selectDate(BuildContext context )async{
+  Future<Null> selectDate(context )async{
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
@@ -36,15 +79,20 @@ class ListWidgets{
         lastDate: new DateTime(2020));
 
   }
-  Widget date(context){
+  Widget date(context, String string){
     //------------------------------DATE--------------------------
     return Padding(
       padding: const EdgeInsets.only(right: 220),
-      child: Center(
-        child: RaisedButton(
-          child: Text('Fecha: ${_date.toString().substring(0,10)}'),
-          onPressed: (){selectDate(context);},
-        ),
+      child: Column(
+        children: <Widget>[
+          Text(string),
+          Center(
+            child: RaisedButton(
+              child: Text(': ${_date.toString().substring(0,10)}'),
+              onPressed: (){selectDate(context);},
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -144,7 +192,7 @@ class ListWidgets{
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-        width: MediaQuery.of(context).size.width/1.2,
+        width: MediaQuery.of(context).size.width * 0.3,
         height: 40,
         padding: EdgeInsets.only(
             top: 4,left: 16, right: 16, bottom: 4
@@ -160,9 +208,11 @@ class ListWidgets{
                   blurRadius: 5
               )
             ]
+
         ),
         child: TextField(
-          keyboardType: TextInputType.numberWithOptions(),
+
+          keyboardType: TextInputType.number,
           maxLines: 1,
           //controller: nameController,
           decoration: InputDecoration(
@@ -175,12 +225,23 @@ class ListWidgets{
     );
   }
 
-  picker() async {
-    File img = await ImagePicker.pickImage(source: ImageSource.camera);
-//    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
-      image = img;
-     // setState(() {});
+  picker(Method m) async {
+    switch(m){
+      case Method.CAMERA:{
+        File img = await ImagePicker.pickImage(source: ImageSource.camera);
+        if (img != null) {
+          image = img;
+          // setState(() {});
+        }
+        break;
+      }
+      case Method.GALLERY:{
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+        if (img != null) {
+          image = img;
+          // setState(() {});
+        }
+      }
     }
   }
 
@@ -195,8 +256,8 @@ class ListWidgets{
           ),
         ),
         RaisedButton(
-          onPressed: picker,
-          child: Text('Seleccione Una Imagen'),
+          onPressed: picker(Method.CAMERA),
+          child: Text('Imagen'),
           color: PrimaryColor,
         )
       ],
@@ -204,7 +265,7 @@ class ListWidgets{
     );
 
   }
-  Widget loadingTask()
+  Widget loadingTask(context)
   {
     return Center(
       child: Column(
@@ -218,25 +279,27 @@ class ListWidgets{
     );
   }
 
+
+  List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null;
-  List<DropdownMenuItem<String>> dropdownMenuItems = new List<DropdownMenuItem<String>>();
   Widget combo(List<FieldOptionModel> elements)
   {
-    for(FieldOptionModel v in elements) dropdownMenuItems.add(
-        new DropdownMenuItem<String>(
-          child: Text(v.name),
-          value: v.name,
-          key: Key(v.value.toString()),
-        )
-    );
+    for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
+
     return  DropdownButton<String>(
       value: dropdownValue,
+      hint: Text("Seleccione"),
       onChanged: (String newValue) {
         setState(() {
-          dropdownValue;
+          dropdownValue = newValue;
         });
       },
-      items: dropdownMenuItems,
+      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 
@@ -274,6 +337,12 @@ class ListWidgets{
             ]
         )
     );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return null;
   }
 }
 
