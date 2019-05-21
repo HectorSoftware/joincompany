@@ -21,10 +21,15 @@ class TaskBloc{
     var hasta = new DateTime.now();
     String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
     String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
+
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, );
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
     int sendStatus = 0;
+
+    print(tasks.total);
+
     for(int i=0; i < tasks.data.length;i++){
       Place marker;
       String valadde = 'N/A';
@@ -37,6 +42,8 @@ class TaskBloc{
       }
     }
     _taskcontroller.add(_listMarker);
+
+
 
 
 

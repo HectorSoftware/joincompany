@@ -21,11 +21,13 @@ class blocListTask {
     var hasta = new DateTime.now();
     var desde = new DateTime.now().add(Duration(days: -15));
     String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
-    String hastadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 23:59:59';
+    String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: hastadesde,endDate:diadesde );
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+
+    print(tasks.total);
 
     bool whilesalir = true;
     while(whilesalir){
