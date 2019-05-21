@@ -126,7 +126,7 @@ class _SearchAddressState extends State<SearchAddress> {
           contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
         ),
         onSubmitted: (value){
-//          sendRequest2(value);
+          //sendRequest2(value);
           sendRequest(value);
         },
         onChanged: (text){

@@ -6,6 +6,7 @@ import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -167,18 +168,20 @@ class _ClienteState extends State<Cliente> {
     CustomersBloc _bloc = new CustomersBloc();
 
     // ignore: missing_required_param
-    return StreamBuilder<List<CustomerModel>>(
+    return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
-      initialData: <CustomerModel>[],
+      initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
       if (snapshot.data.isNotEmpty) {
         return ListView.builder(
           itemCount: snapshot.data.length,
           itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
-                subtitle: Text(snapshot.data[index].code, style: TextStyle(fontSize: 12),),
-                onTap: (){},
+              return Card(
+                child: ListTile(
+                  title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
+                  subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  onTap: (){},
+                ),
               );
           }
         );

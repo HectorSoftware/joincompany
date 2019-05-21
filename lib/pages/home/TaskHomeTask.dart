@@ -8,6 +8,7 @@ import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 import '../../main.dart';
@@ -93,14 +94,24 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                 itemBuilder: (BuildContext context, int index) {
                   int PosicionActual = snapshot.data.length - index - 1;
 
+
+
                   String _date = snapshot.data[PosicionActual].createdAt;
                   String _title = snapshot.data[PosicionActual].name;
                   AddressModel _address = snapshot.data[PosicionActual].address;
-                  String voidFieldMessage = "Desconocido";
+                  String voidFieldMessage = "";
+                  var _customerName = snapshot.data[PosicionActual].customer;
 
                   var date;
                   var title;
                   var address;
+                  var customerName;
+
+                  if(_customerName == null){
+                    customerName = voidFieldMessage;
+                  }else{
+                    customerName = _customerName.name;
+                  }
 
                   if (_date == null) {
                     date = voidFieldMessage;
@@ -120,7 +131,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     if (_address.address == null) {
                       address = voidFieldMessage;
                     } else {
-                      address = _address.address;
+                      address = customerName + ',  ' + _address.address;
                     }
                   }
 
