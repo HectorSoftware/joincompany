@@ -7,6 +7,12 @@ import 'dart:io';
 
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
+
+enum Method{
+  CAMERA,
+  GALLERY
+}
+
 class ListWidgets{
 
 
@@ -174,12 +180,23 @@ class ListWidgets{
     );
   }
 
-  picker() async {
-    File img = await ImagePicker.pickImage(source: ImageSource.camera);
-//    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
-      image = img;
-     // setState(() {});
+  picker(Method m) async {
+    switch(m){
+      case Method.CAMERA:{
+        File img = await ImagePicker.pickImage(source: ImageSource.camera);
+        if (img != null) {
+          image = img;
+          // setState(() {});
+        }
+        break;
+      }
+      case Method.GALLERY:{
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+        if (img != null) {
+          image = img;
+          // setState(() {});
+        }
+      }
     }
   }
 
@@ -194,7 +211,7 @@ class ListWidgets{
           ),
         ),
         RaisedButton(
-          onPressed: picker,
+          onPressed: picker(Method.CAMERA),
           child: Text('Imagen'),
           color: PrimaryColor,
         )

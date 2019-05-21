@@ -63,12 +63,7 @@ class AddContact extends StatelessWidget {
                             showDialog(context: context,
                                 builder: (BuildContext contex){
                                   return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        lw.picker(),
-                                      ],
-                                    ),
+                                    content: lw.uploadImage(context),
                                   );
                                 }
                             );
