@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase userVe;
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : '');
+  final companyController = TextEditingController(text : 'duperu');
   bool TextViewVisible = true;
   bool AgregarUser = true;
   String companyEstable = '';
@@ -75,29 +75,16 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.25,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xff29a0c7),
-                  Color(0xff29a0c7)
-                ],
-              ),
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(90)
-              )
-          ),
+          height: MediaQuery.of(context).size.height * 0.30,
           child: Column(
             children: <Widget>[
               Spacer(),
               Align(
                 alignment: Alignment.center,
-                child: Icon(Icons.person,
-                  size: 90,
-                  color: Colors.black,
-                ),
+                child: Container(
+                  child: Image.asset('assets/images/final-logo.png'),
+                )
+
               ),
             ],
           ),
@@ -230,89 +217,89 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos(String Usr, String pwd, String compy) async {
-//
-//    Circuleprogress = true;
-//    setState(() {
-//      Circuleprogress;
-//    });
-//
-//    String companylocal = companyEstable;
-//    if(AgregarUser){
-//      companylocal = compy;
-//    }
-//
-//    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
-//    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
-//    });
-//    }else{ErrorTextFieldEmail = false;}
-//    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
-//    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
-//    });
-//    }else{ErrorTextFieldpsd = false;}
-//    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
-//    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
-//    });
-//    }else{ErrorTextFieldcompany = false;}
-//
-//    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
-//      var loginResponse;
-//      try{
-//        loginResponse = await login(Usr, pwd, companylocal);
-//      }catch(e){ }
-//
-//      if(loginResponse != null){
-//        if(loginResponse.statusCode == 401){
-//          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-//          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
-//          setState(() {
-//            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-//          });
-//          Circuleprogress = false; setState(() {
-//            Circuleprogress;
-//          });
-//        }
-//        if(loginResponse.statusCode == 500){
-//          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-//          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-//          setState(() {
-//            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-//          });
-//          Circuleprogress = false; setState(() {
-//            Circuleprogress;
-//          });
-//        }
-//        if(loginResponse.statusCode == 200){
-//
-//          AuthModel auth = AuthModel.fromJson(loginResponse.body);
-//          if(AgregarUser){
-//            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-//            int res = await ClientDatabaseProvider.db.saveUser(newuser);
-//          }else{
-//            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-//          }
+
+    Circuleprogress = true;
+    setState(() {
+      Circuleprogress;
+    });
+
+    String companylocal = companyEstable;
+    if(AgregarUser){
+      companylocal = compy;
+    }
+
+    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
+    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
+    });
+    }else{ErrorTextFieldEmail = false;}
+    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
+    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
+    });
+    }else{ErrorTextFieldpsd = false;}
+    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
+    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
+    });
+    }else{ErrorTextFieldcompany = false;}
+
+    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
+      var loginResponse;
+      try{
+        loginResponse = await login(Usr, pwd, companylocal);
+      }catch(e){ }
+
+      if(loginResponse != null){
+        if(loginResponse.statusCode == 401){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+          Circuleprogress = false; setState(() {
+            Circuleprogress;
+          });
+        }
+        if(loginResponse.statusCode == 500){
+          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+          setState(() {
+            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+          });
+          Circuleprogress = false; setState(() {
+            Circuleprogress;
+          });
+        }
+        if(loginResponse.statusCode == 200){
+
+          AuthModel auth = AuthModel.fromJson(loginResponse.body);
+          if(AgregarUser){
+            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+            int res = await ClientDatabaseProvider.db.saveUser(newuser);
+          }else{
+            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+          }
 
           Navigator.pushReplacementNamed(context, '/vistap');
-//        }
-//      }else{
-//        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-//        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-//        setState(() {
-//          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-//        });
-//        Circuleprogress = false; setState(() {
-//          Circuleprogress;
-//        });
-//      }
-//    }
-//
-//    /*
-//
-//    var loginResponse = await login(Usr, pwd, companylocal);
-//    if(loginResponse.statusCode == 200){
-//      Navigator.pushReplacementNamed(context, '/vistap');
-//    }else{
-//
-//    }*/
+        }
+      }else{
+        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false; setState(() {
+          Circuleprogress;
+        });
+      }
+    }
+
+    /*
+
+    var loginResponse = await login(Usr, pwd, companylocal);
+    if(loginResponse.statusCode == 200){
+      Navigator.pushReplacementNamed(context, '/vistap');
+    }else{
+
+    }*/
   }
 
   ValidarUsrPrimeraVez() async {
@@ -374,6 +361,13 @@ class _LoginPageState extends State<LoginPage> {
       // print(customers.data[0].name);
       // print(getAllCustomersResponse.body);
 
+      // Customers With Address
+      // var getAllCustomersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
+      // CustomersWithAddressModel customersWithAddres = CustomersWithAddressModel.fromJson(getAllCustomersWithAddressResponse.body);
+      // print(customersWithAddres.data[0].name);
+      // print(customersWithAddres.data[0].latitude);
+      // print(getAllCustomersWithAddressResponse.body);
+
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);
       // TaskModel task = TaskModel.fromJson(getTaskResponse.body);
@@ -390,9 +384,9 @@ class _LoginPageState extends State<LoginPage> {
       // print(tasks.data[0].responsibleId);
 
       // Form Get
-      // var getFormResponse = await getForm('1', customer, authorization);
+      // var getFormResponse = await getForm('4', customer, authorization);
       // FormModel form = FormModel.fromJson(getFormResponse.body);
-      // print(form.name);
+      // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
 
       // Form All
       // var getAllFormsResponse = await getAllForms(customer, authorization);
@@ -412,9 +406,10 @@ class _LoginPageState extends State<LoginPage> {
       // TaskModel taskCheckOut = TaskModel.fromJson(checkOutTaskResponse.body);
       // print(taskCheckOut.status);
 
-      //print("---------------- Fin test. ----------------------------");
-    }catch(e){
-
+      print("---------------- Fin test. ----------------------------");
+    }catch(error, stackTrace){
+      print(error);
+      print(stackTrace);
     }
 
   }

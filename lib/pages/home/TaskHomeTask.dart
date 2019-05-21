@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   @override
   void initState() {
-    listTaskModellocal = new List<TaskModel>();
     actualizarusuario();
     _getUserLocation();
     super.initState();
@@ -72,84 +70,119 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   String DateTask = "2019-05-05 20:00:04Z";
-  List<TaskModel> listTaskModellocal;
 
   ListViewTareas(){
     blocListTask bloctasks = new blocListTask();
 
-    try{
-      // ignore: cancel_subscriptions
-      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
-      => setState((){
-        listTaskModellocal = newVal;
-      }));
+//    try{
+//      // ignore: cancel_subscriptions
+//      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
+//      => setState((){
+//        //listTaskModellocal = newVal;
+//      }));
+//
+//    }catch(e){ }
 
-    }catch(e){ }
+    return StreamBuilder<List<TaskModel>>(
+        stream: bloctasks.outListTaks,
+        initialData: <TaskModel>[],
+        builder: (context, snapshot) {
+          if (snapshot.data.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  int PosicionActual = snapshot.data.length - index - 1;
 
-    return ListView.builder(
-        itemCount: listTaskModellocal.length,
-        itemBuilder: (BuildContext context, int index) {
+                  String _date = snapshot.data[PosicionActual].createdAt;
+                  String _title = snapshot.data[PosicionActual].name + ' - ' + snapshot.data[PosicionActual].id.toString();
+                  AddressModel _address = snapshot.data[PosicionActual].address;
+                  String voidFieldMessage = "Desconocido";
 
-          int PosicionActual = listTaskModellocal.length - index - 1;
+                  var date;
+                  var title;
+                  var address;
 
-          String _date = listTaskModellocal[PosicionActual].createdAt;
-          String _title = listTaskModellocal[PosicionActual].name;
-          AddressModel _address = listTaskModellocal[PosicionActual].address;
-          String voidFieldMessage = "Desconocido";
+                  if (_date == null) {
+                    date = voidFieldMessage;
+                  } else {
+                    date = _date.substring(10, 16);
+                  }
 
-          var date;
-          var title;
-          var address;
+                  if (_title == null) {
+                    title = voidFieldMessage;
+                  } else {
+                    title = _title;
+                  }
 
-          if (_date == null) {
-            date = voidFieldMessage;
+                  if (_address == null) {
+                    address = voidFieldMessage;
+                  } else {
+                    if (_address.address == null) {
+                      address = voidFieldMessage;
+                    } else {
+                      address = _address.address;
+                    }
+                  }
+
+                  if ((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[PosicionActual].createdAt).day) ||
+                      (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[PosicionActual].createdAt).month) ||
+                      (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[PosicionActual].createdAt).year)) {
+                    DateTask = snapshot.data[PosicionActual].createdAt;
+                    String dateTitulo = DateTime
+                        .parse(snapshot.data[PosicionActual].createdAt)
+                        .day
+                        .toString() + ' de ' + intsToMonths[DateTime
+                        .parse(snapshot.data[PosicionActual].createdAt)
+                        .month
+                        .toString()] + ' ' + DateTime
+                        .parse(snapshot.data[PosicionActual].createdAt)
+                        .year
+                        .toString();
+
+                    var padding = 16.0;
+                    double por = 0.1;
+                    if (MediaQuery
+                        .of(context)
+                        .orientation == Orientation.portrait) {
+                      por = 0.07;
+                    }
+                    return Container(
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.only(left: padding,
+                                right: 0,
+                                top: padding,
+                                bottom: 0),
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
+                            height: MediaQuery
+                                .of(context)
+                                .size
+                                .height * por,
+                            color: PrimaryColor,
+                            child: Text(dateTitulo, style: TextStyle(
+                                fontSize: 16, color: Colors.white)),
+                          ),
+                          ListCard(title, address, date,
+                              snapshot.data[PosicionActual]),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return ListCard(
+                        title, address, date, snapshot.data[PosicionActual]);
+                  }
+                }
+            );
           } else {
-            date = _date.substring(10,16);
-          }
-
-          if (_title == null) {
-            title = voidFieldMessage;
-          } else {
-            title = _title;
-          }
-
-          if (_address == null) {
-            address = voidFieldMessage;
-          } else {
-            if (_address.address == null) {
-              address = voidFieldMessage;
-            } else {
-              address = _address.address;
-            }
-          }
-
-          if((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)||
-              (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)||
-              (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
-            DateTask = listTaskModellocal[PosicionActual].createdAt;
-            String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month.toString()] + ' ' + DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year.toString();
-
-            var padding = 16.0;
-            double por = 0.1;
-            if (MediaQuery.of(context).orientation == Orientation.portrait) {
-              por = 0.07;
-            }
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: padding, right: 0, top: padding, bottom: 0),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * por,
-                    color: PrimaryColor,
-                    child: Text(dateTitulo, style: TextStyle(fontSize:16, color: Colors.white)),
-                  ),
-                  ListCard(title,address,date,listTaskModellocal[PosicionActual]),
-                ],
+            return new Container(
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             );
-          }else{
-            return ListCard(title,address,date,listTaskModellocal[PosicionActual]);
           }
         }
     );
@@ -239,5 +272,3 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     '12': 'Diciembre',
   };
 }
-
-
