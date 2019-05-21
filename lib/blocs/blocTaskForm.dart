@@ -5,9 +5,6 @@ import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:joincompany/models/FormModel.dart';
-
 
 
 class BlocTaskForm {
@@ -25,7 +22,7 @@ class BlocTaskForm {
   FieldModel camposWidgets;
   List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
   List<String> elementDrop = List<String>();
-
+  bool value =false;
 
 
   var  _taskFormController   = StreamController<List<dynamic>>();
@@ -43,15 +40,17 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
-    listWidget.clear();
     inListWidget.add(listWidget);
-   if(idFormType != null)
+   if(idFormType != null  )
      {
       for(SectionModel v in form.sections)
         {
-          print(form);
+       //   print(v.fields.);
           for(FieldModel k in v.fields)
             {
+
+
+
               camposWidgets = k;
              switch(k.fieldType){
                case 'Combo':
@@ -62,11 +61,13 @@ class BlocTaskForm {
                break;
                case 'Text':
                  {
+
                    listWidget.add(items.label(k.name));
                  }
                  break;
                case 'Textarea':
                  {
+
                    listWidget.add(items.textArea(context,k.name));
                  }
                  break;
@@ -90,10 +91,9 @@ class BlocTaskForm {
         }
       inListWidget.add(listWidget);
      }else{
-
+     listWidget.add(items.buildDrawerTouch(context));
+     inListWidget.add(listWidget);
    }
-
-
 
   }
 

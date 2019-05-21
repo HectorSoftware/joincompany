@@ -15,6 +15,7 @@ class ListWidgets{
   File image;
   List<String> elementsNew = List<String>();
   String pivot;
+  List<Offset> _points = <Offset>[];
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -78,7 +79,7 @@ class ListWidgets{
             ),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
-                    Radius.circular(20)
+                    Radius.circular(10)
                 ),
                 color: Colors.white,
                 boxShadow: [
@@ -115,7 +116,7 @@ class ListWidgets{
           ),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
-                  Radius.circular(15)
+                  Radius.circular(10)
               ),
               color: Colors.white,
               boxShadow: [
@@ -150,7 +151,7 @@ class ListWidgets{
         ),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(
-                Radius.circular(15)
+                Radius.circular(10)
             ),
             color: Colors.white,
             boxShadow: [
@@ -195,7 +196,7 @@ class ListWidgets{
         ),
         RaisedButton(
           onPressed: picker,
-          child: Text('Imagen'),
+          child: Text('Seleccione Una Imagen'),
           color: PrimaryColor,
         )
       ],
@@ -216,33 +217,89 @@ class ListWidgets{
       ),
     );
   }
-  String dropdownValue = 'One';
+
+  String dropdownValue = null;
+  List<DropdownMenuItem<String>> dropdownMenuItems = new List<DropdownMenuItem<String>>();
   Widget combo(List<FieldOptionModel> elements)
   {
-    for(FieldOptionModel v in elements){
-
-
-      elementsNew.add(v.name.toString());
-    }
-
+    for(FieldOptionModel v in elements) dropdownMenuItems.add(
+        new DropdownMenuItem<String>(
+          child: Text(v.name),
+          value: v.name,
+          key: Key(v.value.toString()),
+        )
+    );
     return  DropdownButton<String>(
-        value: dropdownValue,
-        onChanged: (String newValue) {
-      setState(() {
-        dropdownValue = newValue;
-      });
-    },
-    items: <String>['One', 'Two', 'Free', 'Four']
-      .map<DropdownMenuItem<String>>((String value) {
-  return DropdownMenuItem<String>(
-  value: value,
-  child: Text(value),
-  );
-  })
-    .toList(),
+      value: dropdownValue,
+      onChanged: (String newValue) {
+        setState(() {
+          dropdownValue;
+        });
+      },
+      items: dropdownMenuItems,
     );
   }
 
-  void setState(Null Function() param0) {}
+
+
+  Widget buildDrawerTouch(context)
+  {
+    return  Container(
+      child: new GestureDetector(
+        onPanUpdate: (DragUpdateDetails details) {
+          setState(() {
+            RenderBox object = context.findRenderObject();
+            Offset _localPosition =
+            object.globalToLocal(details.globalPosition);
+            _points = new List.from(_points)..add(_localPosition);
+          });
+        },
+        onPanEnd: (DragEndDetails details) => _points.add(null),
+        child: new CustomPaint(
+          painter: new Signature(points: _points),
+          size: Size(80.0, 80.0)
+        ),
+      ),
+    );
+  }
+
+   drawerTouch(context)async{
+    await showDialog(
+        context: context,
+        // ignore: deprecated_member_use
+        child: SimpleDialog(
+            title: Text('Firma del Usuario'),
+            children: <Widget>[
+                buildDrawerTouch(context),
+            ]
+        )
+    );
+  }
 }
 
+void setState(Null Function() param0) {
+}
+
+
+class Signature extends CustomPainter {
+  List<Offset> points;
+
+  Signature({this.points});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = new Paint()
+      ..color = Colors.blue
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 10.0;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      if (points[i] != null && points[i + 1] != null) {
+        canvas.drawLine(points[i], points[i + 1], paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
+}

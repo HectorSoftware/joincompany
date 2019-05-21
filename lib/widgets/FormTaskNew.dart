@@ -131,9 +131,7 @@ void initState(){
                   }
                 case ConnectionState.active:
                   {
-
                     final data = snapshot.data;
-
                     return  ListView.builder(
                         itemCount: data.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -143,14 +141,10 @@ void initState(){
                         }
                     ) ;
                   }
-
-              // return Text('Stream has started but not finished  ${snapshot.data.length}');
                 case ConnectionState.done:
                   return Text('Stream has finished');
               }
             }
-
-
         ),
           ],
         ),
@@ -188,6 +182,7 @@ void initState(){
                                          _bloc.customer = customer;
                                          _bloc.token = token;
                                          _bloc.form = form;
+                                        getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                          _bloc.updateListWidget(context);
                                           Navigator.pop(context);
 
