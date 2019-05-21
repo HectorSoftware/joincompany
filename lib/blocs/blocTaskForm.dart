@@ -45,13 +45,11 @@ class BlocTaskForm {
     inListWidget.add(listWidget);
    if(idFormType != null)
      {
-       print('========ENTRANDO AL UPDATE======');
       for(SectionModel v in form.sections)
         {
           for(FieldModel k in v.fields)
             {
               camposWidgets = k;
-             print(k.toJson());
              switch(k.fieldType){
                case 'Combo':
                  {
@@ -87,7 +85,6 @@ class BlocTaskForm {
         }
       inListWidget.add(listWidget);
      }else{
-     print('id null');
 
    }
 

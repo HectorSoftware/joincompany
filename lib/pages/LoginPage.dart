@@ -214,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                //ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                testApi();
               },
               child: Center(
                   child: Center(
@@ -340,7 +341,6 @@ class _LoginPageState extends State<LoginPage> {
       var loginResponse = await login(email, password, customer);
       AuthModel auth = AuthModel.fromJson(loginResponse.body);
       String authorization = auth.accessToken;
-      print(auth.tokenType);
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -399,16 +399,22 @@ class _LoginPageState extends State<LoginPage> {
       // FormsModel forms = FormsModel.fromJson(getAllFormsResponse.body);
       // print(forms.data[1].name);
 
+      // CheckIn Task
+      //lat -12.0949443
+      //long -76.8862068
+      // var checkInTaskResponse = await checkInTask('2527', customer, authorization, '-12.0949443', '-76.8862068', '', date: '2019-05-09 08:30:00');
+      // TaskModel taskCheckIn = TaskModel.fromJson(checkInTaskResponse.body);
+      // print(taskCheckIn.status);
 
 
-
-
-
+      // CheckOut Task
+      // var checkOutTaskResponse = await checkOutTask('2527', customer, authorization, '-12.0949443', '-76.8862068', '');
+      // TaskModel taskCheckOut = TaskModel.fromJson(checkOutTaskResponse.body);
+      // print(taskCheckOut.status);
 
       print("---------------- Fin test. ----------------------------");
     }catch(e, s){
-      print("----------------- Error ----------------");
-      print(e.toString());
+      print(e);
       print(s);
     }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/TaskModel.dart';
@@ -57,4 +59,44 @@ Future<http.Response> updateTask(String id, TaskModel taskObj, String customer, 
 Future<http.Response> deleteTask(String id, String customer, String authorization) async{
   
   return await httpDelete(id, customer, authorization, resourcePath);
+}
+
+Future<http.Response> checkInTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async{
+  
+  String path = resourcePath + '/$id/checkin';
+
+  var params = {
+    "task_id": id,
+    "latitude": latitude,
+    "longitude": longitude,
+    "distance": distance,
+  };
+
+  if (date != null && date!=''){
+    params["date"]=date;
+  }
+
+  String bodyjson = jsonEncode(params);
+
+  return await httpPost(bodyjson, customer, authorization, path);
+}
+
+Future<http.Response> checkOutTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async{
+  
+  String path = resourcePath + '/$id/checkout';
+
+  var params = {
+    "task_id": id,
+    "latitude": latitude,
+    "longitude": longitude,
+    "distance": distance,
+  };
+
+  if (date != null && date!=''){
+    params["date"]=date;
+  }
+
+  String bodyjson = jsonEncode(params);
+
+  return await httpPost(bodyjson, customer, authorization, path);
 }
