@@ -152,7 +152,7 @@ class _ListWidgetsState extends State<ListWidgets> {
         );
   }
 
-  Widget input(context,placeholder){
+  Widget text(context,placeholder){
     //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),

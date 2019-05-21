@@ -62,7 +62,7 @@ class BlocTaskForm {
                case 'Text':
                  {
 
-                   listWidget.add(items.createState().label(defaultValue));
+                   listWidget.add(items.createState().text(context,k.name));
                  }
                  break;
                case 'Textarea':
@@ -94,7 +94,7 @@ class BlocTaskForm {
                  break;
                default:
                  {
-
+                  listWidget.add(items.createState().loadingTask(context));
                  }
                  break;
              }
