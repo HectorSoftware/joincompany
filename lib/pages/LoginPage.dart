@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase userVe;
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : '');
+  final companyController = TextEditingController(text : 'duperu');
   bool TextViewVisible = true;
   bool AgregarUser = true;
   String companyEstable = '';
@@ -75,29 +75,16 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.25,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xff29a0c7),
-                  Color(0xff29a0c7)
-                ],
-              ),
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(90)
-              )
-          ),
+          height: MediaQuery.of(context).size.height * 0.30,
           child: Column(
             children: <Widget>[
               Spacer(),
               Align(
                 alignment: Alignment.center,
-                child: Icon(Icons.person,
-                  size: 90,
-                  color: Colors.black,
-                ),
+                child: Container(
+                  child: Image.asset('assets/images/final-logo.png'),
+                ) 
+                  
               ),
             ],
           ),

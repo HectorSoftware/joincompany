@@ -27,8 +27,6 @@ class blocListTask {
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
-    print(tasks.total);
-
     bool whilesalir = true;
     while(whilesalir){
       for(int i = 0; i < tasks.data.length; i++ ){
