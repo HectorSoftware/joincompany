@@ -13,8 +13,15 @@ enum Method{
   CAMERA,
   GALLERY
 }
-
 class ListWidgets extends StatefulWidget {
+
+
+  @override
+  _ListWidgetsState createState() => new _ListWidgetsState();
+
+}
+
+class _ListWidgetsState extends State<ListWidgets> {
 
 
   DateTime _date = new DateTime.now();
@@ -71,7 +78,7 @@ class ListWidgets extends StatefulWidget {
     );
   }
 
-  Future<Null> selectDate(context )async{
+  Future<Null> selectDate( context )async{
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
@@ -83,16 +90,20 @@ class ListWidgets extends StatefulWidget {
     //------------------------------DATE--------------------------
     return Padding(
       padding: const EdgeInsets.only(right: 220),
-      child: Column(
-        children: <Widget>[
-          Text(string),
-          Center(
-            child: RaisedButton(
-              child: Text(': ${_date.toString().substring(0,10)}'),
-              onPressed: (){selectDate(context);},
+      child: Center(
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(string),
             ),
-          ),
-        ],
+            Center(
+              child: RaisedButton(
+                child: Text(': ${_date.toString().substring(0,10)}'),
+                onPressed: (){selectDate(context);},
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -303,11 +314,9 @@ class ListWidgets extends StatefulWidget {
     );
   }
 
-
-
-  Widget buildDrawerTouch(context)
-  {
-    return  Container(
+Widget tocuh(context){
+  return new Scaffold(
+    body: new Container(
       child: new GestureDetector(
         onPanUpdate: (DragUpdateDetails details) {
           setState(() {
@@ -320,33 +329,20 @@ class ListWidgets extends StatefulWidget {
         onPanEnd: (DragEndDetails details) => _points.add(null),
         child: new CustomPaint(
           painter: new Signature(points: _points),
-          size: Size(80.0, 80.0)
+          size: Size.infinite,
         ),
       ),
-    );
-  }
-
-   drawerTouch(context)async{
-    await showDialog(
-        context: context,
-        // ignore: deprecated_member_use
-        child: SimpleDialog(
-            title: Text('Firma del Usuario'),
-            children: <Widget>[
-                buildDrawerTouch(context),
-            ]
-        )
-    );
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return null;
-  }
+    ),
+    floatingActionButton: new FloatingActionButton(
+      child: new Icon(Icons.clear),
+      onPressed: () => _points.clear(),
+    ),
+  );
 }
 
-void setState(Null Function() param0) {
+
+
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 
@@ -372,3 +368,6 @@ class Signature extends CustomPainter {
   @override
   bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
 }
+
+
+

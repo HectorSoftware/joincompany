@@ -16,7 +16,7 @@ class BlocTaskForm {
   String validateTypeForm = '';
   String token;
   String customer;
-  String idFormType;
+  var idFormType;
   bool pass ;
   FormModel form;
   FieldModel camposWidgets;
@@ -41,9 +41,12 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
+    print('-------------------------');
+    print(idFormType);
+    print(value);
     listWidget.clear();
     inListWidget.add(listWidget);
-   if(idFormType != null  )
+   if(idFormType != null)
      {
       for(SectionModel v in form.sections)
         {
@@ -58,40 +61,40 @@ class BlocTaskForm {
                case 'Combo':
                  {
                    optionsElements = k.fieldOptions;
-                   listWidget.add(items.combo(optionsElements));
+                   listWidget.add(items.createState().combo(optionsElements));
                  }
                break;
                case 'Text':
                  {
 
-                   listWidget.add(items.label(defaultValue));
+                   listWidget.add(items.createState().label(defaultValue));
                  }
                  break;
                case 'Textarea':
                  {
 
-                   listWidget.add(items.textArea(context,k.name));
+                   listWidget.add(items.createState().textArea(context,k.name));
                  }
                  break;
                case 'Number':
                  {
-                   listWidget.add(items.number(context, k.name));
+                   listWidget.add(items.createState().number(context, k.name));
                  }
                  break;
                case 'Date':
                  {
-                   listWidget.add(items.date(context,k.name));
+                   listWidget.add(items.createState().date(context,k.name));
                  }
                  break;
                case 'table':
                  {
                    optionsElements = k.fieldOptions;
-                   listWidget.add(items.tab(context));
+                   listWidget.add(items.createState().tab(context));
                  }
                  break;
                case 'CanvanSignature':
                  {
-                   listWidget.add(items.loadingTask(context));
+                   listWidget.add(items.createState().loadingTask(context));
                  }
                  break;
                default:
@@ -104,8 +107,6 @@ class BlocTaskForm {
         }
       inListWidget.add(listWidget);
      }else{
-     listWidget.add(items.buildDrawerTouch(context));
-     inListWidget.add(listWidget);
    }
 
   }

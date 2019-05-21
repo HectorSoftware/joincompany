@@ -82,7 +82,7 @@ class AddContact extends StatelessWidget {
                             showDialog(context: context,
                                 builder: (BuildContext contex){
                                   return AlertDialog(
-                                    content: lw.tab(ls),
+                                    content: lw.createState().tab(ls),
                                   );
                                 }
                             );

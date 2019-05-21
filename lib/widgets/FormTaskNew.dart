@@ -183,6 +183,7 @@ void initState(){
                                          _bloc.customer = customer;
                                          _bloc.token = token;
                                          _bloc.form = form;
+                                         _bloc.value = true;
                                        // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                          _bloc.updateListWidget(context);
                                           Navigator.pop(context);
