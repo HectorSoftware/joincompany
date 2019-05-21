@@ -23,6 +23,8 @@ class BlocTaskForm {
   bool pass ;
   FormModel form;
   FieldModel camposWidgets;
+  List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
+  List<String> elementDrop = List<String>();
 
 
 
@@ -47,12 +49,15 @@ class BlocTaskForm {
      {
       for(SectionModel v in form.sections)
         {
+          print(form);
           for(FieldModel k in v.fields)
             {
               camposWidgets = k;
              switch(k.fieldType){
                case 'Combo':
                  {
+                   optionsElements = k.fieldOptions;
+                   listWidget.add(items.combo(optionsElements));
                  }
                break;
                case 'Text':

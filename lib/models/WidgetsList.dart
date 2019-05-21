@@ -6,13 +6,15 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FieldModel.dart';
 class ListWidgets{
 
 
   DateTime _date = new DateTime.now();
   TimeOfDay _time = new TimeOfDay.now();
   File image;
-
+  List<String> elementsNew = List<String>();
+  String pivot;
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -173,7 +175,7 @@ class ListWidgets{
   }
 
   picker() async {
-    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
 //    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
       image = img;
@@ -214,5 +216,33 @@ class ListWidgets{
       ),
     );
   }
+  String dropdownValue = 'One';
+  Widget combo(List<FieldOptionModel> elements)
+  {
+    for(FieldOptionModel v in elements){
+
+
+      elementsNew.add(v.name.toString());
+    }
+
+    return  DropdownButton<String>(
+        value: dropdownValue,
+        onChanged: (String newValue) {
+      setState(() {
+        dropdownValue = newValue;
+      });
+    },
+    items: <String>['One', 'Two', 'Free', 'Four']
+      .map<DropdownMenuItem<String>>((String value) {
+  return DropdownMenuItem<String>(
+  value: value,
+  child: Text(value),
+  );
+  })
+    .toList(),
+    );
+  }
+
+  void setState(Null Function() param0) {}
 }
 
