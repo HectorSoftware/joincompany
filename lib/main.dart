@@ -13,7 +13,7 @@ void main() async {
 
 const PrimaryColor = const Color(0xff29a0c7);
 const SecondaryColor = const Color(0xff29a0c7);
-const hostApi = 'https://webapp.getkem.com';
+const hostApi = 'webapp.getkem.com';
 const versionApi = '/api/v1';
 const kGoogleApiKey = "AIzaSyDCs8ksRMNY73LlWa_VEyLzzDS24qKaaMw";
 

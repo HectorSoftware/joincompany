@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 class ContactView extends StatefulWidget {
   @override
   _ContactViewState createState() => _ContactViewState();
 }
 
 class _ContactViewState extends State<ContactView> {
-  Future<List<String>> data(){ //TODO
+  Future<List<CustomersModel>> data(){ //TODO
+    //CustomerService.getAllCustomers();
     return null;
   }
 

@@ -86,7 +86,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   TabBarView getTabBarView(){
     return TabBarView(
       children: <Widget>[
-        TaskHomeTask(),
+        taskHomeTask(),
         taskHomeMap(),
       ],
       controller: _controller,

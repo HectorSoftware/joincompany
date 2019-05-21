@@ -5,7 +5,7 @@ import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 
-class Task {
+class TaskModel {
  int id;
  String createdAt;
  String updatedAt;
@@ -28,14 +28,14 @@ class Task {
  double checkoutLongitude;
  int checkoutDistance;
  String status;
- List<CustomSection> customSections;
- List<CustomValue> customValues;
- Form form;
- Address address;
- Customer customer;
- Responsible responsible;
+ List<CustomSectionModel> customSections;
+ List<CustomValueModel> customValues;
+ FormModel form;
+ AddressModel address;
+ CustomerModel customer;
+ ResponsibleModel responsible;
 
- Task({
+ TaskModel({
    this.id,
    this.createdAt,
    this.updatedAt,
@@ -66,11 +66,11 @@ class Task {
    this.responsible,
  });
 
- factory Task.fromJson(String str) => Task.fromMap(json.decode(str));
+ factory TaskModel.fromJson(String str) => TaskModel.fromMap(json.decode(str));
 
  String toJson() => json.encode(toMap());
 
- factory Task.fromMap(Map<String, dynamic> json) => new Task(
+ factory TaskModel.fromMap(Map<String, dynamic> json) => new TaskModel(
    id: json["id"],
    createdAt: json["created_at"],
    updatedAt: json["updated_at"],
@@ -93,12 +93,12 @@ class Task {
    checkoutLongitude: json['checkout_longitude'] != null ? json["checkout_longitude"].toDouble() : null,
    checkoutDistance: json["checkout_distance"],
    status: json["status"],
-   customSections: json['custom_sections'] != null ? new List<CustomSection>.from(json["custom_sections"].map((x) => CustomSection.fromMap(x))) : null,
-   customValues: json['custom_values'] != null ? new List<CustomValue>.from(json["custom_values"].map((x) => CustomValue.fromMap(x))) : null,
-   form: json['form'] != null ? Form.fromMap(json["form"]) : null,
-   address: json['address'] != null ? Address.fromMap(json["address"]) : null,
-   customer: json['customer'] != null ? Customer.fromMap(json["customer"]) : null,
-   responsible: json['responsible'] != null ? Responsible.fromMap(json["responsible"]) : null,
+   customSections: json['custom_sections'] != null ? new List<CustomSectionModel>.from(json["custom_sections"].map((x) => CustomSectionModel.fromMap(x))) : null,
+   customValues: json['custom_values'] != null ? new List<CustomValueModel>.from(json["custom_values"].map((x) => CustomValueModel.fromMap(x))) : null,
+   form: json['form'] != null ? FormModel.fromMap(json["form"]) : null,
+   address: json['address'] != null ? AddressModel.fromMap(json["address"]) : null,
+   customer: json['customer'] != null ? CustomerModel.fromMap(json["customer"]) : null,
+   responsible: json['responsible'] != null ? ResponsibleModel.fromMap(json["responsible"]) : null,
  );
 
  Map<String, dynamic> toMap() => {
@@ -124,8 +124,8 @@ class Task {
    "checkout_longitude": checkoutLongitude,
    "checkout_distance": checkoutDistance,
    "status": status,
-   "custom_sections": customSections != null ? new List<CustomSection>.from(customSections.map((x) => x.toMap())) : null,
-   "custom_values": customValues != null ? new List<CustomValue>.from(customValues.map((x) => x.toMap())) : null,
+   "custom_sections": customSections != null ? new List<CustomSectionModel>.from(customSections.map((x) => x.toMap())) : null,
+   "custom_values": customValues != null ? new List<CustomValueModel>.from(customValues.map((x) => x.toMap())) : null,
    "form": form != null ? form.toMap() : null,
    "address": address != null ? address.toMap() : null,
    "customer": customer != null ? customer.toMap() : null,
@@ -133,7 +133,7 @@ class Task {
  };
 }
 
-class CustomSection {
+class CustomSectionModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -148,9 +148,9 @@ class CustomSection {
   String code;
   String subtitle;
   String position;
-  List<Field> fields;
+  List<FieldModel> fields;
 
-  CustomSection({
+  CustomSectionModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -168,11 +168,11 @@ class CustomSection {
     this.fields,
   });
 
-  factory CustomSection.fromJson(String str) => CustomSection.fromMap(json.decode(str));
+  factory CustomSectionModel.fromJson(String str) => CustomSectionModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory CustomSection.fromMap(Map<String, dynamic> json) => new CustomSection(
+  factory CustomSectionModel.fromMap(Map<String, dynamic> json) => new CustomSectionModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -187,7 +187,7 @@ class CustomSection {
     code: json["code"],
     subtitle: json["subtitle"],
     position: json["position"],
-    fields: json["fields"] != null ? new List<Field>.from(json["fields"].map((x) => Field.fromMap(x))) : null,
+    fields: json["fields"] != null ? new List<FieldModel>.from(json["fields"].map((x) => FieldModel.fromMap(x))) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -205,11 +205,11 @@ class CustomSection {
     "code": code,
     "subtitle": subtitle,
     "position": position,
-    "fields": fields != null ? new List<Field>.from(fields.map((x) => x.toMap())) : null,
+    "fields": fields != null ? new List<FieldModel>.from(fields.map((x) => x.toMap())) : null,
   };
 }
 
-class CustomValue {
+class CustomValueModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -220,9 +220,9 @@ class CustomValue {
   int customizableId;
   String value;
   String imageBase64;
-  Field field;
+  FieldModel field;
 
-  CustomValue({
+  CustomValueModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -236,11 +236,11 @@ class CustomValue {
     this.field,
   });
 
-  factory CustomValue.fromJson(String str) => CustomValue.fromMap(json.decode(str));
+  factory CustomValueModel.fromJson(String str) => CustomValueModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory CustomValue.fromMap(Map<String, dynamic> json) => new CustomValue(
+  factory CustomValueModel.fromMap(Map<String, dynamic> json) => new CustomValueModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -251,7 +251,7 @@ class CustomValue {
     customizableId: json["customizable_id"],
     value: json["value"],
     imageBase64: json["image_base64"],
-    field: json['field'] != null ? Field.fromMap(json["field"]) : null,
+    field: json['field'] != null ? FieldModel.fromMap(json["field"]) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -269,7 +269,7 @@ class CustomValue {
   };
 }
 
-class Responsible {
+class ResponsibleModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -286,9 +286,9 @@ class Responsible {
   String title;
   String details;
   String profile;
-  Responsible supervisor;
+  ResponsibleModel supervisor;
 
-  Responsible({
+  ResponsibleModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -308,11 +308,11 @@ class Responsible {
     this.supervisor,
   });
 
-  factory Responsible.fromJson(String str) => Responsible.fromMap(json.decode(str));
+  factory ResponsibleModel.fromJson(String str) => ResponsibleModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Responsible.fromMap(Map<String, dynamic> json) => new Responsible(
+  factory ResponsibleModel.fromMap(Map<String, dynamic> json) => new ResponsibleModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
@@ -329,7 +329,7 @@ class Responsible {
     title: json["title"],
     details: json["details"],
     profile: json["profile"],
-    supervisor: json["supervisor"] != null ? Responsible.fromMap(json["supervisor"]) : null,
+    supervisor: json["supervisor"] != null ? ResponsibleModel.fromMap(json["supervisor"]) : null,
   );
 
   Map<String, dynamic> toMap() => {

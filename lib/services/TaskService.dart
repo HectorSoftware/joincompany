@@ -1,84 +1,60 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/main.dart';
+import 'package:joincompany/services/BaseService.dart';
 
-String finalPath = '/tasks';
-String url = hostApi + versionApi + finalPath;
+String resourcePath = '/tasks';
 
-Future<http.Response> getAllTasks(String customer, String authorization) async{
-  final response = await http.get('$url',
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
-  return response;
+Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String urlPage} ) async{
+  
+  var params = new Map<String, String>();
+
+  if (beginDate != null && beginDate!=''){
+    params["begin_date"]=beginDate;
+  }
+
+  if (endDate != null && endDate!=''){
+    params["end_date"]=endDate;
+  }
+
+  if (supervisorId != null && supervisorId!=''){
+    params["supervisor_id"]=supervisorId;
+  }
+  if (responsibleId != null && responsibleId!=''){
+    params["responsible_id"]=responsibleId;
+  }
+
+  if (formId != null && formId!=''){
+    params["form_id"]=formId;
+  }
+
+  if (perPage != null && perPage!=''){
+    params["per_page"]=perPage;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
 }
 
 Future<http.Response> getTask(String id, String customer, String authorization) async{
-  final response = await http.get('$url/$id',
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
-  return response;
+
+  return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-// Future<http.Response> createCustomer(Customer customerObj, String customer, String authorization) async{
-//   final response = await http.post('$url',
-//     headers: {
-//       'customer': customer,
-//       'Authorization': 'Bearer $authorization',
-//       'Content-Type' : 'application/json',
-//     },
-//   body: customerObj.toJson()
-//   );
-//   return response;
-// }
+Future<http.Response> createTask(TaskModel taskObj, String customer, String authorization) async{
+  
+  var bodyJson = taskObj.toJson();
 
-// Future<http.Response> updateCustomer(String id, Customer customerObj, String customer, String authorization) async{
-//   final response = await http.put('$url/$id',
-//     headers: {
-//       'customer': customer,
-//       'Authorization': 'Bearer $authorization',
-//       'Content-Type' : 'application/json',
-//     },
-//    body: customerObj.toJson()
-//   );
-//   return response;
-// }
-
-/*
-Future<http.Response> delteCustomer(String id, String customer, String authorization) async{
-  final response = await http.delete('$url/$id',
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
-  return response;
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
-*/
 
+Future<http.Response> updateTask(String id, TaskModel taskObj, String customer, String authorization) async{
+  
+  var bodyJson = taskObj.toJson();
 
-                        //LLAMAR CLIENTE
-                         /*var b =   await  getCustomer('2',empresa,tokken);
-                         print(b.body);
-                         Customer c = customerFromJson(b.body);
-                         //TODOS LOS CLIENTES
-                         var muchosresponse = await getAllCustomers(empresa,tokken);
-                         Customers muchos = customersFromJson(muchosresponse.body);
-                         //ACTUALIZAR CLIENTES
-                         c.name += '   rn';
-                         var actualizarRespose = await updateCustomer(c.id.toString(), c,empresa, tokken);
-                         print(actualizarRespose.statusCode);
-                         muchos = customersFromJson(muchosresponse.body);
-                         print(muchos.data[1].name);
-                         //CREAR NUEVO
-                         Customer nuevo = Customer(id: null, name: 'cl',code: '456',contactName: 'kn',createdAt: 'jn',createdById: null,deletedAt: 'p',deletedById: null,details: 'juhoji', email: '@g',phone: '5464', pivot: null, updatedAt: 'npk',updatedById: null);
-                         var nuevoResponse = await createCustomer(nuevo,empresa,tokken);
-                         print(nuevoResponse.statusCode);*/
+  return await httpPut(id, bodyJson, customer, authorization, resourcePath);
+}
 
-
+Future<http.Response> deleteTask(String id, String customer, String authorization) async{
+  
+  return await httpDelete(id, customer, authorization, resourcePath);
+}

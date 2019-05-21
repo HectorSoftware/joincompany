@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocTypeTask.dart';
-import 'package:joincompany/blocs/blocFaskForm.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/FormModel.dart' as Form;
+import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'dart:async';
 import 'package:joincompany/models/WidgetsList.dart';
@@ -13,6 +13,8 @@ import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
+
+
 class FormTask extends StatefulWidget {
   
 
@@ -32,7 +34,7 @@ class _FormTaskState extends State<FormTask> {
   String token;
   String customer;
   String user;
-  Forms formType;
+  FormsModel formType;
 
 @override
 void initState(){
@@ -175,14 +177,18 @@ void initState(){
                                itemCount: formType.data.length,//formType.data.length,
                                 itemBuilder: (context, index){
                                  return ListTile(
+
                                    title: Text('${formType.data[index].name}'),
                                    leading: Icon(Icons.label),
                                    onTap: () async {
 
                                          var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                         Form.Form form = Form.Form.fromJson(getFormResponse.body);
-                                          print(form.name);
-                                          print(getFormResponse.body);
+                                         FormModel form = FormModel.fromJson(getFormResponse.body);
+                                         _bloc.idFormType = formType.data[index].id.toString();
+                                         _bloc.customer = customer;
+                                         _bloc.token = token;
+                                         _bloc.form = form;
+                                         _bloc.updateListWidget(context);
                                           Navigator.pop(context);
 
 
@@ -205,8 +211,8 @@ void initState(){
   }
   
   getAll()async{
-    Forms forms;
-    Forms formType;
+    FormsModel forms;
+    FormsModel formType;
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
   try{
@@ -214,21 +220,20 @@ void initState(){
     if(getAllFormsResponse.statusCode == 200)
     {
     //  print(getAllFormsResponse.headers['content-type']);
-      forms = Forms.fromJson(getAllFormsResponse.body);
+      forms = FormsModel.fromJson(getAllFormsResponse.body);
       formType = forms;
-      for(Form.Form form in forms.data){
+      for(FormModel form in forms.data){
 
 
       }
     }
   }catch(e, r){
-    print(e.toString());
+
   }
  return formType;
   }
 
   initFormType()async{
-  print('-----');
   formType = await getAll();
   }
 

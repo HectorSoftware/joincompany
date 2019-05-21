@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 
 class AddContact extends StatelessWidget {
-
+  ListWidgets lw = ListWidgets();
   final String a = "";//TODO: data contact, Object of Model Contacts
 
   Widget customTextField(String title,String savedData,int maxLines,bool isRequered){
@@ -65,7 +66,7 @@ class AddContact extends StatelessWidget {
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        Text("SAVED"),//TODO
+                                        lw.picker(),
                                       ],
                                     ),
                                   );

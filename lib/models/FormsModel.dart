@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:joincompany/models/FormModel.dart';
 
-class Forms {
+class FormsModel {
   int currentPage;
-  List<Form> data;
+  List<FormModel> data;
   String firstPageUrl;
   int from;
   int lastPage;
@@ -16,7 +16,7 @@ class Forms {
   int to;
   int total;
 
-  Forms({
+  FormsModel({
     this.currentPage,
     this.data,
     this.firstPageUrl,
@@ -31,13 +31,13 @@ class Forms {
     this.total,
   });
 
-  factory Forms.fromJson(String str) => Forms.fromMap(json.decode(str));
+  factory FormsModel.fromJson(String str) => FormsModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Forms.fromMap(Map<String, dynamic> json) => new Forms(
+  factory FormsModel.fromMap(Map<String, dynamic> json) => new FormsModel(
     currentPage: json["current_page"],
-    data: json["data"] != null ? new List<Form>.from(json["data"].map((x) => Form.fromMap(x))) : null,
+    data: json["data"] != null ? new List<FormModel>.from(json["data"].map((x) => FormModel.fromMap(x))) : null,
     firstPageUrl: json["first_page_url"],
     from: json["from"],
     lastPage: json["last_page"],
@@ -52,7 +52,7 @@ class Forms {
 
   Map<String, dynamic> toMap() => {
     "current_page": currentPage,
-    "data": data != null ? new List<Form>.from(data.map((x) => x.toMap())) : null,
+    "data": data != null ? new List<FormModel>.from(data.map((x) => x.toMap())) : null,
     "first_page_url": firstPageUrl,
     "from": from,
     "last_page": lastPage,

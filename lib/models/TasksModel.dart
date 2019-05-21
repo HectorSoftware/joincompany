@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:joincompany/models/TaskModel.dart';
 
-class Tasks {
+class TasksModel {
   int currentPage;
-  List<Task> data;
+  List<TaskModel> data;
   String firstPageUrl;
   int from;
   int lastPage;
@@ -16,7 +16,7 @@ class Tasks {
   int to;
   int total;
 
-  Tasks({
+  TasksModel({
     this.currentPage,
     this.data,
     this.firstPageUrl,
@@ -31,13 +31,13 @@ class Tasks {
     this.total,
   });
 
-  factory Tasks.fromJson(String str) => Tasks.fromMap(json.decode(str));
+  factory TasksModel.fromJson(String str) => TasksModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Tasks.fromMap(Map<String, dynamic> json) => new Tasks(
+  factory TasksModel.fromMap(Map<String, dynamic> json) => new TasksModel(
     currentPage: json["current_page"],
-    data: json["data"] != null ? new List<Task>.from(json["data"].map((x) => Task.fromMap(x))) : null,
+    data: json["data"] != null ? new List<TaskModel>.from(json["data"].map((x) => TaskModel.fromMap(x))) : null,
     firstPageUrl: json["first_page_url"],
     from: json["from"],
     lastPage: json["last_page"],
@@ -52,7 +52,7 @@ class Tasks {
 
   Map<String, dynamic> toMap() => {
     "current_page": currentPage,
-    "data": data != null ? new List<Task>.from(data.map((x) => x.toMap())) : null,
+    "data": data != null ? new List<TaskModel>.from(data.map((x) => x.toMap())) : null,
     "first_page_url": firstPageUrl,
     "from": from,
     "last_page": lastPage,
