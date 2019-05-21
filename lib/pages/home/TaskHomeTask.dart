@@ -94,7 +94,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   int PosicionActual = snapshot.data.length - index - 1;
 
                   String _date = snapshot.data[PosicionActual].createdAt;
-                  String _title = snapshot.data[PosicionActual].name + ' - ' + snapshot.data[PosicionActual].id.toString();
+                  String _title = snapshot.data[PosicionActual].name;
                   AddressModel _address = snapshot.data[PosicionActual].address;
                   String voidFieldMessage = "Desconocido";
 
