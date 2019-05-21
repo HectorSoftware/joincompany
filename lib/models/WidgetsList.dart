@@ -90,19 +90,11 @@ class _ListWidgetsState extends State<ListWidgets> {
     //------------------------------DATE--------------------------
     return Padding(
       padding: const EdgeInsets.only(right: 220),
-      child: Center(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(string),
-            ),
-            Center(
-              child: RaisedButton(
-                child: Text(': ${_date.toString().substring(0,10)}'),
-                onPressed: (){selectDate(context);},
-              ),
-            ),
-          ],
+      child: Container(
+        width: MediaQuery.of(context).size.width *0.5,
+        child: RaisedButton(
+          child: Text('$string: ${_date.toString().substring(0,10)}'),
+          onPressed: (){selectDate(context);},
         ),
       ),
     );
@@ -115,7 +107,6 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
   Widget dateTime(context){
-    //------------------------------DATE------------------------
     return Container(
       width: MediaQuery.of(context).size.width*0.5,
       child: RaisedButton(
@@ -127,7 +118,6 @@ class _ListWidgetsState extends State<ListWidgets> {
 
   Widget textArea(context,placeholder){
     return
-      //-------------------------------------TEXTAREA---------------
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
@@ -160,7 +150,6 @@ class _ListWidgetsState extends State<ListWidgets> {
             ),
           ),
         );
-
   }
 
   Widget input(context,placeholder){
@@ -199,7 +188,6 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
   Widget number(context,placeholder){
-    //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(

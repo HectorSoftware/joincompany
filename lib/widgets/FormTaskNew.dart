@@ -179,6 +179,7 @@ void initState(){
 
                                          var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                          FormModel form = FormModel.fromJson(getFormResponse.body);
+                                         var bodyjson = getFormResponse.body;
                                          _bloc.idFormType = formType.data[index].id.toString();
                                          _bloc.customer = customer;
                                          _bloc.token = token;

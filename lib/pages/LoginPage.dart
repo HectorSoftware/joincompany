@@ -330,7 +330,7 @@ class _LoginPageState extends State<LoginPage> {
   testApi() async{
 
     try {
-      print("---------------- Inicia test. ----------------------------");
+   //   print("---------------- Inicia test. ----------------------------");
 
       String email = 'eibanez@duperu.com';
       // String email = 'jgarcia@getkem.com';
@@ -412,10 +412,9 @@ class _LoginPageState extends State<LoginPage> {
       // TaskModel taskCheckOut = TaskModel.fromJson(checkOutTaskResponse.body);
       // print(taskCheckOut.status);
 
-      print("---------------- Fin test. ----------------------------");
-    }catch(e, s){
-      print(e);
-      print(s);
+      //print("---------------- Fin test. ----------------------------");
+    }catch(e){
+
     }
 
   }

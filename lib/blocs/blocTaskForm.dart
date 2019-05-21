@@ -41,21 +41,14 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
-    print('-------------------------');
-    print(idFormType);
-    print(value);
-    listWidget.clear();
     inListWidget.add(listWidget);
+
    if(idFormType != null)
      {
       for(SectionModel v in form.sections)
         {
-       //   print(v.fields.);
           for(FieldModel k in v.fields)
             {
-
-
-
               camposWidgets = k;
              switch(k.fieldType){
                case 'Combo':
