@@ -41,6 +41,8 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
+
+    listWidget.clear();
     inListWidget.add(listWidget);
 
    if(idFormType != null)
