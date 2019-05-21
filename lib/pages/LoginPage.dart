@@ -83,8 +83,8 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.center,
                 child: Container(
                   child: Image.asset('assets/images/final-logo.png'),
-                ) 
-                  
+                )
+
               ),
             ],
           ),
@@ -317,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
   testApi() async{
 
     try {
-      print("---------------- Inicia test. ----------------------------");
+   //   print("---------------- Inicia test. ----------------------------");
 
       String email = 'eibanez@duperu.com';
       // String email = 'jgarcia@getkem.com';

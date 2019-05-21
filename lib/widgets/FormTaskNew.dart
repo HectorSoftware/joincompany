@@ -81,16 +81,8 @@ void initState(){
                            ) ,),
                        ),
                        Container(
-                         child: IconButton(
-                           icon: Icon(Icons.delete),
-                           color: Colors.white,
-                           disabledColor: Colors.white,
-                           iconSize: 30,
-                           tooltip: 'Eliminar Tarea',
-                           onPressed: (){
-                             //AGREGAR FUNCION ELIMINAR TAREA
-                           },
-                         ),
+                         width: MediaQuery.of(context).size.width *0.1,
+
                        ),
                      ],
                    ),
@@ -122,18 +114,17 @@ void initState(){
                           child: Column(
                             children: <Widget>[
                               Center(child: CircularProgressIndicator()),
+                              Text('awaiting interaction'),
                             ],
                           ),
                         ),
-                        Text('awaiting interaction'),
+
                       ],
                     );
                   }
                 case ConnectionState.active:
                   {
-
                     final data = snapshot.data;
-
                     return  ListView.builder(
                         itemCount: data.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -143,14 +134,10 @@ void initState(){
                         }
                     ) ;
                   }
-
-              // return Text('Stream has started but not finished  ${snapshot.data.length}');
                 case ConnectionState.done:
                   return Text('Stream has finished');
               }
             }
-
-
         ),
           ],
         ),
@@ -184,10 +171,13 @@ void initState(){
 
                                          var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                          FormModel form = FormModel.fromJson(getFormResponse.body);
+                                         var bodyjson = getFormResponse.body;
                                          _bloc.idFormType = formType.data[index].id.toString();
                                          _bloc.customer = customer;
                                          _bloc.token = token;
                                          _bloc.form = form;
+                                         _bloc.value = true;
+                                       // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                          _bloc.updateListWidget(context);
                                           Navigator.pop(context);
 

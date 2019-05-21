@@ -68,6 +68,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       ),
     );
   }
+
   String DateTask = "2019-05-05 20:00:04Z";
 
   ListViewTareas(){
@@ -206,10 +207,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     onChanged: (bool value) async {
                       if(value){
                         var getAllTasksResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        print('true');
                       }else{
                         var getAllTasksResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        print('false');
                       }
                     },
                   ),
