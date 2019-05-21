@@ -81,16 +81,8 @@ void initState(){
                            ) ,),
                        ),
                        Container(
-                         child: IconButton(
-                           icon: Icon(Icons.delete),
-                           color: Colors.white,
-                           disabledColor: Colors.white,
-                           iconSize: 30,
-                           tooltip: 'Eliminar Tarea',
-                           onPressed: (){
-                             //AGREGAR FUNCION ELIMINAR TAREA
-                           },
-                         ),
+                         width: MediaQuery.of(context).size.width *0.1,
+
                        ),
                      ],
                    ),
