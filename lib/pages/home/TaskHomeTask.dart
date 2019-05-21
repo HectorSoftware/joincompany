@@ -1,8 +1,15 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/TaskService.dart';
 
 import '../../main.dart';
 
@@ -13,9 +20,14 @@ class taskHomeTask extends StatefulWidget {
 class _MytaskPageTaskState extends State<taskHomeTask> {
 
   bool MostrarLista = false;
+  UserDataBase UserActiv;
+  static LatLng _initialPosition;
 
   @override
   void initState() {
+    listTaskModellocal = new List<TaskModel>();
+    actualizarusuario();
+    _getUserLocation();
     super.initState();
   }
 
@@ -59,94 +71,91 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
   String DateTask = "2019-05-05 20:00:04Z";
+  List<TaskModel> listTaskModellocal;
+
   ListViewTareas(){
     blocListTask bloctasks = new blocListTask();
-    return StreamBuilder<List<TaskModel>>(
-      stream: bloctasks.outListTaks,
-      initialData: <TaskModel>[],
-      builder: (context, snapshot){
-        var withinCardPadding = 2.0;
-        if(snapshot.data.isNotEmpty){
-          return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
 
-                int PosicionActual = snapshot.data.length - index - 1;
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
+      => setState((){
+        listTaskModellocal = newVal;
+      }));
 
-                String _date = snapshot.data[PosicionActual].createdAt;
-                String _title = snapshot.data[PosicionActual].name;
-                AddressModel _address = snapshot.data[PosicionActual].address;
-                String voidFieldMessage = "Desconocido";
-                double padindtext = MediaQuery.of(context).size.height * 5;
-                var date;
-                var title;
-                var address;
+    }catch(e){ }
 
-                if (_date == null) {
-                  date = voidFieldMessage;
-                } else {
-                  date = _date.substring(10,16);
-                }
+    return ListView.builder(
+        itemCount: listTaskModellocal.length,
+        itemBuilder: (BuildContext context, int index) {
 
-                if (_title == null) {
-                  title = voidFieldMessage;
-                } else {
-                   title = _title;
-                }
+          int PosicionActual = listTaskModellocal.length - index - 1;
 
-                if (_address == null) {
-                  address = voidFieldMessage;
-                } else {
-                  if (_address.address == null) {
-                    address = voidFieldMessage;
-                  } else {
-                    address = _address.address;
-                  }
-                }
+          String _date = listTaskModellocal[PosicionActual].createdAt;
+          String _title = listTaskModellocal[PosicionActual].name;
+          AddressModel _address = listTaskModellocal[PosicionActual].address;
+          String voidFieldMessage = "Desconocido";
 
-                if((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[PosicionActual].createdAt).day)||
-                    (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[PosicionActual].createdAt).month)||
-                    (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[PosicionActual].createdAt).year)){
-                  DateTask = snapshot.data[PosicionActual].createdAt;
-                  String dateTitulo = DateTime.parse(snapshot.data[PosicionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(snapshot.data[PosicionActual].createdAt).month.toString()] + ' ' + DateTime.parse(snapshot.data[PosicionActual].createdAt).year.toString();
+          var date;
+          var title;
+          var address;
 
-                  var padding = 16.0;
-                  double por = 0.1;
-                  if (MediaQuery.of(context).orientation == Orientation.portrait) {
-                    por = 0.07;
-                  }
-                  return Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(left: padding, right: 0, top: padding, bottom: 0),
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * por,
-                          color: PrimaryColor,
-                          child: Text(dateTitulo, style: TextStyle(fontSize:16, color: Colors.white)),
-                        ),
-                        ListCard(title,address,date,snapshot.data),
-                      ],
-                    ),
-                  );
-                }else{
-                  return ListCard(title,address,date,snapshot.data);
-                }
-              }
-          );
-        }else{
-          return new Container(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          if (_date == null) {
+            date = voidFieldMessage;
+          } else {
+            date = _date.substring(10,16);
+          }
+
+          if (_title == null) {
+            title = voidFieldMessage;
+          } else {
+            title = _title;
+          }
+
+          if (_address == null) {
+            address = voidFieldMessage;
+          } else {
+            if (_address.address == null) {
+              address = voidFieldMessage;
+            } else {
+              address = _address.address;
+            }
+          }
+
+          if((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)||
+              (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)||
+              (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+            DateTask = listTaskModellocal[PosicionActual].createdAt;
+            String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month.toString()] + ' ' + DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year.toString();
+
+            var padding = 16.0;
+            double por = 0.1;
+            if (MediaQuery.of(context).orientation == Orientation.portrait) {
+              por = 0.07;
+            }
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: padding, right: 0, top: padding, bottom: 0),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * por,
+                    color: PrimaryColor,
+                    child: Text(dateTitulo, style: TextStyle(fontSize:16, color: Colors.white)),
+                  ),
+                  ListCard(title,address,date,listTaskModellocal[PosicionActual]),
+                ],
+              ),
+            );
+          }else{
+            return ListCard(title,address,date,listTaskModellocal[PosicionActual]);
+          }
         }
-
-      },
     );
   }
 
-  Container ListCard(String title, String address, String date,List<TaskModel> listTask){
+  Container ListCard(String title, String address, String date,TaskModel listTask){
+
     return Container(
         child: Card(
           child: Column(
@@ -159,7 +168,18 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     ),
                   ),
-                  Checkbox(value: false, tristate: false, onChanged: (bool value) {},),
+                  Checkbox(
+                    value: listTask.status.contains('done'),
+                    onChanged: (bool value) async {
+                      if(value){
+                        var getAllTasksResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        print('true');
+                      }else{
+                        var getAllTasksResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        print('false');
+                      }
+                    },
+                  ),
                 ],
               ),
               Row(
@@ -181,7 +201,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   Container(
                     child: IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: (){}
+                        onPressed: (){
+                        }
                     ),
                   ),
                 ],
@@ -190,6 +211,18 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           ),
         )
     );
+  }
+
+  actualizarusuario() async{
+    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+  }
+
+  void _getUserLocation() async{
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
   }
 
   Map<String, String> intsToMonths = {

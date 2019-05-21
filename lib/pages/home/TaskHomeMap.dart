@@ -100,7 +100,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
-      print(_initialPosition);
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
