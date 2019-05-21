@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
 class AddContact extends StatelessWidget {
@@ -60,10 +61,28 @@ class AddContact extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(Icons.add),
                           onPressed: (){
+                            List<FieldOptionModel> ls = List<FieldOptionModel>();
+                            ls.add(FieldOptionModel(
+                              value: 1,
+                              name: 'test 1'
+                            ));
+                            ls.add(FieldOptionModel(
+                                value: 2,
+                                name: 'test 2'
+                            ));
+                            ls.add(FieldOptionModel(
+                                value: 3,
+                                name: 'test 3'
+                            ));
+                            ls.add(FieldOptionModel(
+                                value: 4,
+                                name: 'test 4'
+                            ));
+
                             showDialog(context: context,
                                 builder: (BuildContext contex){
                                   return AlertDialog(
-                                    content: lw.uploadImage(context),
+                                    content: lw.tab(ls),
                                   );
                                 }
                             );

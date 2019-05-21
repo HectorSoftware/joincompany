@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -21,6 +22,42 @@ class ListWidgets{
   File image;
   List<String> elementsNew = List<String>();
   String pivot;
+
+  Widget tab(List<FieldOptionModel> data){
+    return SingleChildScrollView(
+      child: Table(
+        columnWidths: {
+          0: FixedColumnWidth(80.0),
+          1: FixedColumnWidth(80.0),
+        },
+        border: TableBorder.all(width: 1.0),
+        children: data.map((item) {
+          return TableRow(
+              children:<Widget>[
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      item.name,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      item.value.toString(),
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                )
+              ]);
+        }).toList(),
+      ),
+    );
+  }
+
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -233,6 +270,7 @@ class ListWidgets{
       ),
     );
   }
+
   String dropdownValue = 'One';
   Widget combo(List<FieldOptionModel> elements)
   {
