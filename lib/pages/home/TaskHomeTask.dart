@@ -38,7 +38,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       aument = 0.8;
     }
 
-    String fechaHoy = DateTime.now().day.toString()+ ' ' + obtenerMes(DateTime.now().month.toString())+ ' ' +DateTime.now().year.toString();
+    String fechaHoy = DateTime.now().day.toString()+ ' ' + intsToMonths[DateTime.now().month.toString()]+ ' ' +DateTime.now().year.toString();
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -46,12 +46,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       child: Scaffold(
         body: Stack(
           children: <Widget>[
-            /*MostrarLista ? ListViewTareas() :
-            Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),*/
             ListViewTareas(),
           ],
         ),
@@ -71,18 +65,19 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       stream: bloctasks.outListTaks,
       initialData: <TaskModel>[],
       builder: (context, snapshot){
-
         var withinCardPadding = 2.0;
-
         if(snapshot.data.isNotEmpty){
           return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
-                String _date = snapshot.data[index].createdAt;
-                String _title = snapshot.data[index].name;
-                AddressModel _address = snapshot.data[index].address;
-                String voidFieldMessage = "Unknown";
 
+                int PosicionActual = snapshot.data.length - index - 1;
+
+                String _date = snapshot.data[PosicionActual].createdAt;
+                String _title = snapshot.data[PosicionActual].name;
+                AddressModel _address = snapshot.data[PosicionActual].address;
+                String voidFieldMessage = "Desconocido";
+                double padindtext = MediaQuery.of(context).size.height * 5;
                 var date;
                 var title;
                 var address;
@@ -90,7 +85,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                 if (_date == null) {
                   date = voidFieldMessage;
                 } else {
-                  date = _date;
+                  date = _date.substring(10,16);
                 }
 
                 if (_title == null) {
@@ -109,67 +104,33 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   }
                 }
 
-                if((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[index].createdAt).day)||
-                    (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[index].createdAt).month)||
-                    (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[index].createdAt).year)){
-                  DateTask = snapshot.data[index].createdAt;
-                  String date = DateTime.parse(snapshot.data[index].createdAt).day.toString() + ' ' + obtenerMes(DateTime.parse(snapshot.data[index].createdAt).day.toString()) + ' ' + DateTime.parse(snapshot.data[index].createdAt).year.toString();
+                if((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[PosicionActual].createdAt).day)||
+                    (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[PosicionActual].createdAt).month)||
+                    (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[PosicionActual].createdAt).year)){
+                  DateTask = snapshot.data[PosicionActual].createdAt;
+                  String dateTitulo = DateTime.parse(snapshot.data[PosicionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(snapshot.data[PosicionActual].createdAt).month.toString()] + ' ' + DateTime.parse(snapshot.data[PosicionActual].createdAt).year.toString();
 
-                  var padding = 25.0;
+                  var padding = 16.0;
+                  double por = 0.1;
+                  if (MediaQuery.of(context).orientation == Orientation.portrait) {
+                    por = 0.07;
+                  }
                   return Container(
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.only(left: padding, right: padding, top: padding, bottom: padding),
+                          padding: EdgeInsets.only(left: padding, right: 0, top: padding, bottom: 0),
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.1,
+                          height: MediaQuery.of(context).size.height * por,
                           color: PrimaryColor,
-                          child: Text(date, style: TextStyle(fontSize:16, color: Colors.white)),
+                          child: Text(dateTitulo, style: TextStyle(fontSize:16, color: Colors.white)),
                         ),
-                        Container(
-
-                        )
+                        ListCard(title,address,date,snapshot.data),
                       ],
                     ),
                   );
                 }else{
-                  return Container(
-                    child: Column(
-                      children: <Widget>[
-                        Card(
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                                          Text(address, style: TextStyle(fontSize: 10)),
-                                          Padding(
-                                            padding: const EdgeInsets.only(right: 200),
-                                            child: IconButton(icon: Icon(Icons.delete), onPressed: (){}),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                children: <Widget>[
-                                  Checkbox(value: false, tristate: false),
-                                  Text(date),
-                                  Container(),
-                                ],
-                              )
-                            ],
-                          ),
-                        )
-                      ]
-                    )
-                  );
+                  return ListCard(title,address,date,snapshot.data);
                 }
               }
           );
@@ -182,6 +143,52 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         }
 
       },
+    );
+  }
+
+  Container ListCard(String title, String address, String date,List<TaskModel> listTask){
+    return Container(
+        child: Card(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16,right: 16),
+                      child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  Checkbox(value: false, tristate: false, onChanged: (bool value) {},),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16,right: 16),
+                      child: Text(address, style: TextStyle(fontSize: 10)),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Text(date),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    child: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: (){}
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        )
     );
   }
 
@@ -199,10 +206,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     '11': 'Noviembre',
     '12': 'Diciembre',
   };
-
-  String obtenerMes(String mes){
-    return intsToMonths[mes];
-  }
 }
 
 

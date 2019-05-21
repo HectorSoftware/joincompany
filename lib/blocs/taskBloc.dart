@@ -10,7 +10,7 @@ class TaskBloc{
   List<Place> _listMarker = new List<Place>();
 
   final _taskcontroller = StreamController<List<Place>>();
- // Sink<List<Place>> get _inTask => _taskcontroller.sink;
+  Sink<List<Place>> get _inTask => _taskcontroller.sink;
   Stream<List<Place>> get outTask => _taskcontroller.stream;
 
   TaskBloc(){
@@ -18,37 +18,27 @@ class TaskBloc{
   }
 
   Future getPLace() async {
-
-    List<Place> listMarkerLocal = new List<Place>();
-    Place marker = Place(id: 1, customer: 'cliente 1', address: 'direccion 1',latitude: -33.4544232,longitude: -70.6308331, status: 0);
-    listMarkerLocal.add(marker);
-    marker = Place(id: 2, customer: 'cliente 2', address: 'direccion 2',latitude: -33.4568714,longitude: -70.6297065, status: 0);
-    listMarkerLocal.add(marker);
-    marker = Place(id: 3, customer: 'cliente 3', address: 'direccion 3',latitude: -33.4548931,longitude: -70.6323136, status: 1);
-    listMarkerLocal.add(marker);
-    marker = Place(id: 4, customer: 'cliente 4', address: 'direccion 4',latitude: -33.4544232,longitude: -70.6261232, status: 2);
-    listMarkerLocal.add(marker);
-    marker = Place(id: 5, customer: 'cliente 5', address: 'direccion 5',latitude: -33.4531271,longitude: -70.5612654, status: 1);
-    listMarkerLocal.add(marker);
-
-    /*List<Place> listMarkerLocal = new List<Place>();
-
+    var hasta = new DateTime.now();
+    String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
+    String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token);
-    Tasks tasks = Tasks.fromJson(getAllTasksResponse.body);
-
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, );
+    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+    int sendStatus = 0;
     for(int i=0; i < tasks.data.length;i++){
       Place marker;
       String valadde = 'N/A';
       if(tasks.data[i].address != null){
         valadde = tasks.data[i].address.address;
-        marker = Place(id: i+1, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: 0);
-        listMarkerLocal.add(marker);
+        if(tasks.data[i].status == 'done'){sendStatus = 2;}
+        if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = 1;}
+        marker = Place(id: i+1, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: sendStatus);
+        _listMarker.add(marker);
       }
-    }*/
-
-    _listMarker = listMarkerLocal;
+    }
     _taskcontroller.add(_listMarker);
+
+
 
   }
 

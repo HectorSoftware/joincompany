@@ -65,7 +65,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
               onMapCreated: onMapCreated,
               myLocationEnabled: true,
               compassEnabled: true,
-              zoomGesturesEnabled: false,
+              zoomGesturesEnabled: true,
               onCameraMove: _onCameraMove,
               markers: _markers,
               polylines: _polyLines,
