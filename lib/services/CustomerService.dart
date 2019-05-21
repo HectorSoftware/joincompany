@@ -5,8 +5,21 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/customers';
 
-Future<http.Response> getAllCustomers(String customer, String authorization, {String perPage, String urlPage} ) async{
+Future<http.Response> getAllCustomers(String customer, String authorization, { String perPage, String urlPage } ) async{
   
+  var params = new Map<String, String>();
+
+  if (perPage != null && perPage!=''){
+      params["per_page"]=perPage;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+}
+
+Future<http.Response> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String urlPage } ) async{
+  
+  String resourcePath = '/customer_addresses';
+
   var params = new Map<String, String>();
 
   if (perPage != null && perPage!=''){

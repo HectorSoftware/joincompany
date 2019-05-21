@@ -214,8 +214,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                //ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                testApi();
+                ValidarDatos(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -374,6 +373,13 @@ class _LoginPageState extends State<LoginPage> {
       // print(customers.data[0].name);
       // print(getAllCustomersResponse.body);
 
+      // Customers With Address
+      // var getAllCustomersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
+      // CustomersWithAddressModel customersWithAddres = CustomersWithAddressModel.fromJson(getAllCustomersWithAddressResponse.body);
+      // print(customersWithAddres.data[0].name);
+      // print(customersWithAddres.data[0].latitude);
+      // print(getAllCustomersWithAddressResponse.body);
+
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);
       // TaskModel task = TaskModel.fromJson(getTaskResponse.body);
@@ -390,9 +396,9 @@ class _LoginPageState extends State<LoginPage> {
       // print(tasks.data[0].responsibleId);
 
       // Form Get
-      // var getFormResponse = await getForm('1', customer, authorization);
+      // var getFormResponse = await getForm('4', customer, authorization);
       // FormModel form = FormModel.fromJson(getFormResponse.body);
-      // print(form.name);
+      // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
 
       // Form All
       // var getAllFormsResponse = await getAllForms(customer, authorization);
@@ -413,9 +419,9 @@ class _LoginPageState extends State<LoginPage> {
       // print(taskCheckOut.status);
 
       print("---------------- Fin test. ----------------------------");
-    }catch(e, s){
-      print(e);
-      print(s);
+    }catch(error, stackTrace){
+      print(error);
+      print(stackTrace);
     }
 
   }
