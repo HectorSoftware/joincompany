@@ -14,6 +14,11 @@ import 'package:joincompany/services/TaskService.dart';
 import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
+
+  taskHomeTask({this.blocListTaskres});
+
+  final blocListTask blocListTaskres;
+
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
 
@@ -22,11 +27,13 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   bool MostrarLista = false;
   UserDataBase UserActiv;
   static LatLng _initialPosition;
+  List<TaskModel> listTaskModellocal;
 
   @override
   void initState() {
     actualizarusuario();
     _getUserLocation();
+    listTaskModellocal = new List<TaskModel>();
     super.initState();
   }
 
@@ -70,136 +77,120 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-  String DateTask = "2019-05-05 20:00:04Z";
+
 
   ListViewTareas(){
-    blocListTask bloctasks = new blocListTask();
+    blocListTask bloctasks = widget.blocListTaskres;
 
-//    try{
-//      // ignore: cancel_subscriptions
-//      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
-//      => setState((){
-//        //listTaskModellocal = newVal;
-//      }));
-//
-//    }catch(e){ }
-
-    return StreamBuilder<List<TaskModel>>(
-        stream: bloctasks.outListTaks,
-        initialData: <TaskModel>[],
-        builder: (context, snapshot) {
-          if (snapshot.data.isNotEmpty) {
-            return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  int PosicionActual = snapshot.data.length - index - 1;
-
-
-
-                  String _date = snapshot.data[PosicionActual].createdAt;
-                  String _title = snapshot.data[PosicionActual].name;
-                  AddressModel _address = snapshot.data[PosicionActual].address;
-                  String voidFieldMessage = "";
-                  var _customerName = snapshot.data[PosicionActual].customer;
-
-                  var date;
-                  var title;
-                  var address;
-                  var customerName;
-
-                  if(_customerName == null){
-                    customerName = voidFieldMessage;
-                  }else{
-                    customerName = _customerName.name;
-                  }
-
-                  if (_date == null) {
-                    date = voidFieldMessage;
-                  } else {
-                    date = _date.substring(10, 16);
-                  }
-
-                  if (_title == null) {
-                    title = voidFieldMessage;
-                  } else {
-                    title = _title;
-                  }
-
-                  if (_address == null) {
-                    address = voidFieldMessage;
-                  } else {
-                    if (_address.address == null) {
-                      address = voidFieldMessage;
-                    } else {
-                      address = customerName + ',  ' + _address.address;
-                    }
-                  }
-
-                  if ((DateTime.parse(DateTask).day != DateTime.parse(snapshot.data[PosicionActual].createdAt).day) ||
-                      (DateTime.parse(DateTask).month != DateTime.parse(snapshot.data[PosicionActual].createdAt).month) ||
-                      (DateTime.parse(DateTask).year != DateTime.parse(snapshot.data[PosicionActual].createdAt).year)) {
-                    DateTask = snapshot.data[PosicionActual].createdAt;
-                    String dateTitulo = DateTime
-                        .parse(snapshot.data[PosicionActual].createdAt)
-                        .day
-                        .toString() + ' de ' + intsToMonths[DateTime
-                        .parse(snapshot.data[PosicionActual].createdAt)
-                        .month
-                        .toString()] + ' ' + DateTime
-                        .parse(snapshot.data[PosicionActual].createdAt)
-                        .year
-                        .toString();
-
-                    var padding = 16.0;
-                    double por = 0.1;
-                    if (MediaQuery
-                        .of(context)
-                        .orientation == Orientation.portrait) {
-                      por = 0.07;
-                    }
-                    return Container(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(left: padding,
-                                right: 0,
-                                top: padding,
-                                bottom: 0),
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width,
-                            height: MediaQuery
-                                .of(context)
-                                .size
-                                .height * por,
-                            color: PrimaryColor,
-                            child: Text(dateTitulo, style: TextStyle(
-                                fontSize: 16, color: Colors.white)),
-                          ),
-                          ListCard(title, address, date,
-                              snapshot.data[PosicionActual]),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return ListCard(
-                        title, address, date, snapshot.data[PosicionActual]);
-                  }
-                }
-            );
-          } else {
-            return new Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
+      => setState((){
+        var hasta = new DateTime.now();
+        for(int h = 0; h < 15; h++){
+          hasta = new DateTime.now().add(Duration(days: -h));
+          for(int k = 0; k < newVal.length; k++){
+            if ((hasta.day == DateTime.parse(newVal[k].createdAt).day)&&
+                (hasta.month == DateTime.parse(newVal[k].createdAt).month)&&
+                (hasta.year == DateTime.parse(newVal[k].createdAt).year)) {
+              listTaskModellocal.add(newVal[k]);
+            }
           }
         }
+      }));
+
+    }catch(e){ }
+    String DateTask = "2019-05-05 20:00:04Z";
+    return listTaskModellocal.length != 0 ? ListView.builder(
+        itemCount: listTaskModellocal.length,
+        itemBuilder: (BuildContext context, int index) {
+
+          int PosicionActual = index;
+          String _date = listTaskModellocal[PosicionActual].createdAt;
+          String _title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
+          AddressModel _address = listTaskModellocal[PosicionActual].address;
+          String voidFieldMessage = "";
+          var _customerName = listTaskModellocal[PosicionActual].customer;
+
+          var date;
+          var title;
+          var address;
+          var customerName;
+
+          if(_customerName == null){
+            customerName = voidFieldMessage;
+          }else{
+            customerName = _customerName.name;
+          }
+
+          if (_date == null) {
+            date = voidFieldMessage;
+          } else {
+            date = _date.substring(10, 16);
+          }
+
+          if (_title == null) {
+            title = voidFieldMessage;
+          } else {
+            title = _title;
+          }
+
+          if (_address == null) {
+            address = voidFieldMessage;
+          } else {
+            if (_address.address == null) {
+              address = voidFieldMessage;
+            } else {
+              address = customerName + ',  ' + _address.address;
+            }
+          }
+
+          if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
+              (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
+              (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
+            DateTask = listTaskModellocal[PosicionActual].createdAt;
+            String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
+                .toString() + ' de ' + intsToMonths[DateTime
+                .parse(listTaskModellocal[PosicionActual].createdAt)
+                .month
+                .toString()] + ' ' + DateTime
+                .parse(listTaskModellocal[PosicionActual].createdAt)
+                .year
+                .toString();
+
+            var padding = 16.0;
+            double por = 0.1;
+            if (MediaQuery
+                .of(context)
+                .orientation == Orientation.portrait) {
+              por = 0.07;
+            }
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * por,
+                    color: PrimaryColor,
+                    child: Text(dateTitulo, style: TextStyle(
+                        fontSize: 16, color: Colors.white)),
+                  ),
+                  ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
+                ],
+              ),
+            );
+          } else {
+            return ListCard(
+                title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
+          }
+        }
+    ) : Center(
+      child: CircularProgressIndicator(),
     );
   }
 
-  Container ListCard(String title, String address, String date,TaskModel listTask){
+  Container ListCard(String title, String address, String date,TaskModel listTask, int index){
 
     return Container(
         child: Card(
@@ -217,9 +208,23 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     value: listTask.status.contains('done'),
                     onChanged: (bool value) async {
                       if(value){
-                        var getAllTasksResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        if(checkInTaskResponse.statusCode == 200){
+                          TaskModel task = TaskModel.fromJson(checkInTaskResponse.body);
+                          print(task.updatedAt);
+                          listTaskModellocal[index].status = 'done';
+                          setState(() {
+                            listTaskModellocal;
+                          });
+                        }
                       }else{
-                        var getAllTasksResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        if(checkInTaskResponse.statusCode == 200){
+                          listTaskModellocal[index].status = 'working';
+                          setState(() {
+                            listTaskModellocal;
+                          });
+                        }
                       }
                     },
                   ),

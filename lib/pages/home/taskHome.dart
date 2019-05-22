@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
@@ -15,6 +16,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
+  blocListTask blocListTaskres;
 
   @override
   void initState() {
@@ -23,12 +25,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           () {setState((){});
       },
     );
+//    blocListTaskres = new blocListTask();
     super.initState();
   }
 
   @override
   void dispose(){
     _controller.dispose();
+    blocListTaskres.dispose();
     super.dispose();
   }
 
@@ -60,6 +64,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
+              print('*****************++');
+              selectDate(context);
             },
           ),
         ],
@@ -84,64 +90,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
+    blocListTaskres = new blocListTask();
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(),
+        taskHomeTask(blocListTaskres: blocListTaskres,),
         taskHomeMap(),
       ],
       controller: _controller,
       physics: _controller.index == 0
           ? AlwaysScrollableScrollPhysics()
           : NeverScrollableScrollPhysics(),
-    );
-  }
-
-  Container tabBarButton(){
-    return Container(
-      margin: EdgeInsets.only(top: 0),
-      padding: EdgeInsets.only(top: 0),
-      child: Row(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: conditionalTask? Colors.grey : Colors.white,
-                child: Text('Tarea'),
-                onPressed: (){
-                  setState(() {
-                    conditionalTask = false;
-                    conditionalMap = true;
-                    conditionalHome = true;
-                  });
-                },
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: conditionalTask? Colors.grey : Colors.white,
-                child: Text('Mapa'),
-                onPressed: (){
-                  setState(() {
-                    conditionalTask = true;
-                    conditionalMap = false;
-                    conditionalHome = false;
-                  });
-                },
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -221,5 +179,17 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
+  String _value = '';
+  Future<Null> selectDate( context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: new DateTime(1990),
+        lastDate: new DateTime(2030)
+    );
+    if(picked != null) setState(() => _value = picked.toString());
+
+
+  }
 
 }

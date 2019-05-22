@@ -78,3 +78,5 @@ class blocListTask {
     updateListTask();
   }
 }
+
+//final blocTaskListTask = blocListTask();
