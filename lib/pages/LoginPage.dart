@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AccountModel.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
@@ -15,6 +16,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AccountService.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
@@ -444,6 +446,13 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
+
+      // Account Get
+      // var getAccountResponse = await getAccount(customer, authorization);
+      // AccountModel account = AccountModel.fromJson(getAccountResponse.body);
+      // print(account.customer.name);
+      // print(account.customer.receiverEmail);
+      // print(account.customer.receiverName);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
