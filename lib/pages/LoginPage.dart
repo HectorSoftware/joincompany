@@ -12,6 +12,7 @@ import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/AddressService.dart';
@@ -19,6 +20,7 @@ import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:joincompany/services/UserService.dart';
 import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
   @override
@@ -217,8 +219,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                // ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                testApi();
+                ValidarDatos(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -400,9 +401,7 @@ class _LoginPageState extends State<LoginPage> {
       // print(tasks.data[0].responsibleId);
 
       // CheckIn Task
-      //lat -12.0949443
-      //long -76.8862068
-      // var checkInTaskResponse = await checkInTask('2527', customer, authorization, '-12.0949443', '-76.8862068', '', date: '2019-05-09 08:30:00');
+      // var checkInTaskResponse = await checkInTask('2933', customer, authorization, '-33.4544217', '-70.6308317', '678', date: '2019-05-21 11:38:49');
       // TaskModel taskCheckIn = TaskModel.fromJson(checkInTaskResponse.body);
       // print(taskCheckIn.status);
 
@@ -423,21 +422,28 @@ class _LoginPageState extends State<LoginPage> {
       // print(forms.data[1].name);
 
       // Address Get
-      var getAddressResponse = await getAddress('559', customer, authorization);
-      AddressModel address = AddressModel.fromJson(getAddressResponse.body);
-      print(address.address);
-      print(address.googlePlaceId);
-      print(address.latitude);
-      print(address.longitude);
+      // var getAddressResponse = await getAddress('559', customer, authorization);
+      // AddressModel address = AddressModel.fromJson(getAddressResponse.body);
+      // print(address.address);
+      // print(address.googlePlaceId);
+      // print(address.latitude);
+      // print(address.longitude);
 
       // Address All
-      var getAllAddressesResponse = await getAllAddresses(customer, authorization);
-      AddressesModel addresses = AddressesModel.fromJson(getAllAddressesResponse.body);
-      print(addresses.data.length);
-      print(addresses.data[0].address);
-      print(addresses.data[0].googlePlaceId);
-      print(addresses.data[0].latitude);
-      print(addresses.data[0].longitude);
+      // var getAllAddressesResponse = await getAllAddresses(customer, authorization);
+      // AddressesModel addresses = AddressesModel.fromJson(getAllAddressesResponse.body);
+      // print(addresses.data.length);
+      // print(addresses.data[0].address);
+      // print(addresses.data[0].googlePlaceId);
+      // print(addresses.data[0].latitude);
+      // print(addresses.data[0].longitude);
+
+      // User Get
+      // var getUserResponse = await getUser(customer, authorization);
+      // UserModel user = UserModel.fromJson(getUserResponse.body);
+      // print(user.name);
+      // print(user.email);
+      // print(user.profile);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
