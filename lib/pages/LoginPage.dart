@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
@@ -12,6 +14,7 @@ import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/FormService.dart';
@@ -214,7 +217,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                // ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                testApi();
               },
               child: Center(
                   child: Center(
@@ -395,16 +399,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(tasks.data.length);
       // print(tasks.data[0].responsibleId);
 
-      // Form Get
-      // var getFormResponse = await getForm('4', customer, authorization);
-      // FormModel form = FormModel.fromJson(getFormResponse.body);
-      // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
-
-      // Form All
-      // var getAllFormsResponse = await getAllForms(customer, authorization);
-      // FormsModel forms = FormsModel.fromJson(getAllFormsResponse.body);
-      // print(forms.data[1].name);
-
       // CheckIn Task
       //lat -12.0949443
       //long -76.8862068
@@ -417,6 +411,33 @@ class _LoginPageState extends State<LoginPage> {
       // var checkOutTaskResponse = await checkOutTask('2527', customer, authorization, '-12.0949443', '-76.8862068', '');
       // TaskModel taskCheckOut = TaskModel.fromJson(checkOutTaskResponse.body);
       // print(taskCheckOut.status);
+
+      // Form Get
+      // var getFormResponse = await getForm('4', customer, authorization);
+      // FormModel form = FormModel.fromJson(getFormResponse.body);
+      // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
+
+      // Form All
+      // var getAllFormsResponse = await getAllForms(customer, authorization);
+      // FormsModel forms = FormsModel.fromJson(getAllFormsResponse.body);
+      // print(forms.data[1].name);
+
+      // Address Get
+      var getAddressResponse = await getAddress('559', customer, authorization);
+      AddressModel address = AddressModel.fromJson(getAddressResponse.body);
+      print(address.address);
+      print(address.googlePlaceId);
+      print(address.latitude);
+      print(address.longitude);
+
+      // Address All
+      var getAllAddressesResponse = await getAllAddresses(customer, authorization);
+      AddressesModel addresses = AddressesModel.fromJson(getAllAddressesResponse.body);
+      print(addresses.data.length);
+      print(addresses.data[0].address);
+      print(addresses.data[0].googlePlaceId);
+      print(addresses.data[0].latitude);
+      print(addresses.data[0].longitude);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
