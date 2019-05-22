@@ -6,11 +6,8 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
-enum type{
-  NAME,
-  CODE,
-  NOTE,
-}
+enum type{NAME,CODE,NOTE}
+
 
 // ignore: must_be_immutable
 class FormClient extends StatefulWidget {
@@ -31,7 +28,7 @@ class _FormClientState extends State<FormClient> {
 
   TextEditingController name,code,note;
 
-  void setDataForm(String data, type t){}
+   void setDataForm(String data, type t){}
 
   Widget customTextField(String title, type t, int maxLines){
     return Container(
@@ -82,6 +79,34 @@ class _FormClientState extends State<FormClient> {
     }
   }
 
+  Future<bool> _asyncConfirmDialog() async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('¿Guardar?'),
+          content: const Text(
+              '¿estas seguro que desea guardar estos datos?'),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('CANCELAR'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: const Text('ACEPTAR'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   void disposeController(){
     name.dispose();
     code.dispose();
@@ -89,19 +114,21 @@ class _FormClientState extends State<FormClient> {
   }
 
   void savedData() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-
-    if(widget.client != null){
-      //TODO: method update
-    }else{
-      CustomerModel client = CustomerModel(
-        name: name.text,
-        code: code.text,
-        details: note.text,
-      );
-      var responseCreate = await createCustomer(client, userAct.company, userAct.token);
-      print(responseCreate.body);
-    }
+     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+      if(validateData()){
+        if(widget.client != null){
+          //TODO: method update
+        }else{
+          CustomerModel client = CustomerModel(
+            name: name.text,
+            code: code.text,
+            details: note.text,
+          );
+          var responseCreate = await createCustomer(client, userAct.company, userAct.token);
+          print(responseCreate.statusCode);
+          print(responseCreate.body);
+        }
+      }
   }
 
   bool validateData(){
@@ -122,7 +149,9 @@ class _FormClientState extends State<FormClient> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return WillPopScope(
+      onWillPop: _asyncConfirmDialog,
+      child: Scaffold(
         appBar: AppBar(
           title: Text('Cliente'),
           elevation: 12,
@@ -133,116 +162,116 @@ class _FormClientState extends State<FormClient> {
               tooltip: 'Eliminar Cliente',
               iconSize: 35,
               onPressed: (){},
-
             )
           ],
-
         ),
         body:SingleChildScrollView(
-            child:Column(
-              children: <Widget>[
-                customTextField(" Nombre *",type.NAME,1),
-                customTextField(" Codigo *",type.CODE,1),
-                customTextField("Notas",type.NOTE,4),
-                Container(
-                    margin: EdgeInsets.all(12.0),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("Contacto"),
-                        Row(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: (){},
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.visibility),
-                                onPressed: (){
-
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
+          child:Column(
+            children: <Widget>[
+              customTextField(" Nombre *",type.NAME,1),
+              customTextField(" Codigo *",type.CODE,1),
+              customTextField("Notas",type.NOTE,4),
+              Container(
+                margin: EdgeInsets.all(12.0),
+                height: MediaQuery.of(context).size.height * 0.030,
+                child:Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                  Text("Contacto"),
+                  Row(
+                    children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: (){},
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: Icon(Icons.visibility),
+                        onPressed: (){},//TODO
+                        ),
+                      ),
+                    ],
                     )
-                ),//client
-                Container(
-                    margin: EdgeInsets.all(12.0),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ],
+                )
+              ),//client
+            Container(
+                margin: EdgeInsets.all(12.0),
+                height: MediaQuery.of(context).size.height * 0.030,
+                child:Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                    Text("Direccion"),
+                    Row(
                       children: <Widget>[
-                        Text("Direccion"),
-                        Row(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: (){
-                                  showDialog(context: context,
-                                      builder: (BuildContext contex){
-                                        return AlertDialog(
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Text("TODO"),//TODO
-                                            ],
-                                          ),
-                                        );
-                                      }
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: (){
+                              showDialog(context: context,
+                                builder: (BuildContext contex){
+                                  return AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text("TODO"),//TODO
+                                      ],
+                                    ),
                                   );
-                                },
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.visibility),
-                                onPressed: (){},
-                              ),
-                            ),
-                          ],
-                        )
+                                }
+                              );
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.visibility),
+                            onPressed: (){},
+                          ),
+                        ),
                       ],
                     )
+                  ],
+                  )
                 ),//Direction
                 Container(
-                    margin: EdgeInsets.all(12.0),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("Negocios"),
-                        Row(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.add),
+                  height: MediaQuery.of(context).size.height * 0.030,
+                  margin: EdgeInsets.all(12.0),
+                  child:Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("Negocios"),
+                      Row(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              icon: Icon(Icons.add),
                                 onPressed: (){},
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.visibility),
-                                onPressed: (){},
-                              ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                            icon: Icon(Icons.visibility),
+                            onPressed: (){},
                             ),
-                          ],
-                        )
-                      ],
-                    )
+                          ),
+                        ],
+                      )
+                    ],
+                  )
                 ),//Negotiates
               ],
-            )
-        )
-    );
-  }
+            ),
+          ),
+        ),
+      );
+    }
 }
