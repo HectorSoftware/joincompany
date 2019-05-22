@@ -4,6 +4,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -121,6 +122,7 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -140,15 +142,7 @@ class _ClienteState extends State<Cliente> {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          clientCard("cliente 1"),
-          clientCard("cliente 2"),
-          clientCard("cliente 3"),
-          clientCard("cliente 4"),
-          clientCard("cliente 5"),
-        ],
-      ),
+      body: Text("body"),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         elevation: 12,
