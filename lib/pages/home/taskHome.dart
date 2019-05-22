@@ -64,7 +64,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
-              print('*****************++');
               selectDate(context);
             },
           ),
@@ -90,7 +89,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
-    blocListTaskres = new blocListTask();
+    blocListTaskres = new blocListTask(valueselectDate);
+    setState(() {
+      blocListTaskres;
+    });
     return TabBarView(
       children: <Widget>[
         taskHomeTask(blocListTaskres: blocListTaskres,),
@@ -179,7 +181,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
-  String _value = '';
+  String valueselectDate = '';
   Future<Null> selectDate( context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -187,7 +189,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         firstDate: new DateTime(1990),
         lastDate: new DateTime(2030)
     );
-    if(picked != null) setState(() => _value = picked.toString());
+    if(picked != null){
+      setState(() =>
+        valueselectDate = picked.toString()
+      );
+      setState(() {
+        blocListTaskres;
+      });
+    }
 
 
   }

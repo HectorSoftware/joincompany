@@ -9,18 +9,17 @@ import 'package:joincompany/services/TaskService.dart';
 class blocListTask {
 
   List<TaskModel> _listTask = List<TaskModel>();
-  List<TaskModel> _listTask_ordenar = List<TaskModel>();
 
   var _tasksController = StreamController<List<TaskModel>>();
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
-  Future updateListTask()
+  Future updateListTask(String fechaCalendario)
   async {
 
     var hasta = new DateTime.now();
     var desde = new DateTime.now().add(Duration(days: -15));
-    String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
+    String diadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 00:00:00';
     String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
@@ -74,8 +73,15 @@ class blocListTask {
     _tasksController.close();
   }
 
-  blocListTask() {
-    updateListTask();
+  blocListTask(String fechaCalendario) {
+//    print('////////////');
+//    print(fechaCalendario);
+//    if(fechaCalendario == ''){
+//      updateListTask(fechaCalendario);
+//    }else{
+//      _listTask = List<TaskModel>();
+      inListTaks.add(_listTask);
+//    }
   }
 }
 

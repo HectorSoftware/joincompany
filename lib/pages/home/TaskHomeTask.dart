@@ -86,6 +86,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
       => setState((){
+        //print('******************');
         var hasta = new DateTime.now();
         for(int h = 0; h < 15; h++){
           hasta = new DateTime.now().add(Duration(days: -h));
