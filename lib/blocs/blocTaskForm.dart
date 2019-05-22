@@ -7,7 +7,7 @@ import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
 
-class BlocTaskForm {
+class BlocTaskForm  {
 
   ListWidgets items = new ListWidgets();
   List<Widget> listWidget = List<Widget>();

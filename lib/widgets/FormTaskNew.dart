@@ -50,51 +50,26 @@ void initState(){
        appBar: AppBar(
          elevation: 12,
          backgroundColor: PrimaryColor,
+         leading:  IconButton(
+           icon: Icon(Icons.arrow_back),
+           tooltip: 'Guardar Tarea',
+           iconSize: 35,
+           onPressed: (){
+             //GUARDAR TAREAAAAAA
+           },
+
+         ) ,
          actions: <Widget>[
-           Container(
-             child: Row(
-               children: <Widget>[
-                 Container(
-                   width: MediaQuery.of(context).size.width,
-                   height: MediaQuery.of(context).size.height,
-                   child: Row(
-                     children: <Widget>[
-                       Padding(
-                         padding: const EdgeInsets.only(right: 10),
-                         child: IconButton(
-                           icon: Icon(Icons.arrow_back),
-                           color: Colors.white,
-                           disabledColor: Colors.white,
-                           iconSize: 30,
-                           tooltip: 'Atras',
-                           onPressed: (){
-                             Navigator.pushReplacementNamed(context, '/vistap');
-                             //AGREGAR FUNCION GUARDE Y ENVIE FORMULARIO
-                           },
-                         ),
-                       ),
-                       Padding(
-                         padding: const EdgeInsets.only(right: 150,top: 5),
-                         child: Text('Agregar tareas',
-                           style:TextStyle(
-                               fontSize: 23
-                           ) ,),
-                       ),
-                       Container(
-                         width: MediaQuery.of(context).size.width *0.1,
+           IconButton(
+             icon: Icon(Icons.delete),
+             tooltip: 'Eliminar Cliente',
+             iconSize: 35,
+             onPressed: (){},
 
-                       ),
-                     ],
-                   ),
-                 ),
-
-               ],
-             ),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
            )
 
          ],
+         title: Text('Agregar Tareas'),
        ),
 
         body:Stack(
