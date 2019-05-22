@@ -5,9 +5,6 @@ import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:joincompany/models/FormModel.dart';
-
 
 
 class BlocTaskForm {
@@ -19,13 +16,14 @@ class BlocTaskForm {
   String validateTypeForm = '';
   String token;
   String customer;
-  String idFormType;
+  var idFormType;
   bool pass ;
   FormModel form;
   FieldModel camposWidgets;
   List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
   List<String> elementDrop = List<String>();
-
+  bool value =false;
+  String defaultValue = ' ';
 
 
   var  _taskFormController   = StreamController<List<dynamic>>();
@@ -43,13 +41,14 @@ class BlocTaskForm {
 
   void updateListWidget(context)
   {
+
     listWidget.clear();
     inListWidget.add(listWidget);
+
    if(idFormType != null)
      {
       for(SectionModel v in form.sections)
         {
-          print(form);
           for(FieldModel k in v.fields)
             {
               camposWidgets = k;
@@ -57,27 +56,40 @@ class BlocTaskForm {
                case 'Combo':
                  {
                    optionsElements = k.fieldOptions;
-                   listWidget.add(items.combo(optionsElements));
+                   listWidget.add(items.createState().combo(optionsElements));
                  }
                break;
                case 'Text':
                  {
-                   listWidget.add(items.label(k.name));
+
+                   listWidget.add(items.createState().label(defaultValue));
                  }
                  break;
                case 'Textarea':
                  {
-                   listWidget.add(items.textArea(context,k.name));
+
+                   listWidget.add(items.createState().textArea(context,k.name));
                  }
                  break;
                case 'Number':
                  {
-                   listWidget.add(items.number(context, k.name));
+                   listWidget.add(items.createState().number(context, k.name));
                  }
                  break;
                case 'Date':
                  {
-                   listWidget.add(items.date(context));
+                   listWidget.add(items.createState().date(context,k.name));
+                 }
+                 break;
+               case 'table':
+                 {
+                   optionsElements = k.fieldOptions;
+                   listWidget.add(items.createState().tab(context));
+                 }
+                 break;
+               case 'CanvanSignature':
+                 {
+                   listWidget.add(items.createState().loadingTask(context));
                  }
                  break;
                default:
@@ -90,10 +102,7 @@ class BlocTaskForm {
         }
       inListWidget.add(listWidget);
      }else{
-
    }
-
-
 
   }
 

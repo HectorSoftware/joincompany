@@ -22,6 +22,7 @@ class AddressModel {
   String contactPhone;
   String contactMobile;
   String contactEmail;
+  Locality locality;
 
   AddressModel({
     this.id,
@@ -45,6 +46,7 @@ class AddressModel {
     this.contactPhone,
     this.contactMobile,
     this.contactEmail,
+    this.locality,
   });
 
   factory AddressModel.fromJson(String str) => AddressModel.fromMap(json.decode(str));
@@ -73,6 +75,7 @@ class AddressModel {
     contactPhone: json["contact_phone"],
     contactMobile: json["contact_mobile"],
     contactEmail: json["contact_email"],
+    locality: json["locality"] != null ? Locality.fromMap(json["locality"]) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -97,5 +100,62 @@ class AddressModel {
     "contact_phone": contactPhone,
     "contact_mobile": contactMobile,
     "contact_email": contactEmail,
+    "locality": locality != null ? locality.toMap() : null,
+  };
+}
+
+class Locality {
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  String collection;
+  String name;
+  String value;
+
+  Locality({
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+    this.createdById,
+    this.updatedById,
+    this.deletedById,
+    this.collection,
+    this.name,
+    this.value,
+  });
+
+  factory Locality.fromJson(String str) => Locality.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory Locality.fromMap(Map<String, dynamic> json) => new Locality(
+    id: json["id"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+    deletedAt: json["deleted_at"],
+    createdById: json["created_by_id"],
+    updatedById: json["updated_by_id"],
+    deletedById: json["deleted_by_id"],
+    collection: json["collection"],
+    name: json["name"],
+    value: json["value"],
+  );
+
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "deleted_at": deletedAt,
+    "created_by_id": createdById,
+    "updated_by_id": updatedById,
+    "deleted_by_id": deletedById,
+    "collection": collection,
+    "name": name,
+    "value": value,
   };
 }

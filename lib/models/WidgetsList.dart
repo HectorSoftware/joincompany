@@ -13,8 +13,15 @@ enum Method{
   CAMERA,
   GALLERY
 }
+class ListWidgets extends StatefulWidget {
 
-class ListWidgets{
+
+  @override
+  _ListWidgetsState createState() => new _ListWidgetsState();
+
+}
+
+class _ListWidgetsState extends State<ListWidgets> {
 
 
   DateTime _date = new DateTime.now();
@@ -22,6 +29,7 @@ class ListWidgets{
   File image;
   List<String> elementsNew = List<String>();
   String pivot;
+  List<Offset> _points = <Offset>[];
 
   Widget tab(List<FieldOptionModel> data){
     return SingleChildScrollView(
@@ -70,7 +78,7 @@ class ListWidgets{
     );
   }
 
-  Future<Null> selectDate(BuildContext context )async{
+  Future<Null> selectDate( context )async{
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
@@ -78,13 +86,14 @@ class ListWidgets{
         lastDate: new DateTime(2020));
 
   }
-  Widget date(context){
+  Widget date(context, String string){
     //------------------------------DATE--------------------------
     return Padding(
       padding: const EdgeInsets.only(right: 220),
-      child: Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width *0.5,
         child: RaisedButton(
-          child: Text('Fecha: ${_date.toString().substring(0,10)}'),
+          child: Text('$string: ${_date.toString().substring(0,10)}'),
           onPressed: (){selectDate(context);},
         ),
       ),
@@ -98,7 +107,6 @@ class ListWidgets{
     );
   }
   Widget dateTime(context){
-    //------------------------------DATE------------------------
     return Container(
       width: MediaQuery.of(context).size.width*0.5,
       child: RaisedButton(
@@ -110,7 +118,6 @@ class ListWidgets{
 
   Widget textArea(context,placeholder){
     return
-      //-------------------------------------TEXTAREA---------------
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
@@ -121,7 +128,7 @@ class ListWidgets{
             ),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
-                    Radius.circular(20)
+                    Radius.circular(10)
                 ),
                 color: Colors.white,
                 boxShadow: [
@@ -143,7 +150,6 @@ class ListWidgets{
             ),
           ),
         );
-
   }
 
   Widget input(context,placeholder){
@@ -158,7 +164,7 @@ class ListWidgets{
           ),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
-                  Radius.circular(15)
+                  Radius.circular(10)
               ),
               color: Colors.white,
               boxShadow: [
@@ -182,18 +188,17 @@ class ListWidgets{
     );
   }
   Widget number(context,placeholder){
-    //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-        width: MediaQuery.of(context).size.width/1.2,
+        width: MediaQuery.of(context).size.width * 0.3,
         height: 40,
         padding: EdgeInsets.only(
             top: 4,left: 16, right: 16, bottom: 4
         ),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(
-                Radius.circular(15)
+                Radius.circular(10)
             ),
             color: Colors.white,
             boxShadow: [
@@ -202,9 +207,11 @@ class ListWidgets{
                   blurRadius: 5
               )
             ]
+
         ),
         child: TextField(
-          keyboardType: TextInputType.numberWithOptions(),
+
+          keyboardType: TextInputType.number,
           maxLines: 1,
           //controller: nameController,
           decoration: InputDecoration(
@@ -257,7 +264,7 @@ class ListWidgets{
     );
 
   }
-  Widget loadingTask()
+  Widget loadingTask(context)
   {
     return Center(
       child: Column(
@@ -271,33 +278,84 @@ class ListWidgets{
     );
   }
 
-  String dropdownValue = 'One';
+
+  List<String> dropdownMenuItems = List<String>();
+  String dropdownValue = null;
   Widget combo(List<FieldOptionModel> elements)
   {
-    for(FieldOptionModel v in elements){
-
-
-      elementsNew.add(v.name.toString());
-    }
+    for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
 
     return  DropdownButton<String>(
-        value: dropdownValue,
-        onChanged: (String newValue) {
-      setState(() {
-        dropdownValue = newValue;
-      });
-    },
-    items: <String>['One', 'Two', 'Free', 'Four']
-      .map<DropdownMenuItem<String>>((String value) {
-  return DropdownMenuItem<String>(
-  value: value,
-  child: Text(value),
-  );
-  })
-    .toList(),
+      value: dropdownValue,
+      hint: Text("Seleccione"),
+      onChanged: (String newValue) {
+        setState(() {
+          dropdownValue = newValue;
+        });
+      },
+      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 
-  void setState(Null Function() param0) {}
+Widget tocuh(context){
+  return new Scaffold(
+    body: new Container(
+      child: new GestureDetector(
+        onPanUpdate: (DragUpdateDetails details) {
+          setState(() {
+            RenderBox object = context.findRenderObject();
+            Offset _localPosition =
+            object.globalToLocal(details.globalPosition);
+            _points = new List.from(_points)..add(_localPosition);
+          });
+        },
+        onPanEnd: (DragEndDetails details) => _points.add(null),
+        child: new CustomPaint(
+          painter: new Signature(points: _points),
+          size: Size.infinite,
+        ),
+      ),
+    ),
+    floatingActionButton: new FloatingActionButton(
+      child: new Icon(Icons.clear),
+      onPressed: () => _points.clear(),
+    ),
+  );
 }
+
+
+
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+
+class Signature extends CustomPainter {
+  List<Offset> points;
+
+  Signature({this.points});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = new Paint()
+      ..color = Colors.blue
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 10.0;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      if (points[i] != null && points[i + 1] != null) {
+        canvas.drawLine(points[i], points[i + 1], paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
+}
+
+
 

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -122,7 +124,6 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -142,7 +143,11 @@ class _ClienteState extends State<Cliente> {
           ),
         ],
       ),
-      body: Text("body"),
+      body: Stack(
+        children: <Widget>[
+          listViewCustomers(),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         elevation: 12,
@@ -157,5 +162,38 @@ class _ClienteState extends State<Cliente> {
 
       ),
     );
+  }
+
+  listViewCustomers(){
+    CustomersBloc _bloc = new CustomersBloc();
+
+    // ignore: missing_required_param
+    return StreamBuilder<List<CustomerWithAddressModel>>(
+      stream: _bloc.outCustomers,
+      initialData: <CustomerWithAddressModel>[],
+      builder: (context, snapshot) {
+      if (snapshot.data.isNotEmpty) {
+        return ListView.builder(
+          itemCount: snapshot.data.length,
+          itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: ListTile(
+                  title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
+                  subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  onTap: (){},
+                ),
+              );
+          }
+        );
+      }else{
+        return new Container(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      }
+    );
+
   }
 }

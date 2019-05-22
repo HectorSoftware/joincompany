@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/api/rutahttp.dart';
-import 'package:joincompany/blocs/taskBloc.dart';
+import 'package:joincompany/blocs/blocTaskMap.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/Marker.dart';
 
@@ -65,7 +65,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
               onMapCreated: onMapCreated,
               myLocationEnabled: true,
               compassEnabled: true,
-              zoomGesturesEnabled: false,
+              zoomGesturesEnabled: true,
               onCameraMove: _onCameraMove,
               markers: _markers,
               polylines: _polyLines,
@@ -100,7 +100,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
-      print(_initialPosition);
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
