@@ -25,7 +25,7 @@ class _ConfigCliState extends State<ConfigCli> {
   static const int linesInputsBasic = 1;
   static const int linesInputsTextAreaBasic = 4;
 
-  TextEditingController name,code,defaults,pos,tlfF,tlfM,email,note,password;    //TODO: implement model setDataConfig
+  TextEditingController name,code,defaults,pos,tlfF,tlfM,email,note,password;
 
   void setDataForm(String data, type t){
       //TODO
