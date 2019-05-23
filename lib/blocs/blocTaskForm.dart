@@ -52,7 +52,7 @@ class BlocTaskForm  {
                case 'Combo':
                  {
                    optionsElements = k.fieldOptions;
-                   listWidget.add(items.createState().tab(optionsElements));
+                   listWidget.add(items.createState().tab(optionsElements,context));
                  }
                break;
                case 'Text':
@@ -81,7 +81,7 @@ class BlocTaskForm  {
                case 'Table':
                  {
                    optionsElements = k.fieldOptions;
-                   listWidget.add(items.createState().tab(optionsElements));
+                   listWidget.add(items.createState().tab(optionsElements,context));
                  }
                  break;
                case 'CanvanSignature':

@@ -50,37 +50,147 @@ final formats = {
 // Changeable in demo
 InputType inputType = InputType.both;
 
-  Widget tab(List<FieldOptionModel> data){
+  Widget tab(List<FieldOptionModel> data,BuildContext contex){
     return SingleChildScrollView(
-      child: Table(
-        columnWidths: {
-          0: FixedColumnWidth(80.0),
-          1: FixedColumnWidth(80.0),
-        },
-        border: TableBorder.all(width: 1.0),
-        children: data.map((item) {
-          return TableRow(
-              children:<Widget>[
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      item.name,
-                      style: TextStyle(fontSize: 20.0),
+      child: Container(
+        margin: EdgeInsets.all(10),
+        width: MediaQuery.of(contex).size.width,
+        height: MediaQuery.of(contex).size.height * 0.4,
+        child: ListView(
+          // This next line does the trick.
+          scrollDirection: Axis.horizontal,
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.red[50],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
                     ),
                   ),
-                ),
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      item.value.toString(),
-                      style: TextStyle(fontSize: 20.0),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
                     ),
                   ),
-                )
-              ]);
-        }).toList(),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.green[100],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.grey[200],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.blue[50],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+        ,
       ),
     );
   }
