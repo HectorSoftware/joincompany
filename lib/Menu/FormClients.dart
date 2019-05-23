@@ -27,29 +27,62 @@ class _FormClientState extends State<FormClient> {
   CustomerWithAddressModel client;
 
   TextEditingController name,code,note;
-
-   void setDataForm(String data, type t){}
+  String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
 
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
       color: Colors.grey.shade300,
-      child: TextFormField(
+      child: TextField(
         controller: getController(t),
         maxLines: maxLines,
         textInputAction: TextInputAction.next,
-        validator: (value){
-          //TODO
-        },
-        onSaved: (value){
-          setDataForm(value, t);
-        },
         decoration: InputDecoration(
             hintText: title,
-            border: InputBorder.none
+            border: InputBorder.none,
+            errorText: getErrorText(t),
         ),
+        onChanged: _onChanges(t),
       ),
     );
+  }
+
+  String getErrorText(type t){
+    switch(t){
+      case type.NAME:{
+        return errorTextFieldName;
+      }
+      case type.CODE:{
+        return errorTextFieldCode;
+      }
+      case type.NOTE:{
+        return errorTextFieldNote;
+      }
+    }
+    return "";
+  }
+
+  _onChanges(type t){
+    switch(t){
+      case type.NAME:{
+        setState(() {
+          errorTextFieldName = '';
+        });
+        break;
+      }
+      case type.CODE:{
+        setState(() {
+          errorTextFieldCode = '';
+        });
+        break;
+      }
+      case type.NOTE:{
+        setState(() {
+          errorTextFieldNote = '';
+        });
+        break;
+      }
+    }
   }
 
   TextEditingController getController(type t){
@@ -80,31 +113,39 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<bool> _asyncConfirmDialog() async {
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('¿Guardar?'),
-          content: const Text(
-              '¿estas seguro que desea guardar estos datos?'),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCELAR'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            FlatButton(
-              child: const Text('ACEPTAR'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            )
-          ],
-        );
-      },
-    );
+    if(name.text == '' && code.text == '' && note.text == '' ){
+      Navigator.of(context).pop(true);
+    }else{
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button for close dialog!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('¿Guardar?'),
+            content: const Text(
+                '¿estas seguro que desea guardar estos datos?'),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('CANCELAR'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              FlatButton(
+                child: const Text('ACEPTAR'),
+                onPressed: () {
+                  if(validateData()){
+                    savedData();
+                    Navigator.of(context).pop(true);
+                  }
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
+    return false;
   }
 
   void disposeController(){
@@ -117,7 +158,15 @@ class _FormClientState extends State<FormClient> {
      UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
       if(validateData()){
         if(widget.client != null){
-          //TODO: method update
+          CustomerModel client = CustomerModel(
+            id: widget.client.id,
+            name: widget.client.name,
+            code: widget.client.code,
+            details: widget.client.details,
+          );
+          var responseCreate = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+          print(responseCreate.statusCode);
+          print(responseCreate.body);
         }else{
           CustomerModel client = CustomerModel(
             name: name.text,
@@ -132,12 +181,24 @@ class _FormClientState extends State<FormClient> {
   }
 
   bool validateData(){
-    return true;// TODO;
+    if(name.text == ''){
+      setState(() {
+        errorTextFieldName = 'Campo requerido';
+      });
+      return false;
+    }
+    if( code.text == ''){
+      setState(() {
+        errorTextFieldCode = 'Campo requerido';
+      });
+      return false;
+    }else{
+      return true;
+    }
   }
 
   @override
   void dispose() {
-    savedData();
     disposeController();
     super.dispose();
   }
@@ -199,7 +260,7 @@ class _FormClientState extends State<FormClient> {
                   ],
                 )
               ),//client
-            Container(
+              Container(
                 margin: EdgeInsets.all(12.0),
                 height: MediaQuery.of(context).size.height * 0.030,
                 child:Row(
@@ -240,7 +301,7 @@ class _FormClientState extends State<FormClient> {
                   ],
                   )
                 ),//Direction
-                Container(
+              Container(
                   height: MediaQuery.of(context).size.height * 0.030,
                   margin: EdgeInsets.all(12.0),
                   child:Row(
@@ -268,10 +329,10 @@ class _FormClientState extends State<FormClient> {
                     ],
                   )
                 ),//Negotiates
-              ],
-            ),
+            ],
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 }
