@@ -141,7 +141,22 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<bool> _asyncConfirmDialog() async {
-    if((name.text == '' && code.text == '') || name.text == widget.client.name && code.text == widget.client.code){
+    if(widget.client != null){
+      if(name.text == widget.client.name && code.text == widget.client.code){
+        Navigator.of(context).pop(true);
+      }else{
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return popUp;
+          },
+        );
+      }
+      if(name.text == '' && code.text == ''){
+        Navigator.of(context).pop(true);
+      }
+    }else if(name.text == '' && code.text == ''){
       Navigator.of(context).pop(true);
     }else{
       return showDialog<bool>(
