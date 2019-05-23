@@ -14,9 +14,11 @@ enum Method{
   CAMERA,
   GALLERY
 }
+
+/// Signature of callbacks that have no arguments and return no data.
+typedef VoidCallback = void Function();
+
 class ListWidgets extends StatefulWidget {
-
-
   @override
   _ListWidgetsState createState() => new _ListWidgetsState();
 
@@ -24,11 +26,12 @@ class ListWidgets extends StatefulWidget {
 
 class _ListWidgetsState extends State<ListWidgets> {
 
-@override
+  @override
   void initState() {
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return null;
@@ -41,14 +44,26 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
-final formats = {
+  final formats = {
   InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
   InputType.date: DateFormat('yyyy-MM-dd'),
   InputType.time: DateFormat("HH:mm"),
 };
 
-// Changeable in demo
-InputType inputType = InputType.both;
+  bool checkSearchInText(String text, filterText){
+
+  text = text.toLowerCase();
+  text = text.replaceAll('á', "a");
+  text = text.replaceAll('é', "e");
+  text = text.replaceAll('í', "i");
+  text = text.replaceAll('ó', "o");
+  text = text.replaceAll('ú', "u");
+
+  return text.contains(filterText);
+}
+
+  // Changeable in demo
+  InputType inputType = InputType.both;
 
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
     return SingleChildScrollView(
@@ -194,16 +209,17 @@ InputType inputType = InputType.both;
       ),
     );
   }
-/*Widget dateTime(){
-    return  DateTimePickerFormField(
-      inputType: inputType,
-      format: formats[inputType],
-      editable: editable,
-      decoration: InputDecoration(
-          labelText: 'Date/Time', hasFloatingPlaceholder: false),
-      onChanged: (dt) => setState(() => date = dt),
-    ),
-}*/
+
+  /*Widget dateTime(){
+      return  DateTimePickerFormField(
+        inputType: inputType,
+        format: formats[inputType],
+        editable: editable,
+        decoration: InputDecoration(
+            labelText: 'Date/Time', hasFloatingPlaceholder: false),
+        onChanged: (dt) => setState(() => date = dt),
+      ),
+  }*/
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -223,7 +239,7 @@ InputType inputType = InputType.both;
     );
          }
 
-Future<Null> selectDate(BuildContext context )async{
+  Future<Null> selectDate(BuildContext context )async{
   final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _date,
@@ -232,7 +248,7 @@ Future<Null> selectDate(BuildContext context )async{
 
 }
 
-Widget date(BuildContext context, String string){
+  Widget date(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -261,7 +277,7 @@ Widget date(BuildContext context, String string){
   );
   }
 
-Widget timeWid(BuildContext context, String string){
+  Widget timeWid(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -361,6 +377,7 @@ Widget timeWid(BuildContext context, String string){
       ),
     );
   }
+
   Widget number(BuildContext context,placeholder, TextEditingController nameController){
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -443,6 +460,7 @@ Widget timeWid(BuildContext context, String string){
       ],
     );
   }
+
   pickerPhoto(Method m) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -452,6 +470,7 @@ Widget timeWid(BuildContext context, String string){
       });
     }
   }
+
   Widget imagePhoto(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -487,8 +506,8 @@ Widget timeWid(BuildContext context, String string){
       ],
     );
   }
-  Widget loadingTask(String string)
-  {
+
+  Widget loadingTask(String string){
     return Center(
       child: Column(
         children: <Widget>[
@@ -501,11 +520,9 @@ Widget timeWid(BuildContext context, String string){
     );
   }
 
-
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
-  Widget combo(List<FieldOptionModel> elements, String string)
-  {
+  Widget combo(List<FieldOptionModel> elements, String string){
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
 
     return  Padding(
@@ -541,9 +558,19 @@ Widget timeWid(BuildContext context, String string){
       icon: Icon(Icons.filter_list),
     );
   }
-@override
+
+  Widget searchButtonAppbar(Icon _searchIcon,VoidCallback _searchPressed,String tooltip, double iconSize){
+    return IconButton(
+      icon: _searchIcon,
+      tooltip: tooltip,
+      iconSize: iconSize,
+      onPressed: _searchPressed,
+    );
+  }
+
+  @override
   void setState(fn) {
-  dropdownValue ;
+    dropdownValue ;
     super.setState(fn);
   }
 }

@@ -9,6 +9,7 @@ import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 
@@ -25,7 +26,7 @@ class taskHomeTask extends StatefulWidget {
 }
 
 class _MytaskPageTaskState extends State<taskHomeTask> {
-
+  ListWidgets ls = ListWidgets();
   bool MostrarLista = false;
   UserDataBase UserActiv;
   static LatLng _initialPosition;
@@ -203,7 +204,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
           }else{
-            if(checkSearch(listTaskModellocal[PosicionActual].name)){
+            if(ls.createState().checkSearchInText(listTaskModellocal[PosicionActual].name, filterText)){
               if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                   (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
                   (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
@@ -354,16 +355,4 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     '11': 'Noviembre',
     '12': 'Diciembre',
   };
-
-  bool checkSearch(String name){
-
-    name = name.toLowerCase();
-    name = name.replaceAll('á', "a");
-    name = name.replaceAll('é', "e");
-    name = name.replaceAll('í', "i");
-    name = name.replaceAll('ó', "o");
-    name = name.replaceAll('ú', "u");
-
-    return name.contains(filterText);
-  }
 }

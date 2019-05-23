@@ -4,6 +4,7 @@ import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/Menu/clientes.dart';
@@ -14,6 +15,9 @@ class TaskHomePage extends StatefulWidget {
 }
 
 class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStateMixin{
+
+  ListWidgets ls = ListWidgets();
+
   TabController _controller;
   bool conditionalTask = false;
   bool conditionalMap = true;
@@ -22,6 +26,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   blocListTaskFilter blocListTaskresFilter;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
+
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
   final TextEditingController _filter = new TextEditingController();
@@ -51,12 +56,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         backgroundColor: PrimaryColor,
         title: _appBarTitle,
         actions: <Widget>[
-          IconButton(
-            icon: _searchIcon,
-            tooltip: 'Eliminar Cliente',
-            iconSize: 25,
-            onPressed: _searchPressed,
-          ),
+          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Cliente', 25),
           IconButton(
             icon: Icon(Icons.calendar_today),
             //ICONO DE ALMANAQUE NO LO ENCUENTRO
