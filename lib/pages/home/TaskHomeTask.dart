@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
@@ -15,9 +16,10 @@ import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskres});
+  taskHomeTask({this.blocListTaskres,this.blocListTaskFilterRes});
 
   final blocListTask blocListTaskres;
+  final blocListTaskFilter blocListTaskFilterRes;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
@@ -28,6 +30,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   UserDataBase UserActiv;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
+  String filterText = '';
 
   @override
   void initState() {
@@ -81,12 +84,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   ListViewTareas(){
     blocListTask bloctasks = widget.blocListTaskres;
+    blocListTaskFilter bloctasksFilter = widget.blocListTaskFilterRes;
 
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
       => setState((){
-        //print('******************');
         listTaskModellocal = new List<TaskModel>();
         var hasta = new DateTime.now();
         for(int h = 0; h < 15; h++){
@@ -99,6 +102,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             }
           }
         }
+      }));
+
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal)
+      => setState((){
+        filterText = newVal;
       }));
 
     }catch(e){ }
@@ -147,56 +156,112 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             }
           }
 
-          if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
-              (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
-              (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
-            DateTask = listTaskModellocal[PosicionActual].createdAt;
-            String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
-                .toString() + ' de ' + intsToMonths[DateTime
-                .parse(listTaskModellocal[PosicionActual].createdAt)
-                .month
-                .toString()] + ' ' + DateTime
-                .parse(listTaskModellocal[PosicionActual].createdAt)
-                .year
-                .toString();
 
-            var padding = 16.0;
-            double por = 0.1;
-            if (MediaQuery.of(context)
-                .orientation == Orientation.portrait) {
-              por = 0.07;
+
+          if(filterText == ''){
+            if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
+                (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
+                (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
+              DateTask = listTaskModellocal[PosicionActual].createdAt;
+              String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
+                  .toString() + ' de ' + intsToMonths[DateTime
+                  .parse(listTaskModellocal[PosicionActual].createdAt)
+                  .month
+                  .toString()] + ' ' + DateTime
+                  .parse(listTaskModellocal[PosicionActual].createdAt)
+                  .year
+                  .toString();
+
+              var padding = 16.0;
+              double por = 0.1;
+              if (MediaQuery.of(context)
+                  .orientation == Orientation.portrait) {
+                por = 0.07;
+              }
+
+              if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
+                  (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                  (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                dateTitulo = 'Hoy, ' + dateTitulo;
+
+              }
+              return Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * por,
+                      color: PrimaryColor,
+                      child: Text(dateTitulo, style: TextStyle(
+                          fontSize: 16, color: Colors.white)),
+                    ),
+                    ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
+                  ],
+                ),
+              );
+            } else {
+              return ListCard(
+                  title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
+          }else{
+            if(listTaskModellocal[PosicionActual].name.contains(filterText)){
+              if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
+                  (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
+                  (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
+                DateTask = listTaskModellocal[PosicionActual].createdAt;
+                String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
+                    .toString() + ' de ' + intsToMonths[DateTime
+                    .parse(listTaskModellocal[PosicionActual].createdAt)
+                    .month
+                    .toString()] + ' ' + DateTime
+                    .parse(listTaskModellocal[PosicionActual].createdAt)
+                    .year
+                    .toString();
 
-            if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
-              dateTitulo = 'Hoy, ' + dateTitulo;
+                var padding = 16.0;
+                double por = 0.1;
+                if (MediaQuery.of(context)
+                    .orientation == Orientation.portrait) {
+                  por = 0.07;
+                }
 
-            }
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * por,
-                    color: PrimaryColor,
-                    child: Text(dateTitulo, style: TextStyle(
-                        fontSize: 16, color: Colors.white)),
+                if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
+                    (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                    (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                  dateTitulo = 'Hoy, ' + dateTitulo;
+
+                }
+                return Container(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * por,
+                        color: PrimaryColor,
+                        child: Text(dateTitulo, style: TextStyle(
+                            fontSize: 16, color: Colors.white)),
+                      ),
+                      ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
+                    ],
                   ),
-                  ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
-                ],
-              ),
-            );
-          } else {
-            return ListCard(
-                title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
+                );
+              } else {
+                return ListCard(
+                    title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
+              }
+            }else{
+              return Container();
+            }
           }
         }
     ) : Center(
       child: CircularProgressIndicator(),
     );
   }
+
+
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
 
@@ -220,7 +285,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         if(checkInTaskResponse.statusCode == 200){
                           listTaskModellocal[index].status = 'done';
                           setState(() {
-                            listTaskModellocal;
+                            //listTaskModellocal;
                           });
                         }
                       }else{
@@ -228,7 +293,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         if(checkInTaskResponse.statusCode == 200){
                           listTaskModellocal[index].status = 'working';
                           setState(() {
-                            listTaskModellocal;
+                            //listTaskModellocal;
                           });
                         }
                       }

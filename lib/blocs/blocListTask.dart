@@ -10,11 +10,11 @@ class blocListTask {
 
   List<TaskModel> _listTask = List<TaskModel>();
 
-  var _tasksController = StreamController<List<TaskModel>>();
+  var _tasksController = StreamController<List<TaskModel>>.broadcast();
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
-  Future updateListTask(List<DateTime> fechaCalendario, String filter) async {
+  Future updateListTask(List<DateTime> fechaCalendario) async {
     _listTask = List<TaskModel>();
     inListTaks.add(_listTask);
 
@@ -37,7 +37,6 @@ class blocListTask {
       }
     }
 
-
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
@@ -46,69 +45,35 @@ class blocListTask {
     while(whilesalir){
       for(int i = 0; i < tasks.data.length; i++ ){
         TaskModel task;
-        if(filter == ""){
-          task = new TaskModel(
-              id: tasks.data[i].id,
-              createdAt:  tasks.data[i].createdAt,
-              updatedAt: tasks.data[i].updatedAt,
-              deletedAt: tasks.data[i].deletedAt,
-              createdById: tasks.data[i].createdById,
-              updatedById: tasks.data[i].updatedById,
-              deletedById: tasks.data[i].updatedById,
-              formId: tasks.data[i].formId,
-              responsibleId: tasks.data[i].responsibleId,
-              customerId: tasks.data[i].customerId,
-              addressId: tasks.data[i].addressId,
-              name: tasks.data[i].name,
-              planningDate: tasks.data[i].planningDate,
-              checkinDate: tasks.data[i].checkinDate,
-              checkinLatitude: tasks.data[i].checkinLatitude,
-              checkinLongitude: tasks.data[i].checkinLongitude,
-              checkoutDistance: tasks.data[i].checkinDistance,
-              checkoutDate: tasks.data[i].checkoutDate,
-              checkoutLatitude: tasks.data[i].checkoutLatitude,
-              checkoutLongitude: tasks.data[i].checkoutLongitude,
-              checkinDistance: tasks.data[i].checkoutDistance,
-              status: tasks.data[i].status,
-              customSections: tasks.data[i].customSections,
-              customValues: tasks.data[i].customValues,
-              form: tasks.data[i].form,
-              address: tasks.data[i].address,
-              customer: tasks.data[i].customer,
-              responsible: tasks.data[i].responsible);
-        }else{
-          if(tasks.data[i].name.contains(filter)){
-            task = new TaskModel(
-                id: tasks.data[i].id,
-                createdAt:  tasks.data[i].createdAt,
-                updatedAt: tasks.data[i].updatedAt,
-                deletedAt: tasks.data[i].deletedAt,
-                createdById: tasks.data[i].createdById,
-                updatedById: tasks.data[i].updatedById,
-                deletedById: tasks.data[i].updatedById,
-                formId: tasks.data[i].formId,
-                responsibleId: tasks.data[i].responsibleId,
-                customerId: tasks.data[i].customerId,
-                addressId: tasks.data[i].addressId,
-                name: tasks.data[i].name,
-                planningDate: tasks.data[i].planningDate,
-                checkinDate: tasks.data[i].checkinDate,
-                checkinLatitude: tasks.data[i].checkinLatitude,
-                checkinLongitude: tasks.data[i].checkinLongitude,
-                checkoutDistance: tasks.data[i].checkinDistance,
-                checkoutDate: tasks.data[i].checkoutDate,
-                checkoutLatitude: tasks.data[i].checkoutLatitude,
-                checkoutLongitude: tasks.data[i].checkoutLongitude,
-                checkinDistance: tasks.data[i].checkoutDistance,
-                status: tasks.data[i].status,
-                customSections: tasks.data[i].customSections,
-                customValues: tasks.data[i].customValues,
-                form: tasks.data[i].form,
-                address: tasks.data[i].address,
-                customer: tasks.data[i].customer,
-                responsible: tasks.data[i].responsible);
-          }
-        }
+        task = new TaskModel(
+            id: tasks.data[i].id,
+            createdAt:  tasks.data[i].createdAt,
+            updatedAt: tasks.data[i].updatedAt,
+            deletedAt: tasks.data[i].deletedAt,
+            createdById: tasks.data[i].createdById,
+            updatedById: tasks.data[i].updatedById,
+            deletedById: tasks.data[i].updatedById,
+            formId: tasks.data[i].formId,
+            responsibleId: tasks.data[i].responsibleId,
+            customerId: tasks.data[i].customerId,
+            addressId: tasks.data[i].addressId,
+            name: tasks.data[i].name,
+            planningDate: tasks.data[i].planningDate,
+            checkinDate: tasks.data[i].checkinDate,
+            checkinLatitude: tasks.data[i].checkinLatitude,
+            checkinLongitude: tasks.data[i].checkinLongitude,
+            checkoutDistance: tasks.data[i].checkinDistance,
+            checkoutDate: tasks.data[i].checkoutDate,
+            checkoutLatitude: tasks.data[i].checkoutLatitude,
+            checkoutLongitude: tasks.data[i].checkoutLongitude,
+            checkinDistance: tasks.data[i].checkoutDistance,
+            status: tasks.data[i].status,
+            customSections: tasks.data[i].customSections,
+            customValues: tasks.data[i].customValues,
+            form: tasks.data[i].form,
+            address: tasks.data[i].address,
+            customer: tasks.data[i].customer,
+            responsible: tasks.data[i].responsible);
         _listTask.add(task);
       }
       if(tasks.nextPageUrl != null){
@@ -124,8 +89,8 @@ class blocListTask {
     _tasksController.close();
   }
 
-  blocListTask(List<DateTime> fechaCalendario, String filter) {
-    updateListTask(fechaCalendario, filter);
+  blocListTask(List<DateTime> fechaCalendario) {
+    updateListTask(fechaCalendario);
   }
 }
 
