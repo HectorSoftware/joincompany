@@ -203,7 +203,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
           }else{
-            if(checkSearch(listTaskModellocal[PosicionActual].name)){
+            if(checkSearch(title) || checkSearch(customerName) || checkSearch(address)){
               if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                   (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
                   (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {

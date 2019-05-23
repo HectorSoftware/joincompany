@@ -132,7 +132,9 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 title: mark.customer,
                 snippet: mark.address,
                 onTap: (){
-                  Navigator.pushNamed(context, '/formularioTareas');
+                  if(mark.status == 0){
+                    Navigator.pushNamed(context, '/formularioTareas');
+                  }
                 }
             ),
             icon: await ColorMarker(mark),
