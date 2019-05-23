@@ -73,7 +73,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: (){
-              Navigator.pushReplacementNamed(context, '/formularioTareas');
+              Navigator.pushNamed(context, '/formularioTareas');
 
             }),
       ),
