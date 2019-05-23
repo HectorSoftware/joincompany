@@ -57,8 +57,6 @@ void initState(){
                  stream: _bloc.outSaveForm,
                  builder: (context, snapshot) {
 
-
-
                  }
              );
              Navigator.pop(context);
@@ -144,17 +142,20 @@ void initState(){
                                      title: Text('${formType.data[index].name}'),
                                      leading: Icon(Icons.label),
                                      onTap: () async {
+                                      try{
+                                        var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                        FormModel form = FormModel.fromJson(getFormResponse.body);
+                                        _bloc.idFormType = formType.data[index].id.toString();
+                                        _bloc.customer = customer;
+                                        _bloc.token = token;
+                                        _bloc.form = form;
+                                        // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
+                                        _bloc.updateListWidget(context);
 
-                                       var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                         FormModel form = FormModel.fromJson(getFormResponse.body);
-                                           _bloc.idFormType = formType.data[index].id.toString();
-                                           _bloc.customer = customer;
-                                           _bloc.token = token;
-                                           _bloc.form = form;
-                                         // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
-                                         _bloc.updateListWidget(context);
+                                        Navigator.pop(context);
 
-                                       Navigator.pop(context);
+
+                                      }catch(e){}
 
 
 

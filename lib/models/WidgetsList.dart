@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 
@@ -46,7 +47,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.all(10),
+        margin: EdgeInsets.all(12),
         width: MediaQuery.of(contex).size.width,
         height: MediaQuery.of(contex).size.height * 0.4,
         child: ListView(
@@ -55,7 +56,7 @@ class _ListWidgetsState extends State<ListWidgets> {
           children: <Widget>[
             Container(
               width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.red[50],
+              color: Colors.grey[200],
               child: Column(
                 children: <Widget>[
                   Card(
@@ -119,7 +120,7 @@ class _ListWidgetsState extends State<ListWidgets> {
             ),
             Container(
               width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.grey[200],
+              color: Colors.red[50],
               child: Column(
                 children: <Widget>[
                   Card(
@@ -216,12 +217,20 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
          }
 
-Future<Null> selectDate(BuildContext context )async{
+Future<Null> selectDate(context )async{
   final DateTime picked = await showDatePicker(
-      context: context,
+      context: context.inheritFromWidgetOfExactType(Widget),
       initialDate: _date,
       firstDate: new DateTime(2000),
-      lastDate: new DateTime(2020));
+      lastDate: new DateTime(2020)
+  );
+
+  if (picked != null && picked != _date){
+    setState(() {
+      _date = picked;
+    });
+
+  }
 
 }
 
@@ -247,7 +256,7 @@ Widget date(BuildContext context, String string){
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
           child: Text('${_date.toString().substring(0,10)}'),
-          onPressed: (){selectDate(context);},
+          onPressed: (){selectDate(context.ancestorInheritedElementForWidgetOfExactType(Widget));},
         ),
       ),
     ],
@@ -288,7 +297,8 @@ Widget timeWidget(BuildContext context, String string){
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
-            width: MediaQuery.of(context).size.width/1.2,
+
+            width: MediaQuery.of(context).size.width,
             height: 150,
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
@@ -309,22 +319,24 @@ Widget timeWidget(BuildContext context, String string){
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
-
                 border: InputBorder.none,
-
                 hintText: placeholder,
               ),
             ),
           ),
+
         );
+
+
   }
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
     //-----------------------------------------INPUT----------------------------------
+    TextEditingController public = nameController;
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-          width: MediaQuery.of(context).size.width/1.2,
+          width: MediaQuery.of(context).size.width,
           height: 40,
           padding: EdgeInsets.only(
               top: 4,left: 16, right: 16, bottom: 4
@@ -400,7 +412,6 @@ Widget timeWidget(BuildContext context, String string){
           });
       }
   }
-
   Widget imageImage(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -436,6 +447,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
+
+
   pickerPhoto(Method m) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -456,7 +469,7 @@ Widget timeWidget(BuildContext context, String string){
                   padding: const EdgeInsets.only(top: 10,left: 5),
                   child: RaisedButton(
                     onPressed: (){
-                      pickerImage(Method.CAMERA);
+                      pickerPhoto(Method.CAMERA);
                     },
                     child: Text(string),
                     color: PrimaryColor,
@@ -480,8 +493,9 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-  Widget loadingTask(String string)
-  {
+
+
+  Widget loadingTask(String string) {
     return Center(
       child: Column(
         children: <Widget>[
