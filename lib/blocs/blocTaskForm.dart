@@ -102,7 +102,7 @@ class BlocTaskForm  {
                      //Desde aca para abajo
                case 'Time':
                  {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
+                   listWidget.add(items.createState().timeWidget(context,k.fieldType));
                  }
                  break;
                case 'DateTime':

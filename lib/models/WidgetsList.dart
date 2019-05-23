@@ -3,12 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
-import 'package:joincompany/pages/FirmTouch.dart';
 
 enum Method{
   CAMERA,
@@ -41,14 +38,10 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
-final formats = {
-  InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
-  InputType.date: DateFormat('yyyy-MM-dd'),
-  InputType.time: DateFormat("HH:mm"),
-};
+
 
 // Changeable in demo
-InputType inputType = InputType.both;
+
 
   Widget tab(List<FieldOptionModel> data){
     return SingleChildScrollView(
@@ -151,7 +144,7 @@ Widget date(BuildContext context, String string){
   );
   }
 
-Widget timeWid(BuildContext context, String string){
+Widget timeWidget(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -172,7 +165,7 @@ Widget timeWid(BuildContext context, String string){
       Padding(
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
-          child: Text('${_time.toString()}'),
+          child: Text(string),
           onPressed: (){selectTime(context);},
         ),
       ),
