@@ -11,7 +11,7 @@ import 'package:joincompany/services/TaskService.dart';
 class TaskBloc{
   List<Place> _listMarker = new List<Place>();
 
-  final _taskcontroller = StreamController<List<Place>>();
+  final _taskcontroller = StreamController<List<Place>>.broadcast();
   Sink<List<Place>> get _inTask => _taskcontroller.sink;
   Stream<List<Place>> get outTask => _taskcontroller.stream;
 

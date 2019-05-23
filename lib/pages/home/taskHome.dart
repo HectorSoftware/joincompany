@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
@@ -18,31 +19,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalMap = true;
   bool conditionalHome = true;
   blocListTask blocListTaskres;
+  blocListTaskFilter blocListTaskresFilter;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
-
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
   final TextEditingController _filter = new TextEditingController();
-
-  void _searchPressed() {
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-          controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
-              hintText: 'Search...'
-          ),
-        );
-      } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Join');
-        _filter.clear();
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -51,7 +33,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           () {setState((){});
       },
     );
-//    blocListTaskres = new blocListTask();
     super.initState();
   }
 
@@ -108,13 +89,15 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
-    blocListTaskres = new blocListTask(valueselectDate, _filter.text);
+    blocListTaskres = new blocListTask(valueselectDate);
+    blocListTaskresFilter = new blocListTaskFilter(_filter);
     setState(() {
       blocListTaskres;
+      blocListTaskresFilter;
     });
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskres: blocListTaskres,),
+        taskHomeTask(blocListTaskres: blocListTaskres,blocListTaskFilterRes: blocListTaskresFilter,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -233,8 +216,31 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         });
       }
     }
-
-
+  }
+  String textFilter = '';
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+          controller: _filter,
+          decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Buscar'
+          ),
+          onChanged: (value){
+              setState(() {
+                textFilter = value.toString();
+                blocListTaskresFilter;
+              });
+            },
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Join');
+        _filter.clear();
+      }
+    });
   }
 
 }
