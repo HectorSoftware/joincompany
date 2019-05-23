@@ -31,9 +31,13 @@ class ClientDatabaseProvider{
 
   //muestra un solo cliente por el id la base de datos
   Future<UserDataBase> getCodeId(String codigo) async {
-    final db = await database;
-    var response = await db.query("User", where: "idTable = ?", whereArgs: [codigo]);
-    return response.isNotEmpty ? UserDataBase.fromMap(response.first) : null;
+    try{
+      final db = await database;
+      var response = await db.query("User", where: "idTable = ?", whereArgs: [codigo]);
+      return response.isNotEmpty ? UserDataBase.fromMap(response.first) : null;
+    }catch(e){
+      return null;
+    }
   }
 
   //Insert

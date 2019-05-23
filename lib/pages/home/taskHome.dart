@@ -107,7 +107,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
- Drawer buildDrawer() {
+  Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
       child: new ListView(
@@ -183,6 +183,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
+
   List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
@@ -217,6 +218,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       }
     }
   }
+
   String textFilter = '';
   void _searchPressed() {
     setState(() {
