@@ -108,7 +108,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
-    blocListTaskres = new blocListTask(valueselectDate);
+    blocListTaskres = new blocListTask(valueselectDate, _filter.text);
     setState(() {
       blocListTaskres;
     });
