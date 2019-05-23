@@ -14,13 +14,29 @@ class blocListTask {
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
-  Future updateListTask(String fechaCalendario)
-  async {
+  Future updateListTask(List<DateTime> fechaCalendario) async {
+    _listTask = List<TaskModel>();
+    inListTaks.add(_listTask);
 
     var hasta = new DateTime.now();
     var desde = new DateTime.now().add(Duration(days: -15));
-    String diadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 00:00:00';
-    String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
+    String diadesde = '';
+    String hastadesde = '';
+    if(fechaCalendario.length == 0){
+      diadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 00:00:00';
+      hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
+    }else{
+      print(fechaCalendario[0].toString());
+      if(fechaCalendario.length == 1){
+        diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
+        hastadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 23:59:59';
+      }else{
+        print(fechaCalendario[1].toString());
+        diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
+        hastadesde = DateTime.parse(fechaCalendario[1].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).day.toString() + ' 23:59:59';
+      }
+    }
+
 
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
@@ -73,15 +89,8 @@ class blocListTask {
     _tasksController.close();
   }
 
-  blocListTask(String fechaCalendario) {
-//    print('////////////');
-//    print(fechaCalendario);
-//    if(fechaCalendario == ''){
-//      updateListTask(fechaCalendario);
-//    }else{
-//      _listTask = List<TaskModel>();
-      inListTaks.add(_listTask);
-//    }
+  blocListTask(List<DateTime> fechaCalendario) {
+    updateListTask(fechaCalendario);
   }
 }
 

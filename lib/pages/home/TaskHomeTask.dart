@@ -87,6 +87,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
       => setState((){
         //print('******************');
+        listTaskModellocal = new List<TaskModel>();
         var hasta = new DateTime.now();
         for(int h = 0; h < 15; h++){
           hasta = new DateTime.now().add(Duration(days: -h));
@@ -161,10 +162,16 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
             var padding = 16.0;
             double por = 0.1;
-            if (MediaQuery
-                .of(context)
+            if (MediaQuery.of(context)
                 .orientation == Orientation.portrait) {
               por = 0.07;
+            }
+
+            if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
+                (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+              dateTitulo = 'Hoy, ' + dateTitulo;
+
             }
             return Container(
               child: Column(
@@ -211,8 +218,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       if(value){
                         var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode == 200){
-                          TaskModel task = TaskModel.fromJson(checkInTaskResponse.body);
-                          print(task.updatedAt);
                           listTaskModellocal[index].status = 'done';
                           setState(() {
                             listTaskModellocal;

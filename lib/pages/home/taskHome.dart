@@ -6,6 +6,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/Menu/clientes.dart';
+import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
@@ -17,6 +18,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalMap = true;
   bool conditionalHome = true;
   blocListTask blocListTaskres;
+  var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
+  var DatepickedEnd = new DateTime.now();
 
   @override
   void initState() {
@@ -181,21 +184,38 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
-  String valueselectDate = '';
+  List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: new DateTime(1990),
-        lastDate: new DateTime(2030)
+    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    context: context,
+    initialFirstDate: DatepickedInit,
+    initialLastDate: DatepickedEnd,
+    firstDate: new DateTime(1990),
+    lastDate: new DateTime(2030)
     );
     if(picked != null){
-      setState(() =>
-        valueselectDate = picked.toString()
-      );
-      setState(() {
-        blocListTaskres;
-      });
+      bool updateVarDataTime = false;
+      if(picked.length == 1){
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[0])){
+          updateVarDataTime = true; DatepickedInit = DatepickedEnd = picked[0];
+        }
+      }else{
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[1])){
+          updateVarDataTime = true;
+          DatepickedInit = picked[0];
+          DatepickedEnd = picked[1];
+        }
+      }
+
+      if(updateVarDataTime){
+        setState(() =>
+        valueselectDate = picked,
+        );
+        setState(() {
+          DatepickedInit; DatepickedEnd;
+          blocListTaskres;
+        });
+      }
     }
 
 
