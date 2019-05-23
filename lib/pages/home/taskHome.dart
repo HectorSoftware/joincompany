@@ -16,6 +16,29 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalMap = true;
   bool conditionalHome = true;
 
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Join');
+  final TextEditingController _filter = new TextEditingController();
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+          controller: _filter,
+          decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Search...'
+          ),
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Join');
+        _filter.clear();
+      }
+    });
+  }
+
   @override
   void initState() {
     _controller = TabController(length: 2, vsync: this);
@@ -38,20 +61,13 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       drawer: buildDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
-        title: new Text('Join'),
+        title: _appBarTitle,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.search),
+            icon: _searchIcon,
             tooltip: 'Eliminar Cliente',
             iconSize: 25,
-            onPressed: (){
-              //FUNCION DE BUSQUEDA EN TAREAS
-              //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchAddress()),
-              );*/
-            },
+            onPressed: _searchPressed,
           ),
           IconButton(
             icon: Icon(Icons.calendar_today),
