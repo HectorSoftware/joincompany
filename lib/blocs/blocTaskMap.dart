@@ -37,7 +37,7 @@ class TaskBloc{
         valadde = tasks.data[i].address.address;
         if(tasks.data[i].status == 'done'){sendStatus = 2;}
         if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = 1;}
-        marker = Place(id: i+1, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: sendStatus);
+        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: sendStatus);
         _listMarker.add(marker);
       }
     }

@@ -6,6 +6,7 @@ import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -13,7 +14,10 @@ class Cliente extends StatefulWidget {
 
 class _ClienteState extends State<Cliente> {
 
-  Widget clientCard(String dataClient) {//TODO: change String for Client
+  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
+    String title = titleCli;
+    String subtitle = subtitleCli;
+    int id = idCli;
     return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -26,7 +30,7 @@ class _ClienteState extends State<Cliente> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                      dataClient,
+                    title,
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold
@@ -36,11 +40,11 @@ class _ClienteState extends State<Cliente> {
               ),
               Container(
                 margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text("direcion "),),
+                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
               ),
             ],
           ),
-          IconButton(icon: Icon(Icons.description),onPressed: (){},),
+          IconButton(icon: Icon(Icons.mode_edit),onPressed: (){},),
         ],
       ),
     );
@@ -144,7 +148,7 @@ class _ClienteState extends State<Cliente> {
       ),
       body: Stack(
         children: <Widget>[
-          ListViewTareas(),
+          listViewCustomers(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -156,29 +160,36 @@ class _ClienteState extends State<Cliente> {
           Navigator.push(
               context,
               new MaterialPageRoute(
-                  builder: (BuildContext context) => new  AddClient()));
+                  builder: (BuildContext context) => new  FormClient(null)));
         },
 
       ),
     );
   }
 
-  ListViewTareas(){
+  listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
 
     // ignore: missing_required_param
-    return StreamBuilder<List<CustomerModel>>(
+    return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
-      initialData: <CustomerModel>[],
+      initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
       if (snapshot.data.isNotEmpty) {
         return ListView.builder(
           itemCount: snapshot.data.length,
           itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
-                subtitle: Text(snapshot.data[index].code, style: TextStyle(fontSize: 12),),
-                onTap: (){},
+              return Card(
+                child: ListTile(
+                  title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
+                  subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (BuildContext context) => new  FormClient(snapshot.data[index])));
+                  },
+                ),
               );
           }
         );

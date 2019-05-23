@@ -5,7 +5,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 
 class AddContact extends StatelessWidget {
   ListWidgets lw = ListWidgets();
-  final String a = "";//TODO: data contact, Object of Model Contacts
+  final String a = "";
 
   Widget customTextField(String title,String savedData,int maxLines,bool isRequered){
     return Container(
@@ -61,28 +61,11 @@ class AddContact extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(Icons.add),
                           onPressed: (){
-                            List<FieldOptionModel> ls = List<FieldOptionModel>();
-                            ls.add(FieldOptionModel(
-                              value: 1,
-                              name: 'test 1'
-                            ));
-                            ls.add(FieldOptionModel(
-                                value: 2,
-                                name: 'test 2'
-                            ));
-                            ls.add(FieldOptionModel(
-                                value: 3,
-                                name: 'test 3'
-                            ));
-                            ls.add(FieldOptionModel(
-                                value: 4,
-                                name: 'test 4'
-                            ));
 
                             showDialog(context: context,
                                 builder: (BuildContext contex){
                                   return AlertDialog(
-                                    content: lw.createState().tab(ls),
+
                                   );
                                 }
                             );

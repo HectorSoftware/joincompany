@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/services/UserService.dart';
 
 enum type{
   NAME,
   CODE,
   DEFAULT,
-  POSITIONS,
+  TITLE,
   TLF_F,
   TLF_M,
   EMAIL,
@@ -25,7 +29,7 @@ class _ConfigCliState extends State<ConfigCli> {
   static const int linesInputsBasic = 1;
   static const int linesInputsTextAreaBasic = 4;
 
-  TextEditingController name,code,defaults,pos,tlfF,tlfM,email,note,password;    //TODO: implement model setDataConfig
+  TextEditingController name,code,defaults,title,tlfF,tlfM,email,note,password;
 
   void setDataForm(String data, type t){
       //TODO
@@ -35,7 +39,7 @@ class _ConfigCliState extends State<ConfigCli> {
     name = TextEditingController();
     code = TextEditingController();
     defaults = TextEditingController();
-    pos = TextEditingController();
+    title = TextEditingController();
     tlfF = TextEditingController();
     tlfM = TextEditingController();
     email = TextEditingController();
@@ -47,7 +51,7 @@ class _ConfigCliState extends State<ConfigCli> {
     name.dispose();
     code.dispose();
     defaults.dispose();
-    pos.dispose();
+    title.dispose();
     tlfF.dispose();
     tlfM.dispose();
     email.dispose();
@@ -55,8 +59,21 @@ class _ConfigCliState extends State<ConfigCli> {
     password.dispose();
   }
 
-  void getConfig(){
-    //TODO
+  void getConfig() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    name.text = user.name;
+    code.text =  user.code;
+    defaults.text =  user.profile;//TODO
+    title.text =  user.title;
+    tlfF.text =  user.phone;
+    tlfM.text =  user.phone;
+    email.text =  user.email;
+    note.text =  user.details;
+    password.text = "";
+
   }
 
   @override
@@ -107,8 +124,8 @@ class _ConfigCliState extends State<ConfigCli> {
       case type.DEFAULT:{
         return defaults;
       }
-      case type.POSITIONS:{
-        return pos;
+      case type.TITLE:{
+        return title;
       }
       case type.TLF_F:{
         return tlfF;
@@ -141,8 +158,8 @@ class _ConfigCliState extends State<ConfigCli> {
             children: <Widget>[
               customTextField("Nombre",type.NAME,linesInputsBasic),
               customTextField("Codigo",type.CODE,linesInputsBasic),
-              customTextField("????",type.DEFAULT,linesInputsBasic),
-              customTextField("Cargo",type.POSITIONS,linesInputsBasic),
+              customTextField("profile",type.DEFAULT,linesInputsBasic),
+              customTextField("titulo",type.TITLE,linesInputsBasic),
               customTextField("Telefono fijo",type.TLF_F,linesInputsBasic),
               customTextField("Telefono movil",type.TLF_M,linesInputsBasic),
               customTextField("Emails",type.EMAIL,linesInputsBasic),
