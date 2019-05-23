@@ -27,15 +27,20 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   static const kGoogleApiKeyy = kGoogleApiKey;
+  TaskBloc _Bloc;
+  StreamSubscription streamSubscription;
 
   @override
   Future initState() {
+    _Bloc = new TaskBloc();
     _getUserLocation();
     super.initState();
   }
 
   @override
   void dispose(){
+    streamSubscription.cancel();
+    _Bloc.dispose();
     super.dispose();
   }
 
@@ -105,17 +110,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
   List<Place> listplace = new List<Place>();
   Future _addMarker() async {
-    //*********************
-    //EJEMPLOS PARA PRUEBAS
-    //*********************
-    //final TaskBloc _Bloc = BlocProvider.of<TaskBloc>(context);
-    final TaskBloc _Bloc = new TaskBloc();
-    //*********************
-    //*********************
 
     try{
       // ignore: cancel_subscriptions
-      StreamSubscription streamSubscription = _Bloc.outTask.listen((newVal)
+      streamSubscription = _Bloc.outTask.listen((newVal)
       => setState((){
         listplace = newVal;
         allmark(listplace);
@@ -232,6 +230,8 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     for(Place p in listplace){
       if(p.status == 1){
         listas_porhacer.add(p);
+      }else{
+        print(p.id);
       }
     }
 
@@ -244,7 +244,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
             itemCount: listas_porhacer.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(listas_porhacer[index].customer),
+                title: Text(listas_porhacer[index].customer + ' ' + listas_porhacer[index].id.toString()),
                 subtitle: Text(listas_porhacer[index].address),
                 leading: Icon(Icons.location_on,color: Colors.red,),
                 onTap: (){

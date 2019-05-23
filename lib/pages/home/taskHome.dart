@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/Menu/clientes.dart';
+import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
@@ -15,6 +17,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
+  blocListTask blocListTaskres;
+  var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
+  var DatepickedEnd = new DateTime.now();
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
@@ -46,12 +51,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           () {setState((){});
       },
     );
+//    blocListTaskres = new blocListTask();
     super.initState();
   }
 
   @override
   void dispose(){
     _controller.dispose();
+    blocListTaskres.dispose();
     super.dispose();
   }
 
@@ -76,6 +83,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
+              selectDate(context);
             },
           ),
         ],
@@ -100,64 +108,19 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
+    blocListTaskres = new blocListTask(valueselectDate);
+    setState(() {
+      blocListTaskres;
+    });
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(),
+        taskHomeTask(blocListTaskres: blocListTaskres,),
         taskHomeMap(),
       ],
       controller: _controller,
       physics: _controller.index == 0
           ? AlwaysScrollableScrollPhysics()
           : NeverScrollableScrollPhysics(),
-    );
-  }
-
-  Container tabBarButton(){
-    return Container(
-      margin: EdgeInsets.only(top: 0),
-      padding: EdgeInsets.only(top: 0),
-      child: Row(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: conditionalTask? Colors.grey : Colors.white,
-                child: Text('Tarea'),
-                onPressed: (){
-                  setState(() {
-                    conditionalTask = false;
-                    conditionalMap = true;
-                    conditionalHome = true;
-                  });
-                },
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: conditionalTask? Colors.grey : Colors.white,
-                child: Text('Mapa'),
-                onPressed: (){
-                  setState(() {
-                    conditionalTask = true;
-                    conditionalMap = false;
-                    conditionalHome = false;
-                  });
-                },
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -237,5 +200,41 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
+  List<DateTime> valueselectDate = new List<DateTime>();
+  Future<Null> selectDate( context )async{
+    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    context: context,
+    initialFirstDate: DatepickedInit,
+    initialLastDate: DatepickedEnd,
+    firstDate: new DateTime(1990),
+    lastDate: new DateTime(2030)
+    );
+    if(picked != null){
+      bool updateVarDataTime = false;
+      if(picked.length == 1){
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[0])){
+          updateVarDataTime = true; DatepickedInit = DatepickedEnd = picked[0];
+        }
+      }else{
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[1])){
+          updateVarDataTime = true;
+          DatepickedInit = picked[0];
+          DatepickedEnd = picked[1];
+        }
+      }
+
+      if(updateVarDataTime){
+        setState(() =>
+        valueselectDate = picked,
+        );
+        setState(() {
+          DatepickedInit; DatepickedEnd;
+          blocListTaskres;
+        });
+      }
+    }
+
+
+  }
 
 }

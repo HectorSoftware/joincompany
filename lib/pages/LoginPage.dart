@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/FormModel.dart';
-import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
+
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
@@ -34,9 +28,9 @@ class _LoginPageState extends State<LoginPage> {
 
   UserDataBase saveUser;
   UserDataBase userVe;
-  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+  final nameController = TextEditingController(text : 'eibanez@duperu.com');
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : 'getkem');
+  final companyController = TextEditingController(text : 'duperu');
   bool TextViewVisible = true;
   bool AgregarUser = true;
   String companyEstable = '';
@@ -89,7 +83,6 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   child: Image.asset('assets/images/final-logo.png'),
                 )
-
               ),
             ],
           ),
@@ -162,6 +155,7 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
           ),
+          TextViewVisible ?
           Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -172,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: BoxDecoration(
               color: Colors.transparent,
             ),
-            child: TextViewVisible ? TextField(
+            child: TextField(
               controller: companyController,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -182,8 +176,8 @@ class _LoginPageState extends State<LoginPage> {
                 errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                 hintText: 'Empresa',
               ),
-            ) : Container(),
-          ),
+            ) ,
+          ) : Container(),
           Container(
             height: MediaQuery.of(context).size.height * 0.08,
             width: MediaQuery.of(context).size.width/1.2,
@@ -310,11 +304,10 @@ class _LoginPageState extends State<LoginPage> {
   ValidarUsrPrimeraVez() async {
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     if(UserActiv != null){
-      TextViewVisible = false;
-      AgregarUser = false;
-      companyEstable = UserActiv.company;
       setState(() {
-        TextViewVisible;AgregarUser;companyEstable;
+        TextViewVisible = false;
+        AgregarUser = false;
+        companyEstable = UserActiv.company;
       });
     }
   }

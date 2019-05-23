@@ -1,13 +1,14 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
+import 'package:joincompany/pages/FirmTouch.dart';
 
 enum Method{
   CAMERA,
@@ -23,49 +24,186 @@ class ListWidgets extends StatefulWidget {
 
 class _ListWidgetsState extends State<ListWidgets> {
 
+@override
+  void initState() {
+
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return null;
+  }
 
   DateTime _date = new DateTime.now();
+
   TimeOfDay _time = new TimeOfDay.now();
   File image;
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
+final formats = {
+  InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+  InputType.date: DateFormat('yyyy-MM-dd'),
+  InputType.time: DateFormat("HH:mm"),
+};
 
-  Widget tab(List<FieldOptionModel> data){
+// Changeable in demo
+InputType inputType = InputType.both;
+
+  Widget tab(List<FieldOptionModel> data,BuildContext contex){
     return SingleChildScrollView(
-      child: Table(
-        columnWidths: {
-          0: FixedColumnWidth(80.0),
-          1: FixedColumnWidth(80.0),
-        },
-        border: TableBorder.all(width: 1.0),
-        children: data.map((item) {
-          return TableRow(
-              children:<Widget>[
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      item.name,
-                      style: TextStyle(fontSize: 20.0),
+      child: Container(
+        margin: EdgeInsets.all(10),
+        width: MediaQuery.of(contex).size.width,
+        height: MediaQuery.of(contex).size.height * 0.4,
+        child: ListView(
+          // This next line does the trick.
+          scrollDirection: Axis.horizontal,
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.red[50],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
                     ),
                   ),
-                ),
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      item.value.toString(),
-                      style: TextStyle(fontSize: 20.0),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
                     ),
                   ),
-                )
-              ]);
-        }).toList(),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.green[100],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.grey[200],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              color: Colors.blue[50],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Divider(
+                    height: 20,
+                    color: Colors.black,
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                  Card(
+                    child:
+                    TextField(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+        ,
       ),
     );
   }
-
+/*Widget dateTime(){
+    return  DateTimePickerFormField(
+      inputType: inputType,
+      format: formats[inputType],
+      editable: editable,
+      decoration: InputDecoration(
+          labelText: 'Date/Time', hasFloatingPlaceholder: false),
+      onChanged: (dt) => setState(() => date = dt),
+    ),
+}*/
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -78,45 +216,81 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
 
-  Future<Null> selectDate( context )async{
-    final DateTime picked = await showDatePicker(
+  Future<Null> selectTime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
         context: context,
-        initialDate: _date,
-        firstDate: new DateTime(2000),
-        lastDate: new DateTime(2020));
+        initialTime: _time,
+    );
+         }
 
-  }
-  Widget date(context, String string){
-    //------------------------------DATE--------------------------
-    return Padding(
-      padding: const EdgeInsets.only(right: 220),
-      child: Container(
-        width: MediaQuery.of(context).size.width *0.5,
+Future<Null> selectDate(BuildContext context )async{
+  final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: new DateTime(2000),
+      lastDate: new DateTime(2020));
+
+}
+
+Widget date(BuildContext context, String string){
+  //------------------------------DATE--------------------------
+  return Row(
+    children: <Widget>[
+      Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 1,left: 16),
+                child: Text(string),
+              ),
+            ],
+          ),
+
+        ],
+
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
-          child: Text('$string: ${_date.toString().substring(0,10)}'),
+          child: Text('${_date.toString().substring(0,10)}'),
           onPressed: (){selectDate(context);},
         ),
       ),
-    );
+    ],
+  );
   }
 
-  Future<Null> _selectTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-        context: context,
-        initialTime: _time
-    );
-  }
-  Widget dateTime(context){
-    return Container(
-      width: MediaQuery.of(context).size.width*0.5,
-      child: RaisedButton(
-        child: Text('Hora: ${_time.format(context)}'),
-        onPressed: (){_selectTime(context);},
+Widget timeWid(BuildContext context, String string){
+  //------------------------------DATE--------------------------
+  return Row(
+    children: <Widget>[
+      Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 1,left: 16),
+                child: Text(string),
+              ),
+            ],
+          ),
+
+        ],
+
       ),
-    );
-  }
+      Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: RaisedButton(
+          child: Text('${_time.toString()}'),
+          onPressed: (){selectTime(context);},
+        ),
+      ),
+    ],
+  );
+}
 
-  Widget textArea(context,placeholder){
+  Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
     return
         Padding(
           padding: const EdgeInsets.all(15.0),
@@ -140,7 +314,7 @@ class _ListWidgetsState extends State<ListWidgets> {
             ),
             child: TextField(
               maxLines: 4,
-              //controller: nameController,
+              controller: nameController,
               decoration: InputDecoration(
 
                 border: InputBorder.none,
@@ -152,7 +326,7 @@ class _ListWidgetsState extends State<ListWidgets> {
         );
   }
 
-  Widget input(context,placeholder){
+  Widget text( BuildContext context,placeholder, TextEditingController nameController){
     //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -176,7 +350,7 @@ class _ListWidgetsState extends State<ListWidgets> {
           ),
           child: TextField(
             maxLines: 1,
-            //controller: nameController,
+            controller: nameController,
             decoration: InputDecoration(
 
               border: InputBorder.none,
@@ -187,11 +361,11 @@ class _ListWidgetsState extends State<ListWidgets> {
       ),
     );
   }
-  Widget number(context,placeholder){
+  Widget number(BuildContext context,placeholder, TextEditingController nameController){
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.3,
+        width:  40,
         height: 40,
         padding: EdgeInsets.only(
             top: 4,left: 16, right: 16, bottom: 4
@@ -213,7 +387,7 @@ class _ListWidgetsState extends State<ListWidgets> {
 
           keyboardType: TextInputType.number,
           maxLines: 1,
-          //controller: nameController,
+          controller: nameController,
           decoration: InputDecoration(
             border: InputBorder.none,
 
@@ -224,52 +398,101 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
 
-  picker(Method m) async {
-    switch(m){
-      case Method.CAMERA:{
-        File img = await ImagePicker.pickImage(source: ImageSource.camera);
+  pickerImage(Method m) async {
+
+        File img = await ImagePicker.pickImage(source: ImageSource.gallery);
         if (img != null) {
-          image = img;
-          // setState(() {});
-        }
-        break;
+          setState(() {
+            image = img;
+          });
       }
-      case Method.GALLERY:{
-    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-        if (img != null) {
-          image = img;
-          // setState(() {});
-        }
-      }
-    }
   }
 
-  Widget uploadImage(context){
-    return Column(
+  Widget imageImage(BuildContext context, String string){
+    return Row(
       children: <Widget>[
+        Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 5,left: 10),
+                  child: RaisedButton(
+                    onPressed: (){
+                        pickerImage(Method.GALLERY);
+                      },
+                    child: Text(''),
+                    color: PrimaryColor,
+                  ),
+                ),
+              ],
+            ),
+
+          ],
+
+        ),
         Container(
+          width: MediaQuery.of(context).size.width* 0.5,
           child: new Center(
             child: image == null
-                ? new Text('No Image to Show ')
+                ? new Text(string)
                 : new Image.file(image),
+
           ),
-        ),
-        RaisedButton(
-          onPressed: picker(Method.CAMERA),
-          child: Text('Imagen'),
-          color: PrimaryColor,
         )
       ],
-
     );
-
   }
-  Widget loadingTask(context)
+  pickerPhoto(Method m) async {
+
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
+    if (img != null) {
+      setState(() {
+        image = img;
+      });
+    }
+  }
+  Widget imagePhoto(BuildContext context, String string){
+    return Row(
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 10,left: 5),
+                  child: RaisedButton(
+                    onPressed: (){
+                      pickerImage(Method.CAMERA);
+                    },
+                    child: Text(string),
+                    color: PrimaryColor,
+                  ),
+                ),
+              ],
+            ),
+
+          ],
+
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width* 0.5,
+          child: new Center(
+            child: image == null
+                ? new Text('')
+                : new Image.file(image),
+
+          ),
+        )
+      ],
+    );
+  }
+  Widget loadingTask(String string)
   {
     return Center(
       child: Column(
         children: <Widget>[
-          Text('Seleccione una Tarea'),
+          Text(string),
           Center(
             child: CircularProgressIndicator(),
           ),
@@ -280,81 +503,49 @@ class _ListWidgetsState extends State<ListWidgets> {
 
 
   List<String> dropdownMenuItems = List<String>();
-  String dropdownValue = null;
-  Widget combo(List<FieldOptionModel> elements)
+  String dropdownValue = null ;
+  Widget combo(List<FieldOptionModel> elements, String string)
   {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
 
-    return  DropdownButton<String>(
-      value: dropdownValue,
-      hint: Text("Seleccione"),
-      onChanged: (String newValue) {
-        setState(() {
-          dropdownValue = newValue;
-        });
-      },
-      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+    return  Padding(
+      padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+      child: DropdownButton<String>(
+        isDense: false,
+        icon: Icon(Icons.arrow_drop_down),
+        elevation: 10,
+        value: dropdownValue,
+        hint: Text(string),
+        onChanged: (String newValue) {
+          setState(() {
+            dropdownValue = newValue;
+          });
+          },
+        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      ),
     );
   }
 
-Widget tocuh(context){
-  return new Scaffold(
-    body: new Container(
-      child: new GestureDetector(
-        onPanUpdate: (DragUpdateDetails details) {
-          setState(() {
-            RenderBox object = context.findRenderObject();
-            Offset _localPosition =
-            object.globalToLocal(details.globalPosition);
-            _points = new List.from(_points)..add(_localPosition);
-          });
-        },
-        onPanEnd: (DragEndDetails details) => _points.add(null),
-        child: new CustomPaint(
-          painter: new Signature(points: _points),
-          size: Size.infinite,
-        ),
-      ),
-    ),
-    floatingActionButton: new FloatingActionButton(
-      child: new Icon(Icons.clear),
-      onPressed: () => _points.clear(),
-    ),
-  );
-}
+  Widget newFirm(BuildContext context){
+    return IconButton(
+      onPressed: (){
+        Navigator.of(context).pushReplacementNamed('/firma');
 
 
-
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-
-class Signature extends CustomPainter {
-  List<Offset> points;
-
-  Signature({this.points});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = new Paint()
-      ..color = Colors.blue
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 10.0;
-
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    }
+      },
+      icon: Icon(Icons.filter_list),
+    );
   }
-
-  @override
-  bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
+@override
+  void setState(fn) {
+  dropdownValue ;
+    super.setState(fn);
+  }
 }
 
 
