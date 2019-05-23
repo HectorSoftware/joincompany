@@ -48,7 +48,7 @@ void initState(){
        appBar: AppBar(
          elevation: 12,
          backgroundColor: PrimaryColor,
-         leading:  IconButton(
+         /*leading:  IconButton(
            icon: Icon(Icons.arrow_back),
            tooltip: 'Guardar Tarea',
            iconSize: 35,
@@ -65,7 +65,7 @@ void initState(){
              Navigator.pushReplacementNamed(context, '/vistap');
            },
 
-         ) ,
+         ) ,*/
          actions: <Widget>[
            IconButton(
              icon: Icon(Icons.delete),

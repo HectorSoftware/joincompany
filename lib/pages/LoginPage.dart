@@ -1,21 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
-
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:joincompany/services/FormService.dart';
-import 'package:joincompany/services/TaskService.dart';
-import 'package:joincompany/services/UserService.dart';
-import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
 
   UserDataBase saveUser;
   UserDataBase userVe;

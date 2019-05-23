@@ -129,10 +129,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           new ListTile(
             trailing: new Icon(Icons.assignment),
             title: new Text('Tareas'),
-
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/vistap');
+//              Navigator.pushReplacementNamed(context, '/vistap');
             },
           ),
           new ListTile(
@@ -140,10 +139,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             trailing: new Icon(Icons.business),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  Cliente()));
+              Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
             },
           ),
           new ListTile(
@@ -153,8 +150,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               Navigator.of(context).pop();
               Navigator.push(
                   context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ContactView()));
+                  new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
             },
           ),
           /*new ListTile(

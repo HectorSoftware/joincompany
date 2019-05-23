@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget{
       routes: {
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>TaskHomePage(),
-        //"/vistap": (context) =>MyHomePagePrueba(),
         "/formularioTareas": (context) =>FormTask(),
         "/cliente": (context) =>Cliente(),
         "/firma": (context) =>FirmTouch(),
