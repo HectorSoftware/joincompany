@@ -220,18 +220,22 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-          controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
-              hintText: 'Buscar'
-          ),
-          onChanged: (value){
+        this._appBarTitle = Container(
+          child: new TextField(
+            controller: _filter,
+            style: TextStyle(color: Colors.white),
+            decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search,color: Colors.white,),
+              hintText: 'Buscar',
+              fillColor: Colors.white,
+            ),
+            onChanged: (value){
               setState(() {
                 textFilter = value.toString();
                 blocListTaskresFilter;
               });
             },
+          ),
         );
       } else {
         this._searchIcon = new Icon(Icons.search);

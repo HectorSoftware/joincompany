@@ -204,7 +204,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
           }else{
-            if(ls.createState().checkSearchInText(listTaskModellocal[PosicionActual].name, filterText)){
+            if(ls.createState().checkSearchInText(title, filterText) ||
+                ls.createState().checkSearchInText(address, filterText) ||
+                ls.createState().checkSearchInText(customerName, filterText)){
               if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                   (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
                   (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
