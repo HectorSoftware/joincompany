@@ -80,8 +80,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-
-
   ListViewTareas(){
     blocListTask bloctasks = widget.blocListTaskres;
     blocListTaskFilter bloctasksFilter = widget.blocListTaskFilterRes;
@@ -205,7 +203,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
           }else{
-            if(listTaskModellocal[PosicionActual].name.contains(filterText)){
+            if(checkSearch(listTaskModellocal[PosicionActual].name)){
               if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                   (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
                   (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
@@ -260,8 +258,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       child: CircularProgressIndicator(),
     );
   }
-
-
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
 
@@ -358,4 +354,16 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     '11': 'Noviembre',
     '12': 'Diciembre',
   };
+
+  bool checkSearch(String name){
+
+    name = name.toLowerCase();
+    name = name.replaceAll('á', "a");
+    name = name.replaceAll('é', "e");
+    name = name.replaceAll('í', "i");
+    name = name.replaceAll('ó', "o");
+    name = name.replaceAll('ú', "u");
+
+    return name.contains(filterText);
+  }
 }

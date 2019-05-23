@@ -24,6 +24,8 @@ class FormClient extends StatefulWidget {
 
 class _FormClientState extends State<FormClient> {
 
+  Widget popUp;
+
   CustomerWithAddressModel client;
 
   TextEditingController name,code,note;
@@ -101,6 +103,32 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData(){
+
+    popUp =  AlertDialog(
+      title: Text('¿Guardar?'),
+      content: const Text(
+          '¿estas seguro que desea guardar estos datos?'),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('CANCELAR'),
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+        ),
+        FlatButton(
+          child: const Text('ACEPTAR'),
+          onPressed: () {
+            if(validateData()){
+              savedData();
+              Navigator.of(context).pop(true);
+            }else{
+              Navigator.of(context).pop(false);
+            }
+          },
+        )
+      ],
+    );
+
     name = TextEditingController();
     code = TextEditingController();
     note = TextEditingController();
@@ -113,35 +141,14 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<bool> _asyncConfirmDialog() async {
-    if(name.text == '' && code.text == '' && note.text == '' ){
+    if((name.text == '' && code.text == '') || name.text == widget.client.name && code.text == widget.client.code){
       Navigator.of(context).pop(true);
     }else{
       return showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button for close dialog!
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('¿Guardar?'),
-            content: const Text(
-                '¿estas seguro que desea guardar estos datos?'),
-            actions: <Widget>[
-              FlatButton(
-                child: const Text('CANCELAR'),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-              FlatButton(
-                child: const Text('ACEPTAR'),
-                onPressed: () {
-                  if(validateData()){
-                    savedData();
-                    Navigator.of(context).pop(true);
-                  }
-                },
-              )
-            ],
-          );
+          return popUp;
         },
       );
     }
@@ -180,7 +187,7 @@ class _FormClientState extends State<FormClient> {
       }
   }
 
-  bool validateData(){
+  bool validateData(){//TODO
     if(name.text == ''){
       setState(() {
         errorTextFieldName = 'Campo requerido';
@@ -203,6 +210,7 @@ class _FormClientState extends State<FormClient> {
     super.dispose();
   }
 
+  @override
   void initState() {
     initData();
     super.initState();
