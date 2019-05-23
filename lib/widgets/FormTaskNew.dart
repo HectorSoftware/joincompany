@@ -1,14 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:joincompany/blocs/BlocTypeTask.dart';
 import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FormModel.dart';
-import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'dart:async';
-import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +22,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
 
+
 //  List<Widget> listWidget = List<Widget>();
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
@@ -38,13 +36,13 @@ class _FormTaskState extends State<FormTask> {
 
 @override
 void initState(){
-
+  BuildOwner();
   initFormType();
     super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
+
   final BlocTaskForm _bloc = new BlocTaskForm(context);
     return new Scaffold(
        appBar: AppBar(
@@ -55,7 +53,16 @@ void initState(){
            tooltip: 'Guardar Tarea',
            iconSize: 35,
            onPressed: (){
-             //GUARDAR TAREAAAAAA
+             StreamBuilder<String>(
+                 stream: _bloc.outSaveForm,
+                 builder: (context, snapshot) {
+
+
+
+                 }
+             );
+             Navigator.pop(context);
+             Navigator.pushReplacementNamed(context, '/vistap');
            },
 
          ) ,
@@ -78,40 +85,35 @@ void initState(){
             stream: _bloc.outListWidget,
             builder: (context, snapshot) {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                  return Text('Not connected to the Stream or null');
-                case ConnectionState.waiting:
-                  {
-                    return Column(
-                      children: <Widget>[
-                        Center(
-                          child: Column(
-                            children: <Widget>[
-                              Center(child: CircularProgressIndicator()),
-                              Text('awaiting interaction'),
-                            ],
-                          ),
-                        ),
-
-                      ],
-                    );
-                  }
-                case ConnectionState.active:
-                  {
+              if (ConnectionState.active != null) {
                     final data = snapshot.data;
-                    return  ListView.builder(
-                        itemCount: data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return new Container(
-                            child: data[index],
-                          );
-                        }
-                    ) ;
-                  }
-                case ConnectionState.done:
-                  return Text('Stream has finished');
+                    if(snapshot.hasData)
+                    {
+                      return  buildView(data);
+                    }
+                   else
+                     {
+                       return Center(
+                         child: Column(
+                           children: <Widget>[
+                             Container(
+                               child: Center(
+                                 child: CircularProgressIndicator(
+                                 ),
+                               ),
+                             ),
+                             Text('Seleccione un Formulario')
+                           ],
+                         ),
+                       );
+                     }
+              }else{
+                CircularProgressIndicator(
+
+                );
+
               }
+
             }
         ),
           ],
@@ -137,30 +139,29 @@ void initState(){
                       builder: (BuildContext context) {
                               return new ListView.builder(
                                itemCount: formType.data.length,//formType.data.length,
-                                itemBuilder: (context, index){
-                                 return ListTile(
+                                itemBuilder: (BuildContext context, index){
+                                   return ListTile(
+                                     title: Text('${formType.data[index].name}'),
+                                     leading: Icon(Icons.label),
+                                     onTap: () async {
 
-                                   title: Text('${formType.data[index].name}'),
-                                   leading: Icon(Icons.label),
-                                   onTap: () async {
-
-                                         var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                       var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                          FormModel form = FormModel.fromJson(getFormResponse.body);
-                                         var bodyjson = getFormResponse.body;
-                                         _bloc.idFormType = formType.data[index].id.toString();
-                                         _bloc.customer = customer;
-                                         _bloc.token = token;
-                                         _bloc.form = form;
-                                         _bloc.value = true;
-                                       // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
+                                           _bloc.idFormType = formType.data[index].id.toString();
+                                           _bloc.customer = customer;
+                                           _bloc.token = token;
+                                           _bloc.form = form;
+                                         // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                          _bloc.updateListWidget(context);
-                                          Navigator.pop(context);
+
+                                       Navigator.pop(context);
 
 
 
-                                   },
+                                     },
 
-                                 );
+                                   );
+
                                 },
                               );
                             }
@@ -173,6 +174,15 @@ void initState(){
       ),
     );
 
+  }
+  Widget buildView(data){
+
+    return  ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (BuildContext context, int index) {
+          return data[index];
+        }
+    ) ;
   }
   
   getAll()async{
@@ -187,12 +197,9 @@ void initState(){
     //  print(getAllFormsResponse.headers['content-type']);
       forms = FormsModel.fromJson(getAllFormsResponse.body);
       formType = forms;
-      for(FormModel form in forms.data){
 
-
-      }
     }
-  }catch(e, r){
+  }catch(e){
 
   }
  return formType;

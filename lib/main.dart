@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget{
         //"/vistap": (context) =>MyHomePagePrueba(),
         "/formularioTareas": (context) =>FormTask(),
         "/cliente": (context) =>Cliente(),
+        "/firma": (context) =>FirmTouch(),
       },
       theme: ThemeData(
         primaryColor: PrimaryColor,

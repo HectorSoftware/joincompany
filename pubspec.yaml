@@ -32,7 +32,7 @@ dependencies:
   rxdart: ^0.21.0
 
   #DATE TIME
-  date_format: ^1.0.6
+  datetime_picker_formfield: ^0.1.8
   #IMAGEN
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
