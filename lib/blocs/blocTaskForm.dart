@@ -37,9 +37,7 @@ class BlocTaskForm  {
   Stream<String> get outForm => _formController.stream;
   Sink<String> get inForm => _formController.sink;
 
-
-  void updateListWidget(context)
-  {
+  void updateListWidget(context){
     listWidget.clear();
    if(idFormType != null)
      {
@@ -138,7 +136,6 @@ class BlocTaskForm  {
    }
   }
 
-
   @override
   void dispose() {
     _taskFormController.close();
@@ -150,8 +147,4 @@ class BlocTaskForm  {
   BlocTaskForm(context) {
     updateListWidget(context);
   }
-
-
-
-
 }
