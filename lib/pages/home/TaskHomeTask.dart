@@ -140,7 +140,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
           int PosicionActual = index;
           String _date = listTaskModellocal[PosicionActual].createdAt;
-          String _title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
+          String _title = listTaskModellocal[PosicionActual].name;
           AddressModel _address = listTaskModellocal[PosicionActual].address;
           String voidFieldMessage = "";
           var _customerName = listTaskModellocal[PosicionActual].customer;

@@ -50,7 +50,8 @@ class BlocTaskForm  {
             case 'Combo':
               {
                 optionsElements = k.fieldOptions;
-                listWidget.add(items.createState().tab(optionsElements,context));
+                listWidget.add(items.createState().newFirm(context,k.name));
+                listWidget.add(items.createState().tab(k.fieldOptions,context));
               }
               break;
             case 'Text':
@@ -84,7 +85,7 @@ class BlocTaskForm  {
               break;
             case 'CanvanSignature':
               {
-                listWidget.add(items.createState().loadingTask(k.fieldType));
+                listWidget.add(items.createState().newFirm(context, k.name));
               }
               break;
             case 'Photo':
@@ -100,7 +101,7 @@ class BlocTaskForm  {
           //Desde aca para abajo
             case 'Time':
               {
-                listWidget.add(items.createState().loadingTask(k.fieldType));
+                listWidget.add(items.createState().timeWidget(context,k.name));
               }
               break;
             case 'DateTime':
@@ -110,7 +111,7 @@ class BlocTaskForm  {
               break;
             case 'ComboSearch':
               {
-                listWidget.add(items.createState().loadingTask(k.fieldType));
+                listWidget.add(items.createState().ComboSearch(context, k.name));
               }
               break;
             case 'Boolean':

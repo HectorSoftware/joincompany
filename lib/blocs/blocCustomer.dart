@@ -22,8 +22,6 @@ class CustomersBloc{
     /*var customersResponse = await getAllCustomers(UserActiv.company,UserActiv.token);
     CustomersModel customers = CustomersModel.fromJson(customersResponse.body);*/
 
-    print('******');
-
     var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     _listCustomersWithAddress = customersWithAddress.data;

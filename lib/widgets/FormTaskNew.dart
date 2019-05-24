@@ -23,11 +23,10 @@ class _FormTaskState extends State<FormTask> {
 
 
 
-//  List<Widget> listWidget = List<Widget>();
+  BuildContext globalContext;
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
-  bool changedView = false;
-
+  var data = List<Widget>();
   UserDataBase userToken ;
   String token;
   String customer;
@@ -37,7 +36,6 @@ class _FormTaskState extends State<FormTask> {
   @override
   void initState(){
     BuildOwner();
-    initFormType();
     super.initState();
   }
   @override
@@ -58,6 +56,16 @@ class _FormTaskState extends State<FormTask> {
                  builder: (context, snapshot) {
                  }
              );
+
+
+
+               setState(() {
+                  data;
+              });
+              _bloc.idFormType = null;
+              _bloc.updateListWidget(globalContext);
+            },
+
              Navigator.pop(context);
              Navigator.pushReplacementNamed(context, '/vistap');
            },
@@ -65,9 +73,52 @@ class _FormTaskState extends State<FormTask> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
-            tooltip: 'Eliminar Cliente',
+            tooltip: 'Eliminar Tarea',
             iconSize: 35,
-            onPressed: (){},
+            onPressed: ()=> showDialog(
+                context: context,
+            child: SimpleDialog(
+
+              title: Text('Descartar Formulario'),
+              children: <Widget>[
+               Padding(
+                 padding: const EdgeInsets.only(left: 200),
+                 child: Column(
+                   children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text('Volver'),
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: (){
+                              Navigator.pop(context);
+
+                            },
+                          ),
+                        ],
+                      ),
+                     Row(
+                       children: <Widget>[
+                         Text('Eliminar'),
+                         IconButton(
+                           icon: Icon(Icons.delete),
+                           onPressed: (){
+                             setState(() {
+                               data;
+                             });
+                             _bloc.idFormType = null;
+                             _bloc.updateListWidget(globalContext);
+                             Navigator.pop(context);
+                           },
+                         ),
+                       ],
+                     ),
+
+                   ],
+                 ),
+               ),
+              ],
+            ))
 
           )
 
@@ -79,10 +130,11 @@ class _FormTaskState extends State<FormTask> {
         children: <Widget>[
           StreamBuilder<List<dynamic>>(
               stream: _bloc.outListWidget,
-              builder: (context, snapshot) {
+              builder: (BuildContext context, snapshot) {
+                globalContext  = context;
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (ConnectionState.active != null) {
-                  final data = snapshot.data;
+                   data = snapshot.data;
                   if(snapshot.hasData)
                   {
                     return  buildView(data);
@@ -90,17 +142,7 @@ class _FormTaskState extends State<FormTask> {
                   else
                   {
                     return Center(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            child: Center(
-                              child: CircularProgressIndicator(
-                              ),
-                            ),
-                          ),
-                          Text('Seleccione un Formulario')
-                        ],
-                      ),
+                      child: Text('Selecione un Formulario'),
                     );
                   }
                 }else{
@@ -133,14 +175,14 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                        return new ListView.builder(
+                        initFormType();
+                        return formType != null ? new ListView.builder(
                           itemCount: formType.data.length,//formType.data.length,
                           itemBuilder: (BuildContext context, index){
                             return ListTile(
                               title: Text('${formType.data[index].name}'),
-                              leading: Icon(Icons.label),
+                              leading: Icon(Icons.poll),
                               onTap: () async {
-
                                 var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
                                 _bloc.idFormType = formType.data[index].id.toString();
@@ -148,18 +190,12 @@ class _FormTaskState extends State<FormTask> {
                                 _bloc.token = token;
                                 _bloc.form = form;
                                 // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
-                                _bloc.updateListWidget(context);
-
+                                _bloc.updateListWidget(globalContext);
                                 Navigator.pop(context);
-
-
-
                               },
-
                             );
-
                           },
-                        );
+                        ) :  Center(child: CircularProgressIndicator());
                       }
                   );
                 }
@@ -169,8 +205,8 @@ class _FormTaskState extends State<FormTask> {
         ),
       ),
     );
-
   }
+
   Widget buildView(data){
 
     return  ListView.builder(

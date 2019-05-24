@@ -32,19 +32,22 @@ class _FirmTouchState extends State<FirmTouch> {
         ),
       ),
 
-      floatingActionButton: Column(
-        children: <Widget>[
-          FloatingActionButton(
-          heroTag: 1,
-            child: new Icon(Icons.clear),
-            onPressed: () => _points.clear(),
-          ),
-          FloatingActionButton(
-              heroTag: 2,
-            child: new Icon(Icons.save),
-            onPressed: () => _points.clear(),
-          ),
-        ],
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top: 570),
+        child: Column(
+          children: <Widget>[
+            FloatingActionButton(
+            heroTag: 1,
+              child: new Icon(Icons.clear),
+              onPressed: () => _points.clear(),
+            ),
+            FloatingActionButton(
+                heroTag: 2,
+              child: new Icon(Icons.save),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       )
     );
   }
