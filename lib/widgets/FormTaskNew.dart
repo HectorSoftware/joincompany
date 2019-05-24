@@ -45,10 +45,10 @@ class _FormTaskState extends State<FormTask> {
 
     final BlocTaskForm _bloc = new BlocTaskForm(context);
     return new Scaffold(
-      appBar: AppBar(
-        elevation: 12,
-        backgroundColor: PrimaryColor,
-        /*leading:  IconButton(
+       appBar: AppBar(
+         elevation: 12,
+         backgroundColor: PrimaryColor,
+         /*leading:  IconButton(
            icon: Icon(Icons.arrow_back),
            tooltip: 'Guardar Tarea',
            iconSize: 35,

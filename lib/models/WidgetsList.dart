@@ -59,146 +59,63 @@ class _ListWidgetsState extends State<ListWidgets> {
 
 
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
+    //TARJETA DE CAA COLUMNA
+    Card card(){
+      return Card(
+        child:
+        TextField(
+        ),
+      );
+    }
+    //COLUMNAS
+    Container columna(Color col,int intCard){
+      List<Widget> ListCard = new List<Widget>();
+      for(int i = 0; i < intCard; i++){
+        ListCard.add(card());
+      }
+      return Container(
+        width: MediaQuery.of(contex).size.width * 0.5,
+        color: col,
+        child: Column(
+          children: <Widget>[
+            card(),
+            Divider(
+              height: 20,
+              color: Colors.black,
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              height: MediaQuery.of(contex).size.height * 0.25,
+              child: ListView.builder(
+                itemCount: ListCard.length,
+                itemBuilder: (contex,index){
+                  return ListCard[index];
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    //LISTA DE COLUMNAS
+    List<Widget> ListColuma = new List<Widget>();
+    ListColuma.add(columna(Colors.red[50],2));
+    ListColuma.add(columna(Colors.blue[50],5));
+    ListColuma.add(columna(Colors.grey[200],3));
+    ListColuma.add(columna(Colors.green[100],1));
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.all(12),
+        margin: EdgeInsets.all(10),
         width: MediaQuery.of(contex).size.width,
         height: MediaQuery.of(contex).size.height * 0.4,
-        child: ListView(
-          // This next line does the trick.
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.grey[200],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.green[100],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.red[50],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.blue[50],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
-        ,
+          itemCount: ListColuma.length,
+          itemBuilder: (contex,index){
+            return ListColuma[index];
+          },
+          // This next line does the trick.
+        )        ,
       ),
     );
   }

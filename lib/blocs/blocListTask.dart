@@ -26,12 +26,10 @@ class blocListTask {
       diadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 00:00:00';
       hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
     }else{
-      print(fechaCalendario[0].toString());
       if(fechaCalendario.length == 1){
         diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
         hastadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 23:59:59';
       }else{
-        print(fechaCalendario[1].toString());
         diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
         hastadesde = DateTime.parse(fechaCalendario[1].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).day.toString() + ' 23:59:59';
       }
@@ -77,7 +75,7 @@ class blocListTask {
         _listTask.add(task);
       }
       if(tasks.nextPageUrl != null){
-        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token, urlPage: tasks.nextPageUrl);
+        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde,endDate: hastadesde, urlPage: tasks.nextPageUrl);
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
       }else{ whilesalir = false; }
     }

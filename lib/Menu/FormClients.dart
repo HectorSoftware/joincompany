@@ -4,6 +4,7 @@ import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 enum type{NAME,CODE,NOTE}
@@ -297,18 +298,9 @@ class _FormClientState extends State<FormClient> {
                           child: IconButton(
                             icon: Icon(Icons.add),
                             onPressed: (){
-                              showDialog(context: context,
-                                builder: (BuildContext contex){
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text("TODO"),//TODO
-                                      ],
-                                    ),
-                                  );
-                                }
-                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SearchAddress()));
                             },
                           ),
                         ),

@@ -12,28 +12,44 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
 
-  Widget ValidarUsrPrimeraVez()  {
-    Future<UserDataBase> userActiv = getUser();
-    if(userActiv != null){
-      return LoginPage();
-    }else{
-      Navigator.pushReplacementNamed(context, '/vistap');
-    }
-    return Text('ha ocurrido un error');
-  }
-
   Future<UserDataBase> getUser() async {
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }
 
+  bool TextViewVisible = true;
+  bool AgregarUser = true;
+  String companyEstable = '';
+  bool salirMail = false;
+
+  ValidarUsrPrimeraVez() async {
+    UserDataBase UserActiv = await getUser();
+    if(UserActiv != null){
+      setState(() {
+        TextViewVisible = false;
+        AgregarUser = false;
+        companyEstable = UserActiv.company;
+      });
+    }
+    salirMail = true;
+  }
+
+  @override
+  void initState() {
+    ValidarUsrPrimeraVez();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         body: Stack(
             children: <Widget>[
-              LoginPage(),
+              salirMail ?
+              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
+              : Center(
+                child: CircularProgressIndicator(),
+              ),
             ]
         )
     );

@@ -7,7 +7,6 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
-import 'package:joincompany/Menu/clientes.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
 class TaskHomePage extends StatefulWidget {
@@ -22,8 +21,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
-  blocListTask blocListTaskres;
   blocListTaskFilter blocListTaskresFilter;
+  blocListTask blocListTaskRes;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
 
@@ -44,7 +43,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   @override
   void dispose(){
     _controller.dispose();
-    blocListTaskres.dispose();
+    blocListTaskresFilter.dispose();
+    blocListTaskRes.dispose();
     super.dispose();
   }
 
@@ -89,15 +89,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
-    blocListTaskres = new blocListTask(valueselectDate);
+
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    setState(() {
-      blocListTaskres;
+    blocListTaskRes = new blocListTask(valueselectDate);
+    /*setState(() {
       blocListTaskresFilter;
-    });
+      blocListTaskRes;
+    });*/
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskres: blocListTaskres,blocListTaskFilterRes: blocListTaskresFilter,),
+        taskHomeTask(blocListTaskFilterRes: blocListTaskresFilter,blocListTaskRes: blocListTaskRes,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -129,10 +130,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           new ListTile(
             trailing: new Icon(Icons.assignment),
             title: new Text('Tareas'),
-
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/vistap');
+//              Navigator.pushReplacementNamed(context, '/vistap');
             },
           ),
           new ListTile(
@@ -140,10 +140,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             trailing: new Icon(Icons.business),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  Cliente()));
+              Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
             },
           ),
           new ListTile(
@@ -153,8 +151,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               Navigator.of(context).pop();
               Navigator.push(
                   context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ContactView()));
+                  new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
             },
           ),
           /*new ListTile(
@@ -213,7 +210,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         );
         setState(() {
           DatepickedInit; DatepickedEnd;
-          blocListTaskres;
+          blocListTaskRes;
         });
       }
     }
@@ -224,18 +221,22 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-          controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
-              hintText: 'Buscar'
-          ),
-          onChanged: (value){
+        this._appBarTitle = Container(
+          child: new TextField(
+            controller: _filter,
+            style: TextStyle(color: Colors.white),
+            decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search,color: Colors.white,),
+              hintText: 'Buscar',
+              fillColor: Colors.white,
+            ),
+            onChanged: (value){
               setState(() {
                 textFilter = value.toString();
                 blocListTaskresFilter;
               });
             },
+          ),
         );
       } else {
         this._searchIcon = new Icon(Icons.search);
