@@ -12,9 +12,11 @@ enum Method{
   CAMERA,
   GALLERY
 }
+
+/// Signature of callbacks that have no arguments and return no data.
+typedef VoidCallback = void Function();
+
 class ListWidgets extends StatefulWidget {
-
-
   @override
   _ListWidgetsState createState() => new _ListWidgetsState();
 
@@ -22,11 +24,12 @@ class ListWidgets extends StatefulWidget {
 
 class _ListWidgetsState extends State<ListWidgets> {
 
-@override
+  @override
   void initState() {
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return null;
@@ -41,7 +44,18 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<Offset> _points = <Offset>[];
 
 
-// Changeable in demo
+  bool checkSearchInText(String text, filterText){
+
+  text = text.toLowerCase();
+  text = text.replaceAll('á', "a");
+  text = text.replaceAll('é', "e");
+  text = text.replaceAll('í', "i");
+  text = text.replaceAll('ó', "o");
+  text = text.replaceAll('ú', "u");
+
+  return text.contains(filterText);
+}
+
 
 
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
@@ -188,16 +202,17 @@ class _ListWidgetsState extends State<ListWidgets> {
       ),
     );
   }
-/*Widget dateTime(){
-    return  DateTimePickerFormField(
-      inputType: inputType,
-      format: formats[inputType],
-      editable: editable,
-      decoration: InputDecoration(
-          labelText: 'Date/Time', hasFloatingPlaceholder: false),
-      onChanged: (dt) => setState(() => date = dt),
-    ),
-}*/
+
+  /*Widget dateTime(){
+      return  DateTimePickerFormField(
+        inputType: inputType,
+        format: formats[inputType],
+        editable: editable,
+        decoration: InputDecoration(
+            labelText: 'Date/Time', hasFloatingPlaceholder: false),
+        onChanged: (dt) => setState(() => date = dt),
+      ),
+  }*/
 
   Widget label(string){
     //------------------------------------LABEL----------------------------
@@ -217,9 +232,9 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
          }
 
-Future<Null> selectDate(context )async{
+Future<Null> selectDate(BuildContext context )async{
   final DateTime picked = await showDatePicker(
-      context: context.inheritFromWidgetOfExactType(Widget),
+      context: context,
       initialDate: _date,
       firstDate: new DateTime(2000),
       lastDate: new DateTime(2020)
@@ -326,8 +341,6 @@ Widget timeWidget(BuildContext context, String string){
           ),
 
         );
-
-
   }
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
@@ -447,8 +460,6 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-
-
   pickerPhoto(Method m) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -493,9 +504,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-
-
-  Widget loadingTask(String string) {
+  Widget loadingTask(String string)
+  {
     return Center(
       child: Column(
         children: <Widget>[
@@ -548,7 +558,17 @@ Widget timeWidget(BuildContext context, String string){
       icon: Icon(Icons.filter_list),
     );
   }
-@override
+
+  Widget searchButtonAppbar(Icon _searchIcon,VoidCallback _searchPressed,String tooltip, double iconSize){
+    return IconButton(
+      icon: _searchIcon,
+      tooltip: tooltip,
+      iconSize: iconSize,
+      onPressed: _searchPressed,
+    );
+  }
+
+  @override
   void setState(fn) {
   dropdownValue ;
     super.setState(fn);

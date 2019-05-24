@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:joincompany/Menu/clientes.dart';
@@ -13,13 +15,21 @@ class TaskHomePage extends StatefulWidget {
 }
 
 class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStateMixin{
+
+  ListWidgets ls = ListWidgets();
+
   TabController _controller;
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
   blocListTask blocListTaskres;
+  blocListTaskFilter blocListTaskresFilter;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
+
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Join');
+  final TextEditingController _filter = new TextEditingController();
 
   @override
   void initState() {
@@ -28,7 +38,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           () {setState((){});
       },
     );
-//    blocListTaskres = new blocListTask();
     super.initState();
   }
 
@@ -45,21 +54,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       drawer: buildDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
-        title: new Text('Join'),
+        title: _appBarTitle,
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            tooltip: 'Eliminar Cliente',
-            iconSize: 25,
-            onPressed: (){
-              //FUNCION DE BUSQUEDA EN TAREAS
-              //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchAddress()),
-              );*/
-            },
-          ),
+          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Cliente', 25),
           IconButton(
             icon: Icon(Icons.calendar_today),
             //ICONO DE ALMANAQUE NO LO ENCUENTRO
@@ -93,12 +90,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   TabBarView getTabBarView(){
     blocListTaskres = new blocListTask(valueselectDate);
+    blocListTaskresFilter = new blocListTaskFilter(_filter);
     setState(() {
       blocListTaskres;
+      blocListTaskresFilter;
     });
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskres: blocListTaskres,),
+        taskHomeTask(blocListTaskres: blocListTaskres,blocListTaskFilterRes: blocListTaskresFilter,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -108,7 +107,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
- Drawer buildDrawer() {
+  Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
       child: new ListView(
@@ -184,6 +183,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
  }
+
   List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
@@ -217,8 +217,32 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         });
       }
     }
+  }
 
-
+  String textFilter = '';
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+          controller: _filter,
+          decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Buscar'
+          ),
+          onChanged: (value){
+              setState(() {
+                textFilter = value.toString();
+                blocListTaskresFilter;
+              });
+            },
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Join');
+        _filter.clear();
+      }
+    });
   }
 
 }

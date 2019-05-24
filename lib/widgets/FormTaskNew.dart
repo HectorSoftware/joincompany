@@ -6,6 +6,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
@@ -24,8 +25,7 @@ class _FormTaskState extends State<FormTask> {
 
 
 //  List<Widget> listWidget = List<Widget>();
-  List<String> listElement = List<String>();
-  List<Widget> listWidgetMain = List<Widget>();
+
   bool changedView = false;
 
   UserDataBase userToken ;
@@ -80,14 +80,15 @@ void initState(){
         body:Stack(
           children: <Widget>[
              StreamBuilder<List<dynamic>>(
-            stream: _bloc.outListWidget,
+            stream: _bloc.outFieldModel,
             builder: (context, snapshot) {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
               if (ConnectionState.active != null) {
                     final data = snapshot.data;
                     if(snapshot.hasData)
                     {
-                      return  buildView(data);
+
+                      return   loadingData(data);
                     }
                    else
                      {
@@ -153,11 +154,7 @@ void initState(){
                                         _bloc.updateListWidget(context);
 
                                         Navigator.pop(context);
-
-
                                       }catch(e){}
-
-
 
                                      },
 
@@ -176,15 +173,113 @@ void initState(){
     );
 
   }
-  Widget buildView(data){
-
-    return  ListView.builder(
+  Widget loadingData(data){
+    ListWidgets items = new ListWidgets();
+    List<Widget> listWidget = List<Widget>();
+      return  ListView.builder(
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          return data[index];
-        }
-    ) ;
-  }
+          switch(data[index].fieldType){
+
+            case 'Combo':
+              {
+                listWidget.add(
+                    items.createState().combo(data[index].fieldOptions, data[index].name));
+              }
+              break;
+            case 'Text':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().text(
+                    context, data[index].name, nameController));
+              }
+              break;
+            case 'Textarea':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().textArea(
+                    context, data[index].name, nameController));
+              }
+              break;
+            case 'Number':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().number(
+                    context, data[index].name, nameController));
+              }
+              break;
+            case 'Date':
+              {
+                listWidget.add(items.createState().date(context, data[index].name));
+              }
+              break;
+            case 'Table':
+              {
+                listWidget.add(
+                    items.createState().tab(data[index].fieldOptions, context));
+              }
+              break;
+            case 'CanvanSignature':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            case 'Photo':
+              {
+                listWidget.add(
+                    items.createState().imagePhoto(context, data[index].name));
+              }
+              break;
+            case 'Image':
+              {
+                listWidget.add(
+                    items.createState().imageImage(context, data[index].name));
+              }
+              break;
+          //Desde aca para abajo
+            case 'Time':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            case 'DateTime':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            case 'ComboSearch':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            case 'Boolean':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            case 'CanvanImage':
+              {
+                listWidget.add(items.createState().loadingTask(data[index].fieldType));
+              }
+              break;
+            default:
+              {
+                listWidget.add(items.createState().label(data[index].fieldType));
+              }
+              break;
+          }
+          return Column(
+            children: <Widget>[
+              listWidget[index],
+            ],
+          );
+    }
+
+    );
+
+}
+
+
   
   getAll()async{
     FormsModel forms;

@@ -10,7 +10,7 @@ class blocListTask {
 
   List<TaskModel> _listTask = List<TaskModel>();
 
-  var _tasksController = StreamController<List<TaskModel>>();
+  var _tasksController = StreamController<List<TaskModel>>.broadcast();
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
@@ -37,7 +37,6 @@ class blocListTask {
       }
     }
 
-
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
@@ -45,7 +44,8 @@ class blocListTask {
     bool whilesalir = true;
     while(whilesalir){
       for(int i = 0; i < tasks.data.length; i++ ){
-        TaskModel task = new TaskModel(
+        TaskModel task;
+        task = new TaskModel(
             id: tasks.data[i].id,
             createdAt:  tasks.data[i].createdAt,
             updatedAt: tasks.data[i].updatedAt,
