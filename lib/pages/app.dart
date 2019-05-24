@@ -32,6 +32,10 @@ class _AppState extends State<App> {
       });
     }
     salirMail = true;
+    setState(() {
+      salirMail;
+    });
+
   }
 
   @override

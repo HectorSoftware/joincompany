@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
@@ -61,14 +62,11 @@ class AddContact extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(Icons.add),
                           onPressed: (){
-
-                            showDialog(context: context,
-                                builder: (BuildContext contex){
-                                  return AlertDialog(
-
-                                  );
-                                }
-                            );
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (BuildContext context) => new  Cliente()));
                           },
                         ),
                       ),
@@ -77,18 +75,7 @@ class AddContact extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(Icons.visibility),
                           onPressed: (){
-                            showDialog(context: context,
-                                builder: (BuildContext contex){
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text("TODO"),//TODO
-                                      ],
-                                    ),
-                                  );
-                                }
-                            );
+
                           },
                         ),
                       ),
