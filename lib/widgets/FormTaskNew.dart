@@ -56,6 +56,16 @@ class _FormTaskState extends State<FormTask> {
                  builder: (context, snapshot) {
                  }
              );
+
+
+
+               setState(() {
+                  data;
+              });
+              _bloc.idFormType = null;
+              _bloc.updateListWidget(globalContext);
+            },
+
              Navigator.pop(context);
              Navigator.pushReplacementNamed(context, '/vistap');
            },
@@ -65,13 +75,50 @@ class _FormTaskState extends State<FormTask> {
             icon: Icon(Icons.delete),
             tooltip: 'Eliminar Tarea',
             iconSize: 35,
-            onPressed: (){
-              setState(() {
-                  data;
-              });
-              _bloc.idFormType = null;
-              _bloc.updateListWidget(globalContext);
-            },
+            onPressed: ()=> showDialog(
+                context: context,
+            child: SimpleDialog(
+
+              title: Text('Descartar Formulario'),
+              children: <Widget>[
+               Padding(
+                 padding: const EdgeInsets.only(left: 200),
+                 child: Column(
+                   children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text('Volver'),
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: (){
+                              Navigator.pop(context);
+
+                            },
+                          ),
+                        ],
+                      ),
+                     Row(
+                       children: <Widget>[
+                         Text('Eliminar'),
+                         IconButton(
+                           icon: Icon(Icons.delete),
+                           onPressed: (){
+                             setState(() {
+                               data;
+                             });
+                             _bloc.idFormType = null;
+                             _bloc.updateListWidget(globalContext);
+                             Navigator.pop(context);
+                           },
+                         ),
+                       ],
+                     ),
+
+                   ],
+                 ),
+               ),
+              ],
+            ))
 
           )
 
@@ -159,6 +206,7 @@ class _FormTaskState extends State<FormTask> {
       ),
     );
   }
+
   Widget buildView(data){
 
     return  ListView.builder(
