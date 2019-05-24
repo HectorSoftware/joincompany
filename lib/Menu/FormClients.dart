@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -269,7 +270,13 @@ class _FormClientState extends State<FormClient> {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         icon: Icon(Icons.add),
-                        onPressed: (){},
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) => new  ContactView()));
+                        },
                       ),
                     ),
                     Align(
@@ -298,9 +305,11 @@ class _FormClientState extends State<FormClient> {
                           child: IconButton(
                             icon: Icon(Icons.add),
                             onPressed: (){
+                              Navigator.of(context).pop();
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SearchAddress()));
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (BuildContext context) => new  SearchAddress()));
                             },
                           ),
                         ),
