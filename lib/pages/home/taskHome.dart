@@ -7,7 +7,6 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
-import 'package:joincompany/Menu/clientes.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 
 class TaskHomePage extends StatefulWidget {
@@ -22,8 +21,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
-  blocListTask blocListTaskres;
   blocListTaskFilter blocListTaskresFilter;
+  blocListTask blocListTaskRes;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
 
@@ -44,7 +43,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   @override
   void dispose(){
     _controller.dispose();
-    blocListTaskres.dispose();
+    blocListTaskresFilter.dispose();
+    blocListTaskRes.dispose();
     super.dispose();
   }
 
@@ -89,15 +89,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   TabBarView getTabBarView(){
-    blocListTaskres = new blocListTask(valueselectDate);
+
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    setState(() {
-      blocListTaskres;
+    blocListTaskRes = new blocListTask(valueselectDate);
+    /*setState(() {
       blocListTaskresFilter;
-    });
+      blocListTaskRes;
+    });*/
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskres: blocListTaskres,blocListTaskFilterRes: blocListTaskresFilter,),
+        taskHomeTask(blocListTaskFilterRes: blocListTaskresFilter,blocListTaskRes: blocListTaskRes,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -209,7 +210,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         );
         setState(() {
           DatepickedInit; DatepickedEnd;
-          blocListTaskres;
+          blocListTaskRes;
         });
       }
     }

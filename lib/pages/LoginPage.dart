@@ -6,6 +6,11 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/AuthService.dart';
 class LoginPage extends StatefulWidget {
+
+  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
+  final bool TextViewVisiblewidget;
+  final bool AgregarUserwidget;
+  final String companyEstablewidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -19,9 +24,9 @@ class _LoginPageState extends State<LoginPage> {
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
   final passwordController = TextEditingController(text : '123');
   final companyController = TextEditingController(text : 'duperu');
-  bool TextViewVisible = true;
-  bool AgregarUser = true;
-  String companyEstable = '';
+  bool TextViewVisible;
+  bool AgregarUser;
+  String companyEstable;
   bool ErrorTextFieldEmail = false;
   bool ErrorTextFieldpsd = false;
   bool ErrorTextFieldcompany = false;
@@ -32,7 +37,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    ValidarUsrPrimeraVez();
+    TextViewVisible = widget.TextViewVisiblewidget;
+    AgregarUser = widget.AgregarUserwidget;
+    companyEstable = widget.companyEstablewidget;
     super.initState();
   }
 @override
@@ -287,17 +294,6 @@ class _LoginPageState extends State<LoginPage> {
     }else{
 
     }*/
-  }
-
-  ValidarUsrPrimeraVez() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    if(UserActiv != null){
-      setState(() {
-        TextViewVisible = false;
-        AgregarUser = false;
-        companyEstable = UserActiv.company;
-      });
-    }
   }
 
   testApi() async{

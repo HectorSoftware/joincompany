@@ -39,10 +39,6 @@ class blocListTask {
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
-    print(tasks.total);
-    print(diadesde);
-    print(hastadesde);
-
     bool whilesalir = true;
     while(whilesalir){
       for(int i = 0; i < tasks.data.length; i++ ){
@@ -79,7 +75,7 @@ class blocListTask {
         _listTask.add(task);
       }
       if(tasks.nextPageUrl != null){
-        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token, urlPage: tasks.nextPageUrl);
+        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde,endDate: hastadesde, urlPage: tasks.nextPageUrl);
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
       }else{ whilesalir = false; }
     }
