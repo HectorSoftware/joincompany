@@ -147,7 +147,12 @@ class _ListWidgetsState extends State<ListWidgets> {
         context: context,
         initialTime: _time,
     );
-         }
+    if (picked != null && picked != _time){
+      setState(() {
+        _time = picked;
+      });
+    }
+  }
 
 Future<Null> selectDate(BuildContext context )async{
   final DateTime picked = await showDatePicker(
@@ -188,7 +193,7 @@ Widget date(BuildContext context, String string){
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
           child: Text('${_date.toString().substring(0,10)}'),
-          onPressed: (){selectDate(context.ancestorInheritedElementForWidgetOfExactType(Widget));},
+          onPressed: (){selectDate(context);},
         ),
       ),
     ],
@@ -262,7 +267,6 @@ Widget timeWidget(BuildContext context, String string){
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
     //-----------------------------------------INPUT----------------------------------
-    TextEditingController public = nameController;
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
@@ -438,6 +442,7 @@ Widget timeWidget(BuildContext context, String string){
 
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
+
   Widget combo(List<FieldOptionModel> elements, String string)
   {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
@@ -466,13 +471,16 @@ Widget timeWidget(BuildContext context, String string){
   }
 
   Widget newFirm(BuildContext context){
-    return IconButton(
-      onPressed: (){
-        Navigator.of(context).pushReplacementNamed('/firma');
+    return Container(
+      height: 200,
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        margin: EdgeInsets.all(20),
+        color: Colors.blueGrey,
+        elevation: 10,
 
 
-      },
-      icon: Icon(Icons.filter_list),
+      ),
     );
   }
 
@@ -482,6 +490,50 @@ Widget timeWidget(BuildContext context, String string){
       tooltip: tooltip,
       iconSize: iconSize,
       onPressed: _searchPressed,
+    );
+  }
+  Widget ComboSearch(BuildContext context,String placeholder ){
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width*0.8,
+            height: 40,
+            padding: EdgeInsets.only(
+                top: 4,left: 16, right: 16, bottom: 4
+            ),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(10)
+                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            child: TextField(
+              maxLines: 1,
+            //  controller: nameController,
+              decoration: InputDecoration(
+
+                border: InputBorder.none,
+
+                hintText: placeholder,
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.search),
+          tooltip: 'Busqueda',
+          iconSize: 20,
+          onPressed: (){},
+        ),
+      ],
     );
   }
 

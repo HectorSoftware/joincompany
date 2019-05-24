@@ -23,10 +23,9 @@ class _FormTaskState extends State<FormTask> {
 
 
 
-//  List<Widget> listWidget = List<Widget>();
+  BuildContext globalContext;
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
-  bool changedView = false;
 
   UserDataBase userToken ;
   String token;
@@ -37,7 +36,6 @@ class _FormTaskState extends State<FormTask> {
   @override
   void initState(){
     BuildOwner();
-    initFormType();
     super.initState();
   }
   @override
@@ -79,7 +77,8 @@ class _FormTaskState extends State<FormTask> {
         children: <Widget>[
           StreamBuilder<List<dynamic>>(
               stream: _bloc.outListWidget,
-              builder: (context, snapshot) {
+              builder: (BuildContext context, snapshot) {
+                globalContext  = context;
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (ConnectionState.active != null) {
                   final data = snapshot.data;
@@ -90,17 +89,7 @@ class _FormTaskState extends State<FormTask> {
                   else
                   {
                     return Center(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            child: Center(
-                              child: CircularProgressIndicator(
-                              ),
-                            ),
-                          ),
-                          Text('Seleccione un Formulario')
-                        ],
-                      ),
+                      child: Text('Selecione un Formulario'),
                     );
                   }
                 }else{
@@ -133,14 +122,14 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                        return new ListView.builder(
+                        initFormType();
+                        return formType != null ? new ListView.builder(
                           itemCount: formType.data.length,//formType.data.length,
                           itemBuilder: (BuildContext context, index){
                             return ListTile(
                               title: Text('${formType.data[index].name}'),
-                              leading: Icon(Icons.label),
+                              leading: Icon(Icons.poll),
                               onTap: () async {
-
                                 var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
                                 _bloc.idFormType = formType.data[index].id.toString();
@@ -148,18 +137,12 @@ class _FormTaskState extends State<FormTask> {
                                 _bloc.token = token;
                                 _bloc.form = form;
                                 // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
-                                _bloc.updateListWidget(context);
-
+                                _bloc.updateListWidget(globalContext);
                                 Navigator.pop(context);
-
-
-
                               },
-
                             );
-
                           },
-                        );
+                        ) :  Center(child: CircularProgressIndicator());
                       }
                   );
                 }
@@ -169,7 +152,6 @@ class _FormTaskState extends State<FormTask> {
         ),
       ),
     );
-
   }
   Widget buildView(data){
 
