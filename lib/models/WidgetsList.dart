@@ -488,7 +488,7 @@ Widget timeWidget(BuildContext context, String string){
             icon: Icon(Icons.input),
           ),
         ),
-        Text(string)
+        Text('Firm touch creado')
       ],
     );
   }

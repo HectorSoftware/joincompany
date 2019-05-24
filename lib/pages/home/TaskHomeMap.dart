@@ -236,7 +236,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       if(p.status == 1){
         listas_porhacer.add(p);
       }else{
-        print(p.id);
       }
     }
 
