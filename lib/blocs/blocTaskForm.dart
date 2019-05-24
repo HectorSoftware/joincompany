@@ -84,7 +84,7 @@ class BlocTaskForm  {
               break;
             case 'CanvanSignature':
               {
-                listWidget.add(items.createState().newFirm(context));
+                listWidget.add(items.createState().newFirm(context, k.name));
               }
               break;
             case 'Photo':

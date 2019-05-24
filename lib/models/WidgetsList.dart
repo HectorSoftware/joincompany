@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
+import 'package:joincompany/pages/FirmTouch.dart';
 
 enum Method{
   CAMERA,
@@ -26,7 +27,6 @@ class _ListWidgetsState extends State<ListWidgets> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -161,7 +161,6 @@ Future<Null> selectDate(BuildContext context )async{
       firstDate: new DateTime(2000),
       lastDate: new DateTime(2020)
   );
-
   if (picked != null && picked != _date){
     setState(() {
       _date = picked;
@@ -470,19 +469,43 @@ Widget timeWidget(BuildContext context, String string){
     );
   }
 
-  Widget newFirm(BuildContext context){
-    return Container(
-      height: 200,
-      width: MediaQuery.of(context).size.width,
-      child: Card(
-        margin: EdgeInsets.all(20),
-        color: Colors.blueGrey,
-        elevation: 10,
+  Widget newFirm(BuildContext context, String string ){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 100,
+          height: 100,
+          child: IconButton(
+            iconSize: 30,
+            onPressed: (){
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new FirmTouch())
+
+              );
 
 
-      ),
+            },
+            icon: Icon(Icons.input),
+          ),
+        ),
+        Text(string)
+      ],
     );
   }
+
+//  Widget newFirm(BuildContext context){
+//    return Container(
+//      height: 200,
+//      width: MediaQuery.of(context).size.width,
+//      child: Card(
+//        margin: EdgeInsets.all(20),
+//        color: Colors.blueGrey,
+//        elevation: 10,
+//
+//
+//      ),
+//    );
+//  }
 
   Widget searchButtonAppbar(Icon _searchIcon,VoidCallback _searchPressed,String tooltip, double iconSize){
     return IconButton(

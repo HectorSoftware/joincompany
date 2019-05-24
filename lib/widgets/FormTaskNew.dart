@@ -26,7 +26,7 @@ class _FormTaskState extends State<FormTask> {
   BuildContext globalContext;
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
-
+  var data = List<Widget>();
   UserDataBase userToken ;
   String token;
   String customer;
@@ -63,9 +63,15 @@ class _FormTaskState extends State<FormTask> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
-            tooltip: 'Eliminar Cliente',
+            tooltip: 'Eliminar Tarea',
             iconSize: 35,
-            onPressed: (){},
+            onPressed: (){
+              setState(() {
+                  data;
+              });
+              _bloc.idFormType = null;
+              _bloc.updateListWidget(globalContext);
+            },
 
           )
 
@@ -81,7 +87,7 @@ class _FormTaskState extends State<FormTask> {
                 globalContext  = context;
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (ConnectionState.active != null) {
-                  final data = snapshot.data;
+                   data = snapshot.data;
                   if(snapshot.hasData)
                   {
                     return  buildView(data);
