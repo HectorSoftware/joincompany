@@ -39,8 +39,8 @@ class blocListTask {
     var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
-    //bool whilesalir = true;
-    //while(whilesalir){
+    bool whilesalir = true;
+    while(whilesalir){
       for(int i = 0; i < tasks.data.length; i++ ){
         TaskModel task;
         task = new TaskModel(
@@ -74,11 +74,11 @@ class blocListTask {
             responsible: tasks.data[i].responsible);
         _listTask.add(task);
       }
-      /*if(tasks.nextPageUrl != null){
+      if(tasks.nextPageUrl != null){
         getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde,endDate: hastadesde, urlPage: tasks.nextPageUrl);
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
       }else{ whilesalir = false; }
-    }*/
+    }
     inListTaks.add(_listTask);
   }
 
