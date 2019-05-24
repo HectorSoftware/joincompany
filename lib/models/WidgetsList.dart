@@ -3,12 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
-import 'package:joincompany/pages/FirmTouch.dart';
 
 enum Method{
   CAMERA,
@@ -44,11 +42,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
-  final formats = {
-  InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
-  InputType.date: DateFormat('yyyy-MM-dd'),
-  InputType.time: DateFormat("HH:mm"),
-};
+
 
   bool checkSearchInText(String text, filterText){
 
@@ -62,8 +56,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   return text.contains(filterText);
 }
 
-  // Changeable in demo
-  InputType inputType = InputType.both;
+
 
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
     //TARJETA DE CAA COLUMNA
@@ -156,16 +149,24 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
          }
 
-  Future<Null> selectDate(BuildContext context )async{
+Future<Null> selectDate(BuildContext context )async{
   final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _date,
       firstDate: new DateTime(2000),
-      lastDate: new DateTime(2020));
+      lastDate: new DateTime(2020)
+  );
+
+  if (picked != null && picked != _date){
+    setState(() {
+      _date = picked;
+    });
+
+  }
 
 }
 
-  Widget date(BuildContext context, String string){
+Widget date(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -187,14 +188,14 @@ class _ListWidgetsState extends State<ListWidgets> {
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
           child: Text('${_date.toString().substring(0,10)}'),
-          onPressed: (){selectDate(context);},
+          onPressed: (){selectDate(context.ancestorInheritedElementForWidgetOfExactType(Widget));},
         ),
       ),
     ],
   );
   }
 
-  Widget timeWid(BuildContext context, String string){
+Widget timeWidget(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -215,7 +216,7 @@ class _ListWidgetsState extends State<ListWidgets> {
       Padding(
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
-          child: Text('${_time.toString()}'),
+          child: Text(string),
           onPressed: (){selectTime(context);},
         ),
       ),
@@ -228,7 +229,8 @@ class _ListWidgetsState extends State<ListWidgets> {
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
-            width: MediaQuery.of(context).size.width/1.2,
+
+            width: MediaQuery.of(context).size.width,
             height: 150,
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
@@ -249,22 +251,22 @@ class _ListWidgetsState extends State<ListWidgets> {
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
-
                 border: InputBorder.none,
-
                 hintText: placeholder,
               ),
             ),
           ),
+
         );
   }
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
     //-----------------------------------------INPUT----------------------------------
+    TextEditingController public = nameController;
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-          width: MediaQuery.of(context).size.width/1.2,
+          width: MediaQuery.of(context).size.width,
           height: 40,
           padding: EdgeInsets.only(
               top: 4,left: 16, right: 16, bottom: 4
@@ -294,7 +296,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       ),
     );
   }
-
   Widget number(BuildContext context,placeholder, TextEditingController nameController){
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -341,7 +342,6 @@ class _ListWidgetsState extends State<ListWidgets> {
           });
       }
   }
-
   Widget imageImage(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -377,7 +377,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       ],
     );
   }
-
   pickerPhoto(Method m) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -387,7 +386,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       });
     }
   }
-
   Widget imagePhoto(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -399,7 +397,7 @@ class _ListWidgetsState extends State<ListWidgets> {
                   padding: const EdgeInsets.only(top: 10,left: 5),
                   child: RaisedButton(
                     onPressed: (){
-                      pickerImage(Method.CAMERA);
+                      pickerPhoto(Method.CAMERA);
                     },
                     child: Text(string),
                     color: PrimaryColor,
@@ -423,8 +421,8 @@ class _ListWidgetsState extends State<ListWidgets> {
       ],
     );
   }
-
-  Widget loadingTask(String string){
+  Widget loadingTask(String string)
+  {
     return Center(
       child: Column(
         children: <Widget>[
@@ -437,9 +435,11 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
 
+
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
-  Widget combo(List<FieldOptionModel> elements, String string){
+  Widget combo(List<FieldOptionModel> elements, String string)
+  {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
 
     return  Padding(
@@ -487,7 +487,7 @@ class _ListWidgetsState extends State<ListWidgets> {
 
   @override
   void setState(fn) {
-    dropdownValue ;
+  dropdownValue ;
     super.setState(fn);
   }
 }

@@ -335,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
       // customerObj.name = 'TestTest Test';
       // customerObj.code = '987654321';
       // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-      // print(createCustomerResponse.body);
+      // print(createCustomerResponse.bo21q   dy);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
