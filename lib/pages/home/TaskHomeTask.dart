@@ -178,8 +178,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             }
           }
 
-
-
           if(filterText == ''){
             if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                 (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
@@ -202,10 +200,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
               }
 
               if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                  (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                  (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                 (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                 (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
                 dateTitulo = 'Hoy, ' + dateTitulo;
-
               }
               return Container(
                 child: Column(
