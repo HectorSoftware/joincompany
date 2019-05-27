@@ -28,9 +28,9 @@ class _LoginPageState extends State<LoginPage> {
 
   UserDataBase saveUser;
   UserDataBase userVe;
-  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : 'duperu');
+  final companyController = TextEditingController(text : 'getkem');
   bool TextViewVisible = true;
   bool AgregarUser = true;
   String companyEstable = '';
