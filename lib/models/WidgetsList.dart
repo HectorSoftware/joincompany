@@ -30,7 +30,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   Stream<String> get outForm => _formController.stream;
   Sink<String> get inForm => _formController.sink;
   Map<String,String> data;
-
+  List<String> listValues = List<String>();
   @override
   void initState() {
     super.initState();
@@ -239,9 +239,12 @@ Widget timeWidget(BuildContext context, String string){
   );
 }
   void saveData(TextEditingController nameController, String id){
-    data.putIfAbsent(id, ()=>nameController.text);
+
+    var value = nameController.text;
+
 
   }
+
 
   Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
     return
@@ -267,6 +270,7 @@ Widget timeWidget(BuildContext context, String string){
                 ]
             ),
             child: TextField(
+
                onChanged: (value){
                  saveData(nameController, placeholder);
                },
@@ -281,6 +285,7 @@ Widget timeWidget(BuildContext context, String string){
           ),
 
         );
+
   }
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
@@ -306,6 +311,9 @@ Widget timeWidget(BuildContext context, String string){
               ]
           ),
           child: TextField(
+            onChanged: (value){
+              saveData(nameController, placeholder);
+            },
             maxLines: 1,
             controller: nameController,
             decoration: InputDecoration(
