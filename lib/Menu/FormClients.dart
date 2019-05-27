@@ -279,6 +279,8 @@ class _FormClientState extends State<FormClient> {
     if(resp){
       UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
       var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      bool eliminado = responseDelete.body == '1' ? true : false;
+
 
     }
   }

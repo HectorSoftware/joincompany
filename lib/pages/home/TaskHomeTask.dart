@@ -266,8 +266,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   ),
                 );
               } else {
-                return ListCard(
-                    title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
+                return ListCard(title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
               }
             }else{
               return Container();
