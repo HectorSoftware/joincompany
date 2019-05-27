@@ -130,7 +130,7 @@ class CustomerWithAddressModel extends AddressModel{
     String contactPhone,
     String contactMobile,
     String contactEmail,
-    Locality locality,
+    LocalityModel locality,
     this.customerId,
     this.addressId,
     this.approved,
@@ -196,7 +196,7 @@ class CustomerWithAddressModel extends AddressModel{
     code: json["code"],
     phone: json["phone"],
     email: json["email"],
-    locality: json["locality"] != null ? Locality.fromMap(json["locality"]) : null,
+    locality: json["locality"] != null ? LocalityModel.fromMap(json["locality"]) : null,
   );
 
   Map<String, dynamic> toMap() => {
