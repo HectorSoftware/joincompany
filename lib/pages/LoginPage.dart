@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AccountModel.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AccountService.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
 class LoginPage extends StatefulWidget {
 
@@ -306,10 +311,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
    //   print("---------------- Inicia test. ----------------------------");
 
-      String email = 'eibanez@duperu.com';
+      String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
       String password = '123';
-      String customer = 'duperu';
+      String customer = 'getkem';
 
       // login
       var loginResponse = await login(email, password, customer);
@@ -326,21 +331,32 @@ class _LoginPageState extends State<LoginPage> {
       // print(refreshResponse.body);
 
       // Customer Get
-      // var getCustomerResponse = await getCustomer('2', customer, authorization);
+      // var getCustomerResponse = await getCustomer('387', customer, authorization);
       // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
       // print(customerObj.name);
       // print(getCustomerResponse.body);
 
       // Customer Update
-      // customerObj.name += ' rr';
-      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
+      // customerObj.name = 'test 15';
+      // var updateCustomerResponse = await updateCustomer('387', customerObj, customer, authorization);
+      // print(customerObj.name);
+      // print(customerObj.toJson());
+      // print(updateCustomerResponse.statusCode);
       // print(updateCustomerResponse.body);
 
       // Customer Create
-      // customerObj.name = 'TestTest Test';
-      // customerObj.code = '987654321';
-      // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-      // print(createCustomerResponse.bo21q   dy);
+      // CustomerModel customerObjNew = CustomerModel(
+        // name : 'Test test test',
+        // code : '32154654',
+        // email : "test@test.com",
+        // phone : "798798",
+        // contactName : "name conact",
+        // details : "nota"
+      // );
+      // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
+      // print(createCustomerResponse.request);
+      // print(createCustomerResponse.statusCode);
+      // print(createCustomerResponse.body);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
@@ -414,6 +430,13 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
+
+      // Account Get
+      // var getAccountResponse = await getAccount(customer, authorization);
+      // AccountModel account = AccountModel.fromJson(getAccountResponse.body);
+      // print(account.customer.name);
+      // print(account.customer.receiverEmail);
+      // print(account.customer.receiverName);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

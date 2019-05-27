@@ -22,7 +22,7 @@ class AddressModel {
   String contactPhone;
   String contactMobile;
   String contactEmail;
-  Locality locality;
+  LocalityModel locality;
 
   AddressModel({
     this.id,
@@ -75,7 +75,7 @@ class AddressModel {
     contactPhone: json["contact_phone"],
     contactMobile: json["contact_mobile"],
     contactEmail: json["contact_email"],
-    locality: json["locality"] != null ? Locality.fromMap(json["locality"]) : null,
+    locality: json["locality"] != null ? LocalityModel.fromMap(json["locality"]) : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -104,7 +104,7 @@ class AddressModel {
   };
 }
 
-class Locality {
+class LocalityModel {
   int id;
   String createdAt;
   String updatedAt;
@@ -116,7 +116,7 @@ class Locality {
   String name;
   String value;
 
-  Locality({
+  LocalityModel({
     this.id,
     this.createdAt,
     this.updatedAt,
@@ -129,11 +129,11 @@ class Locality {
     this.value,
   });
 
-  factory Locality.fromJson(String str) => Locality.fromMap(json.decode(str));
+  factory LocalityModel.fromJson(String str) => LocalityModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Locality.fromMap(Map<String, dynamic> json) => new Locality(
+  factory LocalityModel.fromMap(Map<String, dynamic> json) => new LocalityModel(
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
