@@ -7,6 +7,7 @@ import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
 
+
 class BlocTaskForm  {
 
 
@@ -18,21 +19,11 @@ class BlocTaskForm  {
   FormModel form;
   FieldModel camposWidgets;
   List<FieldOptionModel> optionsElements = List<FieldOptionModel>();
+  List<Map<String,String>> dataSave =  List<Map<String,String>>();
 
   var  _taskFormController   = StreamController<List<dynamic>>();
   Stream<List<dynamic>> get outListWidget => _taskFormController.stream;
   Sink<List<dynamic>> get inListWidget => _taskFormController.sink;
-
-
-  final  _taskTypeFormController   = StreamController<String>();
-  Stream<String> get outTaskType => _taskTypeFormController.stream;
-  Sink<String> get inTaskType => _taskTypeFormController.sink;
-
-
-  final  _saveFormController   = StreamController<String>();
-  Stream<String> get outSaveForm => _saveFormController.stream;
-  Sink<String> get inSaveForm => _saveFormController.sink;
-
 
 
   void updateListWidget(context){
@@ -50,18 +41,19 @@ class BlocTaskForm  {
               {
                 optionsElements = k.fieldOptions;
                 listWidget.add(items.createState().combo(optionsElements,k.name));
+              //  listWidget.add(items.createState().dateTime());
               }
               break;
             case 'Text':
               {
                 final nameController = TextEditingController();
-                listWidget.add(items.createState().text(context,k.name,nameController ));
+                listWidget.add(items.createState().text(context,k.name,nameController,v.id.toString() ));
               }
               break;
             case 'Textarea':
               {
                 final nameController = TextEditingController();
-                listWidget.add(items.createState().textArea(context,k.name,nameController));
+                listWidget.add(items.createState().textArea(context,k.name,nameController,v.id.toString()));
               }
               break;
             case 'Number':
@@ -72,7 +64,7 @@ class BlocTaskForm  {
               break;
             case 'Date':
               {
-                listWidget.add(items.createState().date(context,k.name));
+                listWidget.add(items.createState().dateT(context,k.name));
               }
               break;
             case 'Table':
@@ -96,13 +88,12 @@ class BlocTaskForm  {
                 listWidget.add(items.createState().imageImage(context,k.name));
               }
               break;
-          //Desde aca para abajo
             case 'Time':
               {
                 listWidget.add(items.createState().timeWidget(context,k.name));
               }
               break;
-            case 'DateTime':
+            case 'DateTime'://
               {
                 listWidget.add(items.createState().loadingTask(k.fieldType));
               }
@@ -114,10 +105,10 @@ class BlocTaskForm  {
               break;
             case 'Boolean':
               {
-                listWidget.add(items.createState().loadingTask(k.fieldType));
+                listWidget.add(items.createState().bolean());
               }
               break;
-            case 'CanvanImage':
+            case 'CanvanImage'://
               {
                 listWidget.add(items.createState().loadingTask(k.fieldType));
               }
@@ -134,12 +125,14 @@ class BlocTaskForm  {
     }else{
     }
   }
+  void saveTask(BuildContext context, data,){
+
+
+  }
 
   @override
   void dispose() {
     _taskFormController.close();
-    _taskTypeFormController.close();
-    _saveFormController.close();
   }
 
   BlocTaskForm(context) {

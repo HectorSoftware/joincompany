@@ -8,6 +8,7 @@ import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
 
 enum Method{
   CAMERA,
@@ -25,24 +26,32 @@ class ListWidgets extends StatefulWidget {
 
 class _ListWidgetsState extends State<ListWidgets> {
 
+  final formats = {
+   Date.InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    Date.InputType.date: DateFormat('yyyy-MM-dd'),
+    Date.InputType.time: DateFormat("HH:mm"),
+  };
+  Date.InputType inputType =  Date.InputType.both;
+  bool editable = true;
+  DateTime date;
 
-  final  _formController   = StreamController<String>();
-  Stream<String> get outForm => _formController.stream;
-  Sink<String> get inForm => _formController.sink;
-  Map<String,String> data;
+  BuildContext contextGlobal;
+  Map<String,String> dataInfo = Map<String,String>();
+  List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   List<String> listValues = List<String>();
+
   @override
   void initState() {
     super.initState();
   }
   @override
   void dispose() {
-    _formController.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return null;
   }
 
@@ -50,13 +59,11 @@ class _ListWidgetsState extends State<ListWidgets> {
 
   TimeOfDay _time = new TimeOfDay.now();
   File image;
-  List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
 
 
   bool checkSearchInText(String text, filterText){
-
   text = text.toLowerCase();
   text = text.replaceAll('á', "a");
   text = text.replaceAll('é', "e");
@@ -68,7 +75,24 @@ class _ListWidgetsState extends State<ListWidgets> {
 }
 
 
-
+Widget dateTime(){
+    return Padding(
+        padding: EdgeInsets.all(16.0),
+           child: ListView(
+              children: <Widget>[
+               Text('Format: "${formats[inputType].pattern}"'),
+                Date.DateTimePickerFormField(
+         inputType: inputType,
+         format: formats[inputType],
+         editable: editable,
+         decoration: InputDecoration(
+         labelText: 'Date/Time', hasFloatingPlaceholder: false),
+         //  onChanged: (dt) => setState(() => date = dt),
+  ),
+      ]
+    )
+  );
+}
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
     //TARJETA DE CAA COLUMNA
     Card card(){
@@ -181,7 +205,7 @@ Future<Null> selectDate(BuildContext context )async{
 
 }
 
-Widget date(BuildContext context, String string){
+Widget dateT(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -238,15 +262,21 @@ Widget timeWidget(BuildContext context, String string){
     ],
   );
 }
-  void saveData(TextEditingController nameController, String id) {
+  void saveData(TextEditingController nameController, String id,BuildContext context) {
     var value = nameController.text;
-    listValues.add(value);
-    print(listValues.length);
+        dataInfo.putIfAbsent(id ,()=> value);
+        dataInfo[id] = value;
+        dataSaveState.add(dataInfo);
+        print(dataSaveState.length);
+  }
+  void saveString(value, String string){
+    dataInfo.putIfAbsent(string, value);
+    dataSaveState.add(dataInfo);
   }
 
 
 
-  Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
+  Widget textArea(BuildContext context,placeholder, TextEditingController nameController, String id){
     return
         Padding(
           padding: const EdgeInsets.all(15.0),
@@ -270,22 +300,20 @@ Widget timeWidget(BuildContext context, String string){
                 ]
             ),
             child: TextField(
-              onEditingComplete: (){saveData(nameController, placeholder);},
+
+              onChanged: (value){saveData(nameController, placeholder,context);},
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: placeholder,
-
               ),
             ),
           ),
-
         );
-
   }
 
-  Widget text( BuildContext context,placeholder, TextEditingController nameController){
+  Widget text( BuildContext context,placeholder, TextEditingController nameController,String id){
     //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -309,7 +337,7 @@ Widget timeWidget(BuildContext context, String string){
           ),
           child: TextField(
             onChanged: (value){
-              saveData(nameController, placeholder);
+              saveData(nameController, placeholder,context);
             },
             maxLines: 1,
             controller: nameController,
@@ -346,7 +374,9 @@ Widget timeWidget(BuildContext context, String string){
 
         ),
         child: TextField(
-
+          onChanged: (value){
+            saveData(nameController, placeholder,context);
+          },
           keyboardType: TextInputType.number,
           maxLines: 1,
           controller: nameController,
@@ -481,6 +511,7 @@ Widget timeWidget(BuildContext context, String string){
         onChanged: (String newValue) {
           setState(() {
             dropdownValue = newValue;
+            saveString(newValue,string) ;
           });
           },
         items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
@@ -538,6 +569,13 @@ Widget timeWidget(BuildContext context, String string){
       iconSize: iconSize,
       onPressed: _searchPressed,
     );
+  }
+  
+  Widget bolean(){
+
+    return Container(
+        width: 30,
+        child: Switch(value: true, onChanged: null));
   }
   Widget ComboSearch(BuildContext context,String placeholder ){
     return Row(
