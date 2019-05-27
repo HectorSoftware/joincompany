@@ -19,6 +19,7 @@ enum type{
   EMAIL,
   NOTE,
   PASSWORD,
+  PASSWORD1
 }
 
 class ConfigCli extends StatefulWidget {
@@ -32,7 +33,7 @@ class _ConfigCliState extends State<ConfigCli> {
   static const int linesInputsBasic = 1;
   static const int linesInputsTextAreaBasic = 4;
 
-  TextEditingController name,code,defaults,title,tlfF,tlfM,email,note,password;
+  TextEditingController name,code,defaults,title,tlfF,tlfM,email,note,password,password1;
 
   String nameUser = '';
   String emailUser = '';
@@ -42,7 +43,7 @@ class _ConfigCliState extends State<ConfigCli> {
     //TODO
     initController();
     getConfig();
-    extraerUser();
+    setUser();
     super.initState();
   }
 
@@ -73,7 +74,7 @@ class _ConfigCliState extends State<ConfigCli> {
             customTextField("Emails",type.EMAIL,linesInputsBasic),
             customTextField("Notas",type.NOTE,linesInputsTextAreaBasic),
             customTextField("Contraseña",type.PASSWORD,linesInputsBasic),
-            customTextField("Repetir Contraseña",type.PASSWORD,linesInputsBasic),
+            customTextField("Repetir Contraseña",type.PASSWORD1,linesInputsBasic),
           ],
         ),
       ),
@@ -94,6 +95,7 @@ class _ConfigCliState extends State<ConfigCli> {
     email = TextEditingController();
     note = TextEditingController();
     password = TextEditingController();
+    password1 = TextEditingController();
   }
 
   void disposeController(){
@@ -106,6 +108,7 @@ class _ConfigCliState extends State<ConfigCli> {
     email.dispose();
     note.dispose();
     password.dispose();
+    password1.dispose();
   }
 
   void getConfig() async {
@@ -130,6 +133,7 @@ class _ConfigCliState extends State<ConfigCli> {
       margin: EdgeInsets.all(12.0),
       color: Colors.grey.shade300,
       child: TextFormField(
+        obscureText: (t == type.PASSWORD) || t == (type.PASSWORD1) ? true:false,
         maxLines: maxLines,
         textInputAction: TextInputAction.next,
         validator: (value){
@@ -140,7 +144,8 @@ class _ConfigCliState extends State<ConfigCli> {
         },
         decoration: InputDecoration(
           hintText: title,
-          border: InputBorder.none
+          contentPadding: EdgeInsets.all(12.0),
+          border: InputBorder.none,
         ),
         controller: getController(t),
       ),
@@ -175,6 +180,9 @@ class _ConfigCliState extends State<ConfigCli> {
       }
       case type.PASSWORD:{
         return password;
+      }
+      case type.PASSWORD1:{
+        return password1;
       }
     }
     return null;
@@ -262,8 +270,7 @@ class _ConfigCliState extends State<ConfigCli> {
     );
   }
 
-
-  extraerUser() async {
+  setUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
@@ -273,4 +280,5 @@ class _ConfigCliState extends State<ConfigCli> {
       emailUser = user.email;
     });
   }
+
 }
