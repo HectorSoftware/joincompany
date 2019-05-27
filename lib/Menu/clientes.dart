@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
+import 'package:joincompany/Menu/configCli.dart';
+import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:loadmore/loadmore.dart';
-
+import 'package:joincompany/services/UserService.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -20,6 +25,180 @@ class _ClienteState extends State<Cliente> {
   Widget _appBarTitle = new Text('Clientes');
   String textFilter='';
   final TextEditingController _filter = new TextEditingController();
+  String nameUser = '';
+  String emailUser = '';
+
+  @override
+  void initState() {
+    extraerUser();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      drawer: buildDrawer(),
+      appBar: AppBar(
+        title: _appBarTitle,
+        actions: <Widget>[
+          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
+        ],
+      ),
+      body: Stack(
+        children: <Widget>[
+          listViewCustomers(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        elevation: 12,
+        backgroundColor: PrimaryColor,
+        tooltip: 'Agregar Tarea',
+        onPressed: (){
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) => new  FormClient(null)));
+        },
+
+      ),
+    );
+  }
+
+  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
+    String title = titleCli;
+    String subtitle = subtitleCli;
+    int id = idCli;
+    return Card(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(12.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(12.0),
+                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
+              ),
+            ],
+          ),
+          IconButton(icon: Icon(Icons.mode_edit),onPressed: (){},),
+        ],
+      ),
+    );
+  }
+
+  bool drawerCustomer = true;
+  Drawer buildDrawer() {
+    return Drawer(
+      elevation: 12,
+      child: new ListView(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(
+            decoration: new BoxDecoration(color: SecondaryColor,
+            ),
+            accountName: new Text(nameUser,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+            accountEmail : Text(emailUser,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          Container(
+              child: ListTile(
+                trailing: new Icon(Icons.assignment),
+                title: new Text('Tareas'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              )
+          ),
+          Container(
+            color: drawerCustomer ? Colors.grey[200] :  null,
+            child: ListTile(
+              title: new Text("Clientes"),
+              trailing: new Icon(Icons.business),
+              onTap: () {
+                Navigator.pop(context);
+//                Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Contactos"),
+              trailing: new Icon(Icons.contacts),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+              },
+            ),
+          ),
+          /*new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),*/
+          Divider(
+            height: 30.0,
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.filter_vintage),
+              onTap: () {
+                // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new  ConfigCli()));
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  extraerUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
+    });
+  }
 
   void _searchPressed() {
     setState(() {
@@ -48,61 +227,6 @@ class _ClienteState extends State<Cliente> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      //drawer: buildDrawer(),
-      appBar: AppBar(
-        title: _appBarTitle,
-        actions: <Widget>[
-          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
-        ],
-      ),
-      body: Container(
-        child: RefreshIndicator(
-            child: LoadMore(
-              child: Stack(
-                children: <Widget>[
-                  listViewCustomers(),
-                ],
-              ),
-              onLoadMore: null,
-              whenEmptyLoad: false,
-              delegate: DefaultLoadMoreDelegate(),
-              textBuilder: DefaultLoadMoreTextBuilder.english,
-            ),
-            onRefresh: _refresh,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        elevation: 12,
-        backgroundColor: PrimaryColor,
-        tooltip: 'Agregar Tarea',
-        onPressed: (){
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => new  FormClient(null)));
-        },
-
-      ),
-    );
-  }
-
-  Future<bool> _loadMore() async {//TODO
-    print("onLoadMore");
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-//    load();
-    return true;
-  }
-
-  Future<void> _refresh() async {//TODO
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-//    list.clear();
-//    load();
-  }
-
   listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
 
@@ -123,7 +247,6 @@ class _ClienteState extends State<Cliente> {
                 child: ListTile(
                   title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.description),onPressed: (){},),
                   onTap: (){
                     Navigator.push(
                         context,
@@ -135,8 +258,6 @@ class _ClienteState extends State<Cliente> {
                   },
                 ),
               );
-//              return clientCard(snapshot.data[index]);
-
             }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(dir, textFilter)){
               return Card(
                 child: ListTile(
