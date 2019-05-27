@@ -4,7 +4,9 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
@@ -268,16 +270,28 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
         if(loginResponse.statusCode == 200){
-
           AuthModel auth = AuthModel.fromJson(loginResponse.body);
-          if(AgregarUser){
-            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-            int res = await ClientDatabaseProvider.db.saveUser(newuser);
-          }else{
-            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-          }
 
-          Navigator.pushReplacementNamed(context, '/vistap');
+          var getUserResponseid = await getUser(companylocal,auth.accessToken);
+          if(getUserResponseid != null){
+            if(AgregarUser){
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
+              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+              int res = await ClientDatabaseProvider.db.saveUser(newuser);
+            }else{
+              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+            }
+            Navigator.pushReplacementNamed(context, '/vistap');
+          }else{
+            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false; setState(() {
+              Circuleprogress;
+            });
+          }
         }
       }else{
         ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
