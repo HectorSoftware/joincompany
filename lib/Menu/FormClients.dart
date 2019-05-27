@@ -277,6 +277,16 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
+  void deleteCli()async{
+    var resp = await  _asyncConfirmDialogDeleteUser();
+    if(resp){
+      UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+      var responseCreate = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      print(responseCreate.statusCode);
+      print(responseCreate.body);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -291,22 +301,7 @@ class _FormClientState extends State<FormClient> {
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
               iconSize: 25,
-              onPressed: ()async{
-                 var resp = await  _asyncConfirmDialogDeleteUser();
-                 print(resp);
-//                  if(resp){
-//                    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-//                    CustomerModel client = CustomerModel(
-//                      id: widget.client.id,
-//                      name: name.text,
-//                      code: code.text,
-//                      details: note.text,
-//                    );
-//                    var responseCreate = await deleteCustomer(client.id.toString(), client, userAct.token);
-//                    print(responseCreate.statusCode);
-//                    print(responseCreate.body);
-//                  }
-              },
+              onPressed: widget.client != null ? deleteCli:null,
             )
           ],
         ),
@@ -347,7 +342,7 @@ class _FormClientState extends State<FormClient> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (BuildContext context) => new  Cliente()));
+                                  builder: (BuildContext context) => new  ContactView()));
                         },
                         ),
                       ),

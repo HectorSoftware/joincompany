@@ -243,10 +243,12 @@ class _ClienteState extends State<Cliente> {
             var dir = snapshot.data[index].address;
             //var name = snapshot.data[index].name;
             if(textFilter == ''){
+              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
-                  subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  title: Text(name, style: TextStyle(fontSize: 14),),
+                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   onTap: (){
                     Navigator.push(
                         context,
@@ -259,10 +261,12 @@ class _ClienteState extends State<Cliente> {
                 ),
               );
             }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(dir, textFilter)){
+              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
-                  subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  title: Text(name, style: TextStyle(fontSize: 14),),
+                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   onTap: (){
                     Navigator.push(
                         context,

@@ -55,8 +55,11 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<Offset> _points = <Offset>[];
 
 
-  bool checkSearchInText(String text, filterText){
-
+  bool checkSearchInText(String text,String filterText){
+  if(text == '' || text == null){
+    return false;
+  }
+  filterText = filterText.toLowerCase();
   text = text.toLowerCase();
   text = text.replaceAll('á', "a");
   text = text.replaceAll('é', "e");
