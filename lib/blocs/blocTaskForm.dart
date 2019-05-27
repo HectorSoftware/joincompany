@@ -48,8 +48,7 @@ class BlocTaskForm  {
             case 'Combo':
               {
                 optionsElements = k.fieldOptions;
-                listWidget.add(items.createState().newFirm(context,k.name));
-                listWidget.add(items.createState().tab(k.fieldOptions,context));
+                listWidget.add(items.createState().combo(optionsElements,k.name));
               }
               break;
             case 'Text':

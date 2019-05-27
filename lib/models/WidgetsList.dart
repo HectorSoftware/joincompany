@@ -30,7 +30,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   Stream<String> get outForm => _formController.stream;
   Sink<String> get inForm => _formController.sink;
   Map<String,String> data;
-
+  List<String> listValues = List<String>();
   @override
   void initState() {
     super.initState();
@@ -241,10 +241,13 @@ Widget timeWidget(BuildContext context, String string){
     ],
   );
 }
-  void saveData(TextEditingController nameController, String id){
-    data.putIfAbsent(id, ()=>nameController.text);
-
+  void saveData(TextEditingController nameController, String id) {
+    var value = nameController.text;
+    listValues.add(value);
+    print(listValues.length);
   }
+
+
 
   Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
     return
@@ -270,9 +273,7 @@ Widget timeWidget(BuildContext context, String string){
                 ]
             ),
             child: TextField(
-               onChanged: (value){
-                 saveData(nameController, placeholder);
-               },
+              onEditingComplete: (){saveData(nameController, placeholder);},
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
@@ -284,6 +285,7 @@ Widget timeWidget(BuildContext context, String string){
           ),
 
         );
+
   }
 
   Widget text( BuildContext context,placeholder, TextEditingController nameController){
@@ -309,6 +311,9 @@ Widget timeWidget(BuildContext context, String string){
               ]
           ),
           child: TextField(
+            onChanged: (value){
+              saveData(nameController, placeholder);
+            },
             maxLines: 1,
             controller: nameController,
             decoration: InputDecoration(
@@ -543,7 +548,7 @@ Widget timeWidget(BuildContext context, String string){
         Padding(
           padding: const EdgeInsets.all(12.0),
           child: Container(
-            width: MediaQuery.of(context).size.width*0.8,
+            width: MediaQuery.of(context).size.width*0.5,
             height: 40,
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4

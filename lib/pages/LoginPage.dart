@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AccountModel.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/services/AccountService.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
@@ -320,10 +325,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
    //   print("---------------- Inicia test. ----------------------------");
 
-      String email = 'eibanez@duperu.com';
+      String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
       String password = '123';
-      String customer = 'duperu';
+      String customer = 'getkem';
 
       // login
       var loginResponse = await login(email, password, customer);
@@ -340,7 +345,7 @@ class _LoginPageState extends State<LoginPage> {
       // print(refreshResponse.body);
 
       // Customer Get
-      // var getCustomerResponse = await getCustomer('2', customer, authorization);
+      // var getCustomerResponse = await getCustomer('387', customer, authorization);
       // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
       // print(customerObj.name);
       // print(getCustomerResponse.body);
