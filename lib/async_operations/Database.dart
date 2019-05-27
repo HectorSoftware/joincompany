@@ -7,21 +7,12 @@ import 'package:sqflite/sqflite.dart';
 
 import 'SQL_Instructions.dart';
 
-import '../models/AccountModel.dart';
-import '../models/AddressesModel.dart';
 import '../models/AddressModel.dart';
-import '../models/AuthModel.dart';
 import '../models/CustomerModel.dart';
-import '../models/CustomersModel.dart';
-import '../models/FieldModel.dart';
 import '../models/FormModel.dart';
-import '../models/FormsModel.dart';
 import '../models/SectionModel.dart';
 import '../models/TaskModel.dart';
-import '../models/TasksModel.dart';
 import '../models/UserModel.dart';
-import '../models/UserDataBase.dart';
-import '../models/Marker.dart';
 
 enum AsyncOperation {
   none,
@@ -63,7 +54,7 @@ class AsyncOperationsDatabase {
   // Operations on users
   Future<dynamic> CreateUser(UserModel user) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."users"(
           id,
@@ -190,7 +181,7 @@ class AsyncOperationsDatabase {
   // Operations on forms
   Future<dynamic> CreateForm(FormModel form) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."forms"(
           id,
@@ -267,6 +258,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListForms() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -282,7 +286,7 @@ class AsyncOperationsDatabase {
   // Operations on localities
   Future<dynamic> CreateLocality(LocalityModel locality) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
           INSERT INTO "mydb"."localities"(
             id,
@@ -359,6 +363,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListLocalities() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -374,7 +391,7 @@ class AsyncOperationsDatabase {
   // Operations on responsibles
   Future<dynamic> CreateResponsible(ResponsibleModel responsible) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
           INSERT INTO "mydb"."responsibles"(
             id,
@@ -452,7 +469,7 @@ class AsyncOperationsDatabase {
         responsible.deletedById, responsible.supervisorId, responsible.name,
         responsible.code, responsible.email, responsible.phone,
         responsible.mobile, responsible.title, responsible.details,
-        responsible.profile], ...operations[AsyncOperation.create]],
+        responsible.profile], ...operations[AsyncOperation.update]],
       );
     });
   }
@@ -467,6 +484,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListResponsibles() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -480,27 +510,134 @@ class AsyncOperationsDatabase {
   }
 
   // Operations on custom_fields
-  Future<dynamic> CreateCustomField() async {
-
+  Future<dynamic> CreateCustomField(SectionModel section) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawInsert(
+        '''
+        INSERT INTO "mydb"."custom_fields"(
+          id,
+          created_at,
+          updated_at,
+          deleted_at,
+          created_by_id,
+          updated_by_id,
+          deleted_by_id,
+          section_id,
+          entity_type,
+          entity_id,
+          type,
+          name,
+          code,
+          subtitle,
+          position,
+          field_default_value,
+          field_type,
+          field_placeholder,
+          field_options,
+          field_collection,
+          field_required,
+          field_width,
+          in_server,
+          updated,
+          deleted,
+        )
+        
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''',
+        [...[section.id, section.createdAt, section.updatedAt,
+        section.deletedAt, section.createdById,
+        section.updatedById, section.deletedById,
+        section.sectionId, section.entityType,
+        section.entityId, section.type, section.name,
+        section.code, section.subtitle, section.position,
+        section.fieldDefaultValue, section.fieldType,
+        section.fieldPlaceholder, section.fieldOptions,
+        section.fieldCollection, section.fieldRequired,
+        section.fieldWidth], ...operations[AsyncOperation.create]],
+      );
+    });
   }
 
   Future<dynamic> ReadCustomField(int id) async {
-
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."custom_fields" WHERE id = ${id}
+        '''
+      );
+    });
+    return data;
   }
-  Future<dynamic> UpdateCustomField() async {
 
+  Future<dynamic> UpdateCustomField(SectionModel section) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."custom_fields" SET
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        section_id = ?,
+        entity_type = ?,
+        entity_id = ?,
+        type = ?,
+        name = ?,
+        code = ?,
+        subtitle = ?,
+        position = ?,
+        field_default_value = ?,
+        field_type = ?,
+        field_placeholder = ?,
+        field_options = ?,
+        field_collection = ?,
+        field_required = ?,
+        field_width = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${section.id}
+        ''',
+        [...[section.createdAt,section.updatedAt, section.deletedAt,
+        section.createdById, section.updatedById, section.deletedById,
+        section.sectionId, section.entityType, section.entityId, section.type,
+        section.name, section.code, section.subtitle, section.position,
+        section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
+        section.fieldOptions, section.fieldCollection, section.fieldRequired,
+        section.fieldWidth], ...operations[AsyncOperation.update]],
+      );
+    });
   }
+
   Future<dynamic> DeleteCustomField(int id) async {
-
+    await _database.transaction((transaction) async {
+      await transaction.rawDelete(
+        '''
+        DELETE FROM "mydb"."custom_fields" WHERE id = ${id}
+        '''
+      );
+    });
   }
-  Future<dynamic> ListCustomFields() async {
 
+  Future<dynamic> ListCustomFields() async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."custom_fields"
+        '''
+      );
+    });
+    return data;
   }
 
   // Operations on addresses
   Future<dynamic> CreateAddress(AddressModel address) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."addresses"(
           id,
@@ -559,7 +696,7 @@ class AsyncOperationsDatabase {
     await _database.transaction((transaction) async {
       await transaction.rawUpdate(
         '''
-        UPDATE "mydb"."users" SET
+        UPDATE "mydb"."addresses" SET
         created_at = ?,
         updated_at = ?,
         deleted_at = ?,
@@ -611,6 +748,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListAddresses() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -626,7 +776,7 @@ class AsyncOperationsDatabase {
   // Operations on customers
   Future<dynamic> CreateCustomer(CustomerModel customer) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."customers"(
           id,
@@ -711,6 +861,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListCustomers() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -726,7 +889,7 @@ class AsyncOperationsDatabase {
   // Operations on tasks
   Future<dynamic> CreateTask(TaskModel task) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."tasks"(
           id,
@@ -825,18 +988,26 @@ class AsyncOperationsDatabase {
 
   Future<dynamic> DeleteTask(int id) async {
     await _database.transaction((transaction) async {
-      await transaction.rawUpdate(
+      await transaction.rawDelete(
+          '''
+        DELETE FROM "mydb"."tasks" WHERE id = ${id}
         '''
-        UPDATE "mydb"."tasks" SET
-        in_server = ?,
-        updated = ?,
-        deleted = ?,
-        WHERE id = ${id}
-        ''',
-        operations[AsyncOperation.delete],
       );
     });
   }
+
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
 
   Future<dynamic> ListTasks() async {
     List<Map<String, dynamic>> data;
@@ -851,9 +1022,11 @@ class AsyncOperationsDatabase {
   }
 
   // Operations on custom_users
-  Future<dynamic> CreateCustomUser() async {
+  Future<dynamic> CreateCustomerUser(int id, String createdAt, String updatedAt,
+                                     String deletedAt, int customerId,
+                                     int userId) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."customers_users"(
           id,
@@ -869,30 +1042,98 @@ class AsyncOperationsDatabase {
         
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
-
-        [...[],
-      ...operations[AsyncOperation.create]],
+        [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
+        ...operations[AsyncOperation.create]],
       );
     });
   }
 
-  Future<dynamic> ReadCustomUser(int id) async {
-
+  Future<dynamic> ReadCustomerUser(int id) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customers_users" WHERE id = ${id}
+        '''
+      );
+    });
+    return data;
   }
-  Future<dynamic> UpdateCustomUser() async {
 
+  Future<dynamic> UpdateCustomerUser(int id, String createdAt, String updatedAt,
+                                     String deletedAt, int customerId,
+                                     int userId) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."customer_users" SET
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        supervisor_id = ?,
+        name = ?,
+        code = ?,
+        email = ?,
+        phone = ?,
+        mobile = ?,
+        title = ?,
+        details = ?,
+        profile = ?,
+        password = ?,
+        remember_token = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        [...[createdAt, updatedAt, deletedAt, customerId, userId],
+        ...operations[AsyncOperation.update]],
+      );
+    });
   }
-  Future<dynamic> DeleteCustomUser(int id) async {
 
+  Future<dynamic> DeleteCustomerUser(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawDelete(
+        '''
+        DELETE FROM "mydb"."customer_users" WHERE id = ${id}
+        '''
+      );
+    });
   }
-  Future<dynamic> ListCustomUsers() async {
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
+  Future<dynamic> ListCustomerUsers() async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customer_users"
+        '''
+      );
+    });
+    return data;
   }
 
   // Operations on custom_values
   Future<dynamic> CreateCustomValue(CustomValueModel customValue) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
         INSERT INTO "mydb"."custom_values"(
           id,
@@ -913,10 +1154,9 @@ class AsyncOperationsDatabase {
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
         [...[customValue.id, customValue.createdAt, customValue.updatedAt,
-        customValue.deletedAt, customValue.formsId, customValue.sectionId,
-        customValue.fieldId, customValue.customizableType,
-        customValue.customizableId, customValue.value],
-        ...operations[AsyncOperation.create]],
+        customValue.formId, customValue.sectionId, customValue.fieldId,
+        customValue.customizableType, customValue.customizableId,
+        customValue.value], ...operations[AsyncOperation.create]],
       );
     });
   }
@@ -952,8 +1192,8 @@ class AsyncOperationsDatabase {
         deleted = ?,  
         WHERE id = ${customValue.id}
         ''',
-        [...[customValue.createdAt, customValue.updatedAt, customValue.deletedAt,
-        customValue.formsId, customValue.sectionId, customValue.fieldId,
+        [...[customValue.createdAt, customValue.updatedAt, customValue.formId,
+        customValue.sectionId, customValue.fieldId,
         customValue.customizableType, customValue.customizableId,
         customValue.value], ...operations[AsyncOperation.update]],
       );
@@ -970,6 +1210,19 @@ class AsyncOperationsDatabase {
     });
   }
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
   Future<dynamic> ListCustomValues() async {
     List<Map<String, dynamic>> data;
     await _database.transaction((transaction) async {
@@ -983,34 +1236,115 @@ class AsyncOperationsDatabase {
   }
 
   // Operations on customer_addresses
-  Future<dynamic> CreateCustomerAdress() async {
+  Future<dynamic> CreateCustomerAdress(int id, String createdAt,
+                                       String updatedAt, String deletedAt,
+                                       int customerId, int addressId,
+                                       bool approved) async {
     await _database.transaction((transaction) async {
-      int id = await transaction.rawInsert(
+      await transaction.rawInsert(
         '''
-          INSERT INTO
-            
-          );
-          
-          VALUES()
-          ''',
-        [...[locality.id, locality.createdAt, locality.updatedAt, locality.deletedAt,
-      locality.createdById, locality.updatedById, locality.deletedById, ],
-      ...operations[AsyncOperation.create]],
+        INSERT INTO "mydb"."customers_addresses"(
+          id,
+          created_at,
+          updated_at,
+          deleted_at,
+          customer_id,
+          address_id,
+          approved,
+          in_server,
+          updated,
+          deleted,
+        )
+        
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''',
+        [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
+        approved], ...operations[AsyncOperation.create]],
       );
     });
   }
 
   Future<dynamic> ReadCustomerAdress(int id) async {
-
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customer_addresses" WHERE id = ${id}
+        '''
+      );
+    });
+    return data;
   }
-  Future<dynamic> UpdateCustomerAdress() async {
 
+  Future<dynamic> UpdateCustomerAdress(int id, String createdAt,
+                                       String updatedAt, String deletedAt,
+                                       int customerId, int addressId,
+                                       bool approved) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."customer_addresses" SET
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        supervisor_id = ?,
+        name = ?,
+        code = ?,
+        email = ?,
+        phone = ?,
+        mobile = ?,
+        title = ?,
+        details = ?,
+        profile = ?,
+        password = ?,
+        remember_token = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        [...[createdAt, updatedAt, deletedAt, customerId, addressId,
+        approved], ...operations[AsyncOperation.update]],
+      );
+    });
   }
+
   Future<dynamic> DeleteCustomerAdress(int id) async {
-
+    await _database.transaction((transaction) async {
+      await transaction.rawDelete(
+        '''
+        DELETE FROM "mydb"."customer_addresses" WHERE id = ${id}
+        '''
+      );
+    });
   }
-  Future<dynamic> ListCustomerAdresses() async {
 
+  await _database.transaction((transaction) async {
+    await transaction.rawUpdate(
+      '''
+      UPDATE "mydb"."users" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = ${id}
+      ''',
+      operations[AsyncOperation.delete],
+    );
+  });
+
+  Future<dynamic> ListCustomerAdresses() async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customer_addresses"
+        '''
+      );
+    });
+    return data;
   }
 
 }

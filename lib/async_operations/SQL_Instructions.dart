@@ -321,7 +321,7 @@ CREATE TABLE "mydb"."custom_values"(
 "created_at" DATETIME,
 "updated_at" DATETIME,
 "deleted_at" DATETIME,
-"forms_id" INTEGER,
+"form_id" INTEGER,
 "section_id" INTEGER,
 "field_id" INTEGER,
 "customizable_type" TEXT,
@@ -331,7 +331,7 @@ CREATE TABLE "mydb"."custom_values"(
 "updated" BOOL,
 "deleted" BOOL,
 CONSTRAINT "fk_custom_values_forms1"
-FOREIGN KEY("forms_id")
+FOREIGN KEY("form_id")
 REFERENCES "forms"("id"),
 CONSTRAINT "fk_custom_values_custom_fields1"
 FOREIGN KEY("section_id")
@@ -340,7 +340,7 @@ CONSTRAINT "fk_custom_values_custom_fields2"
 FOREIGN KEY("field_id")
 REFERENCES "custom_fields"("id")
 );
-CREATE INDEX "mydb"."custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("forms_id");
+CREATE INDEX "mydb"."custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
 CREATE INDEX "mydb"."custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
 CREATE INDEX "mydb"."custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
 CREATE TABLE "mydb"."customers_addresses"(
