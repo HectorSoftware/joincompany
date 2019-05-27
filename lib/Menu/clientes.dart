@@ -3,11 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
-import 'package:joincompany/Menu/configCli.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:loadmore/loadmore.dart';
+
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -21,39 +20,6 @@ class _ClienteState extends State<Cliente> {
   Widget _appBarTitle = new Text('Clientes');
   String textFilter='';
   final TextEditingController _filter = new TextEditingController();
-
-  Widget clientCard(CustomerWithAddressModel client) {
-   return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    client.name,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(client.address),),
-              ),
-            ],
-          ),
-          IconButton(icon: Icon(Icons.contact_mail),onPressed: (){},),
-        ],
-      ),
-    );
-  }
 
   void _searchPressed() {
     setState(() {
@@ -92,10 +58,21 @@ class _ClienteState extends State<Cliente> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          listViewCustomers(),
-        ],
+      body: Container(
+        child: RefreshIndicator(
+            child: LoadMore(
+              child: Stack(
+                children: <Widget>[
+                  listViewCustomers(),
+                ],
+              ),
+              onLoadMore: null,
+              whenEmptyLoad: false,
+              delegate: DefaultLoadMoreDelegate(),
+              textBuilder: DefaultLoadMoreTextBuilder.english,
+            ),
+            onRefresh: _refresh,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -111,6 +88,19 @@ class _ClienteState extends State<Cliente> {
 
       ),
     );
+  }
+
+  Future<bool> _loadMore() async {//TODO
+    print("onLoadMore");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+//    load();
+    return true;
+  }
+
+  Future<void> _refresh() async {//TODO
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+//    list.clear();
+//    load();
   }
 
   listViewCustomers(){
@@ -133,6 +123,7 @@ class _ClienteState extends State<Cliente> {
                 child: ListTile(
                   title: Text(snapshot.data[index].name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(snapshot.data[index].address, style: TextStyle(fontSize: 12),),
+                  trailing:  IconButton(icon: Icon(Icons.description),onPressed: (){},),
                   onTap: (){
                     Navigator.push(
                         context,

@@ -49,11 +49,11 @@ class _AppState extends State<App> {
     return new Scaffold(
         body: Stack(
             children: <Widget>[
-//              salirMail ?
-//              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
-//              : Center(
-//                child: CircularProgressIndicator(),
-//              ),
+              salirMail ?
+              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
+              : Center(
+                child: CircularProgressIndicator(),
+              ),
             ]
         )
     );
