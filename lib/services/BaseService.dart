@@ -52,15 +52,21 @@ Future<http.Response> httpPut(String id, String bodyJson, String customer, Strin
 }
 
 
-Future<http.Response> httpDelete(String id, String customer, String authorization, String resourcePath) async{
+Future<http.Response> httpDelete(String id, String customer, String authorization, String resourcePath, bool standardCall) async{
+
+  var response = null;
   var uri = Uri.https(hostApi, versionApi + resourcePath + '/$id');
+  print(uri.toString());
+  var headers = {
+    'customer': customer,
+    'Authorization': 'Bearer $authorization',
+  };
 
-  final response = await http.delete(uri,
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
-
+  if (standardCall) {
+    response = await http.delete(uri, headers: headers);
+  } else {
+    response = await http.get(uri, headers: headers);
+  }
+  
   return response;
 }

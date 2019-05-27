@@ -49,6 +49,7 @@ Future<http.Response> updateCustomer(String id, CustomerModel customerObj, Strin
 }
 
 Future<http.Response> deleteCustomer(String id, String customer, String authorization) async{
+  String resourcePath = '/customer/delete';
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, false);
 }
