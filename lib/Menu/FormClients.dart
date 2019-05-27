@@ -8,6 +8,8 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
+import 'clientes.dart';
+
 enum type{NAME,CODE,NOTE}
 
 
@@ -122,7 +124,6 @@ class _FormClientState extends State<FormClient> {
           onPressed: () {
             if(validateData()){
               savedData();
-              Navigator.of(context).pop(true);
             }else{
               Navigator.of(context).pop(false);
             }
@@ -188,18 +189,30 @@ class _FormClientState extends State<FormClient> {
             code: code.text,
             details: note.text,
           );
-          var responseCreate = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
-          print(responseCreate.statusCode);
-          print(responseCreate.body);
+          var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+          print(response.statusCode);
+          print(response.body);
+
+          if(response.statusCode == 200){
+            Navigator.of(context).pop(true);
+          }else{
+            Navigator.of(context).pop(false);
+          }
+
         }else{
           CustomerModel client = CustomerModel(
             name: name.text,
             code: code.text,
             details: note.text,
           );
-          var responseCreate = await createCustomer(client, userAct.company, userAct.token);
-          print(responseCreate.statusCode);
-          print(responseCreate.body);
+          var response = await createCustomer(client, userAct.company, userAct.token);
+          print(response.statusCode);
+          print(response.body);
+          if(response.statusCode == 200){
+            Navigator.of(context).pop(true);
+          }else{
+            Navigator.of(context).pop(false);
+          }
         }
       }
   }
@@ -233,6 +246,47 @@ class _FormClientState extends State<FormClient> {
     super.initState();
   }
 
+  Future<bool> _asyncConfirmDialogDeleteUser() async {
+    if(widget.client != null){
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button for close dialog!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('ELIMINIAR'),
+            content: const Text(
+                '¿estas seguro que desea guardar estos datos?'),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('CANCELAR'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              FlatButton(
+                child: const Text('ACEPTAR'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
+    return false;
+  }
+
+  void deleteCli()async{
+    var resp = await  _asyncConfirmDialogDeleteUser();
+    if(resp){
+      UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+      var responseCreate = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      print(responseCreate.statusCode);
+      print(responseCreate.body);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -247,7 +301,7 @@ class _FormClientState extends State<FormClient> {
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
               iconSize: 25,
-              onPressed: (){},
+              onPressed: widget.client != null ? deleteCli:null,
             )
           ],
         ),
@@ -283,7 +337,13 @@ class _FormClientState extends State<FormClient> {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         icon: Icon(Icons.visibility),
-                        onPressed: (){},//TODO
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) => new  ContactView()));
+                        },
                         ),
                       ),
                     ],
@@ -317,7 +377,13 @@ class _FormClientState extends State<FormClient> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.visibility),
-                            onPressed: (){},
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (BuildContext context) => new  SearchAddress()));
+                            },
                           ),
                         ),
                       ],
@@ -345,7 +411,9 @@ class _FormClientState extends State<FormClient> {
                             alignment: Alignment.centerRight,
                             child: IconButton(
                             icon: Icon(Icons.visibility),
-                            onPressed: (){},
+                            onPressed: (){
+                              //TODO
+                            },
                             ),
                           ),
                         ],
