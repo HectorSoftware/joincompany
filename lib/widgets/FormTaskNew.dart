@@ -36,7 +36,6 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
-    BuildOwner();
     super.initState();
   }
   @override
@@ -209,10 +208,11 @@ class _FormTaskState extends State<FormTask> {
                       context: context,
                       builder: (BuildContext context) {
                         initFormType();
-                        return formType != null ? new ListView.builder(
+                        return  formType != null ?  new ListView.builder(
                           itemCount: formType.data.length,//formType.data.length,
                           itemBuilder: (BuildContext context, index){
                             return ListTile(
+                             contentPadding: EdgeInsets.all(10),
                               title: Text('${formType.data[index].name}'),
                               leading: Icon(Icons.poll),
                               onTap: () async {
@@ -225,7 +225,6 @@ class _FormTaskState extends State<FormTask> {
                                 setState(() {
                                   pass = true;
                                 });
-
                                 // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 _bloc.updateListWidget(globalContext);
                                 Navigator.pop(context);
