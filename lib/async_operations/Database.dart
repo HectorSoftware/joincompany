@@ -64,82 +64,165 @@ class AsyncOperationsDatabase {
   Future<dynamic> CreateUser(UserModel user) async {
     await _database.transaction((transaction) async {
       int id = await transaction.rawInsert(
-          '''
-          INSERT INTO "mydb"."users"(
-            id,
-            created_at,
-            updated_at,
-            deleted_at,
-            created_by_id,
-            updated_by_id,
-            deleted_by_id,
-            supervisor_id,
-            name,
-            code,
-            email,
-            phone,
-            mobile,
-            title,
-            details,
-            profile,
-            password,
-            remember_token,
-            in_server,
-            updated,
-            deleted,
-          )
-          
-          VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          ''',
-          [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
-           user.createdById, user.updatedById, user.deletedById,
-           user.supervisorId, user.name, user.code, user.email,
-           user.phone, user.mobile, user.title, user.details,
-           user.profile, null, null], ...operations[AsyncOperation.create]],
+        '''
+        INSERT INTO "mydb"."users"(
+          id,
+          created_at,
+          updated_at,
+          deleted_at,
+          created_by_id,
+          updated_by_id,
+          deleted_by_id,
+          supervisor_id,
+          name,
+          code,
+          email,
+          phone,
+          mobile,
+          title,
+          details,
+          profile,
+          password,
+          remember_token,
+          in_server,
+          updated,
+          deleted,
+        )
+        
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''',
+        [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
+        user.createdById, user.updatedById, user.deletedById,
+        user.supervisorId, user.name, user.code, user.email,
+        user.phone, user.mobile, user.title, user.details,
+        user.profile, user.password, user.rememberToken],
+        ...operations[AsyncOperation.create]],
       );
     });
   }
 
-  Future<dynamic> ReadUser() async {}
-  Future<dynamic> UpdateUser() async {}
-  Future<dynamic> DeleteUser() async {}
-  Future<dynamic> ListUsers() async {}
+  Future<dynamic> ReadUser(int id) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."users" WHERE id = ${id}
+        '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> UpdateUser(UserModel user) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."users" SET
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        supervisor_id = ?,
+        name = ?,
+        code = ?,
+        email = ?,
+        phone = ?,
+        mobile = ?,
+        title = ?,
+        details = ?,
+        profile = ?,
+        password = ?,
+        remember_token = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${user.id}
+        ''',
+        [...[user.createdAt, user.updatedAt, user.deletedAt,
+        user.createdById, user.updatedById, user.deletedById,
+        user.supervisorId, user.name, user.code, user.email,
+        user.phone, user.mobile, user.title, user.details,
+        user.profile, user.password, user.rememberToken],
+        ...operations[AsyncOperation.create]],
+      );
+    });
+  }
+
+  Future<dynamic> DeleteUser(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawDelete(
+        '''
+        DELETE FROM "mydb"."users" WHERE id = ${id}
+        '''
+      );
+    });
+  }
+
+  Future<dynamic> ListUsers() async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."users"
+        '''
+      );
+    });
+    return data;
+  }
 
   // Operations on forms
   Future<dynamic> CreateForm(FormModel form) async {
     await _database.transaction((transaction) async {
       int id = await transaction.rawInsert(
-          '''
-          INSERT INTO "mydb"."forms"(
-            id,
-            created_at,
-            updated_at,
-            deleted_at,
-            created_by_id,
-            updated_by_id,
-            deleted_by_id,
-            name,
-            with_checkinout,
-            active,
-            in_server,
-            updated,
-            deleted,
-          )
-          
-          VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          ''',
-          [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
-          form.createdById, form.updatedById, form.deletedById, form.name,
-          form.withCheckinout, form.active],
-          ...operations[AsyncOperation.create]],
+        '''
+        INSERT INTO "mydb"."forms"(
+          id,
+          created_at,
+          updated_at,
+          deleted_at,
+          created_by_id,
+          updated_by_id,
+          deleted_by_id,
+          name,
+          with_checkinout,
+          active,
+          in_server,
+          updated,
+          deleted,
+        )
+        
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''',
+        [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
+        form.createdById, form.updatedById, form.deletedById, form.name,
+        form.withCheckinout, form.active],
+        ...operations[AsyncOperation.create]],
       );
     });
   }
 
-  Future<dynamic> ReadForm() async {}
-  Future<dynamic> UpdateForm() async {}
-  Future<dynamic> DeleteForm() async {}
-  Future<dynamic> ListForms() async {}
+  Future<dynamic> ReadForm() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateForm() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteForm() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListForms() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on localities
   Future<dynamic> CreateLocality(LocalityModel locality) async {
@@ -172,10 +255,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadLocality() async {}
-  Future<dynamic> UpdateLocality() async {}
-  Future<dynamic> DeleteLocality() async {}
-  Future<dynamic> ListLocalities() async {}
+  Future<dynamic> ReadLocality() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateLocality() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteLocality() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListLocalities() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on responsibles
   Future<dynamic> CreateResponsible(ResponsibleModel responsible) async {
@@ -214,10 +313,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadResponsible() async {}
-  Future<dynamic> UpdateResponsible() async {}
-  Future<dynamic> DeleteResponsible() async {}
-  Future<dynamic> ListResponsibles() async {}
+  Future<dynamic> ReadResponsible() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateResponsible() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteResponsible() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListResponsibles() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on custom_fields
   Future<dynamic> CreateCustomField() async {
@@ -237,10 +352,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadCustomField() async {}
-  Future<dynamic> UpdateCustomField() async {}
-  Future<dynamic> DeleteCustomField() async {}
-  Future<dynamic> ListCustomFields() async {}
+  Future<dynamic> ReadCustomField() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateCustomField() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteCustomField() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListCustomFields() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on addresses
   Future<dynamic> CreateAddress() async {
@@ -260,10 +391,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadAddress() async {}
-  Future<dynamic> UpdateAddress() async {}
-  Future<dynamic> DeleteAddress() async {}
-  Future<dynamic> ListAddresses() async {}
+  Future<dynamic> ReadAddress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateAddress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteAddress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListAddresses() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on customers
   Future<dynamic> CreateCustomer() async {
@@ -283,10 +430,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadCustomer() async {}
-  Future<dynamic> UpdateCustomer() async {}
-  Future<dynamic> DeleteCustomer() async {}
-  Future<dynamic> ListCustomers() async {}
+  Future<dynamic> ReadCustomer() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateCustomer() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteCustomer() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListCustomers() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on tasks
   Future<dynamic> CreateTask() async {
@@ -306,10 +469,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadTask() async {}
-  Future<dynamic> UpdateTask() async {}
-  Future<dynamic> DeleteTask() async {}
-  Future<dynamic> ListTasks() async {}
+  Future<dynamic> ReadTask() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateTask() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteTask() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListTasks() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on custom_users
   Future<dynamic> CreateCustomUser() async {
@@ -329,10 +508,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadCustomUser() async {}
-  Future<dynamic> UpdateCustomUser() async {}
-  Future<dynamic> DeleteCustomUser() async {}
-  Future<dynamic> ListCustomUsers() async {}
+  Future<dynamic> ReadCustomUser() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateCustomUser() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteCustomUser() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListCustomUsers() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on custom_values
   Future<dynamic> CreateCustomValue() async {
@@ -352,10 +547,26 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadCustomValue() async {}
-  Future<dynamic> UpdateCustomValue() async {}
-  Future<dynamic> DeleteCustomValue() async {}
-  Future<dynamic> ListCustomValues() async {}
+  Future<dynamic> ReadCustomValue() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateCustomValue() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteCustomValue() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListCustomValues() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
   // Operations on customer_addresses
   Future<dynamic> CreateCustomerAdress() async {
@@ -375,9 +586,25 @@ class AsyncOperationsDatabase {
     });
   }
 
-  Future<dynamic> ReadCustomerAdress() async {}
-  Future<dynamic> UpdateCustomerAdress() async {}
-  Future<dynamic> DeleteCustomerAdress() async {}
-  Future<dynamic> ListCustomerAdresses() async {}
+  Future<dynamic> ReadCustomerAdress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> UpdateCustomerAdress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> DeleteCustomerAdress() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
+  Future<dynamic> ListCustomerAdresses() async {
+    await _database.transaction((transaction) async {
+
+    });
+  }
 
 }

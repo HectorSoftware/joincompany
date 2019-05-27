@@ -18,7 +18,7 @@ class UserModel {
   String details;
   String profile;
   String password;
-  String remenberToken;
+  String rememberToken;
   String loggedAt;
 
   UserModel({
@@ -39,7 +39,7 @@ class UserModel {
     this.details,
     this.profile,
     this.password,
-    this.remenberToken,
+    this.rememberToken,
     this.loggedAt,
   });
 
