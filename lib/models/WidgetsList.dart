@@ -238,12 +238,12 @@ Widget timeWidget(BuildContext context, String string){
     ],
   );
 }
-  void saveData(TextEditingController nameController, String id){
-
+  void saveData(TextEditingController nameController, String id) {
     var value = nameController.text;
-
-
+    listValues.add(value);
+    print(listValues.length);
   }
+
 
 
   Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
@@ -270,10 +270,7 @@ Widget timeWidget(BuildContext context, String string){
                 ]
             ),
             child: TextField(
-
-               onChanged: (value){
-                 saveData(nameController, placeholder);
-               },
+              onEditingComplete: (){saveData(nameController, placeholder);},
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
