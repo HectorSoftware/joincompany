@@ -36,7 +36,7 @@ class blocListTask {
     }
 
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde);
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
     bool whilesalir = true;
@@ -75,7 +75,7 @@ class blocListTask {
         _listTask.add(task);
       }
       if(tasks.nextPageUrl != null){
-        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde,endDate: hastadesde, urlPage: tasks.nextPageUrl);
+        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde,endDate: hastadesde, urlPage: tasks.nextPageUrl,responsibleId: UserActiv.idUserCompany.toString());
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
       }else{ whilesalir = false; }
     }

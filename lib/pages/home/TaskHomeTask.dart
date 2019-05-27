@@ -87,14 +87,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-
-  ListViewTareas(){
-    //bloctasks = blocListTask(ListCalender);
-
-    bloctasksFilter = widget.blocListTaskFilterRes;
+  obtenerTareas(){
     bloctasks = widget.blocListTaskRes;
-
-    //blocTaskCalendar = widget.blocListTaskCalendarRes;
 
     try{
       // ignore: cancel_subscriptions
@@ -117,22 +111,21 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         }
       }));
 
+    }catch(e){ }
+  }
+
+  ListViewTareas(){
+
+    bloctasksFilter = widget.blocListTaskFilterRes;
+    obtenerTareas();
+    try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal)
       => setState((){
         filterText = newVal;
       }));
-
-      // ignore: cancel_subscriptions
-      /*StreamSubscription streamSubscriptionCalendar = blocTaskCalendar.outTaksCalendar.listen((newVal)
-      => setState((){
-        ListCalender = newVal;
-        setState(() {
-          //bloctasks;
-        });
-      }));*/
-
     }catch(e){ }
+
     String DateTask = "2019-05-05 20:00:04Z";
     return listTaskModellocal.length != 0 ? ListView.builder(
         itemCount: listTaskModellocal.length,
@@ -140,7 +133,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
           int PosicionActual = index;
           String _date = listTaskModellocal[PosicionActual].createdAt;
-          String _title = listTaskModellocal[PosicionActual].name;
+          String _title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
           AddressModel _address = listTaskModellocal[PosicionActual].address;
           String voidFieldMessage = "";
           var _customerName = listTaskModellocal[PosicionActual].customer;
@@ -304,7 +297,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         if(checkInTaskResponse.statusCode == 200){
                           listTaskModellocal[index].status = 'done';
                           setState(() {
-                            //listTaskModellocal;
+                            listTaskModellocal;
                           });
                         }
                       }else{
@@ -312,7 +305,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         if(checkInTaskResponse.statusCode == 200){
                           listTaskModellocal[index].status = 'working';
                           setState(() {
-                            //listTaskModellocal;
+                            listTaskModellocal;
                           });
                         }
                       }
