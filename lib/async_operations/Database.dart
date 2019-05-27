@@ -258,18 +258,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteForm(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."forms" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListForms() async {
     List<Map<String, dynamic>> data;
@@ -363,18 +365,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteLocality(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."localities" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListLocalities() async {
     List<Map<String, dynamic>> data;
@@ -484,18 +488,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteResponsible(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."responsibles" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListResponsibles() async {
     List<Map<String, dynamic>> data;
@@ -618,6 +624,21 @@ class AsyncOperationsDatabase {
         '''
         DELETE FROM "mydb"."custom_fields" WHERE id = ${id}
         '''
+      );
+    });
+  }
+
+  Future<dynamic> SoftDeleteCustomField(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."custom_fields" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
       );
     });
   }
@@ -748,18 +769,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteAddress(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."addresses" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListAddresses() async {
     List<Map<String, dynamic>> data;
@@ -861,18 +884,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteCustomer(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."customers" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListCustomers() async {
     List<Map<String, dynamic>> data;
@@ -996,18 +1021,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteTaks(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."tasks" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListTasks() async {
     List<Map<String, dynamic>> data;
@@ -1105,18 +1132,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteCustomerUser(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."customer_users" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListCustomerUsers() async {
     List<Map<String, dynamic>> data;
@@ -1210,18 +1239,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteCustomValue(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."custom_values" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListCustomValues() async {
     List<Map<String, dynamic>> data;
@@ -1322,18 +1353,20 @@ class AsyncOperationsDatabase {
     });
   }
 
-  await _database.transaction((transaction) async {
-    await transaction.rawUpdate(
-      '''
-      UPDATE "mydb"."users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
-      WHERE id = ${id}
-      ''',
-      operations[AsyncOperation.delete],
-    );
-  });
+  Future<dynamic> SoftDeleteCustomerAddress(int id) async {
+    await _database.transaction((transaction) async {
+      await transaction.rawUpdate(
+        '''
+        UPDATE "mydb"."customer_addresses" SET
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        WHERE id = ${id}
+        ''',
+        operations[AsyncOperation.delete],
+      );
+    });
+  }
 
   Future<dynamic> ListCustomerAdresses() async {
     List<Map<String, dynamic>> data;
