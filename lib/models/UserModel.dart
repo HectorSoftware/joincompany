@@ -17,6 +17,9 @@ class UserModel {
   String title;
   String details;
   String profile;
+  String password;
+  String remenberToken;
+  String loggedAt;
 
   UserModel({
     this.id,
@@ -35,6 +38,9 @@ class UserModel {
     this.title,
     this.details,
     this.profile,
+    this.password,
+    this.remenberToken,
+    this.loggedAt,
   });
 
   factory UserModel.fromJson(String str) => UserModel.fromMap(json.decode(str));
