@@ -278,7 +278,7 @@ class _FormClientState extends State<FormClient> {
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
       UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-      var responseCreate = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
 
     }
   }
