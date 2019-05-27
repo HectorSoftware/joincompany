@@ -184,9 +184,9 @@ class _FormClientState extends State<FormClient> {
         if(widget.client != null){
           CustomerModel client = CustomerModel(
             id: widget.client.id,
-            name: widget.client.name,
-            code: widget.client.code,
-            details: widget.client.details,
+            name: name.text,
+            code: code.text,
+            details: note.text,
           );
           var responseCreate = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
           print(responseCreate.statusCode);
@@ -246,7 +246,7 @@ class _FormClientState extends State<FormClient> {
             IconButton(
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
-              iconSize: 35,
+              iconSize: 25,
               onPressed: (){},
             )
           ],
