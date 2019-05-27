@@ -32,6 +32,7 @@ class _FormTaskState extends State<FormTask> {
   String customer;
   String user;
   FormsModel formType;
+  bool pass = false;
 
   @override
   void initState(){
@@ -46,34 +47,49 @@ class _FormTaskState extends State<FormTask> {
        appBar: AppBar(
          elevation: 12,
          backgroundColor: PrimaryColor,
-         /*leading:  IconButton(
+         leading:  IconButton(
            icon: Icon(Icons.arrow_back),
            tooltip: 'Guardar Tarea',
            iconSize: 35,
-           onPressed: (){
-             StreamBuilder<String>(
-                 stream: _bloc.outSaveForm,
-                 builder: (context, snapshot) {
-                 }
-             );
+           onPressed: ()=> showDialog(
+               context: context,
+               child: SimpleDialog(
 
+                 title: Text('Guardar Tarea'),
+                 children: <Widget>[
+                   Padding(
+                     padding: const EdgeInsets.only(left: 100),
+                     child: Column(
+                       children: <Widget>[
+                         Padding(
+                           padding: const EdgeInsets.all(10),
+                           child: Row(
+                             children: <Widget>[
 
+                               RaisedButton(
+                                 child:  Text('Aceptar'),
+                                 color: Colors.white,
+                                 elevation: 0,
 
-               setState(() {
-                  data;
-              });
-              _bloc.idFormType = null;
-              _bloc.updateListWidget(globalContext);
-            },
-
-             Navigator.pop(context);
-             Navigator.pushReplacementNamed(context, '/vistap');
-           },
-         ) ,*/
+                                 onPressed: (){
+                                   //GUARDAR TAREA AQUI...
+                                   Navigator.pop(context);
+                                   Navigator.pushReplacementNamed(context, '/vistap');
+                                 },
+                               ),
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ],
+               ))
+         ) ,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
-            tooltip: 'Eliminar Tarea',
+            tooltip: 'Descartar Formulario',
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
@@ -82,34 +98,58 @@ class _FormTaskState extends State<FormTask> {
               title: Text('Descartar Formulario'),
               children: <Widget>[
                Padding(
-                 padding: const EdgeInsets.only(left: 200),
+                 padding: const EdgeInsets.only(right: 80),
                  child: Column(
                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text('Volver'),
-                          IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: (){
-                              Navigator.pop(context);
-
-                            },
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                            ),
+                            RaisedButton(
+                              elevation: 0,
+                              color: Colors.white,
+                              child: Text('Volver'),
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                      Row(
                        children: <Widget>[
-                         Text('Eliminar'),
                          IconButton(
                            icon: Icon(Icons.delete),
-                           onPressed: (){
-                             setState(() {
-                               data;
-                             });
-                             _bloc.idFormType = null;
-                             _bloc.updateListWidget(globalContext);
-                             Navigator.pop(context);
-                           },
+                             onPressed: (){
+                               setState(() {
+                                 data.clear();
+                                 pass= false;
+                                 _bloc.idFormType = null;
+                                 _bloc.updateListWidget(globalContext);
+                               });
+
+                               //Navigator.pop(context);
+                             }
+                         ),
+                         RaisedButton(
+                           child: Text('Descartar Formulario'),
+                           elevation: 0,
+                           color: Colors.white,
+                             onPressed: (){
+                               setState(() {
+                                 pass= false;
+                                 data.clear();
+                               });
+                               _bloc.idFormType = null;
+                               _bloc.updateListWidget(globalContext);
+                               Navigator.pop(context);
+                             }
                          ),
                        ],
                      ),
@@ -119,13 +159,10 @@ class _FormTaskState extends State<FormTask> {
                ),
               ],
             ))
-
           )
-
         ],
         title: Text('Agregar Tareas'),
       ),
-
       body:Stack(
         children: <Widget>[
           StreamBuilder<List<dynamic>>(
@@ -147,11 +184,8 @@ class _FormTaskState extends State<FormTask> {
                   }
                 }else{
                   CircularProgressIndicator(
-
                   );
-
                 }
-
               }
           ),
         ],
@@ -163,11 +197,10 @@ class _FormTaskState extends State<FormTask> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.menu,color: Colors.white,),
-              onPressed: (){
-                _showModalDateTimeAndDirections();
+              icon: Icon(Icons.menu,color: pass? Colors.white: Colors.grey),
+              onPressed: () => pass ?  _showModalDateTimeAndDirections(): null
 
-              },
+
             ),
             IconButton(
                 icon: Icon(Icons.business,color: Colors.white,),
@@ -189,6 +222,10 @@ class _FormTaskState extends State<FormTask> {
                                 _bloc.customer = customer;
                                 _bloc.token = token;
                                 _bloc.form = form;
+                                setState(() {
+                                  pass = true;
+                                });
+
                                 // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 _bloc.updateListWidget(globalContext);
                                 Navigator.pop(context);
@@ -200,7 +237,6 @@ class _FormTaskState extends State<FormTask> {
                   );
                 }
             ),
-
           ],
         ),
       ),
@@ -208,7 +244,6 @@ class _FormTaskState extends State<FormTask> {
   }
 
   Widget buildView(data){
-
     return  ListView.builder(
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
@@ -216,14 +251,12 @@ class _FormTaskState extends State<FormTask> {
         }
     ) ;
   }
-
   getAll()async{
     FormsModel forms;
     FormsModel formType;
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
     try{
-
       if(getAllFormsResponse.statusCode == 200)
       {
         //  print(getAllFormsResponse.headers['content-type']);
