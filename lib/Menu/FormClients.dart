@@ -189,6 +189,7 @@ class _FormClientState extends State<FormClient> {
             details: widget.client.details,
           );
           var responseCreate = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+          print(client.id.toString());
           print(responseCreate.statusCode);
           print(responseCreate.body);
         }else{

@@ -22,11 +22,8 @@ class _ClienteState extends State<Cliente> {
   String textFilter='';
   final TextEditingController _filter = new TextEditingController();
 
-  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
-    String title = titleCli;
-    String subtitle = subtitleCli;
-    int id = idCli;
-    return Card(
+  Widget clientCard(CustomerWithAddressModel client) {
+   return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -38,7 +35,7 @@ class _ClienteState extends State<Cliente> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    title,
+                    client.name,
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold
@@ -48,88 +45,11 @@ class _ClienteState extends State<Cliente> {
               ),
               Container(
                 margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
+                child: Align(alignment: Alignment.centerLeft,child: Text(client.address),),
               ),
             ],
           ),
-          IconButton(icon: Icon(Icons.mode_edit),onPressed: (){},),
-        ],
-      ),
-    );
-  }
-
-  Drawer buildDrawer() {
-    return Drawer(
-      elevation: 12,
-      child: new ListView(
-        children: <Widget>[
-          new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
-            ),
-            accountName: new Text('Nombre de la empresa:',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-              ),
-            ),
-            accountEmail : Text('Nombre de Usuario',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 17,
-              ),),),
-          new ListTile(
-            trailing: new Icon(Icons.assignment),
-            title: new Text('Tareas'),
-
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/vistap');
-            },
-          ),
-          new ListTile(
-            title: new Text("Clientes"),
-            trailing: new Icon(Icons.business),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  Cliente()));
-            },
-          ),
-          new ListTile(
-            title: new Text("Contactos"),
-            trailing: new Icon(Icons.contacts),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ContactView()));
-            },
-          ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
-          Divider(
-            height: 30.0,
-          ),
-          new ListTile(
-            title: new Text("Configuracion"),
-            trailing: new Icon(Icons.filter_vintage),
-            onTap: () {
-              // Navigator.pushReplacementNamed(context, "/intro");
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ConfigCli()));
-            },
-          ),
+          IconButton(icon: Icon(Icons.contact_mail),onPressed: (){},),
         ],
       ),
     );
@@ -224,6 +144,8 @@ class _ClienteState extends State<Cliente> {
                   },
                 ),
               );
+//              return clientCard(snapshot.data[index]);
+
             }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(dir, textFilter)){
               return Card(
                 child: ListTile(
