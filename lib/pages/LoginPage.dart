@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AccountModel.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/AccountService.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/FormService.dart';
+import 'package:joincompany/services/TaskService.dart';
+import 'package:joincompany/services/UserService.dart';
+import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
-
-  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
-  final bool TextViewVisiblewidget;
-  final bool AgregarUserwidget;
-  final String companyEstablewidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -19,19 +33,15 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+
   UserDataBase saveUser;
   UserDataBase userVe;
-
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  final companyController = TextEditingController(text : 'duperu');
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-//  final companyController = TextEditingController(text : 'getkem');
-
   final passwordController = TextEditingController(text : '123');
-
-  bool TextViewVisible;
-  bool AgregarUser;
-  String companyEstable;
+  final companyController = TextEditingController(text : '');
+  bool TextViewVisible = true;
+  bool AgregarUser = true;
+  String companyEstable = '';
   bool ErrorTextFieldEmail = false;
   bool ErrorTextFieldpsd = false;
   bool ErrorTextFieldcompany = false;
@@ -42,9 +52,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    TextViewVisible = widget.TextViewVisiblewidget;
-    AgregarUser = widget.AgregarUserwidget;
-    companyEstable = widget.companyEstablewidget;
+    ValidarUsrPrimeraVez();
     super.initState();
   }
 @override
@@ -74,15 +82,29 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.30,
+          height: MediaQuery.of(context).size.height * 0.25,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xff29a0c7),
+                  Color(0xff29a0c7)
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(90)
+              )
+          ),
           child: Column(
             children: <Widget>[
               Spacer(),
               Align(
                 alignment: Alignment.center,
-                child: Container(
-                  child: Image.asset('assets/images/final-logo.png'),
-                )
+                child: Icon(Icons.person,
+                  size: 90,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -155,7 +177,6 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
           ),
-          TextViewVisible ?
           Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -166,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: BoxDecoration(
               color: Colors.transparent,
             ),
-            child: TextField(
+            child: TextViewVisible ? TextField(
               controller: companyController,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -176,8 +197,8 @@ class _LoginPageState extends State<LoginPage> {
                 errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                 hintText: 'Empresa',
               ),
-            ) ,
-          ) : Container(),
+            ) : Container(),
+          ),
           Container(
             height: MediaQuery.of(context).size.height * 0.08,
             width: MediaQuery.of(context).size.width/1.2,
@@ -201,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                //testApi();
               },
               child: Center(
                   child: Center(
@@ -301,10 +321,22 @@ class _LoginPageState extends State<LoginPage> {
     }*/
   }
 
+  ValidarUsrPrimeraVez() async {
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    if(UserActiv != null){
+      TextViewVisible = false;
+      AgregarUser = false;
+      companyEstable = UserActiv.company;
+      setState(() {
+        TextViewVisible;AgregarUser;companyEstable;
+      });
+    }
+  }
+
   testApi() async{
 
     try {
-   //   print("---------------- Inicia test. ----------------------------");
+      print("---------------- Inicia test. ----------------------------");
 
       String email = 'eibanez@duperu.com';
       // String email = 'jgarcia@getkem.com';
@@ -340,7 +372,7 @@ class _LoginPageState extends State<LoginPage> {
       // customerObj.name = 'TestTest Test';
       // customerObj.code = '987654321';
       // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-      // print(createCustomerResponse.bo21q   dy);
+      // print(createCustomerResponse.body);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
@@ -414,6 +446,13 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
+
+      // Account Get
+      // var getAccountResponse = await getAccount(customer, authorization);
+      // AccountModel account = AccountModel.fromJson(getAccountResponse.body);
+      // print(account.customer.name);
+      // print(account.customer.receiverEmail);
+      // print(account.customer.receiverName);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
