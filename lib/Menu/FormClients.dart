@@ -190,8 +190,6 @@ class _FormClientState extends State<FormClient> {
             details: note.text,
           );
           var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
-          print(response.statusCode);
-          print(response.body);
 
           if(response.statusCode == 200){
             Navigator.of(context).pop(true);
@@ -206,8 +204,7 @@ class _FormClientState extends State<FormClient> {
             details: note.text,
           );
           var response = await createCustomer(client, userAct.company, userAct.token);
-          print(response.statusCode);
-          print(response.body);
+
           if(response.statusCode == 200){
             Navigator.of(context).pop(true);
           }else{
@@ -282,8 +279,7 @@ class _FormClientState extends State<FormClient> {
     if(resp){
       UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
       var responseCreate = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
-      print(responseCreate.statusCode);
-      print(responseCreate.body);
+
     }
   }
 

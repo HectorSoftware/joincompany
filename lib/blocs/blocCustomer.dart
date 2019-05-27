@@ -26,8 +26,6 @@ class CustomersBloc{
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     _listCustomersWithAddress = customersWithAddress.data;
 
-    print(_listCustomersWithAddress.length);
-
     _customerscontroller.add(_listCustomersWithAddress);
   }
 

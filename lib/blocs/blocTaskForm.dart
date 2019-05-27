@@ -41,7 +41,6 @@ class BlocTaskForm  {
     {
       for(SectionModel v in form.sections)
       {
-        print(v.id);
         for(FieldModel k in v.fields)
         {
           camposWidgets = k;
