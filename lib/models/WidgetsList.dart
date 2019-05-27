@@ -545,7 +545,7 @@ Widget timeWidget(BuildContext context, String string){
         Padding(
           padding: const EdgeInsets.all(12.0),
           child: Container(
-            width: MediaQuery.of(context).size.width*0.8,
+            width: MediaQuery.of(context).size.width*0.5,
             height: 40,
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
