@@ -115,9 +115,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
   bool drawerTask = true;
-  bool drawerCustomer = false;
-  bool drawerContact = false;
-  bool drawerConfig = false;
   Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
@@ -146,14 +143,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text('Tareas'),
               onTap: () {
                 Navigator.pop(context);
-                setState(() {
-                  drawerTask = true; drawerCustomer = false; drawerContact = false; drawerConfig = false;
-                });
               },
             )
           ),
           Container(
-            color: drawerCustomer ? Colors.grey[200] :  null,
             child: ListTile(
               title: new Text("Clientes"),
               trailing: new Icon(Icons.business),
@@ -161,14 +154,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
 //              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
-                setState(() {
-                  drawerCustomer = true; drawerTask = false; drawerContact = false; drawerConfig = false;
-                });
               },
             ),
           ),
           Container(
-            color: drawerContact ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
@@ -177,9 +166,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 Navigator.push(
                     context,
                     new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
-                setState(() {
-                  drawerContact = true; drawerTask = false; drawerCustomer = false; drawerConfig = false;
-                });
               },
             ),
           ),
@@ -194,7 +180,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             height: 30.0,
           ),
           Container(
-            color: drawerConfig ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Configuración"),
               trailing: new Icon(Icons.filter_vintage),
@@ -205,9 +190,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                     context,
                     new MaterialPageRoute(
                         builder: (BuildContext context) => new  ConfigCli()));
-                setState(() {
-                  drawerConfig = true; drawerTask = false; drawerCustomer = false; drawerContact = false;
-                });
               },
             ),
           ),
