@@ -10,17 +10,16 @@ import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskres,this.blocListTaskFilterRes});
+  taskHomeTask({this.blocListTaskFilterRes,this.blocListTaskRes});
 
-  final blocListTask blocListTaskres;
   final blocListTaskFilter blocListTaskFilterRes;
+  final blocListTask blocListTaskRes;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
@@ -33,6 +32,10 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   List<TaskModel> listTaskModellocal;
   String filterText = '';
 
+  blocListTaskFilter bloctasksFilter;
+  blocListTask bloctasks;
+  List<DateTime> ListCalender = new List<DateTime>();
+
   @override
   void initState() {
     actualizarusuario();
@@ -43,6 +46,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   @override
   void dispose(){
+
+    /*bloctasksFilter.dispose();
+    bloctasks.dispose();*/
     super.dispose();
   }
 
@@ -74,25 +80,33 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: (){
-              Navigator.pushReplacementNamed(context, '/formularioTareas');
+              Navigator.pushNamed(context, '/formularioTareas');
 
             }),
       ),
     );
   }
 
+
   ListViewTareas(){
-    blocListTask bloctasks = widget.blocListTaskres;
-    blocListTaskFilter bloctasksFilter = widget.blocListTaskFilterRes;
+    //bloctasks = blocListTask(ListCalender);
+
+    bloctasksFilter = widget.blocListTaskFilterRes;
+    bloctasks = widget.blocListTaskRes;
+
+    //blocTaskCalendar = widget.blocListTaskCalendarRes;
 
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
       => setState((){
         listTaskModellocal = new List<TaskModel>();
-        var hasta = new DateTime.now();
-        for(int h = 0; h < 15; h++){
-          hasta = new DateTime.now().add(Duration(days: -h));
+        setState(() {
+          listTaskModellocal;
+        });
+
+        for(int h = 0; h < 255; h++){
+          var hasta = new DateTime.now().add(Duration(days: -h));
           for(int k = 0; k < newVal.length; k++){
             if ((hasta.day == DateTime.parse(newVal[k].createdAt).day)&&
                 (hasta.month == DateTime.parse(newVal[k].createdAt).month)&&
@@ -109,6 +123,15 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         filterText = newVal;
       }));
 
+      // ignore: cancel_subscriptions
+      /*StreamSubscription streamSubscriptionCalendar = blocTaskCalendar.outTaksCalendar.listen((newVal)
+      => setState((){
+        ListCalender = newVal;
+        setState(() {
+          //bloctasks;
+        });
+      }));*/
+
     }catch(e){ }
     String DateTask = "2019-05-05 20:00:04Z";
     return listTaskModellocal.length != 0 ? ListView.builder(
@@ -117,7 +140,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
           int PosicionActual = index;
           String _date = listTaskModellocal[PosicionActual].createdAt;
-          String _title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
+          String _title = listTaskModellocal[PosicionActual].name;
           AddressModel _address = listTaskModellocal[PosicionActual].address;
           String voidFieldMessage = "";
           var _customerName = listTaskModellocal[PosicionActual].customer;
@@ -155,8 +178,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             }
           }
 
-
-
           if(filterText == ''){
             if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                 (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
@@ -179,10 +200,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
               }
 
               if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                  (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                  (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                 (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                 (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
                 dateTitulo = 'Hoy, ' + dateTitulo;
-
               }
               return Container(
                 child: Column(
@@ -204,7 +224,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
             }
           }else{
-            if(ls.createState().checkSearchInText(listTaskModellocal[PosicionActual].name, filterText)){
+            if(ls.createState().checkSearchInText(title, filterText) ||
+                ls.createState().checkSearchInText(address, filterText) ||
+                ls.createState().checkSearchInText(customerName, filterText)){
               if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
                   (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
                   (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {

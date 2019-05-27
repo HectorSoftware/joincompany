@@ -165,7 +165,7 @@ class _ClienteState extends State<Cliente> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      //drawer: buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[

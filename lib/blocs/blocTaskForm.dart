@@ -39,101 +39,102 @@ class BlocTaskForm  {
 
   void updateListWidget(context){
     listWidget.clear();
-   if(idFormType != null)
-     {
+    if(idFormType != null)
+    {
       for(SectionModel v in form.sections)
+      {
+        for(FieldModel k in v.fields)
         {
-          for(FieldModel k in v.fields)
-            {
-              camposWidgets = k;
-             switch(k.fieldType){
-               case 'Combo':
-                 {
-                   optionsElements = k.fieldOptions;
-                   listWidget.add(items.createState().tab(optionsElements,context));
-                 }
-               break;
-               case 'Text':
-                 {
-                   final nameController = TextEditingController();
-                   listWidget.add(items.createState().text(context,k.name,nameController ));
-                 }
-                 break;
-               case 'Textarea':
-                 {
-                   final nameController = TextEditingController();
-                   listWidget.add(items.createState().textArea(context,k.name,nameController));
-                 }
-                 break;
-               case 'Number':
-                 {
-                   final nameController = TextEditingController();
-                   listWidget.add(items.createState().number(context,k.name,nameController));
-                 }
-                 break;
-               case 'Date':
-                 {
-                   listWidget.add(items.createState().date(context,k.name));
-                 }
-                 break;
-               case 'Table':
-                 {
-                   optionsElements = k.fieldOptions;
-                   listWidget.add(items.createState().tab(optionsElements,context));
-                 }
-                 break;
-               case 'CanvanSignature':
-                 {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
-                 }
-                 break;
-               case 'Photo':
-                 {
-                   listWidget.add(items.createState().imagePhoto(context,k.name));
-                 }
-                 break;
-               case 'Image':
-                 {
-                   listWidget.add(items.createState().imageImage(context,k.name));
-                 }
-                 break;
-                     //Desde aca para abajo
-               case 'Time':
-                 {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
-                 }
-                 break;
-               case 'DateTime':
-                 {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
-                 }
-                 break;
-               case 'ComboSearch':
-                 {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
-                 }
-                 break;
-               case 'Boolean':
-                 {
-                   listWidget.add(items.createState().loadingTask(k.fieldType));
-                 }
-                 break;
-               case 'CanvanImage':
-               {
-                 listWidget.add(items.createState().loadingTask(k.fieldType));
-               }
-               break;
-               default:
-                 {
-                 listWidget.add(items.createState().label(k.fieldType));
-                 }
-                 break;
-             }
-            }
+          camposWidgets = k;
+          switch(k.fieldType){
+            case 'Combo':
+              {
+                optionsElements = k.fieldOptions;
+                listWidget.add(items.createState().newFirm(context,k.name));
+                listWidget.add(items.createState().tab(k.fieldOptions,context));
+              }
+              break;
+            case 'Text':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().text(context,k.name,nameController ));
+              }
+              break;
+            case 'Textarea':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().textArea(context,k.name,nameController));
+              }
+              break;
+            case 'Number':
+              {
+                final nameController = TextEditingController();
+                listWidget.add(items.createState().number(context,k.name,nameController));
+              }
+              break;
+            case 'Date':
+              {
+                listWidget.add(items.createState().date(context,k.name));
+              }
+              break;
+            case 'Table':
+              {
+                optionsElements = k.fieldOptions;
+                listWidget.add(items.createState().tab(optionsElements,context));
+              }
+              break;
+            case 'CanvanSignature':
+              {
+                listWidget.add(items.createState().newFirm(context, k.name));
+              }
+              break;
+            case 'Photo':
+              {
+                listWidget.add(items.createState().imagePhoto(context,k.name));
+              }
+              break;
+            case 'Image':
+              {
+                listWidget.add(items.createState().imageImage(context,k.name));
+              }
+              break;
+          //Desde aca para abajo
+            case 'Time':
+              {
+                listWidget.add(items.createState().timeWidget(context,k.name));
+              }
+              break;
+            case 'DateTime':
+              {
+                listWidget.add(items.createState().loadingTask(k.fieldType));
+              }
+              break;
+            case 'ComboSearch':
+              {
+                listWidget.add(items.createState().ComboSearch(context, k.name));
+              }
+              break;
+            case 'Boolean':
+              {
+                listWidget.add(items.createState().loadingTask(k.fieldType));
+              }
+              break;
+            case 'CanvanImage':
+              {
+                listWidget.add(items.createState().loadingTask(k.fieldType));
+              }
+              break;
+            default:
+              {
+                listWidget.add(items.createState().label(k.fieldType));
+              }
+              break;
+          }
         }
+      }
       inListWidget.add(listWidget);
-     }else{
-   }
+    }else{
+    }
   }
 
   @override

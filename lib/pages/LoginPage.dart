@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
-
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:joincompany/services/FormService.dart';
-import 'package:joincompany/services/TaskService.dart';
-import 'package:joincompany/services/UserService.dart';
-import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
+
+  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
+  final bool TextViewVisiblewidget;
+  final bool AgregarUserwidget;
+  final String companyEstablewidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -25,15 +19,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-
   UserDataBase saveUser;
   UserDataBase userVe;
-  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+
+  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  final companyController = TextEditingController(text : 'duperu');
+//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//  final companyController = TextEditingController(text : 'getkem');
+
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : 'getkem');
-  bool TextViewVisible = true;
-  bool AgregarUser = true;
-  String companyEstable = '';
+
+  bool TextViewVisible;
+  bool AgregarUser;
+  String companyEstable;
   bool ErrorTextFieldEmail = false;
   bool ErrorTextFieldpsd = false;
   bool ErrorTextFieldcompany = false;
@@ -44,7 +42,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    ValidarUsrPrimeraVez();
+    TextViewVisible = widget.TextViewVisiblewidget;
+    AgregarUser = widget.AgregarUserwidget;
+    companyEstable = widget.companyEstablewidget;
     super.initState();
   }
 @override
@@ -301,17 +301,6 @@ class _LoginPageState extends State<LoginPage> {
     }*/
   }
 
-  ValidarUsrPrimeraVez() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    if(UserActiv != null){
-      setState(() {
-        TextViewVisible = false;
-        AgregarUser = false;
-        companyEstable = UserActiv.company;
-      });
-    }
-  }
-
   testApi() async{
 
     try {
@@ -351,7 +340,7 @@ class _LoginPageState extends State<LoginPage> {
       // customerObj.name = 'TestTest Test';
       // customerObj.code = '987654321';
       // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-      // print(createCustomerResponse.body);
+      // print(createCustomerResponse.bo21q   dy);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);

@@ -3,9 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
@@ -28,7 +27,6 @@ class _ListWidgetsState extends State<ListWidgets> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -44,11 +42,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<String> elementsNew = List<String>();
   String pivot;
   List<Offset> _points = <Offset>[];
-  final formats = {
-  InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
-  InputType.date: DateFormat('yyyy-MM-dd'),
-  InputType.time: DateFormat("HH:mm"),
-};
+
 
   bool checkSearchInText(String text, filterText){
 
@@ -62,150 +56,66 @@ class _ListWidgetsState extends State<ListWidgets> {
   return text.contains(filterText);
 }
 
-  // Changeable in demo
-  InputType inputType = InputType.both;
+
 
   Widget tab(List<FieldOptionModel> data,BuildContext contex){
+    //TARJETA DE CAA COLUMNA
+    Card card(){
+      return Card(
+        child:
+        TextField(
+        ),
+      );
+    }
+    //COLUMNAS
+    Container columna(Color col,int intCard){
+      List<Widget> ListCard = new List<Widget>();
+      for(int i = 0; i < intCard; i++){
+        ListCard.add(card());
+      }
+      return Container(
+        width: MediaQuery.of(contex).size.width * 0.5,
+        color: col,
+        child: Column(
+          children: <Widget>[
+            card(),
+            Divider(
+              height: 20,
+              color: Colors.black,
+            ),
+            Container(
+              width: MediaQuery.of(contex).size.width * 0.5,
+              height: MediaQuery.of(contex).size.height * 0.25,
+              child: ListView.builder(
+                itemCount: ListCard.length,
+                itemBuilder: (contex,index){
+                  return ListCard[index];
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    //LISTA DE COLUMNAS
+    List<Widget> ListColuma = new List<Widget>();
+    ListColuma.add(columna(Colors.red[50],2));
+    ListColuma.add(columna(Colors.blue[50],5));
+    ListColuma.add(columna(Colors.grey[200],3));
+    ListColuma.add(columna(Colors.green[100],1));
     return SingleChildScrollView(
       child: Container(
         margin: EdgeInsets.all(10),
         width: MediaQuery.of(contex).size.width,
         height: MediaQuery.of(contex).size.height * 0.4,
-        child: ListView(
-          // This next line does the trick.
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.red[50],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.green[100],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.grey[200],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: MediaQuery.of(contex).size.width * 0.5,
-              color: Colors.blue[50],
-              child: Column(
-                children: <Widget>[
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: Colors.black,
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                  Card(
-                    child:
-                    TextField(
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
-        ,
+          itemCount: ListColuma.length,
+          itemBuilder: (contex,index){
+            return ListColuma[index];
+          },
+          // This next line does the trick.
+        )        ,
       ),
     );
   }
@@ -237,18 +147,30 @@ class _ListWidgetsState extends State<ListWidgets> {
         context: context,
         initialTime: _time,
     );
-         }
+    if (picked != null && picked != _time){
+      setState(() {
+        _time = picked;
+      });
+    }
+  }
 
-  Future<Null> selectDate(BuildContext context )async{
+Future<Null> selectDate(BuildContext context )async{
   final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _date,
       firstDate: new DateTime(2000),
-      lastDate: new DateTime(2020));
+      lastDate: new DateTime(2020)
+  );
+  if (picked != null && picked != _date){
+    setState(() {
+      _date = picked;
+    });
+
+  }
 
 }
 
-  Widget date(BuildContext context, String string){
+Widget date(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -277,7 +199,7 @@ class _ListWidgetsState extends State<ListWidgets> {
   );
   }
 
-  Widget timeWid(BuildContext context, String string){
+Widget timeWidget(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
     children: <Widget>[
@@ -298,7 +220,7 @@ class _ListWidgetsState extends State<ListWidgets> {
       Padding(
         padding: const EdgeInsets.only(left: 10),
         child: RaisedButton(
-          child: Text('${_time.toString()}'),
+          child: Text(string),
           onPressed: (){selectTime(context);},
         ),
       ),
@@ -311,7 +233,8 @@ class _ListWidgetsState extends State<ListWidgets> {
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
-            width: MediaQuery.of(context).size.width/1.2,
+
+            width: MediaQuery.of(context).size.width,
             height: 150,
             padding: EdgeInsets.only(
                 top: 4,left: 16, right: 16, bottom: 4
@@ -332,13 +255,12 @@ class _ListWidgetsState extends State<ListWidgets> {
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
-
                 border: InputBorder.none,
-
                 hintText: placeholder,
               ),
             ),
           ),
+
         );
   }
 
@@ -347,7 +269,7 @@ class _ListWidgetsState extends State<ListWidgets> {
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-          width: MediaQuery.of(context).size.width/1.2,
+          width: MediaQuery.of(context).size.width,
           height: 40,
           padding: EdgeInsets.only(
               top: 4,left: 16, right: 16, bottom: 4
@@ -377,7 +299,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       ),
     );
   }
-
   Widget number(BuildContext context,placeholder, TextEditingController nameController){
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -424,7 +345,6 @@ class _ListWidgetsState extends State<ListWidgets> {
           });
       }
   }
-
   Widget imageImage(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -460,7 +380,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       ],
     );
   }
-
   pickerPhoto(Method m) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -470,7 +389,6 @@ class _ListWidgetsState extends State<ListWidgets> {
       });
     }
   }
-
   Widget imagePhoto(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -482,7 +400,7 @@ class _ListWidgetsState extends State<ListWidgets> {
                   padding: const EdgeInsets.only(top: 10,left: 5),
                   child: RaisedButton(
                     onPressed: (){
-                      pickerImage(Method.CAMERA);
+                      pickerPhoto(Method.CAMERA);
                     },
                     child: Text(string),
                     color: PrimaryColor,
@@ -506,8 +424,8 @@ class _ListWidgetsState extends State<ListWidgets> {
       ],
     );
   }
-
-  Widget loadingTask(String string){
+  Widget loadingTask(String string)
+  {
     return Center(
       child: Column(
         children: <Widget>[
@@ -520,9 +438,12 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
 
+
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
-  Widget combo(List<FieldOptionModel> elements, String string){
+
+  Widget combo(List<FieldOptionModel> elements, String string)
+  {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
 
     return  Padding(
@@ -548,16 +469,43 @@ class _ListWidgetsState extends State<ListWidgets> {
     );
   }
 
-  Widget newFirm(BuildContext context){
-    return IconButton(
-      onPressed: (){
-        Navigator.of(context).pushReplacementNamed('/firma');
+  Widget newFirm(BuildContext context, String string ){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 100,
+          height: 100,
+          child: IconButton(
+            iconSize: 30,
+            onPressed: (){
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new FirmTouch())
+
+              );
 
 
-      },
-      icon: Icon(Icons.filter_list),
+            },
+            icon: Icon(Icons.input),
+          ),
+        ),
+        Text('Firm touch creado')
+      ],
     );
   }
+
+//  Widget newFirm(BuildContext context){
+//    return Container(
+//      height: 200,
+//      width: MediaQuery.of(context).size.width,
+//      child: Card(
+//        margin: EdgeInsets.all(20),
+//        color: Colors.blueGrey,
+//        elevation: 10,
+//
+//
+//      ),
+//    );
+//  }
 
   Widget searchButtonAppbar(Icon _searchIcon,VoidCallback _searchPressed,String tooltip, double iconSize){
     return IconButton(
@@ -567,10 +515,54 @@ class _ListWidgetsState extends State<ListWidgets> {
       onPressed: _searchPressed,
     );
   }
+  Widget ComboSearch(BuildContext context,String placeholder ){
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width*0.8,
+            height: 40,
+            padding: EdgeInsets.only(
+                top: 4,left: 16, right: 16, bottom: 4
+            ),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(10)
+                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            child: TextField(
+              maxLines: 1,
+            //  controller: nameController,
+              decoration: InputDecoration(
+
+                border: InputBorder.none,
+
+                hintText: placeholder,
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.search),
+          tooltip: 'Busqueda',
+          iconSize: 20,
+          onPressed: (){},
+        ),
+      ],
+    );
+  }
 
   @override
   void setState(fn) {
-    dropdownValue ;
+  dropdownValue ;
     super.setState(fn);
   }
 }
