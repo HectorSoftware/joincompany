@@ -25,9 +25,20 @@ class ListWidgets extends StatefulWidget {
 
 class _ListWidgetsState extends State<ListWidgets> {
 
+
+  final  _formController   = StreamController<String>();
+  Stream<String> get outForm => _formController.stream;
+  Sink<String> get inForm => _formController.sink;
+  Map<String,String> data;
+
   @override
   void initState() {
     super.initState();
+  }
+  @override
+  void dispose() {
+    _formController.close();
+    super.dispose();
   }
 
   @override
@@ -227,6 +238,10 @@ Widget timeWidget(BuildContext context, String string){
     ],
   );
 }
+  void saveData(TextEditingController nameController, String id){
+    data.putIfAbsent(id, ()=>nameController.text);
+
+  }
 
   Widget textArea(BuildContext context,placeholder, TextEditingController nameController){
     return
@@ -252,11 +267,15 @@ Widget timeWidget(BuildContext context, String string){
                 ]
             ),
             child: TextField(
+               onChanged: (value){
+                 saveData(nameController, placeholder);
+               },
               maxLines: 4,
               controller: nameController,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: placeholder,
+
               ),
             ),
           ),

@@ -33,9 +33,7 @@ class BlocTaskForm  {
   Stream<String> get outSaveForm => _saveFormController.stream;
   Sink<String> get inSaveForm => _saveFormController.sink;
 
-  final  _formController   = StreamController<String>();
-  Stream<String> get outForm => _formController.stream;
-  Sink<String> get inForm => _formController.sink;
+
 
   void updateListWidget(context){
     listWidget.clear();
@@ -43,6 +41,7 @@ class BlocTaskForm  {
     {
       for(SectionModel v in form.sections)
       {
+        print(v.id);
         for(FieldModel k in v.fields)
         {
           camposWidgets = k;
@@ -141,7 +140,6 @@ class BlocTaskForm  {
   void dispose() {
     _taskFormController.close();
     _taskTypeFormController.close();
-    _formController.close();
     _saveFormController.close();
   }
 
