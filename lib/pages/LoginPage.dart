@@ -385,6 +385,12 @@ class _LoginPageState extends State<LoginPage> {
       // print(createCustomerResponse.statusCode);
       // print(createCustomerResponse.body);
 
+      // Customer Delete
+      // var deleteCustomerResponse = await deleteCustomer('411', customer, authorization);
+      // print(deleteCustomerResponse.body);
+      // bool eliminado = deleteCustomerResponse.body == '1' ? true : false;
+      // print(eliminado);
+
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
       // CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
