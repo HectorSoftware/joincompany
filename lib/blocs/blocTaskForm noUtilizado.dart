@@ -8,7 +8,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 
 
 
-class BlocTaskForm  {
+/*class BlocTaskForm  {
 
 
   ListWidgets items = new ListWidgets();
@@ -138,4 +138,4 @@ class BlocTaskForm  {
   BlocTaskForm(context) {
     updateListWidget(context);
   }
-}
+}*/

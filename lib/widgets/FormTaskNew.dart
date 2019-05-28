@@ -23,12 +23,15 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-
+  Map<String,String> dataInfo = Map<String,String>();
+  List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   ListWidgets items = new ListWidgets();
   BuildContext globalContext;
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
-
+  List<FieldModel> listFieldsModels = List<FieldModel>();
+  SectionModel section;
+  FormModel formGlobal;
   UserDataBase userToken ;
   String token;
   String customer;
@@ -43,6 +46,7 @@ class _FormTaskState extends State<FormTask> {
   }
   @override
   Widget build(BuildContext context) {
+    globalContext = context;
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -73,6 +77,7 @@ class _FormTaskState extends State<FormTask> {
 
                                  onPressed: (){
                                    //GUARDAR TAREA AQUI...
+
                                    Navigator.pop(context);
                                    Navigator.pushReplacementNamed(context, '/vistap');
                                  },
@@ -130,7 +135,6 @@ class _FormTaskState extends State<FormTask> {
                                setState(() {
                                  listWidgetMain.clear();
                                  pass= false;
-
                                });
 
                                //Navigator.pop(context);
@@ -161,21 +165,24 @@ class _FormTaskState extends State<FormTask> {
         ],
         title: Text('Agregar Tareas'),
       ),
-      body:Center(
-        child: pass ? Stack(
-          children: <Widget>[
-            ListView.builder(
-            itemCount:listWidgetMain.length,
-            itemBuilder: (BuildContext context, index){
-              return listWidgetMain[index];
-
+      body:pass ? Stack(
+        children: <Widget>[
+          ListView.builder(
+          itemCount: listFieldsModels.length,
+          itemBuilder: (BuildContext context, index){
+            if(listFieldsModels[index].fieldType == 'Textarea'){
+              return textArea(listFieldsModels[index].name,index.toString());
+            }
+            if(listFieldsModels[index].fieldType == 'Text'){
+              return text(listFieldsModels[index].name,index.toString());
             }
 
-            )
-            ]
+          }
 
-        ) : Text('Seleccione un Formulario'),
-      ),
+          )
+          ]
+
+      ) : Center(child: Text('Seleccione un Formulario'),),
       bottomNavigationBar: BottomAppBar(
         color: PrimaryColor,
         child: new Row(
@@ -225,99 +232,15 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-  lisC(FormModel form){
-    listWidgetMain.clear();
+ Future<Null> lisC(FormModel form)async {
     for(SectionModel section in form.sections)
       {
         for(FieldModel fields in section.fields)
         {
-
-
-          switch(fields.fieldType){
-            case 'Combo':
-              {
-                elementsOptions = fields.fieldOptions;
-                listWidgetMain.add(items.createState().combo(elementsOptions,fields.name));
-                //  listWidget.add(items.createState().dateTime());
-              }
-              break;
-            case 'Text':
-              {
-                final nameController = TextEditingController();
-                listWidgetMain.add(items.createState().text(context,fields.name,nameController,section.id.toString() ));
-              }
-              break;
-            case 'Textarea':
-              {
-                final nameController = TextEditingController();
-                listWidgetMain.add(items.createState().textArea(context,fields.name,nameController,section.id.toString()));
-              }
-              break;
-            case 'Number':
-              {
-                final nameController = TextEditingController();
-                listWidgetMain.add(items.createState().number(context,fields.name,nameController));
-              }
-              break;
-            case 'Date':
-              {
-                listWidgetMain.add(items.createState().dateT(context,fields.name));
-              }
-              break;
-            case 'Table':
-              {
-                elementsOptions = fields.fieldOptions;
-                listWidgetMain.add(items.createState().tab(elementsOptions,context));
-              }
-              break;
-            case 'CanvanSignature':
-              {
-                listWidgetMain.add(items.createState().newFirm(context, fields.name));
-              }
-              break;
-            case 'Photo':
-              {
-                listWidgetMain.add(items.createState().imagePhoto(context,fields.name));
-              }
-              break;
-            case 'Image':
-              {
-                listWidgetMain.add(items.createState().imageImage(context,fields.name));
-              }
-              break;
-            case 'Time':
-              {
-                listWidgetMain.add(items.createState().timeWidget(context,fields.name));
-              }
-              break;
-            case 'DateTime'://
-              {
-                listWidgetMain.add(items.createState().loadingTask(fields.name));
-              }
-              break;
-            case 'ComboSearch':
-              {
-                listWidgetMain.add(items.createState().ComboSearch(context, fields.name));
-              }
-              break;
-            case 'Boolean':
-              {
-                listWidgetMain.add(items.createState().bolean());
-              }
-              break;
-            case 'CanvanImage'://
-              {
-                listWidgetMain.add(items.createState().loadingTask(fields.name));
-              }
-              break;
-            default:
-              {
-                listWidgetMain.add(items.createState().label(fields.name));
-              }
-              break;
-          }
+          listFieldsModels.add(fields);
         }
       }
+
   }
 
 
@@ -390,5 +313,91 @@ class _FormTaskState extends State<FormTask> {
         });
   }
 
+  void saveData(TextEditingController nameController, String id) {
+    var value = nameController.text;
+    dataInfo.putIfAbsent(id ,()=> value);
+    dataInfo[id] = value;
+    print(dataInfo.values);
+
+  }
+  Widget text(placeholder,String id){
+    TextEditingController nameController = TextEditingController();
+    return  Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        width: MediaQuery.of(globalContext).size.width,
+        height: 40,
+        padding: EdgeInsets.only(
+            top: 4,left: 16, right: 16, bottom: 4
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+                Radius.circular(10)
+            ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: TextField(
+          onChanged: (value){
+           // print(id);
+              saveData(nameController,id);
+          },
+          maxLines: 1,
+          controller: nameController,
+          decoration: InputDecoration(
+
+            border: InputBorder.none,
+
+            hintText: placeholder,
+          ),
+        ),
+      ),
+    );
+  }
+  Widget textArea(placeholder, String id){
+    TextEditingController nameController = TextEditingController();
+    return
+      Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Container(
+
+          width: MediaQuery.of(globalContext).size.width,
+          height: 150,
+          padding: EdgeInsets.only(
+              top: 4,left: 16, right: 16, bottom: 4
+          ),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(
+                  Radius.circular(10)
+              ),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 5
+                )
+              ]
+          ),
+          child: TextField(
+
+              onChanged: (value){
+              //  print(id);
+                saveData(nameController,id);
+                },
+            maxLines: 4,
+             controller: nameController,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: placeholder,
+            ),
+          ),
+        ),
+      );
+  }
 }
 

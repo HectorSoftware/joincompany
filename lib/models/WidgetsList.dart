@@ -275,7 +275,7 @@ Widget timeWidget(BuildContext context, String string){
 
 
 
-  Widget textArea(BuildContext context,placeholder, TextEditingController nameController, String id){
+  Widget textArea(BuildContext context,placeholder, String id){
     return
         Padding(
           padding: const EdgeInsets.all(15.0),
@@ -300,9 +300,9 @@ Widget timeWidget(BuildContext context, String string){
             ),
             child: TextField(
 
-              onChanged: (value){saveData(nameController, placeholder,context);},
+            //  onChanged: (value){saveData(nameController, placeholder,context);},
               maxLines: 4,
-              controller: nameController,
+             // controller: nameController,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: placeholder,
@@ -312,7 +312,7 @@ Widget timeWidget(BuildContext context, String string){
         );
   }
 
-  Widget text( BuildContext context,placeholder, TextEditingController nameController,String id){
+  Widget text( BuildContext context,placeholder,String id){
     //-----------------------------------------INPUT----------------------------------
     return  Padding(
       padding: const EdgeInsets.all(12.0),
@@ -336,10 +336,10 @@ Widget timeWidget(BuildContext context, String string){
           ),
           child: TextField(
             onChanged: (value){
-              saveData(nameController, placeholder,context);
+            //  saveData(nameController, placeholder,context);
             },
             maxLines: 1,
-            controller: nameController,
+        //    controller: nameController,
             decoration: InputDecoration(
 
               border: InputBorder.none,
@@ -350,7 +350,7 @@ Widget timeWidget(BuildContext context, String string){
       ),
     );
   }
-  Widget number(BuildContext context,placeholder, TextEditingController nameController){
+  Widget number(BuildContext context,placeholder){
     return  Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
@@ -374,11 +374,11 @@ Widget timeWidget(BuildContext context, String string){
         ),
         child: TextField(
           onChanged: (value){
-            saveData(nameController, placeholder,context);
+         //   saveData(nameController, placeholder,context);
           },
           keyboardType: TextInputType.number,
           maxLines: 1,
-          controller: nameController,
+         // controller: nameController,
           decoration: InputDecoration(
             border: InputBorder.none,
 
