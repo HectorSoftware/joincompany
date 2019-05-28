@@ -12,6 +12,8 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:loadmore/loadmore.dart';
+
 
 import '../../main.dart';
 
@@ -121,9 +123,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   ListViewTareas(){
 
     bloctasksFilter = widget.blocListTaskFilterRes;
-
-
-
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal)
@@ -132,8 +131,29 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       }));
     }catch(e){ }
 
-    String DateTask = "2019-05-05 20:00:04Z";
-    return listTaskModellocal.length != 0 ? ListView.builder(
+    return listTaskModellocal.length != 0 ?
+    Container(
+      child: LoadMore(
+      isFinish: listTaskModellocal.length >= 5,
+      onLoadMore: _loadMore,
+      child: listando(),
+      ),
+    ) : Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Future<bool> _loadMore() async {
+    print("JESUS");
+    CircularProgressIndicator();
+    //load();
+    return true;
+  }
+
+  listando(){
+
+    String DateTask = "1990-05-05 20:00:04Z";
+    return ListView.builder(
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
 
@@ -198,8 +218,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
               }
 
               if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                 (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                 (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                  (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
+                  (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
                 dateTitulo = 'Hoy, ' + dateTitulo;
               }
               return Container(
@@ -273,8 +293,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             }
           }
         }
-    ) : Center(
-      child: CircularProgressIndicator(),
     );
   }
 
@@ -297,7 +315,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       if(value){
                         var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode == 200){
-                          print(index);
                           listTaskModellocal[index].status = 'done';
                           setState(() {
 //                            listTaskModellocal;
@@ -306,7 +323,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       }else{
                         var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode == 200){
-                          print(index);
                           listTaskModellocal[index].status = 'working';
                           setState(() {
 //                            listTaskModellocal;
