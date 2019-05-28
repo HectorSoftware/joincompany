@@ -94,7 +94,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<UserModel> ReadUser(int id) async {
+  Future<dynamic> ReadUser(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -105,7 +105,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<UserModel>> ReadUsersBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadUsersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -179,7 +179,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<UserModel>> ListUsers() async {
+  Future<dynamic> ListUsers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -221,7 +221,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<FormModel> ReadForm(int id) async {
+  Future<dynamic> ReadForm(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -233,7 +233,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<FormModel>> ReadFormsBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadFormsBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -298,7 +298,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<FormModel>> ListForms() async {
+  Future<dynamic> ListForms() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -340,7 +340,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<LocalityModel> ReadLocality(int id) async {
+  Future<dynamic> ReadLocality(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -352,7 +352,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<LocalityModel>> ReadLocalitiesBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadLocalitiesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -417,7 +417,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<LocalityModel>> ListLocalities() async {
+  Future<dynamic> ListLocalities() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -467,7 +467,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<ResponsibleModel> ReadResponsible(int id) async {
+  Future<dynamic> ReadResponsible(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -479,7 +479,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<ResponsibleModel>> ReadResponsiblesBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadResponsiblesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -552,7 +552,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<ResponsibleModel>> ListResponsibles() async {
+  Future<dynamic> ListResponsibles() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -612,7 +612,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<SectionModel> ReadCustomField(int id) async {
+  Future<dynamic> ReadCustomField(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -624,7 +624,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<SectionModel>> ReadCustomFieldsBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadCustomFieldsBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -704,7 +704,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<SectionModel>> ListCustomFields() async {
+  Future<dynamic> ListCustomFields() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -762,7 +762,7 @@ class DatabaseProvider {
 
   }
 
-  Future<AddressModel> ReadAddress(int id) async {
+  Future<dynamic> ReadAddress(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -774,7 +774,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<AddressModel>> ReadAddressesBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadAddressesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -853,7 +853,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<AddressModel>> ListAddresses() async {
+  Future<dynamic> ListAddresses() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -899,7 +899,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<CustomerModel> ReadCustomer(int id) async {
+  Future<dynamic> ReadCustomer(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -911,7 +911,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<CustomerModel>> ReadCustomersBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadCustomersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -980,7 +980,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<CustomerModel>> ListCustomers() async {
+  Future<dynamic> ListCustomers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1037,7 +1037,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<TaskModel> ReadTask(int id) async {
+  Future<dynamic> ReadTask(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1049,7 +1049,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<TaskModel>> ReadTasksBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadTasksBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1129,7 +1129,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<TaskModel>> ListTasks() async {
+  Future<dynamic> ListTasks() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1167,7 +1167,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<Map> ReadCustomerUser(int id) async {
+  Future<dynamic> ReadCustomerUser(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1179,7 +1179,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<Map>> ReadCustomerUsersBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadCustomerUsersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1252,7 +1252,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<Map>> ListCustomerUsers() async {
+  Future<dynamic> ListCustomerUsers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1295,7 +1295,7 @@ class DatabaseProvider {
 
   }
 
-  Future<CustomValueModel> ReadCustomValue(int id) async {
+  Future<dynamic> ReadCustomValue(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1307,7 +1307,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<CustomValueModel>> ReadCustomValuesBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadCustomValuesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1372,7 +1372,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<CustomValueModel>> ListCustomValues() async {
+  Future<dynamic> ListCustomValues() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1412,7 +1412,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<Map> ReadCustomerAdress(int id) async {
+  Future<dynamic> ReadCustomerAdress(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1424,7 +1424,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<Map>> ReadCustomerAddressesBySyncState(SyncState syncState) async {
+  Future<dynamic> ReadCustomerAddressesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1498,7 +1498,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<Map>> ListCustomerAdresses() async {
+  Future<dynamic> ListCustomerAdresses() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
