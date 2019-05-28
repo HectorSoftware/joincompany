@@ -22,6 +22,7 @@ import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/services/TaskService.dart';
 
 
 class FormTask extends StatefulWidget {
@@ -89,25 +90,14 @@ class _FormTaskState extends State<FormTask> {
                                  color: Colors.white,
                                  elevation: 0,
                                  onPressed: (){
-                                   for( Map<String,String> dataInfo in dataSaveState)
-                                     {
-                                     print(dataInfo);
-                                     }
+
                                    if(dataSaveState.isNotEmpty) {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
-                                     //   saveTask.customerId =;
-                                     //  saveTask.addressId =;
                                      saveTask.name = formGlobal.name;
-                                     // saveTask.planningDate =;
-                                    // saveTask.customValues
-
-
-                                   }else{
-
+                                     saveTask.customValuesMap = dataSaveState;
                                    }
-                                   //GUARDAR TAREA AQUI...
-
+                                   saveTaskApi();
                                    Navigator.pop(context);
                                   // Navigator.pop(context);
                                  },
@@ -487,14 +477,16 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
+  Future saveTaskApi() async{
+
+    await createTask(saveTask,customer, token);
+  }
 
   void saveData(String dataController, String id) {
     Map<String,String> dataInfo = Map<String,String>();
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
-
-    dataSaveState.add(dataInfo);
    /* for( Map<String,String> data in dataSaveState)
     {
 
@@ -510,4 +502,5 @@ class _FormTaskState extends State<FormTask> {
   }
 
 }
+
 
