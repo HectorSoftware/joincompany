@@ -47,13 +47,15 @@ class DatabaseProvider {
     String path = join(documentsDirectory.path, "db.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
       onCreate: (Database db, int version) async {
-        await db.execute(asyncSQLInstructionsOnCreate);
+        databaseInstructions.forEach((key, value) async {
+          await db.execute(value);
+        });
       }
     );
   }
 
   // Operations on users
-  Future<dynamic> CreateUser(UserModel user) async {
+  Future<int> CreateUser(UserModel user) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -118,7 +120,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateUser(UserModel user) async {
+  Future<int> UpdateUser(UserModel user) async {
     final db = await database;
     db.rawUpdate(
       '''
@@ -154,7 +156,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteUser(int id) async {
+  Future<int> SoftDeleteUser(int id) async {
     final db = await database;
     db.rawUpdate(
       '''
@@ -168,7 +170,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteUser(int id) async {
+  Future<int> DeleteUser(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -190,7 +192,7 @@ class DatabaseProvider {
   }
 
   // Operations on forms
-  Future<dynamic> CreateForm(FormModel form) async {
+  Future<int> CreateForm(FormModel form) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -247,7 +249,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateForm(FormModel form) async {
+  Future<int> UpdateForm(FormModel form) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -273,7 +275,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteForm(int id) async {
+  Future<int> DeleteForm(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -282,7 +284,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteForm(int id) async {
+  Future<int> SoftDeleteForm(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -309,7 +311,7 @@ class DatabaseProvider {
   }
 
   // Operations on localities
-  Future<dynamic> CreateLocality(LocalityModel locality) async {
+  Future<int> CreateLocality(LocalityModel locality) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -366,7 +368,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateLocality(LocalityModel locality) async {
+  Future<int> UpdateLocality(LocalityModel locality) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -392,7 +394,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteLocality(int id) async {
+  Future<int> DeleteLocality(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -401,7 +403,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteLocality(int id) async {
+  Future<int> SoftDeleteLocality(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -428,7 +430,7 @@ class DatabaseProvider {
   }
 
   // Operations on responsibles
-  Future<dynamic> CreateResponsible(ResponsibleModel responsible) async {
+  Future<int> CreateResponsible(ResponsibleModel responsible) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -493,7 +495,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateResponsible(ResponsibleModel responsible) async {
+  Future<int> UpdateResponsible(ResponsibleModel responsible) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -527,7 +529,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteResponsible(int id) async {
+  Future<int> DeleteResponsible(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -536,7 +538,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteResponsible(int id) async {
+  Future<int> SoftDeleteResponsible(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -563,7 +565,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_fields
-  Future<dynamic> CreateCustomField(SectionModel section) async {
+  Future<int> CreateCustomField(SectionModel section) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -638,7 +640,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomField(SectionModel section) async {
+  Future<int> UpdateCustomField(SectionModel section) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -679,7 +681,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomField(int id) async {
+  Future<int> DeleteCustomField(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -688,7 +690,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomField(int id) async {
+  Future<int> SoftDeleteCustomField(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -715,7 +717,7 @@ class DatabaseProvider {
   }
 
   // Operations on addresses
-  Future<dynamic> CreateAddress(AddressModel address) async {
+  Future<int> CreateAddress(AddressModel address) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -788,7 +790,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateAddress(AddressModel address) async {
+  Future<int> UpdateAddress(AddressModel address) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -828,7 +830,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteAddress(int id) async {
+  Future<int> DeleteAddress(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -837,7 +839,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteAddress(int id) async {
+  Future<int> SoftDeleteAddress(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -864,7 +866,7 @@ class DatabaseProvider {
   }
 
   // Operations on customers
-  Future<dynamic> CreateCustomer(CustomerModel customer) async {
+  Future<int> CreateCustomer(CustomerModel customer) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -925,7 +927,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomer(CustomerModel customer) async {
+  Future<int> UpdateCustomer(CustomerModel customer) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -955,7 +957,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomer(int id) async {
+  Future<int> DeleteCustomer(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -964,7 +966,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomer(int id) async {
+  Future<int> SoftDeleteCustomer(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -991,7 +993,7 @@ class DatabaseProvider {
   }
 
   // Operations on tasks
-  Future<dynamic> CreateTask(TaskModel task) async {
+  Future<int> CreateTask(TaskModel task) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -1063,7 +1065,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateTask(TaskModel task) async {
+  Future<int> UpdateTask(TaskModel task) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -1104,7 +1106,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteTask(int id) async {
+  Future<int> DeleteTask(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1113,7 +1115,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteTaks(int id) async {
+  Future<int> SoftDeleteTaks(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -1140,7 +1142,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_users
-  Future<dynamic> CreateCustomerUser(int id, String createdAt, String updatedAt,
+  Future<int> CreateCustomerUser(int id, String createdAt, String updatedAt,
                                      String deletedAt, int customerId,
                                      int userId) async {
     final db = await database;
@@ -1193,7 +1195,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomerUser(int id, String createdAt, String updatedAt,
+  Future<int> UpdateCustomerUser(int id, String createdAt, String updatedAt,
                                      String deletedAt, int customerId,
                                      int userId) async {
     final db = await database;
@@ -1227,7 +1229,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomerUser(int id) async {
+  Future<int> DeleteCustomerUser(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1236,7 +1238,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomerUser(int id) async {
+  Future<int> SoftDeleteCustomerUser(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -1263,7 +1265,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_values
-  Future<dynamic> CreateCustomValue(CustomValueModel customValue) async {
+  Future<int> CreateCustomValue(CustomValueModel customValue) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -1321,7 +1323,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomValue(CustomValueModel customValue) async {
+  Future<int> UpdateCustomValue(CustomValueModel customValue) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -1347,7 +1349,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomValue(int id) async {
+  Future<int> DeleteCustomValue(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1356,7 +1358,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomValue(int id) async {
+  Future<int> SoftDeleteCustomValue(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
@@ -1383,7 +1385,7 @@ class DatabaseProvider {
   }
 
   // Operations on customer_addresses
-  Future<dynamic> CreateCustomerAdress(int id, String createdAt,
+  Future<int> CreateCustomerAdress(int id, String createdAt,
                                        String updatedAt, String deletedAt,
                                        int customerId, int addressId,
                                        bool approved) async {
@@ -1438,7 +1440,7 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomerAdress(int id, String createdAt,
+  Future<int> UpdateCustomerAdress(int id, String createdAt,
                                        String updatedAt, String deletedAt,
                                        int customerId, int addressId,
                                        bool approved) async {
@@ -1473,7 +1475,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomerAdress(int id) async {
+  Future<int> DeleteCustomerAdress(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1482,7 +1484,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomerAddress(int id) async {
+  Future<int> SoftDeleteCustomerAddress(int id) async {
     final db = await database;
     await db.rawUpdate(
       '''
