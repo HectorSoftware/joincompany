@@ -41,7 +41,16 @@ class _FormClientState extends State<FormClient> {
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
-      color: Colors.grey.shade300,
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5
+            )
+          ]
+      ),
+      //color: Colors.grey.shade300,
       child: TextField(
         controller: getController(t),
         maxLines: maxLines,

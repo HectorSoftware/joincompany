@@ -329,13 +329,8 @@ Widget timeWidget(BuildContext context, String string){
       child: Container(
           width: MediaQuery.of(context).size.width,
           height: 40,
-          padding: EdgeInsets.only(
-              top: 4,left: 16, right: 16, bottom: 4
-          ),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(10)
-              ),
+          padding: EdgeInsets.only(top: 4,left: 16, right: 16, bottom: 4),
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -351,9 +346,7 @@ Widget timeWidget(BuildContext context, String string){
             maxLines: 1,
         //    controller: nameController,
             decoration: InputDecoration(
-
               border: InputBorder.none,
-
               hintText: placeholder,
             ),
           ),

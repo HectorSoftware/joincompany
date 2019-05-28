@@ -131,7 +131,16 @@ class _ConfigCliState extends State<ConfigCli> {
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
-      color: Colors.grey.shade300,
+      //color: Colors.grey.shade300,
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5
+            )
+          ]
+      ),
       child: TextFormField(
         obscureText: (t == type.PASSWORD) || t == (type.PASSWORD1) ? true:false,
         maxLines: maxLines,
