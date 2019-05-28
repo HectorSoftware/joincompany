@@ -1,11 +1,21 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:intl/intl.dart';
+import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FieldModel.dart';
+import 'package:joincompany/pages/FirmTouch.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
 import 'package:flutter/material.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
@@ -23,7 +33,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  Map<String,String> dataInfo = Map<String,String>();
+
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   ListWidgets items = new ListWidgets();
   BuildContext globalContext;
@@ -36,9 +46,13 @@ class _FormTaskState extends State<FormTask> {
   String token;
   String customer;
   String user;
+  int responsibleId;
   FormsModel formType;
   bool pass = false;
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
+
+  TaskModel saveTask = new TaskModel();
+  TextEditingController nameController;
 
   @override
   void initState(){
@@ -74,12 +88,28 @@ class _FormTaskState extends State<FormTask> {
                                  child:  Text('Aceptar'),
                                  color: Colors.white,
                                  elevation: 0,
-
                                  onPressed: (){
+                                   for( Map<String,String> dataInfo in dataSaveState)
+                                     {
+                                     print(dataInfo);
+                                     }
+                                   if(dataSaveState.isNotEmpty) {
+                                     saveTask.formId = formGlobal.id;
+                                     saveTask.responsibleId = responsibleId;
+                                     //   saveTask.customerId =;
+                                     //  saveTask.addressId =;
+                                     saveTask.name = formGlobal.name;
+                                     // saveTask.planningDate =;
+                                    // saveTask.customValues
+
+
+                                   }else{
+
+                                   }
                                    //GUARDAR TAREA AQUI...
 
                                    Navigator.pop(context);
-                                   Navigator.pop(context);
+                                  // Navigator.pop(context);
                                  },
                                ),
                              ],
@@ -133,7 +163,6 @@ class _FormTaskState extends State<FormTask> {
                            icon: Icon(Icons.delete),
                              onPressed: (){
                                setState(() {
-                                 listWidgetMain.clear();
                                  pass= false;
                                });
 
@@ -147,9 +176,7 @@ class _FormTaskState extends State<FormTask> {
                              onPressed: (){
                                setState(() {
                                  pass= false;
-                                 listWidgetMain.clear();
                                });
-
                                Navigator.pop(context);
                              }
                          ),
@@ -165,24 +192,166 @@ class _FormTaskState extends State<FormTask> {
         ],
         title: Text('Agregar Tareas'),
       ),
-      body:pass ? Stack(
-        children: <Widget>[
-          ListView.builder(
-          itemCount: listFieldsModels.length,
-          itemBuilder: (BuildContext context, index){
-            if(listFieldsModels[index].fieldType == 'Textarea'){
-              return textArea(listFieldsModels[index].name,index.toString());
-            }
-            if(listFieldsModels[index].fieldType == 'Text'){
-              return text(listFieldsModels[index].name,index.toString());
-            }
+      body: (){
+        return pass?
+        Stack(
+            children: <Widget>[
+              ListView.builder(
 
-          }
+                  itemCount: listFieldsModels.length,
+                  itemBuilder: (BuildContext context, index){
 
-          )
-          ]
+                    if(listFieldsModels[index].fieldType == 'Textarea'){
+                      //TEXTAREA
+                      return Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Container(
+                          width: MediaQuery.of(globalContext).size.width,
+                          height: 150,
+                          padding: EdgeInsets.only(
+                              top: 4,left: 16, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                              saveData(value,listFieldsModels[index].id.toString());
+                            },
+                            maxLines: 4,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: listFieldsModels[index].name,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType == 'Text'){
+                      //TEXT
+                      return  Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Container(
+                          width: MediaQuery.of(globalContext).size.width,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 4,left: 16, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                              saveData(value,listFieldsModels[index].id.toString());
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
 
-      ) : Center(child: Text('Seleccione un Formulario'),),
+                              border: InputBorder.none,
+
+                              hintText: listFieldsModels[index].name,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType == 'Number'){
+
+                      return  Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Container(
+                          width:  40,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 4,left: 16, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                              saveData(value,index.toString());
+                            },
+                            keyboardType: TextInputType.number,
+                            maxLines: 1,
+                            // controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: listFieldsModels[index].name,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType == 'Combo'){
+                      List<String> dropdownMenuItems = List<String>();
+                      String dropdownValue ;
+                      for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
+
+                      return  Padding(
+                        padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                        child: DropdownButton<String>(
+                          isDense: false,
+                          icon: Icon(Icons.arrow_drop_down),
+                          elevation: 10,
+                          value: dropdownValue,
+                          hint: Text(listFieldsModels[index].name),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              dropdownValue = newValue;
+                            });
+                            saveData(dropdownValue,index.toString());
+                          },
+                          items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType == 'Date'){
+
+                    }
+
+
+                  }
+
+              )
+            ]
+
+        ) : Center(child: Text('Seleccione un Formulario'),);
+      }() ,
       bottomNavigationBar: BottomAppBar(
         color: PrimaryColor,
         child: new Row(
@@ -215,6 +384,7 @@ class _FormTaskState extends State<FormTask> {
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
                                 lisC(form);
                                 setState(() {
+
                                   pass = true;
                                 });
                                 Navigator.pop(context);
@@ -233,6 +403,10 @@ class _FormTaskState extends State<FormTask> {
   }
 
  Future<Null> lisC(FormModel form)async {
+    listFieldsModels.clear();
+    setState(() {
+      formGlobal = form;
+    });
     for(SectionModel section in form.sections)
       {
         for(FieldModel fields in section.fields)
@@ -279,6 +453,7 @@ class _FormTaskState extends State<FormTask> {
     token = userToken.token;
     customer = userToken.company;
     user = userToken.name;
+    responsibleId = userToken.idUserCompany;
 
   }
 
@@ -313,91 +488,26 @@ class _FormTaskState extends State<FormTask> {
         });
   }
 
-  void saveData(TextEditingController nameController, String id) {
-    var value = nameController.text;
+  void saveData(String dataController, String id) {
+    Map<String,String> dataInfo = Map<String,String>();
+    var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
-    print(dataInfo.values);
+
+    dataSaveState.add(dataInfo);
+   /* for( Map<String,String> data in dataSaveState)
+    {
+
+      Future iterateMapEntry(key, value) {
+        if(key != id){
+          dataSaveState.add(dataInfo);
+        }
+      }
+      data.forEach(iterateMapEntry);
+    }*/
+
 
   }
-  Widget text(placeholder,String id){
-    TextEditingController nameController = TextEditingController();
-    return  Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Container(
-        width: MediaQuery.of(globalContext).size.width,
-        height: 40,
-        padding: EdgeInsets.only(
-            top: 4,left: 16, right: 16, bottom: 4
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(
-                Radius.circular(10)
-            ),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        child: TextField(
-          onChanged: (value){
-           // print(id);
-              saveData(nameController,id);
-          },
-          maxLines: 1,
-          controller: nameController,
-          decoration: InputDecoration(
 
-            border: InputBorder.none,
-
-            hintText: placeholder,
-          ),
-        ),
-      ),
-    );
-  }
-  Widget textArea(placeholder, String id){
-    TextEditingController nameController = TextEditingController();
-    return
-      Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Container(
-
-          width: MediaQuery.of(globalContext).size.width,
-          height: 150,
-          padding: EdgeInsets.only(
-              top: 4,left: 16, right: 16, bottom: 4
-          ),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(10)
-              ),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 5
-                )
-              ]
-          ),
-          child: TextField(
-
-              onChanged: (value){
-              //  print(id);
-                saveData(nameController,id);
-                },
-            maxLines: 4,
-             controller: nameController,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: placeholder,
-            ),
-          ),
-        ),
-      );
-  }
 }
 
