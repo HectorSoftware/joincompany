@@ -279,7 +279,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
-
     return Container(
         child: Card(
           child: Column(
@@ -298,6 +297,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       if(value){
                         var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode == 200){
+                          print(index);
                           listTaskModellocal[index].status = 'done';
                           setState(() {
 //                            listTaskModellocal;
@@ -306,6 +306,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       }else{
                         var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode == 200){
+                          print(index);
                           listTaskModellocal[index].status = 'working';
                           setState(() {
 //                            listTaskModellocal;

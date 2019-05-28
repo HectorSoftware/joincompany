@@ -75,6 +75,12 @@ class _ListWidgetsState extends State<ListWidgets> {
   text = text.replaceAll('ó', "o");
   text = text.replaceAll('ú', "u");
 
+  filterText = filterText.replaceAll('á', "a");
+  filterText = filterText.replaceAll('é', "e");
+  filterText = filterText.replaceAll('í', "i");
+  filterText = filterText.replaceAll('ó', "o");
+  filterText = filterText.replaceAll('ú', "u");
+
   return text.contains(filterText);
 }
 
