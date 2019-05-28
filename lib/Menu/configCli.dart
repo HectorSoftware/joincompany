@@ -240,7 +240,7 @@ class _ConfigCliState extends State<ConfigCli> {
                 Navigator.pop(context);
                 Navigator.push(
                     context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
               },
             ),
           ),

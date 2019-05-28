@@ -165,7 +165,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 Navigator.of(context).pop();
                 Navigator.push(
                     context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
               },
             ),
           ),
