@@ -14,7 +14,7 @@ enum DatabaseTables {
 }
 
 const Map<DatabaseTables, String> databaseInstructions = {
-  DatabaseTables.addresses:
+  DatabaseTables.users:
     '''CREATE TABLE "users"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "created_at" DATETIME,
