@@ -228,8 +228,6 @@ class _SearchAddressState extends State<SearchAddress> {
         ),
         icon: await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"),
     ));
-
-
   }
 
   Mapa(){
