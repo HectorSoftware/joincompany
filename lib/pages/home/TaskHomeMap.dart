@@ -129,7 +129,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
             markerId: MarkerId(mark.id.toString()),
             position: LatLng(mark.latitude, mark.longitude),
             infoWindow: InfoWindow(
-                title: mark.customer,
+                title: (mark.customer) ,
                 snippet: mark.address,
                 onTap: (){
                   if(mark.status == 0){
@@ -212,6 +212,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       icon: Icon(Icons.place),
       label: Text("Tareas"),
       backgroundColor: PrimaryColor,
+      shape: RoundedRectangleBorder(),
     );
   }
 

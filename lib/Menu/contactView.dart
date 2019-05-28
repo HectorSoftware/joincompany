@@ -9,8 +9,16 @@ import 'package:joincompany/services/UserService.dart';
 
 import '../main.dart';
 import 'configCli.dart';
+
+// ignore: must_be_immutable
 class ContactView extends StatefulWidget {
+  bool vista;
   @override
+
+  ContactView(vista){
+    this.vista = vista;
+  }
+
   _ContactViewState createState() => _ContactViewState();
 }
 
@@ -28,7 +36,7 @@ class _ContactViewState extends State<ContactView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
         title: Text(""),
       ),
@@ -81,39 +89,38 @@ class _ContactViewState extends State<ContactView> {
 
   Widget contactCard(String dataContacts) {//TODO: change String for Contacts
     return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: ListTile(
+        title:  Text(dataContacts),
+        subtitle: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Align(alignment: Alignment.centerLeft,child: Text("empresa"),),
+            Align(alignment: Alignment.centerLeft,
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                        Icons.mail,
+                      size: 20,
+                    ),
+                    onPressed: (){},
+                  ),
 
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.all(12.0),
-            child: Align(alignment: Alignment.centerLeft,child: Text(dataContacts, style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold
-            ),),),
-          ),
-          Container(
-            margin: EdgeInsets.all(12.0),
-            child: Align(alignment: Alignment.centerLeft,child: Text("empresa"),),
-          ),
-          Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.mail
-                ),
-                onPressed: (){},
+                  IconButton(
+                    icon: Icon(
+                        Icons.call,
+                      size: 20,
+                    ),
+                    onPressed: (){},
+                  )
+                ],
               ),
-
-              IconButton(
-                icon: Icon(
-                    Icons.call
-                ),
-                onPressed: (){},
-              )
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
+        onTap:  widget.vista ? (){
+          Navigator.of(context).pop(dataContacts);
+        }:null,
       ),
     );
   }
@@ -126,19 +133,13 @@ class _ContactViewState extends State<ContactView> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
-            ),
-            accountName: new Text(nameUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail : Text(emailUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-              ),
+            decoration: new BoxDecoration(color: SecondaryColor),
+            margin: EdgeInsets.only(bottom: 0),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
+            currentAccountPicture: CircleAvatar(
+              radius: 1,
+              backgroundImage: new AssetImage('assets/images/user.jpg'),
             ),
           ),
           Container(
