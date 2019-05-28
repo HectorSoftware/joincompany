@@ -14,19 +14,19 @@ import '../models/SectionModel.dart';
 import '../models/TaskModel.dart';
 import '../models/UserModel.dart';
 
-enum AsyncOperation {
+enum SyncState {
   none,
-  create,
-  update,
-  delete,
+  created,
+  updated,
+  deleted,
 }
 
-final Map<AsyncOperation, List<dynamic>> operations = {
+final Map<SyncState, List<dynamic>> paramsBySyncState = {
   // [in_server, updated, deleted]
-  AsyncOperation.none: [],
-  AsyncOperation.create: [false, true, false],
-  AsyncOperation.update: [true, true, false],
-  AsyncOperation.delete: [true, false, true],
+  SyncState.none: [],
+  SyncState.created: [false, true, false],
+  SyncState.updated: [true, true, false],
+  SyncState.deleted: [true, false, true],
 };
 
 class AsyncOperationsDatabase {
@@ -50,7 +50,7 @@ class AsyncOperationsDatabase {
         }
     );
   }
-
+  
   // Operations on users
   Future<dynamic> CreateUser(UserModel user) async {
     await _database.transaction((transaction) async {
@@ -87,7 +87,7 @@ class AsyncOperationsDatabase {
         user.supervisorId, user.name, user.code, user.email,
         user.phone, user.mobile, user.title, user.details,
         user.profile, user.password, user.rememberToken],
-        ...operations[AsyncOperation.create]],
+        ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -99,6 +99,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."users" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadUsersBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."users" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -136,7 +152,7 @@ class AsyncOperationsDatabase {
         user.supervisorId, user.name, user.code, user.email,
         user.phone, user.mobile, user.title, user.details,
         user.profile, user.password, user.rememberToken],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -151,7 +167,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -204,7 +220,7 @@ class AsyncOperationsDatabase {
         [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
         form.createdById, form.updatedById, form.deletedById, form.name,
         form.withCheckinout, form.active],
-        ...operations[AsyncOperation.create]],
+        ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -216,6 +232,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."forms" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadFormsBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."forms" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -243,7 +275,7 @@ class AsyncOperationsDatabase {
         [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
         form.createdById, form.updatedById, form.deletedById, form.name,
         form.withCheckinout, form.active],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -268,7 +300,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -311,7 +343,7 @@ class AsyncOperationsDatabase {
         [...[locality.id, locality.createdAt, locality.updatedAt,
         locality.deletedAt, locality.createdById, locality.updatedById,
         locality.deletedById, locality.collection, locality.name,
-        locality.value], ...operations[AsyncOperation.create]],
+        locality.value], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -323,6 +355,22 @@ class AsyncOperationsDatabase {
           '''
         SELECT * FROM "mydb"."localities" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadLocalitiesBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."localities" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -350,7 +398,7 @@ class AsyncOperationsDatabase {
         [...[locality.createdAt, locality.updatedAt, locality.deletedAt,
         locality.createdById, locality.updatedById, locality.deletedById,
         locality.collection, locality.name, locality.value],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -375,7 +423,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -426,7 +474,7 @@ class AsyncOperationsDatabase {
         responsible.deletedById, responsible.supervisorId, responsible.name,
         responsible.code, responsible.email, responsible.phone,
         responsible.mobile, responsible.title, responsible.details,
-        responsible.profile], ...operations[AsyncOperation.create]],
+        responsible.profile], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -438,6 +486,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."responsibles" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadResponsiblesBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."responsibles" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -473,7 +537,7 @@ class AsyncOperationsDatabase {
         responsible.deletedById, responsible.supervisorId, responsible.name,
         responsible.code, responsible.email, responsible.phone,
         responsible.mobile, responsible.title, responsible.details,
-        responsible.profile], ...operations[AsyncOperation.update]],
+        responsible.profile], ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -498,7 +562,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -559,7 +623,7 @@ class AsyncOperationsDatabase {
         section.fieldDefaultValue, section.fieldType,
         section.fieldPlaceholder, section.fieldOptions,
         section.fieldCollection, section.fieldRequired,
-        section.fieldWidth], ...operations[AsyncOperation.create]],
+        section.fieldWidth], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -571,6 +635,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."custom_fields" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadCustomFieldsBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."custom_fields" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -613,7 +693,7 @@ class AsyncOperationsDatabase {
         section.name, section.code, section.subtitle, section.position,
         section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
         section.fieldOptions, section.fieldCollection, section.fieldRequired,
-        section.fieldWidth], ...operations[AsyncOperation.update]],
+        section.fieldWidth], ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -638,7 +718,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -696,7 +776,7 @@ class AsyncOperationsDatabase {
         address.details, address.reference, address.latitude, address.longitude,
         address.googlePlaceId, address.country,address.state, address.city,
         address.contactName, address.contactPhone, address.contactMobile,
-        address.contactEmail], ...operations[AsyncOperation.create]],
+        address.contactEmail], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -708,6 +788,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."addresses" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadAddressesBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."addresses" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -749,7 +845,7 @@ class AsyncOperationsDatabase {
         address.latitude, address.longitude, address.googlePlaceId,
         address.country, address.state, address.city, address.contactName,
         address.contactPhone, address.contactMobile, address.contactEmail],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -764,7 +860,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -779,7 +875,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -826,7 +922,7 @@ class AsyncOperationsDatabase {
         customer.deletedAt, customer.createdById, customer.updatedById,
         customer.deletedById, customer.name, customer.code, customer.phone,
         customer.email, customer.contactName, customer.details],
-        ...operations[AsyncOperation.create]],
+        ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -838,6 +934,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."customers" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadCustomersBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customers" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -869,7 +981,7 @@ class AsyncOperationsDatabase {
         customer.createdById, customer.updatedById, customer.deletedById,
         customer.name, customer.code, customer.phone, customer.email,
         customer.contactName, customer.details],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -894,7 +1006,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -952,7 +1064,7 @@ class AsyncOperationsDatabase {
         task.planningDate, task.checkinDate, task.checkinLatitude,
         task.checkinLongitude, task.checkinDistance, task.checkoutDate,
         task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
-        task.status], ...operations[AsyncOperation.create]],
+        task.status], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -964,6 +1076,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."tasks" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadTasksBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."tasks" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -1006,7 +1134,7 @@ class AsyncOperationsDatabase {
         task.checkinDate, task.checkinLatitude, task.checkinLongitude,
         task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
         task.checkoutLongitude, task.checkoutDistance, task.status],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -1031,7 +1159,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -1070,7 +1198,7 @@ class AsyncOperationsDatabase {
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
         [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
-        ...operations[AsyncOperation.create]],
+        ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -1082,6 +1210,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."customers_users" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadCustomerUsersBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customer_users" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -1117,7 +1261,7 @@ class AsyncOperationsDatabase {
         WHERE id = ${id}
         ''',
         [...[createdAt, updatedAt, deletedAt, customerId, userId],
-        ...operations[AsyncOperation.update]],
+        ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -1142,7 +1286,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -1185,7 +1329,7 @@ class AsyncOperationsDatabase {
         [...[customValue.id, customValue.createdAt, customValue.updatedAt,
         customValue.formId, customValue.sectionId, customValue.fieldId,
         customValue.customizableType, customValue.customizableId,
-        customValue.value], ...operations[AsyncOperation.create]],
+        customValue.value], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -1197,6 +1341,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."custom_values" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadCustomValuesBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."custom_values" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -1224,7 +1384,7 @@ class AsyncOperationsDatabase {
         [...[customValue.createdAt, customValue.updatedAt, customValue.formId,
         customValue.sectionId, customValue.fieldId,
         customValue.customizableType, customValue.customizableId,
-        customValue.value], ...operations[AsyncOperation.update]],
+        customValue.value], ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -1249,7 +1409,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
@@ -1290,7 +1450,7 @@ class AsyncOperationsDatabase {
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
         [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
-        approved], ...operations[AsyncOperation.create]],
+        approved], ...paramsBySyncState[SyncState.created]],
       );
     });
   }
@@ -1302,6 +1462,22 @@ class AsyncOperationsDatabase {
         '''
         SELECT * FROM "mydb"."customer_addresses" WHERE id = ${id}
         '''
+      );
+    });
+    return data;
+  }
+
+  Future<dynamic> ReadCustomerAddressesBySyncState(SyncState syncState) async {
+    List<Map<String, dynamic>> data;
+    await _database.transaction((transaction) async {
+      data = await transaction.rawQuery(
+        '''
+        SELECT * FROM "mydb"."customer_addresses" WHERE 
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+        ''',
+        paramsBySyncState[syncState],
       );
     });
     return data;
@@ -1338,7 +1514,7 @@ class AsyncOperationsDatabase {
         WHERE id = ${id}
         ''',
         [...[createdAt, updatedAt, deletedAt, customerId, addressId,
-        approved], ...operations[AsyncOperation.update]],
+        approved], ...paramsBySyncState[SyncState.updated]],
       );
     });
   }
@@ -1363,7 +1539,7 @@ class AsyncOperationsDatabase {
         deleted = ?,
         WHERE id = ${id}
         ''',
-        operations[AsyncOperation.delete],
+        paramsBySyncState[SyncState.deleted],
       );
     });
   }
