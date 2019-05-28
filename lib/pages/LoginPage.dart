@@ -7,9 +7,11 @@ import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AccountService.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
@@ -273,16 +275,28 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
         if(loginResponse.statusCode == 200){
-
           AuthModel auth = AuthModel.fromJson(loginResponse.body);
-          if(AgregarUser){
-            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-            int res = await ClientDatabaseProvider.db.saveUser(newuser);
-          }else{
-            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-          }
 
-          Navigator.pushReplacementNamed(context, '/vistap');
+          var getUserResponseid = await getUser(companylocal,auth.accessToken);
+          if(getUserResponseid != null){
+            if(AgregarUser){
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
+              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+              int res = await ClientDatabaseProvider.db.saveUser(newuser);
+            }else{
+              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+            }
+            Navigator.pushReplacementNamed(context, '/vistap');
+          }else{
+            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false; setState(() {
+              Circuleprogress;
+            });
+          }
         }
       }else{
         ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
@@ -337,26 +351,21 @@ class _LoginPageState extends State<LoginPage> {
       // print(getCustomerResponse.body);
 
       // Customer Update
-      // customerObj.name = 'test 15';
-      // var updateCustomerResponse = await updateCustomer('387', customerObj, customer, authorization);
-      // print(customerObj.name);
-      // print(customerObj.toJson());
-      // print(updateCustomerResponse.statusCode);
+      // customerObj.name += ' rr';
+      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
       // print(updateCustomerResponse.body);
 
       // Customer Create
-      // CustomerModel customerObjNew = CustomerModel(
-        // name : 'Test test test',
-        // code : '32154654',
-        // email : "test@test.com",
-        // phone : "798798",
-        // contactName : "name conact",
-        // details : "nota"
-      // );
-      // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
-      // print(createCustomerResponse.request);
-      // print(createCustomerResponse.statusCode);
-      // print(createCustomerResponse.body);
+      // customerObj.name = 'TestTest Test';
+      // customerObj.code = '987654321';
+      // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
+      // print(createCustomerResponse.bo21q   dy);
+
+      // Customer Delete
+      // var deleteCustomerResponse = await deleteCustomer('411', customer, authorization);
+      // print(deleteCustomerResponse.body);
+      // bool eliminado = deleteCustomerResponse.body == '1' ? true : false;
+      // print(eliminado);
 
       // Customer All
       // var getAllCustomersResponse = await getAllCustomers(customer, authorization);
@@ -430,13 +439,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
-
-      // Account Get
-      // var getAccountResponse = await getAccount(customer, authorization);
-      // AccountModel account = AccountModel.fromJson(getAccountResponse.body);
-      // print(account.customer.name);
-      // print(account.customer.receiverEmail);
-      // print(account.customer.receiverName);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

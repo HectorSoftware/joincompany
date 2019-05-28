@@ -6,6 +6,9 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
 
+import '../main.dart';
+import 'contactView.dart';
+
 enum type{
   NAME,
   CODE,
@@ -16,6 +19,7 @@ enum type{
   EMAIL,
   NOTE,
   PASSWORD,
+  PASSWORD1
 }
 
 class ConfigCli extends StatefulWidget {
@@ -29,10 +33,56 @@ class _ConfigCliState extends State<ConfigCli> {
   static const int linesInputsBasic = 1;
   static const int linesInputsTextAreaBasic = 4;
 
-  TextEditingController name,code,defaults,title,tlfF,tlfM,email,note,password;
+  TextEditingController name,code,defaults,title,tlfF,tlfM,email,note,password,password1;
+
+  String nameUser = '';
+  String emailUser = '';
+
+  @override
+  void initState() {
+    //TODO
+    initController();
+    getConfig();
+    setUser();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    //TODO
+    disposeController();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: buildDrawer(),
+      appBar: AppBar(
+        title: Text("Configuracion"),
+        automaticallyImplyLeading: true,
+      ),
+      body:SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            customTextField("Nombre",type.NAME,linesInputsBasic),
+            customTextField("Codigo",type.CODE,linesInputsBasic),
+            customTextField("profile",type.DEFAULT,linesInputsBasic),
+            customTextField("titulo",type.TITLE,linesInputsBasic),
+            customTextField("Telefono fijo",type.TLF_F,linesInputsBasic),
+            customTextField("Telefono movil",type.TLF_M,linesInputsBasic),
+            customTextField("Emails",type.EMAIL,linesInputsBasic),
+            customTextField("Notas",type.NOTE,linesInputsTextAreaBasic),
+            customTextField("Contraseña",type.PASSWORD,linesInputsBasic),
+            customTextField("Repetir Contraseña",type.PASSWORD1,linesInputsBasic),
+          ],
+        ),
+      ),
+    );
+  }
 
   void setDataForm(String data, type t){
-      //TODO
+    //TODO
   }
 
   void initController(){
@@ -45,6 +95,7 @@ class _ConfigCliState extends State<ConfigCli> {
     email = TextEditingController();
     note = TextEditingController();
     password = TextEditingController();
+    password1 = TextEditingController();
   }
 
   void disposeController(){
@@ -57,6 +108,7 @@ class _ConfigCliState extends State<ConfigCli> {
     email.dispose();
     note.dispose();
     password.dispose();
+    password1.dispose();
   }
 
   void getConfig() async {
@@ -76,26 +128,12 @@ class _ConfigCliState extends State<ConfigCli> {
 
   }
 
-  @override
-  void initState() {
-    //TODO
-    initController();
-    getConfig();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    //TODO
-    disposeController();
-    super.dispose();
-  }
-
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
       color: Colors.grey.shade300,
       child: TextFormField(
+        obscureText: (t == type.PASSWORD) || t == (type.PASSWORD1) ? true:false,
         maxLines: maxLines,
         textInputAction: TextInputAction.next,
         validator: (value){
@@ -106,7 +144,8 @@ class _ConfigCliState extends State<ConfigCli> {
         },
         decoration: InputDecoration(
           hintText: title,
-          border: InputBorder.none
+          contentPadding: EdgeInsets.all(12.0),
+          border: InputBorder.none,
         ),
         controller: getController(t),
       ),
@@ -142,33 +181,104 @@ class _ConfigCliState extends State<ConfigCli> {
       case type.PASSWORD:{
         return password;
       }
+      case type.PASSWORD1:{
+        return password1;
+      }
     }
     return null;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Configuracion"),
-        automaticallyImplyLeading: true,
-      ),
-      body:SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              customTextField("Nombre",type.NAME,linesInputsBasic),
-              customTextField("Codigo",type.CODE,linesInputsBasic),
-              customTextField("profile",type.DEFAULT,linesInputsBasic),
-              customTextField("titulo",type.TITLE,linesInputsBasic),
-              customTextField("Telefono fijo",type.TLF_F,linesInputsBasic),
-              customTextField("Telefono movil",type.TLF_M,linesInputsBasic),
-              customTextField("Emails",type.EMAIL,linesInputsBasic),
-              customTextField("Notas",type.NOTE,linesInputsTextAreaBasic),
-              customTextField("Contraseña",type.PASSWORD,linesInputsBasic),
-              customTextField("Repetir Contraseña",type.PASSWORD,linesInputsBasic),
-            ],
+  bool drawerCustomer = true;
+  Drawer buildDrawer() {
+    return Drawer(
+      elevation: 12,
+      child: new ListView(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(
+            decoration: new BoxDecoration(color: SecondaryColor,
+            ),
+            accountName: new Text(nameUser,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+            accountEmail : Text(emailUser,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15,
+              ),
+            ),
           ),
-        ),
+          Container(
+              child: ListTile(
+                trailing: new Icon(Icons.assignment),
+                title: new Text('Tareas'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              )
+          ),
+          Container(
+            child: ListTile(
+              title: new Text("Clientes"),
+              trailing: new Icon(Icons.business),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cliente');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Contactos"),
+              trailing: new Icon(Icons.contacts),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+              },
+            ),
+          ),
+          /*new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),*/
+          Divider(
+            height: 30.0,
+          ),
+          Container(
+            color: drawerCustomer ? Colors.grey[200] :  null,
+            child: new ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.filter_vintage),
+              onTap: () {
+                // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  setUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
+    });
+  }
+
 }

@@ -24,6 +24,7 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
   }
   if (responsibleId != null && responsibleId!=''){
     params["responsible_id"]=responsibleId;
+
   }
 
   if (formId != null && formId!=''){
@@ -58,7 +59,7 @@ Future<http.Response> updateTask(String id, TaskModel taskObj, String customer, 
 
 Future<http.Response> deleteTask(String id, String customer, String authorization) async{
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, true);
 }
 
 Future<http.Response> checkInTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async{

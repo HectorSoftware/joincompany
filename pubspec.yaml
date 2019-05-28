@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  #LISTAR
+  loadmore: ^1.0.3
+
   #ICONOS
   cupertino_icons: ^0.1.2
 

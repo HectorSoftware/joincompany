@@ -32,7 +32,6 @@ import 'package:joincompany/models/WidgetsList.dart';
     {
       for(SectionModel v in form.sections)
       {
-
         for(FieldModel k in v.fields)
         {
 

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:joincompany/services/UserService.dart';
 
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
@@ -25,6 +29,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   blocListTask blocListTaskRes;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
+  String nameUser = '';
+  String emailUser = '';
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
@@ -37,6 +43,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           () {setState((){});
       },
     );
+    extraerUser();
     super.initState();
   }
 
@@ -81,8 +88,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       unselectedLabelColor: Colors.white30,
       labelStyle: TextStyle(fontSize: 20),
       tabs: <Tab>[
-        Tab(text: 'Tareas',),
-        Tab(text: 'Mapa',),
+        Tab(child: Text('TAREAS',style: TextStyle(fontSize: 15.5),),),
+        Tab(child: Text('MAPA',style: TextStyle(fontSize: 15.5),),),
       ],
       controller: _controller,
     );
@@ -107,7 +114,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           : NeverScrollableScrollPhysics(),
     );
   }
-
+  bool drawerTask = true;
   Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
@@ -116,43 +123,51 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           new UserAccountsDrawerHeader(
             decoration: new BoxDecoration(color: SecondaryColor,
             ),
-            accountName: new Text('Nombre de la empresa:',
+            accountName: new Text(nameUser,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 16,
               ),
             ),
-            accountEmail : Text('Nombre de Usuario',
+            accountEmail : Text(emailUser,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 17,
-              ),),),
-          new ListTile(
-            trailing: new Icon(Icons.assignment),
-            title: new Text('Tareas'),
-            onTap: () {
-              Navigator.pop(context);
-//              Navigator.pushReplacementNamed(context, '/vistap');
-            },
+                fontSize: 15,
+              ),
+            ),
           ),
-          new ListTile(
-            title: new Text("Clientes"),
-            trailing: new Icon(Icons.business),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/cliente');
+          Container(
+            color: drawerTask ? Colors.grey[200] :  null,
+            child: ListTile(
+              trailing: new Icon(Icons.assignment),
+              title: new Text('Tareas'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            )
+          ),
+          Container(
+            child: ListTile(
+              title: new Text("Clientes"),
+              trailing: new Icon(Icons.business),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cliente');
 //              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
-            },
+              },
+            ),
           ),
-          new ListTile(
-            title: new Text("Contactos"),
-            trailing: new Icon(Icons.contacts),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
-            },
+          Container(
+            child: new ListTile(
+              title: new Text("Contactos"),
+              trailing: new Icon(Icons.contacts),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+              },
+            ),
           ),
           /*new ListTile(
             title: new Text("Negocios"),
@@ -164,17 +179,19 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           Divider(
             height: 30.0,
           ),
-          new ListTile(
-            title: new Text("Configuracion"),
-            trailing: new Icon(Icons.filter_vintage),
-            onTap: () {
-             // Navigator.pushReplacementNamed(context, "/intro");
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ConfigCli()));
-            },
+          Container(
+            child: new ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.filter_vintage),
+              onTap: () {
+               // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new  ConfigCli()));
+              },
+            ),
           ),
         ],
       ),
@@ -243,6 +260,17 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         this._appBarTitle = new Text('Join');
         _filter.clear();
       }
+    });
+  }
+
+  extraerUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
     });
   }
 

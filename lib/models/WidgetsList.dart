@@ -62,13 +62,23 @@ class _ListWidgetsState extends State<ListWidgets> {
   List<Offset> _points = <Offset>[];
 
 
-  bool checkSearchInText(String text, filterText){
+  bool checkSearchInText(String text,String filterText){
+  if(text == '' || text == null){
+    return false;
+  }
+  filterText = filterText.toLowerCase();
   text = text.toLowerCase();
   text = text.replaceAll('á', "a");
   text = text.replaceAll('é', "e");
   text = text.replaceAll('í', "i");
   text = text.replaceAll('ó', "o");
   text = text.replaceAll('ú', "u");
+
+  filterText = filterText.replaceAll('á', "a");
+  filterText = filterText.replaceAll('é', "e");
+  filterText = filterText.replaceAll('í', "i");
+  filterText = filterText.replaceAll('ó', "o");
+  filterText = filterText.replaceAll('ú', "u");
 
   return text.contains(filterText);
 }
@@ -569,7 +579,7 @@ Widget timeWidget(BuildContext context, String string){
       onPressed: _searchPressed,
     );
   }
-  
+
   Widget bolean(){
 
     return Container(

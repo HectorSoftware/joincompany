@@ -52,7 +52,7 @@ class _FormTaskState extends State<FormTask> {
          elevation: 12,
          backgroundColor: PrimaryColor,
          leading:  IconButton(
-           icon: Icon(Icons.arrow_back),
+           icon: Icon(Icons.arrow_back,size: 25,),
            tooltip: 'Guardar Tarea',
            iconSize: 35,
            onPressed: ()=> showDialog(
@@ -79,7 +79,7 @@ class _FormTaskState extends State<FormTask> {
                                    //GUARDAR TAREA AQUI...
 
                                    Navigator.pop(context);
-                                   Navigator.pushReplacementNamed(context, '/vistap');
+                                   Navigator.pop(context);
                                  },
                                ),
                              ],
@@ -93,7 +93,7 @@ class _FormTaskState extends State<FormTask> {
          ) ,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: Icon(Icons.delete,size: 25,),
             tooltip: 'Descartar Formulario',
             iconSize: 35,
             onPressed: ()=> showDialog(

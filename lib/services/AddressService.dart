@@ -37,5 +37,5 @@ Future<http.Response> updateAddress(String id, AddressModel addressObj, String c
 
 Future<http.Response> deleteAddress(String id, String customer, String authorization) async{
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, true);
 }
