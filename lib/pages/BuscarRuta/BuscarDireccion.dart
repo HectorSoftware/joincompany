@@ -218,16 +218,18 @@ class _SearchAddressState extends State<SearchAddress> {
     return placemark;
   }
 
-  void _addMarker(LatLng location, String address){
-    setState(() {
-      _markers.add(Marker(markerId: MarkerId(_lastPosition.toString()),
-          position: location,
-          infoWindow: InfoWindow(
-              title: address,
-          ),
-          icon: BitmapDescriptor.defaultMarker
-      ));
-    });
+  Future _addMarker(LatLng location, String address) async {
+    _markers.clear();
+
+    _markers.add(Marker(markerId: MarkerId(_lastPosition.toString()),
+        position: location,
+        infoWindow: InfoWindow(
+          title: address,
+        ),
+        icon: await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"),
+    ));
+
+
   }
 
   Mapa(){
@@ -262,27 +264,32 @@ class _SearchAddressState extends State<SearchAddress> {
     return ListView.builder(
       itemCount: listPlacemark.length,
       itemBuilder: (context, index) {
-        return Row(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                  child: RaisedButton(
-                    onPressed: (){
-                      var center = LatLng(listPlacemark[index].latitude, listPlacemark[index].longitude);
-                      mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-                          target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
+        return Card(
+          margin: EdgeInsets.only(bottom: 0,top: 2,left: 5,right: 5),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                    child: RaisedButton(
+                      onPressed: (){
+                        var center = LatLng(listPlacemark[index].latitude, listPlacemark[index].longitude);
+                        _addMarker(center,listPlacemark[index].address);
+                        mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                            target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
                       },
-                    child: Text(listPlacemark[index].address),
-                    color: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    elevation: 0,
-                  )
+                      child: Text(listPlacemark[index].address),
+                      color: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      elevation: 0,
+                    )
+                ),
               ),
-            ),
-            Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
-              Navigator.of(context).pop(listPlacemark[index].address);
-            })),
-          ],
+              Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
+                Navigator.of(context).pop(listPlacemark[index].address);
+              })),
+            ],
+          ),
         );
       },
     );
