@@ -12,6 +12,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
+import 'package:joincompany/widgets/FormTaskNew.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -95,7 +96,7 @@ class _ClienteState extends State<Cliente> {
               ),
             ],
           ),
-          IconButton(icon: Icon(Icons.mode_edit),onPressed: (){},),
+          IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){},),
         ],
       ),
     );
@@ -154,7 +155,7 @@ class _ClienteState extends State<Cliente> {
                 Navigator.pop(context);
                 Navigator.push(
                     context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView()));
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
               },
             ),
           ),
@@ -249,6 +250,11 @@ class _ClienteState extends State<Cliente> {
                 child: ListTile(
                   title: Text(name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                  trailing:  IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                  },),
                   onTap: (){
                     Navigator.push(
                         context,
