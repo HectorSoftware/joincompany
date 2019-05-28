@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
@@ -221,7 +223,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                // ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                testApi();
               },
               child: Center(
                   child: Center(
@@ -403,6 +406,23 @@ class _LoginPageState extends State<LoginPage> {
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
+
+      // Customer Addresses
+      // var getCustomerAddressesResponse = await getCustomerAddresses('387', customer, authorization);
+      // List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+      // print(customerAddresses.length);
+      // print(customerAddresses[0].address);
+
+      // Customer Address Relate
+      // var relateCustomerAddressResponse = await relateCustomerAddress('417', '345', customer, authorization);
+      // print(relateCustomerAddressResponse.statusCode);
+      // print(relateCustomerAddressResponse.body);
+
+      // Customer Address Unrelate
+      // var unrelateCustomerAddressResponse = await unrelateCustomerAddress('417', '345', customer, authorization);
+      // print(unrelateCustomerAddressResponse.request);
+      // print(unrelateCustomerAddressResponse.statusCode);
+      // print(unrelateCustomerAddressResponse.body);
 
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);
