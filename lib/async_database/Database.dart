@@ -57,7 +57,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."users"(
+      INSERT INTO "users"(
         id,
         created_at,
         updated_at,
@@ -97,7 +97,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."users" WHERE id = ${id}
+      SELECT * FROM "users" WHERE id = ${id}
       '''
     );
     return data;
@@ -108,7 +108,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."users" WHERE 
+      SELECT * FROM "users" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -122,7 +122,7 @@ class DatabaseProvider {
     final db = await database;
     db.rawUpdate(
       '''
-      UPDATE "mydb"."users" SET
+      UPDATE "users" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -158,7 +158,7 @@ class DatabaseProvider {
     final db = await database;
     db.rawUpdate(
       '''
-      UPDATE "mydb"."users" SET
+      UPDATE "users" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -172,7 +172,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."users" WHERE id = ${id}
+      DELETE FROM "users" WHERE id = ${id}
       '''
     );
   }
@@ -182,7 +182,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."users"
+      SELECT * FROM "users"
       '''
     );
 
@@ -194,7 +194,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."forms"(
+      INSERT INTO "forms"(
         id,
         created_at,
         updated_at,
@@ -224,7 +224,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."forms" WHERE id = ${id}
+      SELECT * FROM "forms" WHERE id = ${id}
       '''
     );
 
@@ -236,7 +236,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."forms" WHERE 
+      SELECT * FROM "forms" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -251,7 +251,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."forms" SET
+      UPDATE "forms" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -277,7 +277,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."forms" WHERE id = ${id}
+      DELETE FROM "forms" WHERE id = ${id}
       '''
     );
   }
@@ -286,7 +286,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."forms" SET
+      UPDATE "forms" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -301,7 +301,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-        SELECT * FROM "mydb"."forms"
+        SELECT * FROM "forms"
         '''
       );
 
@@ -313,7 +313,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-        INSERT INTO "mydb"."localities"(
+        INSERT INTO "localities"(
           id,
           created_at,
           updated_at,
@@ -343,7 +343,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."localities" WHERE id = ${id}
+      SELECT * FROM "localities" WHERE id = ${id}
       '''
     );
 
@@ -355,7 +355,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."localities" WHERE 
+      SELECT * FROM "localities" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -370,7 +370,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."localities" SET
+      UPDATE "localities" SET
       created_at,
       updated_at,
       deleted_at,
@@ -396,7 +396,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."localities" WHERE id = ${id}
+      DELETE FROM "localities" WHERE id = ${id}
       '''
     );
   }
@@ -405,7 +405,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."localities" SET
+      UPDATE "localities" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -420,7 +420,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."localities"
+      SELECT * FROM "localities"
       '''
     );
 
@@ -432,7 +432,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."responsibles"(
+      INSERT INTO "responsibles"(
         id,
         created_at,
         updated_at,
@@ -470,7 +470,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."responsibles" WHERE id = ${id}
+      SELECT * FROM "responsibles" WHERE id = ${id}
       '''
     );
 
@@ -482,7 +482,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."responsibles" WHERE 
+      SELECT * FROM "responsibles" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -497,7 +497,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."responsibles" SET
+      UPDATE "responsibles" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -531,7 +531,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."responsibles" WHERE id = ${id}
+      DELETE FROM "responsibles" WHERE id = ${id}
       '''
     );
   }
@@ -540,7 +540,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."responsibles" SET
+      UPDATE "responsibles" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -555,7 +555,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."responsibles"
+      SELECT * FROM "responsibles"
       '''
     );
 
@@ -567,7 +567,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."custom_fields"(
+      INSERT INTO "custom_fields"(
         id,
         created_at,
         updated_at,
@@ -615,7 +615,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_fields" WHERE id = ${id}
+      SELECT * FROM "custom_fields" WHERE id = ${id}
       '''
     );
 
@@ -627,7 +627,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_fields" WHERE 
+      SELECT * FROM "custom_fields" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -642,7 +642,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."custom_fields" SET
+      UPDATE "custom_fields" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -683,7 +683,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."custom_fields" WHERE id = ${id}
+      DELETE FROM "custom_fields" WHERE id = ${id}
       '''
     );
   }
@@ -692,7 +692,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."custom_fields" SET
+      UPDATE "custom_fields" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -707,7 +707,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_fields"
+      SELECT * FROM "custom_fields"
       '''
     );
 
@@ -719,7 +719,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."addresses"(
+      INSERT INTO "addresses"(
         id,
         created_at,
         updated_at,
@@ -765,7 +765,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."addresses" WHERE id = ${id}
+      SELECT * FROM "addresses" WHERE id = ${id}
       '''
     );
 
@@ -777,7 +777,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."addresses" WHERE 
+      SELECT * FROM "addresses" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -792,7 +792,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."addresses" SET
+      UPDATE "addresses" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -832,7 +832,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."addresses" WHERE id = ${id}
+      DELETE FROM "addresses" WHERE id = ${id}
       '''
     );
   }
@@ -841,7 +841,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."addresses" SET
+      UPDATE "addresses" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -856,7 +856,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."addresses"
+      SELECT * FROM "addresses"
       '''
     );
 
@@ -868,7 +868,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."customers"(
+      INSERT INTO "customers"(
         id,
         created_at,
         updated_at,
@@ -884,8 +884,8 @@ class DatabaseProvider {
         details,
         in_server,
         updated,
-        deleted,
-      );
+        deleted
+      )
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -902,7 +902,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customers" WHERE id = ${id}
+      SELECT * FROM "customers" WHERE id = ${id}
       '''
     );
 
@@ -914,7 +914,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customers" WHERE 
+      SELECT * FROM "customers" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -929,7 +929,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customers" SET
+      UPDATE "customers" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -959,7 +959,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."customers" WHERE id = ${id}
+      DELETE FROM "customers" WHERE id = ${id}
       '''
     );
   }
@@ -968,7 +968,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customers" SET
+      UPDATE "customers" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -983,7 +983,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customers"
+      SELECT * FROM "customers"
       '''
     );
 
@@ -995,7 +995,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."tasks"(
+      INSERT INTO "tasks"(
         id,
         created_at,
         updated_at,
@@ -1040,7 +1040,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."tasks" WHERE id = ${id}
+      SELECT * FROM "tasks" WHERE id = ${id}
       '''
     );
 
@@ -1052,7 +1052,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."tasks" WHERE 
+      SELECT * FROM "tasks" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1067,7 +1067,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."tasks" SET
+      UPDATE "tasks" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1108,7 +1108,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."tasks" WHERE id = ${id}
+      DELETE FROM "tasks" WHERE id = ${id}
       '''
     );
   }
@@ -1117,7 +1117,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."tasks" SET
+      UPDATE "tasks" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1132,7 +1132,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."tasks"
+      SELECT * FROM "tasks"
       '''
     );
 
@@ -1146,7 +1146,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."customers_users"(
+      INSERT INTO "customers_users"(
         id,
         created_at,
         updated_at,
@@ -1170,7 +1170,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customers_users" WHERE id = ${id}
+      SELECT * FROM "customers_users" WHERE id = ${id}
       '''
     );
 
@@ -1182,7 +1182,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customer_users" WHERE 
+      SELECT * FROM "customer_users" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1199,7 +1199,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customer_users" SET
+      UPDATE "customer_users" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1231,7 +1231,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."customer_users" WHERE id = ${id}
+      DELETE FROM "customer_users" WHERE id = ${id}
       '''
     );
   }
@@ -1240,7 +1240,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customer_users" SET
+      UPDATE "customer_users" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1255,7 +1255,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customer_users"
+      SELECT * FROM "customer_users"
       '''
     );
 
@@ -1267,7 +1267,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."custom_values"(
+      INSERT INTO "custom_values"(
         id,
         created_at,
         updated_at,
@@ -1298,7 +1298,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_values" WHERE id = ${id}
+      SELECT * FROM "custom_values" WHERE id = ${id}
       '''
     );
 
@@ -1310,7 +1310,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_values" WHERE 
+      SELECT * FROM "custom_values" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1325,7 +1325,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."custom_values" SET
+      UPDATE "custom_values" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1351,7 +1351,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."custom_values" WHERE id = ${id}
+      DELETE FROM "custom_values" WHERE id = ${id}
       '''
     );
   }
@@ -1360,7 +1360,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."custom_values" SET
+      UPDATE "custom_values" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1375,7 +1375,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."custom_values"
+      SELECT * FROM "custom_values"
       '''
     );
 
@@ -1390,7 +1390,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawInsert(
       '''
-      INSERT INTO "mydb"."customers_addresses"(
+      INSERT INTO "customers_addresses"(
         id,
         created_at,
         updated_at,
@@ -1415,7 +1415,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customer_addresses" WHERE id = ${id}
+      SELECT * FROM "customer_addresses" WHERE id = ${id}
       '''
     );
 
@@ -1427,7 +1427,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customer_addresses" WHERE 
+      SELECT * FROM "customer_addresses" WHERE 
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1445,7 +1445,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customer_addresses" SET
+      UPDATE "customer_addresses" SET
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1477,7 +1477,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawDelete(
       '''
-      DELETE FROM "mydb"."customer_addresses" WHERE id = ${id}
+      DELETE FROM "customer_addresses" WHERE id = ${id}
       '''
     );
   }
@@ -1486,7 +1486,7 @@ class DatabaseProvider {
     final db = await database;
     await db.rawUpdate(
       '''
-      UPDATE "mydb"."customer_addresses" SET
+      UPDATE "customer_addresses" SET
       in_server = ?,
       updated = ?,
       deleted = ?,
@@ -1501,7 +1501,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "mydb"."customer_addresses"
+      SELECT * FROM "customer_addresses"
       '''
     );
 

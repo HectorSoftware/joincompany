@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AccountModel.dart';
@@ -339,6 +341,8 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       print("---------------- Inicia test. ----------------------------");
+
+      // CustomerChannel.retrieveNewsCustomersLocal();
 
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
