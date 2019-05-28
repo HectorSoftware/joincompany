@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
-import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
@@ -622,11 +621,6 @@ Widget timeWidget(BuildContext context, String string){
     );
   }
 
-  @override
-  void setState(fn) {
-  dropdownValue ;
-    super.setState(fn);
-  }
 }
 
 

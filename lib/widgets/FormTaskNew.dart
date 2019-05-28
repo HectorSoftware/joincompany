@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:joincompany/blocs/blocTaskForm.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
@@ -22,17 +24,18 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
 
-
+  ListWidgets items = new ListWidgets();
   BuildContext globalContext;
   List<String> listElement = List<String>();
   List<Widget> listWidgetMain = List<Widget>();
-  var data = List<Widget>();
+
   UserDataBase userToken ;
   String token;
   String customer;
   String user;
   FormsModel formType;
   bool pass = false;
+  List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
 
   @override
   void initState(){
@@ -40,8 +43,6 @@ class _FormTaskState extends State<FormTask> {
   }
   @override
   Widget build(BuildContext context) {
-
-    final BlocTaskForm _bloc = new BlocTaskForm(context);
     return new Scaffold(
        appBar: AppBar(
          elevation: 12,
@@ -127,10 +128,9 @@ class _FormTaskState extends State<FormTask> {
                            icon: Icon(Icons.delete),
                              onPressed: (){
                                setState(() {
-                                 data.clear();
+                                 listWidgetMain.clear();
                                  pass= false;
-                                 _bloc.idFormType = null;
-                                 _bloc.updateListWidget(globalContext);
+
                                });
 
                                //Navigator.pop(context);
@@ -143,10 +143,9 @@ class _FormTaskState extends State<FormTask> {
                              onPressed: (){
                                setState(() {
                                  pass= false;
-                                 data.clear();
+                                 listWidgetMain.clear();
                                });
-                               _bloc.idFormType = null;
-                               _bloc.updateListWidget(globalContext);
+
                                Navigator.pop(context);
                              }
                          ),
@@ -162,32 +161,20 @@ class _FormTaskState extends State<FormTask> {
         ],
         title: Text('Agregar Tareas'),
       ),
-      body:Stack(
-        children: <Widget>[
-          StreamBuilder<List<dynamic>>(
-              stream: _bloc.outListWidget,
-              builder: (BuildContext context, snapshot) {
-                globalContext  = context;
-                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-                if (ConnectionState.active != null) {
-                   data = snapshot.data;
-                  if(snapshot.hasData)
-                  {
-                    return  buildView(data);
-                  }
-                  else
-                  {
-                    return Center(
-                      child: Text('Selecione un Formulario'),
-                    );
-                  }
-                }else{
-                  CircularProgressIndicator(
-                  );
-                }
-              }
-          ),
-        ],
+      body:Center(
+        child: pass ? Stack(
+          children: <Widget>[
+            ListView.builder(
+            itemCount:listWidgetMain.length,
+            itemBuilder: (BuildContext context, index){
+              return listWidgetMain[index];
+
+            }
+
+            )
+            ]
+
+        ) : Text('Seleccione un Formulario'),
       ),
       bottomNavigationBar: BottomAppBar(
         color: PrimaryColor,
@@ -217,16 +204,12 @@ class _FormTaskState extends State<FormTask> {
                               leading: Icon(Icons.poll),
                               onTap: () async {
                                 var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
-                                _bloc.idFormType = formType.data[index].id.toString();
-                                _bloc.customer = customer;
-                                _bloc.token = token;
-                                _bloc.form = form;
+                                lisC(form);
                                 setState(() {
                                   pass = true;
                                 });
-                                // getFormResponse.body.split(' ').forEach((word) => print(" " + word));
-                                _bloc.updateListWidget(globalContext);
                                 Navigator.pop(context);
                               },
                             );
@@ -242,11 +225,106 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-  Widget buildView(data){
+  lisC(FormModel form){
+    listWidgetMain.clear();
+    for(SectionModel section in form.sections)
+      {
+        for(FieldModel fields in section.fields)
+        {
+
+
+          switch(fields.fieldType){
+            case 'Combo':
+              {
+                elementsOptions = fields.fieldOptions;
+                listWidgetMain.add(items.createState().combo(elementsOptions,fields.name));
+                //  listWidget.add(items.createState().dateTime());
+              }
+              break;
+            case 'Text':
+              {
+                final nameController = TextEditingController();
+                listWidgetMain.add(items.createState().text(context,fields.name,nameController,section.id.toString() ));
+              }
+              break;
+            case 'Textarea':
+              {
+                final nameController = TextEditingController();
+                listWidgetMain.add(items.createState().textArea(context,fields.name,nameController,section.id.toString()));
+              }
+              break;
+            case 'Number':
+              {
+                final nameController = TextEditingController();
+                listWidgetMain.add(items.createState().number(context,fields.name,nameController));
+              }
+              break;
+            case 'Date':
+              {
+                listWidgetMain.add(items.createState().dateT(context,fields.name));
+              }
+              break;
+            case 'Table':
+              {
+                elementsOptions = fields.fieldOptions;
+                listWidgetMain.add(items.createState().tab(elementsOptions,context));
+              }
+              break;
+            case 'CanvanSignature':
+              {
+                listWidgetMain.add(items.createState().newFirm(context, fields.name));
+              }
+              break;
+            case 'Photo':
+              {
+                listWidgetMain.add(items.createState().imagePhoto(context,fields.name));
+              }
+              break;
+            case 'Image':
+              {
+                listWidgetMain.add(items.createState().imageImage(context,fields.name));
+              }
+              break;
+            case 'Time':
+              {
+                listWidgetMain.add(items.createState().timeWidget(context,fields.name));
+              }
+              break;
+            case 'DateTime'://
+              {
+                listWidgetMain.add(items.createState().loadingTask(fields.name));
+              }
+              break;
+            case 'ComboSearch':
+              {
+                listWidgetMain.add(items.createState().ComboSearch(context, fields.name));
+              }
+              break;
+            case 'Boolean':
+              {
+                listWidgetMain.add(items.createState().bolean());
+              }
+              break;
+            case 'CanvanImage'://
+              {
+                listWidgetMain.add(items.createState().loadingTask(fields.name));
+              }
+              break;
+            default:
+              {
+                listWidgetMain.add(items.createState().label(fields.name));
+              }
+              break;
+          }
+        }
+      }
+  }
+
+
+  Widget buildView(){
     return  ListView.builder(
-        itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          return data[index];
+
         }
     ) ;
   }
@@ -280,6 +358,7 @@ class _FormTaskState extends State<FormTask> {
     user = userToken.name;
 
   }
+
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,

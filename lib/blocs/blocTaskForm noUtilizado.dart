@@ -35,7 +35,7 @@ class BlocTaskForm  {
 
         for(FieldModel k in v.fields)
         {
-          camposWidgets = k;
+
           switch(k.fieldType){
             case 'Combo':
               {
