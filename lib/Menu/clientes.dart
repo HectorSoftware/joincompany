@@ -109,19 +109,13 @@ class _ClienteState extends State<Cliente> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
-            ),
-            accountName: new Text(nameUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail : Text(emailUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-              ),
+            decoration: new BoxDecoration(color: SecondaryColor),
+            margin: EdgeInsets.only(bottom: 0),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
+            currentAccountPicture: CircleAvatar(
+              radius: 1,
+              backgroundImage: new AssetImage('assets/images/user.jpg'),
             ),
           ),
           Container(
@@ -250,7 +244,7 @@ class _ClienteState extends State<Cliente> {
                 child: ListTile(
                   title: Text(name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){
+                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));

@@ -133,19 +133,13 @@ class _ContactViewState extends State<ContactView> {
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
-            ),
-            accountName: new Text(nameUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail : Text(emailUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-              ),
+            decoration: new BoxDecoration(color: SecondaryColor),
+            margin: EdgeInsets.only(bottom: 0),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
+            currentAccountPicture: CircleAvatar(
+              radius: 1,
+              backgroundImage: new AssetImage('assets/images/user.jpg'),
             ),
           ),
           Container(

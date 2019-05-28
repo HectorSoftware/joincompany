@@ -121,30 +121,54 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
-            ),
-            accountName: new Text(nameUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail : Text(emailUser,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-              ),
+            decoration: new BoxDecoration(color: SecondaryColor),
+            margin: EdgeInsets.only(bottom: 0),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
+            currentAccountPicture: CircleAvatar(
+              radius: 1,
+              backgroundImage: new AssetImage('assets/images/user.jpg'),
             ),
           ),
-          Container(
-            color: drawerTask ? Colors.grey[200] :  null,
-            child: ListTile(
-              trailing: new Icon(Icons.assignment),
-              title: new Text('Tareas'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+          /*Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            color: PrimaryColor,
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 40),
+                    height: 50,
+                    child: CircleAvatar(
+                      minRadius: 25.0,
+                      maxRadius: 25.0,
+                      backgroundImage: new AssetImage('assets/images/user.jpg'),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
+                  )
+
+                ],
+              ),
             )
+          ),*/
+          Container(
+              color: drawerTask ? Colors.grey[200] :  null,
+              child: ListTile(
+                trailing: new Icon(Icons.assignment),
+                title: new Text('Tareas'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
           ),
           Container(
             child: ListTile(
