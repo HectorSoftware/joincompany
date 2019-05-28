@@ -132,13 +132,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     }catch(e){ }
 
     return listTaskModellocal.length != 0 ?
-    Container(
-      child: LoadMore(
-      isFinish: listTaskModellocal.length >= 5,
-      onLoadMore: _loadMore,
-      child: listando(),
-      ),
-    ) : Center(
+    listando() : Center(
       child: CircularProgressIndicator(),
     );
   }

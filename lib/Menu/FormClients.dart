@@ -50,6 +50,7 @@ class _FormClientState extends State<FormClient> {
             hintText: title,
             border: InputBorder.none,
             errorText: getErrorText(t),
+            contentPadding: EdgeInsets.all(12.0),
         ),
         onChanged: _onChanges(t),
       ),
@@ -144,8 +145,11 @@ class _FormClientState extends State<FormClient> {
   Future<bool> _asyncConfirmDialog() async {
     if(widget.client != null){
       if(name.text == widget.client.name && code.text == widget.client.code){
-        Navigator.of(context).pop(true);
+        return true;
       }else{
+        if(name.text == '' && code.text == ''){
+          return true;
+        }
         return showDialog<bool>(
           context: context,
           barrierDismissible: false, // user must tap button for close dialog!
@@ -154,11 +158,9 @@ class _FormClientState extends State<FormClient> {
           },
         );
       }
-      if(name.text == '' && code.text == ''){
-        Navigator.of(context).pop(true);
-      }
+
     }else if(name.text == '' && code.text == ''){
-      Navigator.of(context).pop(true);
+      return true;
     }else{
       return showDialog<bool>(
         context: context,
