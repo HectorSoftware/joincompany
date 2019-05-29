@@ -39,7 +39,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   @override
   void dispose(){
-    streamSubscription.cancel();
     _Bloc.dispose();
     super.dispose();
   }
@@ -87,26 +86,26 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   void _onCameraMove(CameraPosition position) {
-    setState(() {
+    //setState(() {
       _lastPosition = position.target;
-    });
+    //});
   }
 
   static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 15);
 
   void onMapCreated(controller) {
-    setState(() {
+    //setState(() {
       mapController = controller;
-    });
+    //});
     _addMarker();
   }
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-    setState(() {
+    //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
-    });
+    //});
   }
   List<Place> listplace = new List<Place>();
   Future _addMarker() async {
@@ -137,13 +136,15 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                   }
                 }
             ),
-            icon: await ColorMarker(mark),
+            onTap: (){ },
+          icon: await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"),
+//          icon: await ColorMarker(mark),
       ));
     }
-    setState((){
+    //setState((){
     _markers;
     _polyLines;
-    });
+    //});
   }
 
   Future createRoute(Place mark) async {
@@ -158,6 +159,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   Future<BitmapDescriptor> ColorMarker(Place mark) async {
     if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
+    //if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context),Image.network('https://picsum.photos/250?image=9')); }
     if(mark.status == 2){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
     if(mark.status == 1){
       //createRoute(mark);
