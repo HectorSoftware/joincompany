@@ -284,7 +284,7 @@ class _SearchAddressState extends State<SearchAddress> {
                 ),
               ),
               Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
-                Navigator.of(context).pop(listPlacemark[index].address);
+                Navigator.of(context).pop(listPlacemark[index]);
               })),
             ],
           ),

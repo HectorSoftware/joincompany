@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -329,8 +327,6 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
    //   print("---------------- Inicia test. ----------------------------");
-
-      // CustomerChannel.retrieveNewsCustomersLocal();
 
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';

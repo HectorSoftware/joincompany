@@ -243,7 +243,7 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14),),
+                  title: Text(name + '-'+ snapshot.data[index].id.toString() , style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
                     Navigator.push(
