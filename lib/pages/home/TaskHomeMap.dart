@@ -251,7 +251,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
             itemCount: listas_porhacer.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(listas_porhacer[index].customer + ' ' + listas_porhacer[index].id.toString()),
+                title: Text(listas_porhacer[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
                 subtitle: Text(listas_porhacer[index].address),
                 leading: Icon(Icons.location_on,color: Colors.red,),
                 onTap: (){

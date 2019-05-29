@@ -178,7 +178,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           if (listTaskModellocal[PosicionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
+            title = listTaskModellocal[PosicionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
           }
 
           if (listTaskModellocal[PosicionActual].address == null) {
