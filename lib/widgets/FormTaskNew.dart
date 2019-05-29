@@ -34,7 +34,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-
+  Map<String,String> dataInfo = Map<String,String>();
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   ListWidgets items = new ListWidgets();
   BuildContext globalContext;
@@ -90,12 +90,24 @@ class _FormTaskState extends State<FormTask> {
                                  color: Colors.white,
                                  elevation: 0,
                                  onPressed: (){
+                                   Map<String,String> dataAux = Map<String,String>();
+                                    iterateMapEntry(key, value) {
+                                      dataAux.putIfAbsent(key,()=> value);
+                                      dataSaveState.add(dataAux);
+                                   }
+                                   print(dataSaveState);
+
+                                   dataInfo.forEach(iterateMapEntry);
 
                                    if(dataSaveState.isNotEmpty) {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
                                      saveTask.customValuesMap = dataSaveState;
+                                     print(saveTask.formId);
+                                     print(saveTask.responsibleId);
+                                     print(saveTask.name);
+                                     print(saveTask.customValuesMap);
                                    }
                                    saveTaskApi();
                                    Navigator.pop(context);
@@ -480,24 +492,14 @@ class _FormTaskState extends State<FormTask> {
   Future saveTaskApi() async{
 
     await createTask(saveTask,customer, token);
+    //if(){}
   }
 
   void saveData(String dataController, String id) {
-    Map<String,String> dataInfo = Map<String,String>();
+
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
-   /* for( Map<String,String> data in dataSaveState)
-    {
-
-      Future iterateMapEntry(key, value) {
-        if(key != id){
-          dataSaveState.add(dataInfo);
-        }
-      }
-      data.forEach(iterateMapEntry);
-    }*/
-
 
   }
 
