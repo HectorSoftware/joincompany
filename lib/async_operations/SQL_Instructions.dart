@@ -1,5 +1,4 @@
 enum DatabaseTables {
-  none,
   users,
   forms,
   localities,
