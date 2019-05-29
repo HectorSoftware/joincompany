@@ -11,6 +11,7 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 class Cliente extends StatefulWidget {
@@ -249,6 +250,7 @@ class _ClienteState extends State<Cliente> {
                     Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                        //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
                   onTap: (){
                     Navigator.push(

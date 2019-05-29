@@ -126,39 +126,7 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData() async {
-
     userAct = await ClientDatabaseProvider.db.getCodeId('1');
-
-    popUp =  AlertDialog(
-      title: Text('¿Guardar?'),
-      content: const Text(
-          '¿estas seguro que desea guardar estos datos?'),
-      actions: <Widget>[
-        FlatButton(
-          child: const Text('SALIR'),
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
-        ),
-        FlatButton(
-          child: const Text('ACEPTAR'),
-          onPressed: () {
-            Navigator.of(context).pop(false);
-          },
-        )
-      ],
-    );
-
-    name = TextEditingController();
-    code = TextEditingController();
-    note = TextEditingController();
-
-    if(widget.client != null){
-        name.text = widget.client.name;
-        code.text = widget.client.code;
-        note.text = widget.client.details;
-    }
-
     //Directions
     if(widget.client != null){
       var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
@@ -167,6 +135,39 @@ class _FormClientState extends State<FormClient> {
         directionsAll.add(direction);
       }
     }
+    setState(() {
+      popUp =  AlertDialog(
+        title: Text('¿Guardar?'),
+        content: const Text(
+            '¿estas seguro que desea guardar estos datos?'),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('SALIR'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+          FlatButton(
+            child: const Text('ACEPTAR'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          )
+        ],
+      );
+
+      name = TextEditingController();
+      code = TextEditingController();
+      note = TextEditingController();
+
+      if(widget.client != null){
+        name.text = widget.client.name;
+        code.text = widget.client.code;
+        note.text = widget.client.details;
+      }
+      directionsOld;      //Directions
+      directionsAll;
+    });
   }
 
   Future<int> deletedAddressUser(AddressModel direction)async{
@@ -175,11 +176,7 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> addAddressUser(AddressModel direction)async{
-    print(direction.id);
     var resp = await relateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
-    print(resp.body);
-    print(resp.request);
-    print(resp.statusCode);
     return resp.statusCode;
   }
 
