@@ -43,8 +43,17 @@ Future<http.Response> getTask(String id, String customer, String authorization) 
 }
 
 Future<http.Response> createTask(TaskModel taskObj, String customer, String authorization) async{
-  
-  var bodyJson = taskObj.toJson();
+
+  var taskMapAux = taskObj.toMap();
+  var taskMap = new Map<String, dynamic>();
+
+  taskMapAux.forEach((key, value) {
+    if (value != null) {
+      taskMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(taskMap);
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }

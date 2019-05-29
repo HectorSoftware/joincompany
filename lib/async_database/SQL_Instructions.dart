@@ -1,5 +1,4 @@
 enum DatabaseTables {
-  none,
   users,
   forms,
   localities,
@@ -34,6 +33,7 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "details" TEXT,
     "profile" TEXT,
     "remember_token" TEXT,
+    "logged_at" DATETIME,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,

@@ -23,12 +23,13 @@ Future<http.Response> httpGet(String customer, String authorization, String reso
 
 Future<http.Response> httpPost(String bodyJson, String customer, String authorization, String resourcePath) async{
   var uri = Uri.https(hostApi, versionApi + resourcePath);
-
+  
   final response = await http.post(uri,
     headers: {
       'customer': customer,
       'Authorization': 'Bearer $authorization',
       'Content-Type' : 'application/json',
+      'Accept': 'application/json',
     },
     body: bodyJson
   );
