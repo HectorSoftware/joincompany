@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -52,4 +54,30 @@ Future<http.Response> deleteCustomer(String id, String customer, String authoriz
   String resourcePath = '/customer/delete';
   
   return await httpDelete(id, customer, authorization, resourcePath, false);
+}
+
+Future<http.Response> getCustomerAddresses(String id, String customer, String authorization ) async{
+  
+  String extraPath = "/addresses";
+
+  return await httpGet(customer, authorization, resourcePath, id: id, extraPath: extraPath);
+}
+
+Future<http.Response> relateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+  String resourcePath = '/addresses/customers/relate';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'address_id': idAddress,
+    'approved' : 1,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
+}
+
+Future<http.Response> unrelateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+  String resourcePath = '/customer/delete_address';
+  String id = '$idCustomer/$idAddress';
+  
+  return await httpGet(customer, authorization, resourcePath, id: id);
 }

@@ -1,5 +1,5 @@
 var asyncSQLInstructionsOnCreate =
-'''CREATE TABLE "mydb"."users"(
+'''CREATE TABLE "users"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -31,10 +31,10 @@ CONSTRAINT "fk_users_users3"
 FOREIGN KEY("deleted_by_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."users.fk_users_users1_idx" ON "users" ("created_by_id");
-CREATE INDEX "mydb"."users.fk_users_users2_idx" ON "users" ("updated_by_id");
-CREATE INDEX "mydb"."users.fk_users_users3_idx" ON "users" ("deleted_by_id");
-CREATE TABLE "mydb"."forms"(
+CREATE INDEX "users.fk_users_users1_idx" ON "users" ("created_by_id");
+CREATE INDEX "users.fk_users_users2_idx" ON "users" ("updated_by_id");
+CREATE INDEX "users.fk_users_users3_idx" ON "users" ("deleted_by_id");
+CREATE TABLE "forms"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -58,10 +58,10 @@ CONSTRAINT "fk_forms_users3"
 FOREIGN KEY("deleted_by_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."forms.fk_forms_users1_idx" ON "forms" ("created_by_id");
-CREATE INDEX "mydb"."forms.fk_forms_users2_idx" ON "forms" ("updated_by_id");
-CREATE INDEX "mydb"."forms.fk_forms_users3_idx" ON "forms" ("deleted_by_id");
-CREATE TABLE "mydb"."localities"(
+CREATE INDEX "forms.fk_forms_users1_idx" ON "forms" ("created_by_id");
+CREATE INDEX "forms.fk_forms_users2_idx" ON "forms" ("updated_by_id");
+CREATE INDEX "forms.fk_forms_users3_idx" ON "forms" ("deleted_by_id");
+CREATE TABLE "localities"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -85,10 +85,10 @@ CONSTRAINT "fk_localities_users3"
 FOREIGN KEY("deleted_by_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."localities.fk_localities_users1_idx" ON "localities" ("created_by_id");
-CREATE INDEX "mydb"."localities.fk_localities_users2_idx" ON "localities" ("updated_by_id");
-CREATE INDEX "mydb"."localities.fk_localities_users3_idx" ON "localities" ("deleted_by_id");
-CREATE TABLE "mydb"."responsibles"(
+CREATE INDEX "localities.fk_localities_users1_idx" ON "localities" ("created_by_id");
+CREATE INDEX "localities.fk_localities_users2_idx" ON "localities" ("updated_by_id");
+CREATE INDEX "localities.fk_localities_users3_idx" ON "localities" ("deleted_by_id");
+CREATE TABLE "responsibles"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -121,11 +121,11 @@ CONSTRAINT "fk_responsibles_responsibles1"
 FOREIGN KEY("supervisor_id")
 REFERENCES "responsibles"("id")
 );
-CREATE INDEX "mydb"."responsibles.fk_responsibles_users1_idx" ON "responsibles" ("created_by_id");
-CREATE INDEX "mydb"."responsibles.fk_responsibles_users2_idx" ON "responsibles" ("updated_by_id");
-CREATE INDEX "mydb"."responsibles.fk_responsibles_users3_idx" ON "responsibles" ("deleted_by_id");
-CREATE INDEX "mydb"."responsibles.fk_responsibles_responsibles1_idx" ON "responsibles" ("supervisor_id");
-CREATE TABLE "mydb"."custom_fields"(
+CREATE INDEX "responsibles.fk_responsibles_users1_idx" ON "responsibles" ("created_by_id");
+CREATE INDEX "responsibles.fk_responsibles_users2_idx" ON "responsibles" ("updated_by_id");
+CREATE INDEX "responsibles.fk_responsibles_users3_idx" ON "responsibles" ("deleted_by_id");
+CREATE INDEX "responsibles.fk_responsibles_responsibles1_idx" ON "responsibles" ("supervisor_id");
+CREATE TABLE "custom_fields"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -164,11 +164,11 @@ CONSTRAINT "fk_custom_fields_custom_fields1"
 FOREIGN KEY("section_id")
 REFERENCES "custom_fields"("id")
 );
-CREATE INDEX "mydb"."custom_fields.fk_custom_fields_users1_idx" ON "custom_fields" ("created_by_id");
-CREATE INDEX "mydb"."custom_fields.fk_custom_fields_users2_idx" ON "custom_fields" ("updated_by_id");
-CREATE INDEX "mydb"."custom_fields.fk_custom_fields_users3_idx" ON "custom_fields" ("deleted_by_id");
-CREATE INDEX "mydb"."custom_fields.fk_custom_fields_custom_fields1_idx" ON "custom_fields" ("section_id");
-CREATE TABLE "mydb"."addresses"(
+CREATE INDEX "custom_fields.fk_custom_fields_users1_idx" ON "custom_fields" ("created_by_id");
+CREATE INDEX "custom_fields.fk_custom_fields_users2_idx" ON "custom_fields" ("updated_by_id");
+CREATE INDEX "custom_fields.fk_custom_fields_users3_idx" ON "custom_fields" ("deleted_by_id");
+CREATE INDEX "custom_fields.fk_custom_fields_custom_fields1_idx" ON "custom_fields" ("section_id");
+CREATE TABLE "addresses"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -206,11 +206,11 @@ CONSTRAINT "fk_addresses_localities1"
 FOREIGN KEY("locality_id")
 REFERENCES "localities"("id")
 );
-CREATE INDEX "mydb"."addresses.fk_addresses_users1_idx" ON "addresses" ("created_by_id");
-CREATE INDEX "mydb"."addresses.fk_addresses_users2_idx" ON "addresses" ("updated_by_id");
-CREATE INDEX "mydb"."addresses.fk_addresses_users3_idx" ON "addresses" ("deleted_by_id");
-CREATE INDEX "mydb"."addresses.fk_addresses_localities1_idx" ON "addresses" ("locality_id");
-CREATE TABLE "mydb"."customers"(
+CREATE INDEX "addresses.fk_addresses_users1_idx" ON "addresses" ("created_by_id");
+CREATE INDEX "addresses.fk_addresses_users2_idx" ON "addresses" ("updated_by_id");
+CREATE INDEX "addresses.fk_addresses_users3_idx" ON "addresses" ("deleted_by_id");
+CREATE INDEX "addresses.fk_addresses_localities1_idx" ON "addresses" ("locality_id");
+CREATE TABLE "customers"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -237,10 +237,10 @@ CONSTRAINT "fk_customers_users3"
 FOREIGN KEY("deleted_by_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."customers.fk_customers_users1_idx" ON "customers" ("created_by_id");
-CREATE INDEX "mydb"."customers.fk_customers_users2_idx" ON "customers" ("updated_by_id");
-CREATE INDEX "mydb"."customers.fk_customers_users3_idx" ON "customers" ("deleted_by_id");
-CREATE TABLE "mydb"."tasks"(
+CREATE INDEX "customers.fk_customers_users1_idx" ON "customers" ("created_by_id");
+CREATE INDEX "customers.fk_customers_users2_idx" ON "customers" ("updated_by_id");
+CREATE INDEX "customers.fk_customers_users3_idx" ON "customers" ("deleted_by_id");
+CREATE TABLE "tasks"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -288,16 +288,16 @@ CONSTRAINT "fk_tasks_users3"
 FOREIGN KEY("deleted_by_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."tasks.fk_tasks_forms_idx" ON "tasks" ("form_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_responsibles1_idx" ON "tasks" ("responsible_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_customers1_idx" ON "tasks" ("customer_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_addresses1_idx" ON "tasks" ("address_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_users1_idx" ON "tasks" ("created_by_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_users2_idx" ON "tasks" ("updated_by_id");
-CREATE INDEX "mydb"."tasks.fk_tasks_users3_idx" ON "tasks" ("deleted_by_id");
+CREATE INDEX "tasks.fk_tasks_forms_idx" ON "tasks" ("form_id");
+CREATE INDEX "tasks.fk_tasks_responsibles1_idx" ON "tasks" ("responsible_id");
+CREATE INDEX "tasks.fk_tasks_customers1_idx" ON "tasks" ("customer_id");
+CREATE INDEX "tasks.fk_tasks_addresses1_idx" ON "tasks" ("address_id");
+CREATE INDEX "tasks.fk_tasks_users1_idx" ON "tasks" ("created_by_id");
+CREATE INDEX "tasks.fk_tasks_users2_idx" ON "tasks" ("updated_by_id");
+CREATE INDEX "tasks.fk_tasks_users3_idx" ON "tasks" ("deleted_by_id");
 INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(1, 'now()', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(2, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-CREATE TABLE "mydb"."customers_users"(
+CREATE TABLE "customers_users"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -314,9 +314,9 @@ CONSTRAINT "fk_customers_users_users2"
 FOREIGN KEY("user_id")
 REFERENCES "users"("id")
 );
-CREATE INDEX "mydb"."customers_users.fk_customers_users_customers2_idx" ON "customers_users" ("customer_id");
-CREATE INDEX "mydb"."customers_users.fk_customers_users_users2_idx" ON "customers_users" ("user_id");
-CREATE TABLE "mydb"."custom_values"(
+CREATE INDEX "customers_users.fk_customers_users_customers2_idx" ON "customers_users" ("customer_id");
+CREATE INDEX "customers_users.fk_customers_users_users2_idx" ON "customers_users" ("user_id");
+CREATE TABLE "custom_values"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -340,10 +340,10 @@ CONSTRAINT "fk_custom_values_custom_fields2"
 FOREIGN KEY("field_id")
 REFERENCES "custom_fields"("id")
 );
-CREATE INDEX "mydb"."custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
-CREATE INDEX "mydb"."custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
-CREATE INDEX "mydb"."custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
-CREATE TABLE "mydb"."customers_addresses"(
+CREATE INDEX "custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
+CREATE INDEX "custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
+CREATE INDEX "custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
+CREATE TABLE "customers_addresses"(
 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "created_at" DATETIME,
 "updated_at" DATETIME,
@@ -361,6 +361,6 @@ CONSTRAINT "fk_customers_addresses_addresses1"
 FOREIGN KEY("address_id")
 REFERENCES "addresses"("id")
 );
-CREATE INDEX "mydb"."customers_addresses.fk_customers_addresses_addresses1_idx" ON "customers_addresses" ("address_id");
-CREATE INDEX "mydb"."customers_addresses.fk_customers_addresses_customers1_idx" ON "customers_addresses" ("customer_id");'''
+CREATE INDEX "customers_addresses.fk_customers_addresses_addresses1_idx" ON "customers_addresses" ("address_id");
+CREATE INDEX "customers_addresses.fk_customers_addresses_customers1_idx" ON "customers_addresses" ("customer_id");'''
 ;
