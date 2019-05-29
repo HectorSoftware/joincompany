@@ -335,7 +335,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          deleteCustomer(listTask.id.toString());
+                          deleteCustomer(listTask.id.toString(),index);
                         }
                     ),
                   ),
@@ -348,10 +348,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
 
-  Future <bool> deleteCustomer(String taskID) async {
+  deleteCustomer(String taskID, int index) async {
     var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
-    print(deleteTaskResponse.statusCode);
-    return true;
+    if(deleteTaskResponse.statusCode == 200){
+      listTaskModellocal.removeAt(index);
+    }
   }
 
   actualizarusuario() async{
