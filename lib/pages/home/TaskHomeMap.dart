@@ -18,6 +18,11 @@ class taskHomeMap extends StatefulWidget {
 * AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
 * */
 
+enum markersId {
+  none,
+  markerRed,
+}
+
 class _MytaskPageMapState extends State<taskHomeMap> {
 
   GoogleMapController mapController;
@@ -122,6 +127,15 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   allmark(List<Place> listPlaces) async {
+    
+    Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
+
+
+
+    Map<markersId, String> markersIconsFromId = {
+      markersId.markerRed: "marker_red1",
+    };
+
     for(Place mark in listPlaces){
       _markers.add(
         Marker(
@@ -137,14 +151,14 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 }
             ),
             onTap: (){ },
-          icon: await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"),
-//          icon: await ColorMarker(mark),
-      ));
+          icon: await ColorMarker(mark)
+        ),
+      );
     }
-    //setState((){
-    _markers;
-    _polyLines;
-    //});
+//    //setState((){
+//    _markers;
+//    _polyLines;
+//    //});
   }
 
   Future createRoute(Place mark) async {
@@ -232,6 +246,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
 
+  // ignore: non_constant_identifier_names
   ListClientes(){
 
     List<Place> listas_porhacer = new List<Place>();

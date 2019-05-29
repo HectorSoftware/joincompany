@@ -115,7 +115,8 @@ class _ClienteState extends State<Cliente> {
             accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
             currentAccountPicture: CircleAvatar(
               radius: 1,
-              backgroundImage: new AssetImage('assets/images/user.jpg'),
+              backgroundColor: Colors.white,
+              backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
           Container(

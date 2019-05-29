@@ -43,7 +43,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   void initState() {
     actualizarusuario();
     _getUserLocation();
-    obtenerTareas();
     listTaskModellocal = new List<TaskModel>();
     super.initState();
   }
@@ -95,7 +94,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   obtenerTareas(){
     bloctasks = widget.blocListTaskRes;
-
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
@@ -104,7 +102,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         setState(() {
           listTaskModellocal;
         });
-
         for(int h = 0; h < 255; h++){
           var hasta = new DateTime.now().add(Duration(days: -h));
           for(int k = 0; k < newVal.length; k++){
@@ -116,11 +113,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           }
         }
       }));
-
     }catch(e){ }
   }
 
   ListViewTareas(){
+
+    obtenerTareas();
 
     bloctasksFilter = widget.blocListTaskFilterRes;
     try{
@@ -135,13 +133,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     listando() : Center(
       child: CircularProgressIndicator(),
     );
-  }
-
-  Future<bool> _loadMore() async {
-    print("JESUS");
-    CircularProgressIndicator();
-    //load();
-    return true;
   }
 
   listando(){
