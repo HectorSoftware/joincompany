@@ -11,7 +11,6 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 class Cliente extends StatefulWidget {
