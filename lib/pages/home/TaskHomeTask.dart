@@ -352,6 +352,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
     if(deleteTaskResponse.statusCode == 200){
       listTaskModellocal.removeAt(index);
+      setState(() {
+        listTaskModellocal;
+      });
     }
   }
 
