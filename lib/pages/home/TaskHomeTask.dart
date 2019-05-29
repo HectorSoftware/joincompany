@@ -92,7 +92,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-  obtenerTareas(){
+
+  ListViewTareas(){
+
     bloctasks = widget.blocListTaskRes;
     try{
       // ignore: cancel_subscriptions
@@ -114,11 +116,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         }
       }));
     }catch(e){ }
-  }
-
-  ListViewTareas(){
-
-    obtenerTareas();
 
     bloctasksFilter = widget.blocListTaskFilterRes;
     try{
@@ -169,7 +166,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           if (listTaskModellocal[PosicionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[PosicionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
+            title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
           }
 
           if (listTaskModellocal[PosicionActual].address == null) {
@@ -282,6 +279,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
+    bool icomDetele = true;
+
     return Container(
         child: Card(
           child: Column(
@@ -338,6 +337,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: (){
+                          deleteCustomer(listTask.id.toString());
                         }
                     ),
                   ),
@@ -347,6 +347,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           ),
         )
     );
+  }
+
+
+  deleteCustomer(String taskID) async {
+    var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
+    print(deleteTaskResponse.statusCode);
   }
 
   actualizarusuario() async{
