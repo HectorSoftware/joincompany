@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -10,25 +8,19 @@ import 'package:joincompany/models/AccountModel.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/FormModel.dart';
-import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AccountService.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:joincompany/services/FormService.dart';
-import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
-import 'package:sentry/sentry.dart' as sentryr;
 class LoginPage extends StatefulWidget {
+
+  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
+  final bool TextViewVisiblewidget;
+  final bool AgregarUserwidget;
+  final String companyEstablewidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -37,15 +29,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-
   UserDataBase saveUser;
   UserDataBase userVe;
+
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  final companyController = TextEditingController(text : 'duperu');
+//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//  final companyController = TextEditingController(text : 'getkem');
+
   final passwordController = TextEditingController(text : '123');
-  final companyController = TextEditingController(text : '');
-  bool TextViewVisible = true;
-  bool AgregarUser = true;
-  String companyEstable = '';
+
+  bool TextViewVisible;
+  bool AgregarUser;
+  String companyEstable;
   bool ErrorTextFieldEmail = false;
   bool ErrorTextFieldpsd = false;
   bool ErrorTextFieldcompany = false;
@@ -56,7 +52,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    ValidarUsrPrimeraVez();
+    TextViewVisible = widget.TextViewVisiblewidget;
+    AgregarUser = widget.AgregarUserwidget;
+    companyEstable = widget.companyEstablewidget;
     super.initState();
   }
 @override
@@ -86,29 +84,15 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.25,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xff29a0c7),
-                  Color(0xff29a0c7)
-                ],
-              ),
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(90)
-              )
-          ),
+          height: MediaQuery.of(context).size.height * 0.30,
           child: Column(
             children: <Widget>[
               Spacer(),
               Align(
                 alignment: Alignment.center,
-                child: Icon(Icons.person,
-                  size: 90,
-                  color: Colors.black,
-                ),
+                child: Container(
+                  child: Image.asset('assets/images/final-logo.png'),
+                )
               ),
             ],
           ),
@@ -181,6 +165,7 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
           ),
+          TextViewVisible ?
           Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -191,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: BoxDecoration(
               color: Colors.transparent,
             ),
-            child: TextViewVisible ? TextField(
+            child: TextField(
               controller: companyController,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -201,8 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                 errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                 hintText: 'Empresa',
               ),
-            ) : Container(),
-          ),
+            ) ,
+          ) : Container(),
           Container(
             height: MediaQuery.of(context).size.height * 0.08,
             width: MediaQuery.of(context).size.width/1.2,
@@ -226,6 +211,7 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                //testApi();
               },
               child: Center(
                   child: Center(
@@ -292,16 +278,28 @@ class _LoginPageState extends State<LoginPage> {
           });
         }
         if(loginResponse.statusCode == 200){
-
           AuthModel auth = AuthModel.fromJson(loginResponse.body);
-          if(AgregarUser){
-            UserDataBase newuser = UserDataBase(name: Usr,idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-            int res = await ClientDatabaseProvider.db.saveUser(newuser);
-          }else{
-            int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-          }
 
-          Navigator.pushReplacementNamed(context, '/vistap');
+          var getUserResponseid = await getUser(companylocal,auth.accessToken);
+          if(getUserResponseid != null){
+            if(AgregarUser){
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
+              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+              int res = await ClientDatabaseProvider.db.saveUser(newuser);
+            }else{
+              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+            }
+            Navigator.pushReplacementNamed(context, '/vistap');
+          }else{
+            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false; setState(() {
+              Circuleprogress;
+            });
+          }
         }
       }else{
         ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
@@ -323,18 +321,6 @@ class _LoginPageState extends State<LoginPage> {
     }else{
 
     }*/
-  }
-
-  ValidarUsrPrimeraVez() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    if(UserActiv != null){
-      TextViewVisible = false;
-      AgregarUser = false;
-      companyEstable = UserActiv.company;
-      setState(() {
-        TextViewVisible;AgregarUser;companyEstable;
-      });
-    }
   }
 
   testApi() async{
@@ -368,11 +354,8 @@ class _LoginPageState extends State<LoginPage> {
       // print(getCustomerResponse.body);
 
       // Customer Update
-      // customerObj.name = 'test 15';
-      // var updateCustomerResponse = await updateCustomer('387', customerObj, customer, authorization);
-      // print(customerObj.name);
-      // print(customerObj.toJson());
-      // print(updateCustomerResponse.statusCode);
+      // customerObj.name += ' rr';
+      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
       // print(updateCustomerResponse.body);
 
       // Customer Create
@@ -498,13 +481,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
-
-      // Account Get
-      // var getAccountResponse = await getAccount(customer, authorization);
-      // AccountModel account = AccountModel.fromJson(getAccountResponse.body);
-      // print(account.customer.name);
-      // print(account.customer.receiverEmail);
-      // print(account.customer.receiverName);
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

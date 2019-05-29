@@ -24,6 +24,7 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
   }
   if (responsibleId != null && responsibleId!=''){
     params["responsible_id"]=responsibleId;
+
   }
 
   if (formId != null && formId!=''){
