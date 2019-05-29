@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -7,11 +8,9 @@ import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 class Cliente extends StatefulWidget {
@@ -20,7 +19,7 @@ class Cliente extends StatefulWidget {
 }
 
 class _ClienteState extends State<Cliente> {
-
+  File img;
   ListWidgets ls = ListWidgets();
 
   Icon _searchIcon = new Icon(Icons.search);
@@ -70,7 +69,6 @@ class _ClienteState extends State<Cliente> {
   Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
     String title = titleCli;
     String subtitle = subtitleCli;
-    int id = idCli;
     return Card(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,8 +187,8 @@ class _ClienteState extends State<Cliente> {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
-
     setState(() {
+      img = img;
       nameUser = user.name;
       emailUser = user.email;
     });
@@ -249,7 +247,6 @@ class _ClienteState extends State<Cliente> {
                     Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
-                        //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
                   onTap: (){
                     Navigator.push(

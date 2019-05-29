@@ -402,6 +402,7 @@ Widget timeWidget(BuildContext context, String string){
           });
       }
   }
+
   Widget imageImage(BuildContext context, String string){
     return Row(
       children: <Widget>[

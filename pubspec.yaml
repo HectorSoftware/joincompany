@@ -41,7 +41,7 @@ dependencies:
   #IMAGEN
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
-  painter: ^0.3.1
+  painter2: any
   flutter_colorpicker: any
 
 dev_dependencies:
