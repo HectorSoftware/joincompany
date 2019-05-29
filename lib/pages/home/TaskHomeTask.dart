@@ -279,8 +279,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
-    bool icomDetele = true;
-
     return Container(
         child: Card(
           child: Column(
@@ -336,7 +334,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   Container(
                     child: IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: (){
+                        onPressed: () {
                           deleteCustomer(listTask.id.toString());
                         }
                     ),
@@ -350,9 +348,10 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
 
-  deleteCustomer(String taskID) async {
+  Future <bool> deleteCustomer(String taskID) async {
     var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
     print(deleteTaskResponse.statusCode);
+    return true;
   }
 
   actualizarusuario() async{
