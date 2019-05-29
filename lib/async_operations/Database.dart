@@ -114,77 +114,90 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<List<UserModel>> QueryUser(UserModel query) async {
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int supervisorId;
+  String name;
+  String code;
+  String email;
+  String phone;
+  String mobile;
+  String title;
+  String details;
+  String profile;
+  String password;
+  String rememberToken;
+  String loggedAt;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
-      SELECT * FROM "users"
+        '''
+      SELECT * FROM "responsibles"
       '''
     );
 
     if (data.isNotEmpty) {
-      List<UserModel> listOfUsers = new List<UserModel>();
-      data.forEach((userRetrieved) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
         if (query.id != null)
-          if (query.id != userRetrieved[""])
-           return;
+          if (query.id != responsibleRetrieved[""])
+            return;
         if (query.createdAt != null)
-          if (query.createdAt != userRetrieved[""])
-           return;
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
         if (query.updatedAt != null)
-          if (query.updatedAt != userRetrieved[""])
-           return;
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
         if (query.deletedAt != null)
-          if (query.deletedAt != userRetrieved[""])
-           return;
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
         if (query.createdById != null)
-          if (query.createdById != userRetrieved[""])
-           return;
+          if (query.createdById != responsibleRetrieved[""])
+            return;
         if (query.updatedById != null)
-          if (query.updatedById != userRetrieved[""])
-           return;
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
         if (query.deletedById != null)
-          if (query.deletedById != userRetrieved[""])
-           return;
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
         if (query.supervisorId != null)
-          if (query.supervisorId != userRetrieved[""])
-           return;
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
         if (query.name != null)
-          if (query.name != userRetrieved[""])
-           return;
+          if (query.name != responsibleRetrieved[""])
+            return;
         if (query.code != null)
-          if (query.code != userRetrieved[""])
-           return;
+          if (query.code != responsibleRetrieved[""])
+            return;
         if (query.email != null)
-          if (query.email != userRetrieved[""])
-           return;
+          if (query.email != responsibleRetrieved[""])
+            return;
         if (query.phone != null)
-          if (query.phone != userRetrieved[""])
-           return;
+          if (query.phone != responsibleRetrieved[""])
+            return;
         if (query.mobile != null)
-          if (query.mobile != userRetrieved[""])
-           return;
+          if (query.mobile != responsibleRetrieved[""])
+            return;
         if (query.title != null)
-          if (query.title != userRetrieved[""])
-           return;
+          if (query.title != responsibleRetrieved[""])
+            return;
         if (query.details != null)
-          if (query.details != userRetrieved[""])
-           return;
+          if (query.details != responsibleRetrieved[""])
+            return;
         if (query.profile != null)
-          if (query.profile != userRetrieved[""])
-           return;
-        if (query.password != null)
-          if (query.password != userRetrieved[""])
-           return;
-        if (query.rememberToken != null)
-          if (query.rememberToken != userRetrieved[""])
-           return;
-        if (query.loggedAt != null)
-          if (query.loggedAt != userRetrieved[""])
-           return;
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
 
-        listOfUsers.add(new UserModel(
+        listOfResponsibles.add(new ResponsibleModel(
           id: query.id,
           createdAt: query.createdAt,
           updatedAt: query.updatedAt,
@@ -201,11 +214,10 @@ class DatabaseProvider {
           title: query.title,
           details: query.details,
           profile: query.profile,
-          password: query.password,
-          rememberToken: query.rememberToken,
-          loggedAt: query.loggedAt,
+          supervisor: query.supervisor,
         ));
       });
+      return listOfResponsibles;
     }
     else
       return null;
@@ -298,7 +310,7 @@ class DatabaseProvider {
     return data;
   }
 
-  // TODO: Return all user ids
+  // TODO: Return just user ids
 
   // Operations on forms
   Future<int> CreateForm(FormModel form, SyncState syncState) async {
@@ -353,6 +365,107 @@ class DatabaseProvider {
         active: data.first[""],
         sections: ,
       );
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  String name;
+  bool withCheckinout;
+  bool active;
+  List<SectionModel> sections;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -475,6 +588,118 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int localityId;
+  String address;
+  String details;
+  String reference;
+  double latitude;
+  double longitude;
+  String googlePlaceId;
+  String country;
+  String state;
+  String city;
+  String contactName;
+  String contactPhone;
+  String contactMobile;
+  String contactEmail;
+  LocalityModel locality;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -605,6 +830,113 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int supervisorId;
+  String name;
+  String code;
+  String email;
+  String phone;
+  String mobile;
+  String title;
+  String details;
+  String profile;
+  ResponsibleModel supervisor;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -753,6 +1085,119 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int sectionId;
+  String entityType;
+  int entityId;
+  String type;
+  String name;
+  String code;
+  String subtitle;
+  int position;
+  String fieldDefaultValue;
+  String fieldType;
+  String fieldPlaceholder;
+  List<FieldOptionModel> fieldOptions;
+  String fieldCollection;
+  bool fieldRequired;
+  int fieldWidth;
+  List<FieldModel> fields;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -910,6 +1355,118 @@ class DatabaseProvider {
       return null;
   }
 
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int localityId;
+  String address;
+  String details;
+  String reference;
+  double latitude;
+  double longitude;
+  String googlePlaceId;
+  String country;
+  String state;
+  String city;
+  String contactName;
+  String contactPhone;
+  String contactMobile;
+  String contactEmail;
+  LocalityModel locality;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
+    else
+      return null;
+  }
+
   Future<List<AddressModel>> ReadAddressesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1046,6 +1603,110 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  String name;
+  String code;
+  String phone;
+  String email;
+  String contactName;
+  String details;
+  PivotCustomerUserModel pivot;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -1191,6 +1852,124 @@ class DatabaseProvider {
       return null;
   }
 
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int createdById;
+  int updatedById;
+  int deletedById;
+  int formId;
+  int responsibleId;
+  int customerId;
+  int addressId;
+  String name;
+  String planningDate;
+  String checkinDate;
+  double checkinLatitude;
+  double checkinLongitude;
+  int checkinDistance;
+  String checkoutDate;
+  double checkoutLatitude;
+  double checkoutLongitude;
+  int checkoutDistance;
+  String status;
+  List<CustomSectionModel> customSections;
+  List<CustomValueModel> customValues;
+  FormModel form;
+  AddressModel address;
+  CustomerModel customer;
+  ResponsibleModel responsible;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
+    else
+      return null;
+  }
+
   Future<List<TaskModel>> ReadTasksBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1320,6 +2099,102 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int customerId;
+  int userId;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
@@ -1455,6 +2330,107 @@ class DatabaseProvider {
       return null;
   }
 
+  int id;
+  String createdAt;
+  String updatedAt;
+  int formId;
+  int sectionId;
+  int fieldId;
+  String customizableType;
+  int customizableId;
+  String value;
+  String imageBase64;
+  FieldModel field;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
+    else
+      return null;
+  }
+
   Future<List<CustomValueModel>> ReadCustomValuesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1571,6 +2547,103 @@ class DatabaseProvider {
 
     if (data.first != null)
       return new xxx.fromDatabase(data.first);
+    else
+      return null;
+  }
+
+  int id;
+  String createdAt;
+  String updatedAt;
+  String deletedAt;
+  int customerId;
+  int addressId;
+  bool approved;
+  Future<List<ResponsibleModel>> QueryResponsible(ResponsibleModel query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "responsibles"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
+      data.forEach((responsibleRetrieved) {
+        if (query.id != null)
+          if (query.id != responsibleRetrieved[""])
+            return;
+        if (query.createdAt != null)
+          if (query.createdAt != responsibleRetrieved[""])
+            return;
+        if (query.updatedAt != null)
+          if (query.updatedAt != responsibleRetrieved[""])
+            return;
+        if (query.deletedAt != null)
+          if (query.deletedAt != responsibleRetrieved[""])
+            return;
+        if (query.createdById != null)
+          if (query.createdById != responsibleRetrieved[""])
+            return;
+        if (query.updatedById != null)
+          if (query.updatedById != responsibleRetrieved[""])
+            return;
+        if (query.deletedById != null)
+          if (query.deletedById != responsibleRetrieved[""])
+            return;
+        if (query.supervisorId != null)
+          if (query.supervisorId != responsibleRetrieved[""])
+            return;
+        if (query.name != null)
+          if (query.name != responsibleRetrieved[""])
+            return;
+        if (query.code != null)
+          if (query.code != responsibleRetrieved[""])
+            return;
+        if (query.email != null)
+          if (query.email != responsibleRetrieved[""])
+            return;
+        if (query.phone != null)
+          if (query.phone != responsibleRetrieved[""])
+            return;
+        if (query.mobile != null)
+          if (query.mobile != responsibleRetrieved[""])
+            return;
+        if (query.title != null)
+          if (query.title != responsibleRetrieved[""])
+            return;
+        if (query.details != null)
+          if (query.details != responsibleRetrieved[""])
+            return;
+        if (query.profile != null)
+          if (query.profile != responsibleRetrieved[""])
+            return;
+        if (query.supervisor != null)
+          if (query.supervisor != responsibleRetrieved[""])
+            return;
+
+        listOfResponsibles.add(new ResponsibleModel(
+          id: query.id,
+          createdAt: query.createdAt,
+          updatedAt: query.updatedAt,
+          deletedAt: query.deletedAt,
+          createdById: query.createdById,
+          updatedById: query.updatedById,
+          deletedById: query.deletedById,
+          supervisorId: query.supervisorId,
+          name: query.name,
+          code: query.code,
+          email: query.email,
+          phone: query.phone,
+          mobile: query.mobile,
+          title: query.title,
+          details: query.details,
+          profile: query.profile,
+          supervisor: query.supervisor,
+        ));
+      });
+      return listOfResponsibles;
+    }
     else
       return null;
   }
