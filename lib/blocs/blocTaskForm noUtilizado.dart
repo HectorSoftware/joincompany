@@ -36,48 +36,48 @@ import 'package:joincompany/models/WidgetsList.dart';
         {
 
           switch(k.fieldType){
-            case 'Combo':
+            case 'Combo':*
               {
                 optionsElements = k.fieldOptions;
                 listWidget.add(items.createState().combo(optionsElements,k.name));
               //  listWidget.add(items.createState().dateTime());
               }
               break;
-            case 'Text':
+            case 'Text':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().text(context,k.name,nameController,v.id.toString() ));
               }
               break;
-            case 'Textarea':
+            case 'Textarea':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().textArea(context,k.name,nameController,v.id.toString()));
               }
               break;
-            case 'Number':
+            case 'Number':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().number(context,k.name,nameController));
               }
               break;
-            case 'Date':
+            case 'Date':*
               {
                 listWidget.add(items.createState().dateT(context,k.name));
               }
               break;
-            case 'Table':
+            case 'Table':*
               {
                 optionsElements = k.fieldOptions;
                 listWidget.add(items.createState().tab(optionsElements,context));
               }
               break;
-            case 'CanvanSignature':
+            case 'CanvanSignature':////
               {
                 listWidget.add(items.createState().newFirm(context, k.name));
               }
               break;
-            case 'Photo':
+            case 'Photo':**
               {
                 listWidget.add(items.createState().imagePhoto(context,k.name));
               }

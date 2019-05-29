@@ -9,9 +9,6 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
-import 'package:flutter/material.dart';
-import 'package:joincompany/main.dart';
-import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
@@ -34,7 +31,10 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  Map<String,String> dataInfo = Map<String,String>();
+  File image;
+  TimeOfDay _time = new TimeOfDay.now();
+  DateTime _date = new DateTime.now();
+   Map<String,String> dataInfo = Map<String,String>();
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   ListWidgets items = new ListWidgets();
   BuildContext globalContext;
@@ -51,6 +51,7 @@ class _FormTaskState extends State<FormTask> {
   FormsModel formType;
   bool pass = false;
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
+   List<MapEntry<String,String>> lstMapEntries = new List<MapEntry<String,String>> ();
 
   TaskModel saveTask = new TaskModel();
   TextEditingController nameController;
@@ -90,28 +91,33 @@ class _FormTaskState extends State<FormTask> {
                                  color: Colors.white,
                                  elevation: 0,
                                  onPressed: (){
-                                   Map<String,String> dataAux = Map<String,String>();
-                                    iterateMapEntry(key, value) {
-                                      dataAux.putIfAbsent(key,()=> value);
-                                      dataSaveState.add(dataAux);
-                                   }
-                                   print(dataSaveState);
-
-                                   dataInfo.forEach(iterateMapEntry);
-
+                                   dataSaveState.clear();
+                                   List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
+                                   dataInfo.forEach((key, value) {
+                                      listOfMaps.add({key: value});
+                                    }
+                                   );
+                                   dataSaveState = listOfMaps;
+                                  // print(dataSaveState);
                                    if(dataSaveState.isNotEmpty) {
+                                     // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
+                                     // print(createCustomerResponse.request);
+                                     // print(createCustomerResponse.statusCode);
+                                     // print(createCustomerResponse.body);
+
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                     saveTask.customValuesMap = dataSaveState;
-                                     print(saveTask.formId);
-                                     print(saveTask.responsibleId);
-                                     print(saveTask.name);
-                                     print(saveTask.customValuesMap);
+                                   //  saveTask.customValuesMap = dataSaveState;
+//                                     print(saveTask.formId);
+//                                     print(saveTask.responsibleId);
+//                                     print(saveTask.name);
+//                                     print(saveTask.customValuesMap);
+                                     saveTaskApi();
                                    }
-                                   saveTaskApi();
+
                                    Navigator.pop(context);
-                                   Navigator.pop(context);
+                                  // Navigator.pop(context);
                                  },
                                ),
                              ],
@@ -131,7 +137,6 @@ class _FormTaskState extends State<FormTask> {
             onPressed: ()=> showDialog(
                 context: context,
             child: SimpleDialog(
-
               title: Text('Descartar Formulario'),
               children: <Widget>[
                Padding(
@@ -202,7 +207,9 @@ class _FormTaskState extends State<FormTask> {
 
                   itemCount: listFieldsModels.length,
                   itemBuilder: (BuildContext context, index){
-
+                    if(listFieldsModels[index].fieldType == null) {
+                        return Center(child: Text('Formulario no Disponible'),);
+                    }
                     if(listFieldsModels[index].fieldType == 'Textarea'){
                       //TEXTAREA
                       return Padding(
@@ -327,7 +334,7 @@ class _FormTaskState extends State<FormTask> {
                           elevation: 10,
                           value: dropdownValue,
                           hint: Text(listFieldsModels[index].name),
-                          onChanged: (String newValue) {
+                          onChanged: (newValue) {
                             setState(() {
                               dropdownValue = newValue;
                             });
@@ -343,9 +350,264 @@ class _FormTaskState extends State<FormTask> {
                       );
                     }
                     if(listFieldsModels[index].fieldType == 'Date'){
+                      return Row(
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1,left: 16),
+                                    child: Text(listFieldsModels[index].name),
+                                  ),
+                                ],
+                              ),
+
+                            ],
+
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: RaisedButton(
+                              child: Text('${_date.toString().substring(0,10)}'),
+                              onPressed: (){selectDate(context);},
+                            ),
+                          ),
+                        ],
+                      );
+                    }//CAMBIAR A DATETIME
+                    if(listFieldsModels[index].fieldType == 'DateTime'){
+                      return Row(
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1,left: 16),
+                                    child: Text(listFieldsModels[index].name),
+                                  ),
+                                ],
+                              ),
+
+                            ],
+
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: RaisedButton(
+                              child: Text('${_date.toString().substring(0,10)}'),
+                              onPressed: (){selectDate(context);},
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType =='table'){
+                      Card card(){
+                        return Card(
+                          child:
+                          TextField(
+                          ),
+                        );
+                      }
+                      //COLUMNAS
+                      Container columna(Color col,int intCard){
+                        List<Widget> ListCard = new List<Widget>();
+                        for(int i = 0; i < intCard; i++){
+                          ListCard.add(card());
+                        }
+                        return Container(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          color: col,
+                          child: Column(
+                            children: <Widget>[
+                              card(),
+                              Divider(
+                                height: 20,
+                                color: Colors.black,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                height: MediaQuery.of(context).size.height * 0.25,
+                                child: ListView.builder(
+                                  itemCount: ListCard.length,
+                                  itemBuilder: (contex,index){
+                                    return ListCard[index];
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                      //LISTA DE COLUMNAS
+                      List<Widget> ListColuma = new List<Widget>();
+                      ListColuma.add(columna(Colors.red[50],2));
+                      ListColuma.add(columna(Colors.blue[50],5));
+                      ListColuma.add(columna(Colors.grey[200],3));
+                      ListColuma.add(columna(Colors.green[100],1));
+                      return SingleChildScrollView(
+                        child: Container(
+                          margin: EdgeInsets.all(10),
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: ListColuma.length,
+                            itemBuilder: (context,index){
+                              return ListColuma[index];
+                            },
+                            // This next line does the trick.
+                          ) ,
+                        ),
+                      );
+                    }
+                    if(listFieldsModels[index].fieldType == 'ComboSearch'){
+                      return Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width*0.5,
+                              height: 40,
+                              padding: EdgeInsets.only(
+                                  top: 4,left: 16, right: 16, bottom: 4
+                              ),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(10)
+                                  ),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5
+                                    )
+                                  ]
+                              ),
+                              child: TextField(
+                                maxLines: 1,
+                                //  controller: nameController,
+                                decoration: InputDecoration(
+
+                                  border: InputBorder.none,
+
+                                  hintText: listFieldsModels[index].name,
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.search),
+                            tooltip: 'Busqueda',
+                            iconSize: 20,
+                            onPressed: (){},
+                          ),
+                        ],
+                      );
 
                     }
+                    if(listFieldsModels[index].fieldType == 'Time')
+                      {
+                        return Row(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 1,left: 16),
+                                      child: Text(listFieldsModels[index].name),
+                                    ),
+                                  ],
+                                ),
 
+                              ],
+
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: RaisedButton(
+                                child: Text(_time.format(context)),
+                                onPressed: (){selectTime(context);},
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    if(listFieldsModels[index].fieldType == 'Photo'){
+                      return Row(
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10,left: 5),
+                                    child: RaisedButton(
+                                      onPressed: (){
+                                        pickerPhoto(Method.CAMERA);
+                                      },
+                                      child: Text(listFieldsModels[index].name),
+                                      color: PrimaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            ],
+
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width* 0.5,
+                            child: new Center(
+                              child: image == null
+                                  ? new Text('')
+                                  : new Image.file(image),
+
+                            ),
+                          )
+                        ],
+                      );
+
+                    }
+                    if(listFieldsModels[index].fieldType == 'Image'){
+                      return Row(
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5,left: 10),
+                                    child: RaisedButton(
+                                      onPressed: (){
+                                        pickerImage(Method.GALLERY);
+                                      },
+                                      child: Text(''),
+                                      color: PrimaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            ],
+
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width* 0.5,
+                            child: new Center(
+                              child: image == null
+                                  ? new Text(listFieldsModels[index].name)
+                                  : new Image.file(image),
+
+                            ),
+                          )
+                        ],
+                      );
+
+                    }
 
                   }
 
@@ -382,11 +644,10 @@ class _FormTaskState extends State<FormTask> {
                               leading: Icon(Icons.poll),
                               onTap: () async {
                                 var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
+//                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
-
                                   pass = true;
                                 });
                                 Navigator.pop(context);
@@ -403,8 +664,35 @@ class _FormTaskState extends State<FormTask> {
       ),
     );
   }
+  Future<Null> selectDate(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _date){
+      setState(() {
+        _date = picked;
+      });
 
- Future<Null> lisC(FormModel form)async {
+    }
+
+  }
+  Future<Null> selectTime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (picked != null && picked != _time){
+      setState(() {
+        _time = picked;
+      });
+    }
+  }
+
+
+  Future<Null> lisC(FormModel form)async {
     listFieldsModels.clear();
     setState(() {
       formGlobal = form;
@@ -417,6 +705,24 @@ class _FormTaskState extends State<FormTask> {
         }
       }
 
+  }
+  pickerImage(Method m) async {
+
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      setState(() {
+        image = img;
+      });
+    }
+  }
+  pickerPhoto(Method m) async {
+
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
+    if (img != null) {
+      setState(() {
+        image = img;
+      });
+    }
   }
 
 
@@ -491,8 +797,11 @@ class _FormTaskState extends State<FormTask> {
   }
   Future saveTaskApi() async{
 
-    await createTask(saveTask,customer, token);
-    //if(){}
+     var createTaskResponse = await createTask(saveTask, customer, token);
+//     print(createTaskResponse.request);
+//
+//     print(createTaskResponse.statusCode);
+//     print(createTaskResponse.body);
   }
 
   void saveData(String dataController, String id) {

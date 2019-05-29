@@ -34,11 +34,10 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  final companyController = TextEditingController(text : 'duperu');
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+    final nameController = TextEditingController(text : 'eibanez@duperu.com');
+    final companyController = TextEditingController(text : 'duperu');
+// final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -363,10 +362,19 @@ class _LoginPageState extends State<LoginPage> {
       // print(updateCustomerResponse.body);
 
       // Customer Create
-      // customerObj.name = 'TestTest Test';
-      // customerObj.code = '987654321';
-      // var createCustomerResponse = await createCustomer(customerObj, customer, authorization);
-      // print(createCustomerResponse.bo21q   dy);
+      // CustomerModel customerObjNew = CustomerModel(
+      // name : 'Test test test',
+      // code : '32154654',
+      // email : "test@test.com",
+      // phone : "798798",
+      // contactName : "name conact",
+      // details : "nota"
+      // );
+      // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
+      // print(createCustomerResponse.request);
+      // print(createCustomerResponse.statusCode);
+      // print(createCustomerResponse.body);
+
 
       // Customer Delete
       // var deleteCustomerResponse = await deleteCustomer('411', customer, authorization);
