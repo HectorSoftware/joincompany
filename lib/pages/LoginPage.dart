@@ -329,8 +329,6 @@ class _LoginPageState extends State<LoginPage> {
     try {
    //   print("---------------- Inicia test. ----------------------------");
 
-      // CustomerChannel.retrieveNewsCustomersLocal();
-
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
       String password = '123';
@@ -357,18 +355,21 @@ class _LoginPageState extends State<LoginPage> {
       // print(getCustomerResponse.body);
 
       // Customer Update
-      // customerObj.name += ' rr';
-      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
+      // customerObj.name = 'test 15';
+      // var updateCustomerResponse = await updateCustomer('387', customerObj, customer, authorization);
+      // print(customerObj.name);
+      // print(customerObj.toJson());
+      // print(updateCustomerResponse.statusCode);
       // print(updateCustomerResponse.body);
 
       // Customer Create
       // CustomerModel customerObjNew = CustomerModel(
-      // name : 'Test test test',
-      // code : '32154654',
-      // email : "test@test.com",
-      // phone : "798798",
-      // contactName : "name conact",
-      // details : "nota"
+      //   name : '123Test test test',
+      //   code : '1132154654',
+      //   email : "test12@test.com",
+      //   phone : "79879812",
+      //   contactName : "name12 conact",
+      //   details : "nota 12"
       // );
       // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
       // print(createCustomerResponse.request);
@@ -411,6 +412,20 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerAddressResponse.request);
       // print(unrelateCustomerAddressResponse.statusCode);
       // print(unrelateCustomerAddressResponse.body);
+
+      // Task Create
+      // TaskModel taskNew = new TaskModel(
+      //   name: 'Enrolamiento eHuapi',
+      //   formId: 3,
+      //   responsibleId: 3,
+      //   customerId: 408,
+      //   addressId: 345,
+      //   customValuesMap: [{"18": "hola"}, {"20" : "Test"}]
+      // );
+      // var createTaskResponse = await createTask(taskNew, customer, authorization);
+      // print(createTaskResponse.request);
+      // print(createTaskResponse.statusCode);
+      // print(createTaskResponse.body);
 
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);
