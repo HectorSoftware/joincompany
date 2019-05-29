@@ -99,7 +99,7 @@ class _FormTaskState extends State<FormTask> {
                                    }
                                    saveTaskApi();
                                    Navigator.pop(context);
-                                  // Navigator.pop(context);
+                                   Navigator.pop(context);
                                  },
                                ),
                              ],
@@ -351,8 +351,6 @@ class _FormTaskState extends State<FormTask> {
             IconButton(
               icon: Icon(Icons.menu,color: pass? Colors.white: Colors.grey),
               onPressed: () => pass ?  _showModalDateTimeAndDirections(): null
-
-
             ),
             IconButton(
                 icon: Icon(Icons.business,color: Colors.white,),
@@ -361,8 +359,10 @@ class _FormTaskState extends State<FormTask> {
                       context: context,
                       builder: (BuildContext context) {
                         initFormType();
-                        return  formType != null ?  new ListView.builder(
-                          itemCount: formType.data.length,//formType.data.length,
+                        return  formType != null ?
+
+                        new ListView.builder(
+                          itemCount: formType.data.length,
                           itemBuilder: (BuildContext context, index){
                             return ListTile(
                              contentPadding: EdgeInsets.all(10),
