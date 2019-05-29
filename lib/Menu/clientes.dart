@@ -11,6 +11,7 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 class Cliente extends StatefulWidget {
@@ -242,12 +243,13 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14),),
+                  title: Text(name + '-'+ snapshot.data[index].id.toString() , style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                        //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
                   onTap: (){
                     Navigator.push(

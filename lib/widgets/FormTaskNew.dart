@@ -32,6 +32,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   File image;
+  String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
    Map<String,String> dataInfo = Map<String,String>();
@@ -323,7 +324,7 @@ class _FormTaskState extends State<FormTask> {
                     }
                     if(listFieldsModels[index].fieldType == 'Combo'){
                       List<String> dropdownMenuItems = List<String>();
-                      String dropdownValue ;
+
                       for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
 
                       return  Padding(
@@ -334,6 +335,7 @@ class _FormTaskState extends State<FormTask> {
                           elevation: 10,
                           value: dropdownValue,
                           hint: Text(listFieldsModels[index].name),
+
                           onChanged: (newValue) {
                             setState(() {
                               dropdownValue = newValue;
@@ -608,6 +610,16 @@ class _FormTaskState extends State<FormTask> {
                       );
 
                     }
+                    if(listFieldsModels[index].fieldType == 'Label'){
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(listFieldsModels[index].name,style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        ),
+                      );
+
+                    }
 
                   }
 
@@ -648,6 +660,7 @@ class _FormTaskState extends State<FormTask> {
 //                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
+                                  dropdownValue= null;
                                   pass = true;
                                 });
                                 Navigator.pop(context);
@@ -679,6 +692,7 @@ class _FormTaskState extends State<FormTask> {
     }
 
   }
+
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
