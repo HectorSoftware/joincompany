@@ -99,7 +99,7 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                    );
                                    dataSaveState = listOfMaps;
-                                  // print(dataSaveState);
+//                                   print(dataSaveState);
                                    if(dataSaveState.isNotEmpty) {
                                      // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
                                      // print(createCustomerResponse.request);
@@ -109,7 +109,7 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                   //  saveTask.customValuesMap = dataSaveState;
+                                     saveTask.customValuesMap = dataSaveState;
 //                                     print(saveTask.formId);
 //                                     print(saveTask.responsibleId);
 //                                     print(saveTask.name);
@@ -660,7 +660,6 @@ class _FormTaskState extends State<FormTask> {
 //                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
-                                  dropdownValue= null;
                                   pass = true;
                                 });
                                 Navigator.pop(context);
