@@ -176,7 +176,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
       for(int contpage = 0; contpage < pageTasks; contpage++){
         if(urlPageNext == ''){
-          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20');
+          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString());
         }else{
           if(urlPageNext != 'nill'){
             getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext);
