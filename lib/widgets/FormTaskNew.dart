@@ -36,6 +36,8 @@ class _FormTaskState extends State<FormTask> {
   String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
+  DateTime _dateTask = new DateTime.now();
+  bool lleno = false;
    Map<String,String> dataInfo = Map<String,String>();
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
   ListWidgets items = new ListWidgets();
@@ -205,434 +207,30 @@ class _FormTaskState extends State<FormTask> {
         ],
         title: Text('Agregar Tareas'),
       ),
-      body: (){
-        return pass?
-        Stack(
-            children: <Widget>[
-              ListView.builder(
+      body:pass?
+      Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: Column(
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.72, //0.4
+              child: returnsStack(),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.08, //0.2
+             // child: directionClient != null ? Text(directionClient.address),
 
-                  itemCount: listFieldsModels.length,
-                  itemBuilder: (BuildContext context, index){
-                    if(listFieldsModels[index].fieldType == null) {
-                        return Center(child: Text('Formulario no Disponible'),);
-                    }
-                    if(listFieldsModels[index].fieldType == 'Textarea'){
-                      //TEXTAREA
-                      return Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Container(
-                          width: MediaQuery.of(globalContext).size.width,
-                          height: 150,
-                          padding: EdgeInsets.only(
-                              top: 4,left: 16, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                              saveData(value,listFieldsModels[index].id.toString());
-                            },
-                            maxLines: 4,
-                            //controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: listFieldsModels[index].name,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType == 'Text'){
-                      //TEXT
-                      return  Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          width: MediaQuery.of(globalContext).size.width,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 4,left: 16, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                              saveData(value,listFieldsModels[index].id.toString());
-                            },
-                            maxLines: 1,
-                            //controller: nameController,
-                            decoration: InputDecoration(
+            ),
+          ],
+        ),
+      )
+      : Center(child: Text('Seleccione un Formulario')),
 
-                              border: InputBorder.none,
 
-                              hintText: listFieldsModels[index].name,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType == 'Number'){
 
-                      return  Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          width:  40,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 4,left: 16, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                              saveData(value,index.toString());
-                            },
-                            keyboardType: TextInputType.number,
-                            maxLines: 1,
-                            // controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: listFieldsModels[index].name,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType == 'Combo'){
-                      List<String> dropdownMenuItems = List<String>();
-
-                      for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
-
-                      return  Padding(
-                        padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                        child: DropdownButton<String>(
-                          isDense: false,
-                          icon: Icon(Icons.arrow_drop_down),
-                          elevation: 10,
-                          value: dropdownValue,
-                          hint: Text(listFieldsModels[index].name),
-
-                          onChanged: (newValue) {
-                            setState(() {
-                              dropdownValue = newValue;
-                            });
-                            saveData(dropdownValue,index.toString());
-                          },
-                          items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType == 'Date'){
-                      return Row(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1,left: 16),
-                                    child: Text(listFieldsModels[index].name),
-                                  ),
-                                ],
-                              ),
-
-                            ],
-
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: RaisedButton(
-                              child: Text('${_date.toString().substring(0,10)}'),
-                              onPressed: (){selectDate(context);},
-                            ),
-                          ),
-                        ],
-                      );
-                    }//CAMBIAR A DATETIME
-                    if(listFieldsModels[index].fieldType == 'DateTime'){
-                      return Row(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1,left: 16),
-                                    child: Text(listFieldsModels[index].name),
-                                  ),
-                                ],
-                              ),
-
-                            ],
-
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: RaisedButton(
-                              child: Text('${_date.toString().substring(0,10)}'),
-                              onPressed: (){selectDate(context);},
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType =='table'){
-                      Card card(){
-                        return Card(
-                          child:
-                          TextField(
-                          ),
-                        );
-                      }
-                      //COLUMNAS
-                      Container columna(Color col,int intCard){
-                        List<Widget> ListCard = new List<Widget>();
-                        for(int i = 0; i < intCard; i++){
-                          ListCard.add(card());
-                        }
-                        return Container(
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          color: col,
-                          child: Column(
-                            children: <Widget>[
-                              card(),
-                              Divider(
-                                height: 20,
-                                color: Colors.black,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                height: MediaQuery.of(context).size.height * 0.25,
-                                child: ListView.builder(
-                                  itemCount: ListCard.length,
-                                  itemBuilder: (contex,index){
-                                    return ListCard[index];
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      }
-                      //LISTA DE COLUMNAS
-                      List<Widget> ListColuma = new List<Widget>();
-                      ListColuma.add(columna(Colors.red[50],2));
-                      ListColuma.add(columna(Colors.blue[50],5));
-                      ListColuma.add(columna(Colors.grey[200],3));
-                      ListColuma.add(columna(Colors.green[100],1));
-                      return SingleChildScrollView(
-                        child: Container(
-                          margin: EdgeInsets.all(10),
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: ListColuma.length,
-                            itemBuilder: (context,index){
-                              return ListColuma[index];
-                            },
-                            // This next line does the trick.
-                          ) ,
-                        ),
-                      );
-                    }
-                    if(listFieldsModels[index].fieldType == 'ComboSearch'){
-                      return Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width*0.5,
-                              height: 40,
-                              padding: EdgeInsets.only(
-                                  top: 4,left: 16, right: 16, bottom: 4
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(10)
-                                  ),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 5
-                                    )
-                                  ]
-                              ),
-                              child: TextField(
-                                maxLines: 1,
-                                //  controller: nameController,
-                                decoration: InputDecoration(
-
-                                  border: InputBorder.none,
-
-                                  hintText: listFieldsModels[index].name,
-                                ),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.search),
-                            tooltip: 'Busqueda',
-                            iconSize: 20,
-                            onPressed: (){},
-                          ),
-                        ],
-                      );
-
-                    }
-                    if(listFieldsModels[index].fieldType == 'Time')
-                      {
-                        return Row(
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 1,left: 16),
-                                      child: Text(listFieldsModels[index].name),
-                                    ),
-                                  ],
-                                ),
-
-                              ],
-
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: RaisedButton(
-                                child: Text(_time.format(context)),
-                                onPressed: (){selectTime(context);},
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    if(listFieldsModels[index].fieldType == 'Photo'){
-                      return Row(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10,left: 5),
-                                    child: RaisedButton(
-                                      onPressed: (){
-                                        pickerPhoto(Method.CAMERA);
-                                      },
-                                      child: Text(listFieldsModels[index].name),
-                                      color: PrimaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                            ],
-
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width* 0.5,
-                            child: new Center(
-                              child: image == null
-                                  ? new Text('')
-                                  : new Image.file(image),
-
-                            ),
-                          )
-                        ],
-                      );
-
-                    }
-                    if(listFieldsModels[index].fieldType == 'Image'){
-                      return Row(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 5,left: 10),
-                                    child: RaisedButton(
-                                      onPressed: (){
-                                        pickerImage(Method.GALLERY);
-                                      },
-                                      child: Text(''),
-                                      color: PrimaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                            ],
-
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width* 0.5,
-                            child: new Center(
-                              child: image == null
-                                  ? new Text(listFieldsModels[index].name)
-                                  : new Image.file(image),
-
-                            ),
-                          )
-                        ],
-                      );
-
-                    }
-                    if(listFieldsModels[index].fieldType == 'Label'){
-                      return Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(listFieldsModels[index].name,style: TextStyle(
-                          fontSize: 20,
-                        ),
-                        ),
-                      );
-
-                    }
-
-                  }
-
-              )
-            ]
-
-        ) : Center(child: Text('Seleccione un Formulario'),);
-      }() ,
       bottomNavigationBar: BottomAppBar(
         color: PrimaryColor,
         child: new Row(
@@ -683,6 +281,437 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+  Stack returnsStack(){
+    return Stack(
+      children: <Widget>[
+        ListView.builder(
+            itemCount: listFieldsModels.length,
+            itemBuilder: (BuildContext context, index){
+              if(listFieldsModels[index].fieldType == null) {
+                return Center(child: Text('Formulario no Disponible'),);
+              }
+              if(listFieldsModels[index].fieldType == 'Textarea'){
+                //TEXTAREA
+                return Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Container(
+                    width: MediaQuery.of(globalContext).size.width,
+                    height: 150,
+                    padding: EdgeInsets.only(
+                        top: 4,left: 16, right: 16, bottom: 4
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10)
+                        ),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: TextField(
+                      onChanged: (value){
+                        saveData(value,listFieldsModels[index].id.toString());
+                      },
+                      maxLines: 4,
+                      //controller: nameController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: listFieldsModels[index].name,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Text'){
+                //TEXT
+                return  Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    width: MediaQuery.of(globalContext).size.width,
+                    height: 40,
+                    padding: EdgeInsets.only(
+                        top: 4,left: 16, right: 16, bottom: 4
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10)
+                        ),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: TextField(
+                      onChanged: (value){
+                        saveData(value,listFieldsModels[index].id.toString());
+                      },
+                      maxLines: 1,
+                      //controller: nameController,
+                      decoration: InputDecoration(
+
+                        border: InputBorder.none,
+
+                        hintText: listFieldsModels[index].name,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Number'){
+                return  Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    width:  40,
+                    height: 40,
+                    padding: EdgeInsets.only(
+                        top: 4,left: 16, right: 16, bottom: 4
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10)
+                        ),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: TextField(
+                      onChanged: (value){
+                        saveData(value,index.toString());
+                      },
+                      keyboardType: TextInputType.number,
+                      maxLines: 1,
+                      // controller: nameController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: listFieldsModels[index].name,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Combo'){
+                List<String> dropdownMenuItems = List<String>();
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
+                return  Padding(
+                  padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                  child: DropdownButton<String>(
+                    isDense: false,
+                    icon: Icon(Icons.arrow_drop_down),
+                    elevation: 10,
+                    value: dropdownValue,
+                    hint: Text(listFieldsModels[index].name),
+
+                    onChanged: (newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                      saveData(dropdownValue,index.toString());
+                    },
+                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Date'){
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1,left: 16),
+                              child: Text(listFieldsModels[index].name),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: RaisedButton(
+                        child: Text('${_date.toString().substring(0,10)}'),
+                        onPressed: (){selectDate(context);},
+                      ),
+                    ),
+                  ],
+                );
+              }//CAMBIAR A DATETIME
+              if(listFieldsModels[index].fieldType == 'DateTime'){
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1,left: 16),
+                              child: Text(listFieldsModels[index].name),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: RaisedButton(
+                        child: Text('${_date.toString().substring(0,10)}'),
+                        onPressed: (){selectDate(context);},
+                      ),
+                    ),
+                  ],
+                );
+              }
+              if(listFieldsModels[index].fieldType =='table'){
+                Card card(){
+                  return Card(
+                    child:
+                    TextField(
+                    ),
+                  );
+                }
+                //COLUMNAS
+                Container columna(Color col,int intCard){
+                  List<Widget> ListCard = new List<Widget>();
+                  for(int i = 0; i < intCard; i++){
+                    ListCard.add(card());
+                  }
+                  return Container(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    color: col,
+                    child: Column(
+                      children: <Widget>[
+                        card(),
+                        Divider(
+                          height: 20,
+                          color: Colors.black,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: ListView.builder(
+                            itemCount: ListCard.length,
+                            itemBuilder: (contex,index){
+                              return ListCard[index];
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+                //LISTA DE COLUMNAS
+                List<Widget> ListColuma = new List<Widget>();
+                ListColuma.add(columna(Colors.red[50],2));
+                ListColuma.add(columna(Colors.blue[50],5));
+                ListColuma.add(columna(Colors.grey[200],3));
+                ListColuma.add(columna(Colors.green[100],1));
+                return SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: ListColuma.length,
+                      itemBuilder: (context,index){
+                        return ListColuma[index];
+                      },
+                      // This next line does the trick.
+                    ) ,
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'ComboSearch'){
+                return Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        height: 40,
+                        padding: EdgeInsets.only(
+                            top: 4,left: 16, right: 16, bottom: 4
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10)
+                            ),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5
+                              )
+                            ]
+                        ),
+                        child: TextField(
+                          maxLines: 1,
+                          //  controller: nameController,
+                          decoration: InputDecoration(
+
+                            border: InputBorder.none,
+
+                            hintText: listFieldsModels[index].name,
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      tooltip: 'Busqueda',
+                      iconSize: 20,
+                      onPressed: (){},
+                    ),
+                  ],
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Time')
+              {
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1,left: 16),
+                              child: Text(listFieldsModels[index].name),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: RaisedButton(
+                        child: Text(_time.format(context)),
+                        onPressed: (){selectTime(context);},
+                      ),
+                    ),
+                  ],
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Photo'){
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 5),
+                              child: RaisedButton(
+                                onPressed: (){
+                                  pickerPhoto(Method.CAMERA);
+                                },
+                                child: Text(listFieldsModels[index].name),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
+                      child: new Center(
+                        child: image == null
+                            ? new Text('')
+                            : new Image.file(image),
+
+                      ),
+                    )
+                  ],
+                );
+
+              }
+              if(listFieldsModels[index].fieldType == 'Image'){
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5,left: 10),
+                              child: RaisedButton(
+                                onPressed: (){
+                                  pickerImage(Method.GALLERY);
+                                },
+                                child: Text(''),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
+                      child: new Center(
+                        child: image == null
+                            ? new Text(listFieldsModels[index].name)
+                            : new Image.file(image),
+
+                      ),
+                    )
+                  ],
+                );
+
+              }
+              if(listFieldsModels[index].fieldType == 'Label'){
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(listFieldsModels[index].name,style: TextStyle(
+                    fontSize: 20,
+                  ),
+                  ),
+                );
+
+              }
+            }
+        ),
+
+
+      ],
+    );
+  }
+
+
+   direction(){
+    setState(() {
+      directionClient;
+    });
+    return Text(directionClient.address,style: TextStyle(
+        fontSize: 13
+    ),);
+  }
   addDirection() async{
     AddressModel resp = await getDirections();
       print(resp.address);
@@ -702,6 +731,21 @@ class _FormTaskState extends State<FormTask> {
     if (picked != null && picked != _date){
       setState(() {
         _date = picked;
+      });
+
+    }
+
+  }
+  Future<Null> selectDateTask(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateTask,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _dateTask){
+      setState(() {
+        _dateTask = picked;
       });
 
     }
@@ -812,7 +856,7 @@ class _FormTaskState extends State<FormTask> {
             children: <Widget>[
               new ListTile(
                 leading: new Icon(Icons.location_on),
-                title: new Text('Lugar'),
+                title: new Text('Lugar' + '  '),
                 onTap: () {
                   Navigator.pop(context);
                   addDirection();
@@ -822,10 +866,11 @@ class _FormTaskState extends State<FormTask> {
               ),
               new ListTile(
                 leading: new Icon(Icons.access_time),
-                title: new Text('Hora'),
+                title: new Text('Hora' + '    '),
                 onTap: () {
-
                   Navigator.pop(context);
+                  selectDateTask(globalContext);
+
                 },
               ),
             ],
