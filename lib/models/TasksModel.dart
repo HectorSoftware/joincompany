@@ -44,7 +44,7 @@ class TasksModel {
     lastPageUrl: json["last_page_url"],
     nextPageUrl: json["next_page_url"],
     path: json["path"],
-    perPage: json["per_page"],
+    perPage: int.parse(json["per_page"].toString()),
     prevPageUrl: json["prev_page_url"],
     to: json["to"],
     total: json["total"],
