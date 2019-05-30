@@ -37,6 +37,7 @@ class _FormTaskState extends State<FormTask> {
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
+  TimeOfDay _timeTask = new TimeOfDay.now();
   bool lleno = false;
    Map<String,String> dataInfo = Map<String,String>();
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
@@ -215,13 +216,25 @@ class _FormTaskState extends State<FormTask> {
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.72, //0.4
+              height: MediaQuery.of(context).size.height * 0.70, //0.4
               child: returnsStack(),
             ),
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.08, //0.2
-             // child: directionClient != null ? Text(directionClient.address),
+              height: MediaQuery.of(context).size.height * 0.05, //0.2
+             child: Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: directionClient.address != null ? Text('Direccion:  ${directionClient.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+             ),
+
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.05, //0.2
+               child: Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: directionClient.address != null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+               ),
 
             ),
           ],
@@ -263,6 +276,7 @@ class _FormTaskState extends State<FormTask> {
 //                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
+                                  directionClient.address = null;
                                   dropdownValue = null;
                                   pass = true;
                                 });
@@ -751,6 +765,17 @@ class _FormTaskState extends State<FormTask> {
     }
 
   }
+  Future<Null> selectTimeTask(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeTask,
+    );
+    if (picked != null && picked != _timeTask){
+      setState(() {
+        _timeTask = picked;
+      });
+    }
+  }
 
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
@@ -869,8 +894,8 @@ class _FormTaskState extends State<FormTask> {
                 title: new Text('Hora' + '    '),
                 onTap: () {
                   Navigator.pop(context);
+                  selectTimeTask(globalContext);
                   selectDateTask(globalContext);
-
                 },
               ),
             ],
