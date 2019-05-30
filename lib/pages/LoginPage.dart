@@ -211,7 +211,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                //testApi();
               },
               child: Center(
                   child: Center(
