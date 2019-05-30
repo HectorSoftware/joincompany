@@ -75,7 +75,7 @@ class blocListTask {
         _listTask.add(task);
       }
       if(tasks.nextPageUrl != null){
-        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde, endDate: hastadesde, urlPage: tasks.nextPageUrl,responsibleId: UserActiv.idUserCompany.toString());
+        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde, endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
       } else break;
     }

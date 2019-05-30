@@ -47,7 +47,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   actualizarusuario() async{
     UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),2);
+    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),3);
     setState(() {
       UserActiv;
     });
@@ -144,33 +144,22 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
-    String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString();
-    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString();
+    String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
+    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    String urlPageNext = '';
     TasksModel tasks = new TasksModel();
     var getAllTasksResponse;
     List<TaskModel> _listTask = new List<TaskModel>();
     try{
 
-      for(int contpage = 0; contpage < pageTasks; contpage++){
-        if(urlPageNext == ''){
-          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20');
-        }else{
-          if(urlPageNext != 'nill'){
-            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext, perPage: '20');
-          }
-        }
-        if(getAllTasksResponse.statusCode == 200){
-          tasks = TasksModel.fromJson(getAllTasksResponse.body);
-          if(tasks.nextPageUrl != null){
-            urlPageNext = tasks.nextPageUrl;
-          }else{urlPageNext = 'nill';}
+      getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
+      if(getAllTasksResponse.statusCode == 200){
+        tasks = TasksModel.fromJson(getAllTasksResponse.body);
+        for(int i = 0; i < tasks.data.length; i++ ){
+          _listTask.add(tasks.data[i]);
         }
       }
-      for(int i = 0; i < tasks.data.length; i++ ){
-        _listTask.add(tasks.data[i]);
-      }
+
     }catch(e){}
     setState(() {
       listTaskModellocal = _listTask;
