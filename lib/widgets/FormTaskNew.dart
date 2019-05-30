@@ -68,6 +68,7 @@ class _FormTaskState extends State<FormTask> {
   }
   @override
   Widget build(BuildContext context) {
+    initFormType();
     globalContext = context;
     return new Scaffold(
        appBar: AppBar(
@@ -115,11 +116,14 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
                                      saveTask.customValuesMap = dataSaveState;
+                                     saveTask.addressId = directionClient.id;
+                                     saveTask.planningDate = _timeTask.toString();
+                                    // saveTask.customValuesMap = dataSaveState;
 //                                     print(saveTask.formId);
 //                                     print(saveTask.responsibleId);
 //                                     print(saveTask.name);
 //                                     print(saveTask.customValuesMap);
-                                     //saveTaskApi();
+                                     saveTaskApi();
                                    }
 
                                    Navigator.pop(context);
@@ -260,7 +264,6 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                        initFormType();
                         return  formType != null ?
 
                         new ListView.builder(
@@ -908,6 +911,7 @@ class _FormTaskState extends State<FormTask> {
     print(createTaskResponse.request);
 //
     print(createTaskResponse.statusCode);
+    print('--------------------------------------');
    print(createTaskResponse.body);
   }
 
