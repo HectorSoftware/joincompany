@@ -1,28 +1,26 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
-import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
-import 'package:loadmore/loadmore.dart';
 
 
 import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskFilterRes,this.blocListTaskRes});
+  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget});
 
-  final blocListTaskFilter blocListTaskFilterRes;
-  final blocListTask blocListTaskRes;
+  final blocListTaskFilter blocListTaskFilterReswidget;
+  final blocListTaskCalendar blocListTaskCalendarReswidget;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
@@ -36,28 +34,29 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   String filterText = '';
 
   blocListTaskFilter bloctasksFilter;
-  blocListTask bloctasks;
+  blocListTaskCalendar blocListTaskCalendarRes;
   List<DateTime> ListCalender = new List<DateTime>();
 
   @override
   void initState() {
-    actualizarusuario();
     _getUserLocation();
     listTaskModellocal = new List<TaskModel>();
+    actualizarusuario();
     super.initState();
+  }
+
+  actualizarusuario() async{
+    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+    setState(() {
+      UserActiv;
+    });
   }
 
   @override
   void dispose(){
-
-    /*bloctasksFilter.dispose();
-    bloctasks.dispose();*/
+    bloctasksFilter.dispose();
     super.dispose();
-  }
-
-  bool _checked = false;
-  Widget returnCheckedCheckBox(){
-
   }
 
   @override
@@ -95,7 +94,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   ListViewTareas(){
 
-    bloctasks = widget.blocListTaskRes;
+    /*bloctasks = widget.blocListTaskRes;
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
@@ -115,9 +114,20 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           }
         }
       }));
-    }catch(e){ }
+    }catch(e){ }*/
 
-    bloctasksFilter = widget.blocListTaskFilterRes;
+    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+      => setState((){
+        listTaskModellocal.clear();
+        getdatalist(onData[1],onData[0],1);
+      }));
+    }catch(e){}
+
+
+    bloctasksFilter = widget.blocListTaskFilterReswidget;
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal)
@@ -132,6 +142,65 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
+
+  getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+    String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString();
+    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString();
+
+    String urlPageNext = '';
+    TasksModel tasks = new TasksModel();
+    var getAllTasksResponse;
+    List<TaskModel> _listTask = new List<TaskModel>();
+    try{
+
+//      while(true){
+//
+//        if(urlPageNext == ''){
+//          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString());
+//        }else{
+//          if(urlPageNext != 'nill'){
+//            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext);
+//          }
+//        }
+//
+//        if(getAllTasksResponse.statusCode == 200){
+//          tasks = TasksModel.fromJson(getAllTasksResponse.body);
+//          for(int i = 0; i < tasks.data.length; i++ ){
+//            _listTask.add(tasks.data[i]);
+//          }
+//        }
+//
+//
+//      break;
+//      }
+
+      for(int contpage = 0; contpage < pageTasks; contpage++){
+        if(urlPageNext == ''){
+          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20');
+        }else{
+          if(urlPageNext != 'nill'){
+            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext);
+          }
+        }
+        if(getAllTasksResponse.statusCode == 200){
+          var bodyy = getAllTasksResponse.body;
+          print(getAllTasksResponse.body);
+          tasks = TasksModel.fromJson(getAllTasksResponse.body);
+          print(getAllTasksResponse.body);
+          if(tasks.nextPageUrl != null){
+            urlPageNext = tasks.nextPageUrl;
+          }else{urlPageNext = 'nill';}
+        }
+      }
+      for(int i = 0; i < tasks.data.length; i++ ){
+        _listTask.add(tasks.data[i]);
+      }
+    }catch(e,s){ print(s);}
+    setState(() {
+      listTaskModellocal = _listTask;
+    });
+  }
+
   listando(){
 
     String DateTask = "1990-05-05 20:00:04Z";
@@ -140,11 +209,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         itemBuilder: (BuildContext context, int index) {
 
           int PosicionActual = index;
-          //String _date = listTaskModellocal[PosicionActual].createdAt;
-          //String _title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
-          //AddressModel _address = listTaskModellocal[PosicionActual].address;
           String voidFieldMessage = "";
-          //var _customerName = listTaskModellocal[PosicionActual].customer;
 
           var date;
           var title;
@@ -356,10 +421,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         listTaskModellocal;
       });
     }
-  }
-
-  actualizarusuario() async{
-    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
   }
 
   void _getUserLocation() async{
