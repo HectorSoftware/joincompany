@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -13,13 +12,13 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
 }
 
 class _ClienteState extends State<Cliente> {
-  File img;
   ListWidgets ls = ListWidgets();
 
   Icon _searchIcon = new Icon(Icons.search);
@@ -62,41 +61,6 @@ class _ClienteState extends State<Cliente> {
                   builder: (BuildContext context) => new  FormClient(null)));
         },
 
-      ),
-    );
-  }
-
-  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
-    String title = titleCli;
-    String subtitle = subtitleCli;
-    return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
-              ),
-            ],
-          ),
-          IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){},),
-        ],
       ),
     );
   }
@@ -188,7 +152,6 @@ class _ClienteState extends State<Cliente> {
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
     setState(() {
-      img = img;
       nameUser = user.name;
       emailUser = user.email;
     });
@@ -241,9 +204,9 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name + '-'+ snapshot.data[index].id.toString() , style: TextStyle(fontSize: 14),),
+                  title: Text(name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
+                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                     Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));

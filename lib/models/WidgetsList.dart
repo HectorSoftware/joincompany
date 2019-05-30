@@ -9,6 +9,8 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
+import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
+import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 
 enum Method{
   CAMERA,
@@ -401,6 +403,16 @@ Widget timeWidget(BuildContext context, String string){
             image = img;
           });
       }
+  }
+
+  Future<Image> getImg() async{
+    return showDialog<Image>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return PickerImg();
+      },
+    );
   }
 
   Widget imageImage(BuildContext context, String string){

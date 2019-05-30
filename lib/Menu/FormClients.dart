@@ -175,8 +175,8 @@ class _FormClientState extends State<FormClient> {
      return resp.statusCode;
   }
 
-  Future<int> addAddressUser(AddressModel direction)async{
-    var resp = await relateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+  Future<int> addAddressUser(AddressModel direction, int idCli)async{
+    var resp = await relateCustomerAddress(idCli.toString(),direction.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
@@ -222,18 +222,6 @@ class _FormClientState extends State<FormClient> {
       return true;
     }else{
       if(validateData()){
-          bool saveDirections = await setDirections();
-          if(!saveDirections){
-            return showDialog(
-                context: context,
-                barrierDismissible: true, // user must tap button for close dialog!
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                      title: Text('Ha ocurrido un error con las direcciones')
-                  );
-                }
-            );
-          }
           if(widget.client != null){
             CustomerModel client = CustomerModel(
               id: widget.client.id,
@@ -244,6 +232,18 @@ class _FormClientState extends State<FormClient> {
             var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
 
             if(response.statusCode == 200){
+              bool saveDirections = await setDirections(widget.client.id);
+              if(!saveDirections){
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error con las direcciones')
+                      );
+                    }
+                );
+              }
              return true;
             }else{
               return showDialog(
@@ -256,7 +256,6 @@ class _FormClientState extends State<FormClient> {
                   }
               );
             }
-
           }else{
             CustomerModel client = CustomerModel(
               name: name.text,
@@ -266,6 +265,19 @@ class _FormClientState extends State<FormClient> {
             var response = await createCustomer(client, userAct.company, userAct.token);
 
             if(response.statusCode == 200){
+              CustomerModel cli = CustomerModel.fromJson(response.body);
+              bool saveDirections = await setDirections(cli.id);
+              if(!saveDirections){
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error con las direcciones')
+                      );
+                    }
+                );
+              }
               return true;
             }else{
               return showDialog(
@@ -285,17 +297,23 @@ class _FormClientState extends State<FormClient> {
     }
   }
 
-  Future<bool> setDirections()async{
-    for(var direction in directionsNews){
-      int resp = await addAddressUser(direction);
-      responceStatus(resp);
-    }
-    for(var direction in directionsOld){
-      if(oldToEliminated(direction)){
-        int resp = await deletedAddressUser(direction);
+  Future<bool> setDirections(int idCli)async{
+    if(directionsNews.isNotEmpty){
+      for(var direction in directionsNews){
+        int resp = await addAddressUser(direction, idCli);
         responceStatus(resp);
       }
     }
+
+    if(directionsOld.isNotEmpty){
+      for(var direction in directionsOld){
+        if(oldToEliminated(direction)){
+          int resp = await deletedAddressUser(direction);
+          responceStatus(resp);
+        }
+      }
+    }
+
     return true;
   }
 
@@ -410,29 +428,13 @@ class _FormClientState extends State<FormClient> {
     );
   }//TODO
 
-  void exitDeletedClient()async{
-    await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
-    Navigator.push(
-        context,
-        new MaterialPageRoute(
-            builder: (BuildContext context) => Cliente()));
-  }
 
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
       var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
       if(responseDelete.statusCode == 200){
-        exitDeletedClient();
-        return showDialog(
-            context: context,
-            barrierDismissible: true, // user must tap button for close dialog!
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: Text('Cliente eliminado')
-              );
-            }
-        );
+        Navigator.of(context).pop();
       }else{
         return showDialog(
             context: context,
@@ -447,11 +449,6 @@ class _FormClientState extends State<FormClient> {
 
 
     }
-  }
-
-  Future<bool> exitFuture(bool exit)async{
-    await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
-    return exit;
   }
 
   ListView getDirectionsBuilder() {
