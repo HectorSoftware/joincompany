@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -12,7 +14,7 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
-
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 class Cliente extends StatefulWidget {
   @override
   _ClienteState createState() => _ClienteState();
@@ -20,6 +22,9 @@ class Cliente extends StatefulWidget {
 
 class _ClienteState extends State<Cliente> {
   ListWidgets ls = ListWidgets();
+
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
@@ -31,7 +36,16 @@ class _ClienteState extends State<Cliente> {
   @override
   void initState() {
     extraerUser();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     super.initState();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    print("entre");
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   @override
@@ -46,7 +60,7 @@ class _ClienteState extends State<Cliente> {
       ),
       body: Stack(
         children: <Widget>[
-          listViewCustomers(),
+          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
         ],
       ),
       floatingActionButton: FloatingActionButton(

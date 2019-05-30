@@ -5,10 +5,11 @@ import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
-
-import 'pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
 void main() async {
+  ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+  connectionStatus.initialize();
   runApp(MyApp());
 }
 
