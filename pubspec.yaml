@@ -41,7 +41,6 @@ dependencies:
   #IMAGEN
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
-  painter: ^0.3.1
   flutter_colorpicker: any
 
 dev_dependencies:
@@ -55,6 +54,7 @@ flutter:
   - assets/images/cliente.png
   - assets/images/final-logo.png
   - assets/images/user.jpg
+  - assets/images/user.png
   fonts:
     - family: Roboto
       fonts:

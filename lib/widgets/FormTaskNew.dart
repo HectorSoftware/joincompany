@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
@@ -51,6 +52,7 @@ class _FormTaskState extends State<FormTask> {
   int responsibleId;
   FormsModel formType;
   bool pass = false;
+  AddressModel  directionClient = new  AddressModel();
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
    List<MapEntry<String,String>> lstMapEntries = new List<MapEntry<String,String>> ();
 
@@ -118,7 +120,7 @@ class _FormTaskState extends State<FormTask> {
                                    }
 
                                    Navigator.pop(context);
-                                  Navigator.pop(context);
+                                   Navigator.pop(context);
                                  },
                                ),
                              ],
@@ -158,7 +160,8 @@ class _FormTaskState extends State<FormTask> {
                               elevation: 0,
                               color: Colors.white,
                               child: Text('Volver'),
-                              onPressed: (){
+                              onPressed: () {
+
                                 Navigator.pop(context);
                               },
                             ),
@@ -172,6 +175,7 @@ class _FormTaskState extends State<FormTask> {
                              onPressed: (){
                                setState(() {
                                  pass= false;
+                                 dropdownValue = null;
                                });
 
                                //Navigator.pop(context);
@@ -184,6 +188,7 @@ class _FormTaskState extends State<FormTask> {
                              onPressed: (){
                                setState(() {
                                  pass= false;
+                                 dropdownValue = null;
                                });
                                Navigator.pop(context);
                              }
@@ -660,6 +665,7 @@ class _FormTaskState extends State<FormTask> {
 //                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
+                                  dropdownValue = null;
                                   pass = true;
                                 });
                                 Navigator.pop(context);
@@ -675,6 +681,16 @@ class _FormTaskState extends State<FormTask> {
         ),
       ),
     );
+  }
+
+  addDirection() async{
+    AddressModel resp = await getDirections();
+      print(resp.address);
+    if(resp != null) {
+      setState(() {
+        directionClient = resp;
+      });
+    }
   }
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
@@ -702,6 +718,15 @@ class _FormTaskState extends State<FormTask> {
         _time = picked;
       });
     }
+  }
+  Future<AddressModel> getDirections() async{
+    return showDialog<AddressModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SearchAddress();
+      },
+    );
   }
 
 
@@ -789,12 +814,11 @@ class _FormTaskState extends State<FormTask> {
                 leading: new Icon(Icons.location_on),
                 title: new Text('Lugar'),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SearchAddress()),
-                  );
+                  Navigator.pop(context);
+                  addDirection();
 
                 },
+
               ),
               new ListTile(
                 leading: new Icon(Icons.access_time),
