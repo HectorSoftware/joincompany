@@ -47,7 +47,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   actualizarusuario() async{
     UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),2);
     setState(() {
       UserActiv;
     });
@@ -153,40 +153,16 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     List<TaskModel> _listTask = new List<TaskModel>();
     try{
 
-//      while(true){
-//
-//        if(urlPageNext == ''){
-//          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString());
-//        }else{
-//          if(urlPageNext != 'nill'){
-//            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext);
-//          }
-//        }
-//
-//        if(getAllTasksResponse.statusCode == 200){
-//          tasks = TasksModel.fromJson(getAllTasksResponse.body);
-//          for(int i = 0; i < tasks.data.length; i++ ){
-//            _listTask.add(tasks.data[i]);
-//          }
-//        }
-//
-//
-//      break;
-//      }
-
       for(int contpage = 0; contpage < pageTasks; contpage++){
         if(urlPageNext == ''){
-          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString());
+          getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20');
         }else{
           if(urlPageNext != 'nill'){
-            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext);
+            getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(),urlPage: urlPageNext, perPage: '20');
           }
         }
         if(getAllTasksResponse.statusCode == 200){
-          var bodyy = getAllTasksResponse.body;
-          print(getAllTasksResponse.body);
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
-          print(getAllTasksResponse.body);
           if(tasks.nextPageUrl != null){
             urlPageNext = tasks.nextPageUrl;
           }else{urlPageNext = 'nill';}
@@ -195,7 +171,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       for(int i = 0; i < tasks.data.length; i++ ){
         _listTask.add(tasks.data[i]);
       }
-    }catch(e,s){ print(s);}
+    }catch(e){}
     setState(() {
       listTaskModellocal = _listTask;
     });
