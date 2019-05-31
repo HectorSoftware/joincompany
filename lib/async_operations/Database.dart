@@ -3965,7 +3965,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "customer_addresses"
       '''
     );
@@ -3993,7 +3993,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT customer_id, address_id FROM "customer_addresses"
       '''
     );
