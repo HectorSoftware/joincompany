@@ -110,15 +110,8 @@ class _FormTaskState extends State<FormTask> {
                              saveTask.planningDate = _dateTask.toString().substring(0,19);
                              saveTask.customValuesMap = dataInfo;
                              saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
-                             if(taskEnd == true)
-                               {
-                                 print('tarea creada');
-                                 Navigator.pop(context);
-                                 Navigator.pop(context);
-                               }else{
-                               print('NO');
-                             }
-
+                             Navigator.pop(context);
+                             Navigator.pop(context);
                            }
 
                          },
@@ -634,7 +627,6 @@ class _FormTaskState extends State<FormTask> {
 
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      height: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
                           child: image == null ? new Text('')
