@@ -175,6 +175,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     String DateTask = "1990-05-05 20:00:04Z";
     return ListView.builder(
+
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
           int PosicionActual = index;
