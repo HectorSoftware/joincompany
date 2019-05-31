@@ -11,6 +11,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:loadmore/loadmore.dart';
 
 
 import '../../main.dart';
@@ -47,9 +48,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   actualizarusuario() async{
     UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),3);
+    ListCalender.add(DateTime.now());
+    ListCalender.add(DateTime.now().add(Duration(days: -15)));
+    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
     setState(() {
-      UserActiv;
+    UserActiv;ListCalender;
     });
   }
 
@@ -62,13 +65,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   @override
   Widget build(BuildContext context) {
 
-    final mediaQueryData = MediaQuery.of(context);
+    final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
     double aument = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {
+    if (mediaQueryData.orientation == Orientation.portrait) {//VERTICAL
       aument = 0.8;
     }
-
-    String fechaHoy = DateTime.now().day.toString()+ ' ' + intsToMonths[DateTime.now().month.toString()]+ ' ' +DateTime.now().year.toString();
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -122,6 +123,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
       => setState((){
         listTaskModellocal.clear();
+        paginador = 0;
         getdatalist(onData[1],onData[0],1);
       }));
     }catch(e){}
@@ -136,14 +138,42 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       }));
     }catch(e){ }
 
-    return listTaskModellocal.length != 0 ?
-    listando() : Center(
+    return ((listTaskModellocal.length != 0)) ?
+
+    /*Container(
+        child: RefreshIndicator(
+          child: LoadMore(
+            isFinish: listTaskModellocal.length >= 20,
+            onLoadMore: getdatalist(ListCalender[0],ListCalender[1],paginador),
+            child : listando(),
+            delegate: DefaultLoadMoreDelegate(),
+            textBuilder: DefaultLoadMoreTextBuilder.chinese,
+          ),
+          onRefresh: _refresh,
+        ),
+      )*/
+
+    listando()
+
+      : Center(
       child: CircularProgressIndicator(),
     );
   }
 
+  Future<void> _refresh() async {
+    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    listTaskModellocal.clear();
+    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+  }
 
+  int paginador = 0;
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+
+    paginador++;
+
+    print(desdef);
+    print(hastaf);
+
     String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
@@ -159,7 +189,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           _listTask.add(tasks.data[i]);
         }
       }
-
     }catch(e){}
     setState(() {
       listTaskModellocal = _listTask;
@@ -210,10 +239,16 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           }
 
           if(filterText == ''){
+            bool res = true;
+
             if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
-                (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
-                (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
+            (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
+            (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
               DateTask = listTaskModellocal[PosicionActual].createdAt;
+            } else {
+              res = false;
+            }
+
               String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
                   .toString() + ' de ' + intsToMonths[DateTime
                   .parse(listTaskModellocal[PosicionActual].createdAt)
@@ -237,6 +272,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
               return Container(
                 child: Column(
                   children: <Widget>[
+                    res ?
                     Container(
                       padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
                       width: MediaQuery.of(context).size.width,
@@ -244,14 +280,11 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       color: PrimaryColor,
                       child: Text(dateTitulo, style: TextStyle(
                           fontSize: 16, color: Colors.white)),
-                    ),
+                    ) : Container(),
                     ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
                   ],
                 ),
               );
-            } else {
-              return ListCard(title, address, date, listTaskModellocal[PosicionActual], PosicionActual);
-            }
           }else{
             if(ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
@@ -325,19 +358,23 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     value: listTask.status.contains('done'),
                     onChanged: (bool value) async {
                       if(value){
-                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        if(checkInTaskResponse.statusCode == 200){
+                        setState(() {
                           listTaskModellocal[index].status = 'done';
+                        });
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-//                            listTaskModellocal;
+                            listTaskModellocal[index].status = 'working';
                           });
                         }
                       }else{
-                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        if(checkInTaskResponse.statusCode == 200){
+                        setState(() {
                           listTaskModellocal[index].status = 'working';
+                        });
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-//                            listTaskModellocal;
+                            listTaskModellocal[index].status = 'done';
                           });
                         }
                       }

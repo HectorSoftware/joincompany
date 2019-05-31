@@ -37,7 +37,7 @@ class TaskBloc{
         valadde = tasks.data[i].address.address;
         if(tasks.data[i].status == 'done'){sendStatus = 2;}
         if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = 1;}
-        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: sendStatus);
+        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, status: sendStatus,CustomerAddress: null);
         _listMarker.add(marker);
       }
     }
@@ -50,7 +50,7 @@ class TaskBloc{
       String valadde = 'N/A';
       if(customersWithAddress.data[y].address != null){
         valadde = customersWithAddress.data[y].address;
-        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, status: 0);
+        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, status: 0,CustomerAddress: customersWithAddress.data[y]);
         _listMarker.add(marker);
       }
     }
