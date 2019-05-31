@@ -60,11 +60,11 @@ class DatabaseProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "db.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
-      onCreate: (Database db, int version) async {
-        databaseInstructions.forEach((key, value) async {
-          await db.execute(value);
-        });
-      }
+        onCreate: (Database db, int version) async {
+          databaseInstructions.forEach((key, value) async {
+            await db.execute(value);
+          });
+        }
     );
   }
 
@@ -73,7 +73,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "users" WHERE id = ${user.id}
       '''
     );
@@ -110,11 +110,11 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
-      user.createdById, user.updatedById, user.deletedById,
-      user.supervisorId, user.name, user.code, user.email,
-      user.phone, user.mobile, user.title, user.details,
-      user.profile, user.password, user.rememberToken],
-      ...paramsBySyncState[syncState]],
+    user.createdById, user.updatedById, user.deletedById,
+    user.supervisorId, user.name, user.code, user.email,
+    user.phone, user.mobile, user.title, user.details,
+    user.profile, user.password, user.rememberToken],
+    ...paramsBySyncState[syncState]],
     );
   }
 
@@ -122,7 +122,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "users" WHERE id = $id
       '''
     );
@@ -156,7 +156,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "users"
       '''
     );
@@ -288,11 +288,12 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateUser(UserModel user, SyncState syncState) async {
+  Future<int> UpdateUser(int userId, UserModel user, SyncState syncState) async {
     final db = await database;
     return db.rawUpdate(
       '''
       UPDATE "users" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -313,35 +314,35 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${user.id}
+      WHERE id = ${userId}
       ''',
-      [...[user.createdAt, user.updatedAt, user.deletedAt,
-      user.createdById, user.updatedById, user.deletedById,
-      user.supervisorId, user.name, user.code, user.email,
-      user.phone, user.mobile, user.title, user.details,
-      user.profile, user.password, user.rememberToken],
-      ...paramsBySyncState[syncState]],
+      [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
+    user.createdById, user.updatedById, user.deletedById,
+    user.supervisorId, user.name, user.code, user.email,
+    user.phone, user.mobile, user.title, user.details,
+    user.profile, user.password, user.rememberToken],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> ChangeSyncStateUser(int id, SyncState syncState) async {
     final db = await database;return
-    db.rawUpdate(
-      '''
+      db.rawUpdate(
+        '''
       UPDATE "users" SET
       in_server = ? AND
       updated = ? AND
       deleted = ? AND
       WHERE id = $id
       ''',
-      paramsBySyncState[syncState],
-    );
+        paramsBySyncState[syncState],
+      );
   }
 
   Future<int> DeleteUserById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "users" WHERE id = $id
       '''
     );
@@ -351,7 +352,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "users"
       '''
     );
@@ -385,14 +386,12 @@ class DatabaseProvider {
       return null;
   }
 
-  // TODO: Return just user ids
-
   // Operations on forms
   Future<int> CreateForm(FormModel form, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "forms" WHERE id = ${form.id}
       '''
     );
@@ -425,9 +424,9 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
-      form.createdById, form.updatedById, form.deletedById, form.name,
-      form.withCheckinout, form.active],
-      ...paramsBySyncState[syncState]],
+    form.createdById, form.updatedById, form.deletedById, form.name,
+    form.withCheckinout, form.active],
+    ...paramsBySyncState[syncState]],
     );
   }
 
@@ -435,7 +434,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "forms" WHERE id = $id
       '''
     );
@@ -468,7 +467,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "forms"
       '''
     );
@@ -571,19 +570,19 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateForm(FormModel form, SyncState syncState) async {
+  Future<int> UpdateForm(int formId, FormModel form, SyncState syncState) async {
     final db = await database;
 
     form.sections.forEach((section) async {
       List<Map<String, dynamic>> data;
       data = await db.rawQuery(
-      '''
+          '''
       SELECT * FROM "forms" WHERE id = ${section.id}
       '''
       );
 
       if (data.isNotEmpty)
-        UpdateCustomField(section, syncState);
+        UpdateCustomField(section.id, section, syncState);
       else
         CreateCustomField(section, syncState);
     });
@@ -591,6 +590,7 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "forms" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -603,19 +603,19 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${form.id}
+      WHERE id = ${formId}
       ''',
       [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
-      form.createdById, form.updatedById, form.deletedById, form.name,
-      form.withCheckinout, form.active],
-      ...paramsBySyncState[syncState]],
+    form.createdById, form.updatedById, form.deletedById, form.name,
+    form.withCheckinout, form.active],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteFormById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "forms" WHERE id = $id
       '''
     );
@@ -639,7 +639,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "forms"
       '''
     );
@@ -674,7 +674,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT id FROM "forms"
       '''
     );
@@ -693,7 +693,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "localities" WHERE id = ${locality.id}
       '''
     );
@@ -722,9 +722,9 @@ class DatabaseProvider {
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
       [...[locality.id, locality.createdAt, locality.updatedAt,
-      locality.deletedAt, locality.createdById, locality.updatedById,
-      locality.deletedById, locality.collection, locality.name,
-      locality.value], ...paramsBySyncState[syncState]],
+    locality.deletedAt, locality.createdById, locality.updatedById,
+    locality.deletedById, locality.collection, locality.name,
+    locality.value], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -732,7 +732,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "localities" WHERE id = $id
       '''
     );
@@ -758,7 +758,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "localities"
       '''
     );
@@ -850,11 +850,12 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateLocality(LocalityModel locality, SyncState syncState) async {
+  Future<int> UpdateLocality(int localityId, LocalityModel locality, SyncState syncState) async {
     final db = await database;
     return await db.rawUpdate(
       '''
       UPDATE "localities" SET
+      id = ?,
       created_at,
       updated_at,
       deleted_at,
@@ -867,19 +868,19 @@ class DatabaseProvider {
       in_server,
       updated,
       deleted,
-      WHERE id = ${locality.id}
+      WHERE id = ${localityId}
       ''',
-      [...[locality.createdAt, locality.updatedAt, locality.deletedAt,
-      locality.createdById, locality.updatedById, locality.deletedById,
-      locality.collection, locality.name, locality.value],
-      ...paramsBySyncState[syncState]],
+      [...[locality.id, locality.createdAt, locality.updatedAt, locality.deletedAt,
+    locality.createdById, locality.updatedById, locality.deletedById,
+    locality.collection, locality.name, locality.value],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteLocalityById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "localities" WHERE id = $id
       '''
     );
@@ -903,7 +904,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "localities"
       '''
     );
@@ -934,7 +935,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles" WHERE id = ${responsible.id}
       '''
     );
@@ -971,11 +972,11 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[responsible.id, responsible.createdAt, responsible.updatedAt,
-      responsible.deletedAt, responsible.createdById, responsible.updatedById,
-      responsible.deletedById, responsible.supervisorId, responsible.name,
-      responsible.code, responsible.email, responsible.phone,
-      responsible.mobile, responsible.title, responsible.details,
-      responsible.profile], ...paramsBySyncState[syncState]],
+    responsible.deletedAt, responsible.createdById, responsible.updatedById,
+    responsible.deletedById, responsible.supervisorId, responsible.name,
+    responsible.code, responsible.email, responsible.phone,
+    responsible.mobile, responsible.title, responsible.details,
+    responsible.profile], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -983,7 +984,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles" WHERE id = $id
       '''
     );
@@ -1019,7 +1020,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles"
       '''
     );
@@ -1145,24 +1146,25 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateResponsible(ResponsibleModel responsible, SyncState syncState) async {
+  Future<int> UpdateResponsible(int responsibleId, ResponsibleModel responsible, SyncState syncState) async {
     final db = await database;
 
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles" WHERE id = ${responsible.supervisor.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateResponsible(responsible.supervisor, syncState);
+      UpdateResponsible(responsible.supervisor.id, responsible.supervisor, syncState);
     else
       CreateResponsible(responsible.supervisor, syncState);
 
     return await db.rawUpdate(
       '''
       UPDATE "responsibles" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1184,18 +1186,18 @@ class DatabaseProvider {
       WHERE id = ${responsible.id}
       ''',
       [...[responsible.id, responsible.createdAt, responsible.updatedAt,
-      responsible.deletedAt, responsible.createdById, responsible.updatedById,
-      responsible.deletedById, responsible.supervisorId, responsible.name,
-      responsible.code, responsible.email, responsible.phone,
-      responsible.mobile, responsible.title, responsible.details,
-      responsible.profile], ...paramsBySyncState[syncState]],
+    responsible.deletedAt, responsible.createdById, responsible.updatedById,
+    responsible.deletedById, responsible.supervisorId, responsible.name,
+    responsible.code, responsible.email, responsible.phone,
+    responsible.mobile, responsible.title, responsible.details,
+    responsible.profile], ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteResponsibleById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "responsibles" WHERE id = $id
       '''
     );
@@ -1219,7 +1221,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles"
       '''
     );
@@ -1258,7 +1260,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_fields" WHERE id = ${section.id}
       '''
     );
@@ -1298,37 +1300,37 @@ class DatabaseProvider {
       )));
 
       CreateCustomField(
-        SectionModel(
-          id: field.id,
-          createdAt: field.createdAt,
-          updatedAt: field.updatedAt,
-          deletedAt: field.deletedAt,
-          createdById: field.createdById,
-          updatedById: field.updatedById,
-          deletedById: field.deletedById,
-          sectionId: field.sectionId,
-          entityType: field.entityType,
-          entityId: field.entityId,
-          type: field.type,
-          name: field.name,
-          code: field.code,
-          subtitle: field.subtitle,
-          position: field.position,
-          fieldDefaultValue: field.fieldDefaultValue,
-          fieldType: field.fieldType,
-          fieldPlaceholder: field.fieldPlaceholder,
-          fieldOptions: field.fieldOptions,
-          fieldCollection: field.fieldCollection,
-          fieldRequired: field.fieldRequired,
-          fieldWidth: field.fieldWidth,
-          fields: fields,
-        ),
-        syncState
+          SectionModel(
+            id: field.id,
+            createdAt: field.createdAt,
+            updatedAt: field.updatedAt,
+            deletedAt: field.deletedAt,
+            createdById: field.createdById,
+            updatedById: field.updatedById,
+            deletedById: field.deletedById,
+            sectionId: field.sectionId,
+            entityType: field.entityType,
+            entityId: field.entityId,
+            type: field.type,
+            name: field.name,
+            code: field.code,
+            subtitle: field.subtitle,
+            position: field.position,
+            fieldDefaultValue: field.fieldDefaultValue,
+            fieldType: field.fieldType,
+            fieldPlaceholder: field.fieldPlaceholder,
+            fieldOptions: field.fieldOptions,
+            fieldCollection: field.fieldCollection,
+            fieldRequired: field.fieldRequired,
+            fieldWidth: field.fieldWidth,
+            fields: fields,
+          ),
+          syncState
       );
     });
 
     return await db.rawInsert(
-      '''
+        '''
       INSERT INTO "custom_fields"(
         id,
         created_at,
@@ -1359,16 +1361,16 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[section.id, section.createdAt, section.updatedAt,
-      section.deletedAt, section.createdById,
-      section.updatedById, section.deletedById,
-      section.sectionId, section.entityType,
-      section.entityId, section.type, section.name,
-      section.code, section.subtitle, section.position,
-      section.fieldDefaultValue, section.fieldType,
-      section.fieldPlaceholder, section.fieldOptions.toString(),
-      section.fieldCollection, section.fieldRequired,
-      section.fieldWidth], ...paramsBySyncState[syncState]],
+        [...[section.id, section.createdAt, section.updatedAt,
+    section.deletedAt, section.createdById,
+    section.updatedById, section.deletedById,
+    section.sectionId, section.entityType,
+    section.entityId, section.type, section.name,
+    section.code, section.subtitle, section.position,
+    section.fieldDefaultValue, section.fieldType,
+    section.fieldPlaceholder, section.fieldOptions.toString(),
+    section.fieldCollection, section.fieldRequired,
+    section.fieldWidth], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1376,7 +1378,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_fields" WHERE id = $id
       '''
     );
@@ -1447,7 +1449,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_fields"
       '''
     );
@@ -1457,70 +1459,70 @@ class DatabaseProvider {
       data.forEach((sectionRetrieved) async {
         if (query.id != null)
           if (query.id != sectionRetrieved["id"])
-              return;
+            return;
         if (query.createdAt != null)
           if (query.createdAt != sectionRetrieved["created_at"])
-              return;
+            return;
         if (query.updatedAt != null)
           if (query.updatedAt != sectionRetrieved["updated_at"])
-              return;
+            return;
         if (query.deletedAt != null)
           if (query.deletedAt != sectionRetrieved["deleted_at"])
-              return;
+            return;
         if (query.createdById != null)
           if (query.createdById != sectionRetrieved["created_by_id"])
-              return;
+            return;
         if (query.updatedById != null)
           if (query.updatedById != sectionRetrieved["updated_by_id"])
-              return;
+            return;
         if (query.deletedById != null)
           if (query.deletedById != sectionRetrieved["deleted_by_id"])
-              return;
+            return;
         if (query.sectionId != null)
           if (query.sectionId != sectionRetrieved["section_id"])
-              return;
+            return;
         if (query.entityType != null)
           if (query.entityType != sectionRetrieved["entity_type"])
-              return;
+            return;
         if (query.entityId != null)
           if (query.entityId != sectionRetrieved["entity_id"])
-              return;
+            return;
         if (query.type != null)
           if (query.type != sectionRetrieved["type"])
-              return;
+            return;
         if (query.name != null)
           if (query.name != sectionRetrieved["name"])
-              return;
+            return;
         if (query.code != null)
           if (query.code != sectionRetrieved["code"])
-              return;
+            return;
         if (query.subtitle != null)
           if (query.subtitle != sectionRetrieved["subtitle"])
-              return;
+            return;
         if (query.position != null)
           if (query.position != sectionRetrieved["position"])
-              return;
+            return;
         if (query.fieldDefaultValue != null)
           if (query.fieldDefaultValue != sectionRetrieved["field_default_value"])
-              return;
+            return;
         if (query.fieldType != null)
           if (query.fieldType != sectionRetrieved["field_type"])
-              return;
+            return;
         if (query.fieldPlaceholder != null)
           if (query.fieldPlaceholder != sectionRetrieved["field_placeholder"])
-              return;
+            return;
         if (query.fieldOptions != null)
           if (query.fieldOptions != sectionRetrieved["field_options"])
-              return;
+            return;
         if (query.fieldCollection != null)
           if (query.fieldCollection != sectionRetrieved["field_collection"])
-              return;
+            return;
         if (query.fieldRequired != null)
           if (query.fieldRequired != sectionRetrieved["field_required"])
-              return;
+            return;
         if (query.fieldWidth != null)
           if (query.fieldWidth != sectionRetrieved["field_width"])
-              return;
+            return;
 
 
         List<FieldModel> fields = new List<FieldModel>();
@@ -1555,29 +1557,29 @@ class DatabaseProvider {
         )));
 
         listOfSections.add(SectionModel(
-            id: sectionRetrieved["id"],
-            createdAt: sectionRetrieved["created_at"],
-            updatedAt: sectionRetrieved["updated_at"],
-            deletedAt: sectionRetrieved["deleted_at"],
-            createdById: sectionRetrieved["created_by_id"],
-            updatedById: sectionRetrieved["updated_by_id"],
-            deletedById: sectionRetrieved["deleted_by_id"],
-            sectionId: sectionRetrieved["section_id"],
-            entityType: sectionRetrieved["entity_type"],
-            entityId: sectionRetrieved["entity_id"],
-            type: sectionRetrieved["type"],
-            name: sectionRetrieved["name"],
-            code: sectionRetrieved["code"],
-            subtitle: sectionRetrieved["subtitle"],
-            position: sectionRetrieved["position"],
-            fieldDefaultValue: sectionRetrieved["field_default_value"],
-            fieldType: sectionRetrieved["field_type"],
-            fieldPlaceholder: sectionRetrieved["field_placeholder"],
-            fieldOptions: sectionRetrieved["field_options"],
-            fieldCollection: sectionRetrieved["field_collection"],
-            fieldRequired: sectionRetrieved["field_required"],
-            fieldWidth: sectionRetrieved["field_width"],
-            fields: fields,
+          id: sectionRetrieved["id"],
+          createdAt: sectionRetrieved["created_at"],
+          updatedAt: sectionRetrieved["updated_at"],
+          deletedAt: sectionRetrieved["deleted_at"],
+          createdById: sectionRetrieved["created_by_id"],
+          updatedById: sectionRetrieved["updated_by_id"],
+          deletedById: sectionRetrieved["deleted_by_id"],
+          sectionId: sectionRetrieved["section_id"],
+          entityType: sectionRetrieved["entity_type"],
+          entityId: sectionRetrieved["entity_id"],
+          type: sectionRetrieved["type"],
+          name: sectionRetrieved["name"],
+          code: sectionRetrieved["code"],
+          subtitle: sectionRetrieved["subtitle"],
+          position: sectionRetrieved["position"],
+          fieldDefaultValue: sectionRetrieved["field_default_value"],
+          fieldType: sectionRetrieved["field_type"],
+          fieldPlaceholder: sectionRetrieved["field_placeholder"],
+          fieldOptions: sectionRetrieved["field_options"],
+          fieldCollection: sectionRetrieved["field_collection"],
+          fieldRequired: sectionRetrieved["field_required"],
+          fieldWidth: sectionRetrieved["field_width"],
+          fields: fields,
         ));
       });
       return listOfSections;
@@ -1665,7 +1667,7 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomField(SectionModel section, SyncState syncState) async {
+  Future<int> UpdateCustomField(int sectionId, SectionModel section, SyncState syncState) async {
     final db = await database;
     section.fields.forEach((field) async {
       List<FieldModel> fields = new List<FieldModel>();
@@ -1700,13 +1702,14 @@ class DatabaseProvider {
 
       List<Map<String, dynamic>> data;
       data = await db.rawQuery(
-      '''
+          '''
       SELECT * FROM "custom_fields" WHERE id = ${field.id}
       '''
       );
 
       if (data.isNotEmpty)
         UpdateCustomField(
+            field.id,
             SectionModel(
               id: field.id,
               createdAt: field.createdAt,
@@ -1766,8 +1769,9 @@ class DatabaseProvider {
     });
 
     return await db.rawUpdate(
-      '''
+        '''
       UPDATE "custom_fields" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -1792,22 +1796,22 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${section.id}
+      WHERE id = ${sectionId}
       ''',
-      [...[section.createdAt,section.updatedAt, section.deletedAt,
-      section.createdById, section.updatedById, section.deletedById,
-      section.sectionId, section.entityType, section.entityId, section.type,
-      section.name, section.code, section.subtitle, section.position,
-      section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
-      section.fieldOptions.toString(), section.fieldCollection, section.fieldRequired,
-      section.fieldWidth], ...paramsBySyncState[syncState]],
+        [...[section.id, section.createdAt,section.updatedAt, section.deletedAt,
+    section.createdById, section.updatedById, section.deletedById,
+    section.sectionId, section.entityType, section.entityId, section.type,
+    section.name, section.code, section.subtitle, section.position,
+    section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
+    section.fieldOptions.toString(), section.fieldCollection, section.fieldRequired,
+    section.fieldWidth], ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteCustomFieldById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "custom_fields" WHERE id = $id
       '''
     );
@@ -1831,7 +1835,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_fields"
       '''
     );
@@ -1907,7 +1911,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "addresses" WHERE id = ${address.id}
       '''
     );
@@ -1950,12 +1954,12 @@ class DatabaseProvider {
       ''',
 
       [...[address.id, address.createdAt, address.updatedAt,
-      address.deletedAt, address.createdById, address.updatedById,
-      address.deletedById, address.localityId, address.address,
-      address.details, address.reference, address.latitude, address.longitude,
-      address.googlePlaceId, address.country,address.state, address.city,
-      address.contactName, address.contactPhone, address.contactMobile,
-      address.contactEmail], ...paramsBySyncState[syncState]],
+    address.deletedAt, address.createdById, address.updatedById,
+    address.deletedById, address.localityId, address.address,
+    address.details, address.reference, address.latitude, address.longitude,
+    address.googlePlaceId, address.country,address.state, address.city,
+    address.contactName, address.contactPhone, address.contactMobile,
+    address.contactEmail], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1963,7 +1967,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "addresses" WHERE id = $id
       '''
     );
@@ -2078,28 +2082,28 @@ class DatabaseProvider {
         LocalityModel localityModel = await ReadLocalityById(addressRetrieved["locality_id"]);
 
         listOfAddresses.add(new AddressModel(
-              id: addressRetrieved["id"],
-              createdAt: addressRetrieved["created_at"],
-              updatedAt: addressRetrieved["updated_at"],
-              deletedAt: addressRetrieved["deleted_at"],
-              createdById: addressRetrieved["created_by_id"],
-              updatedById: addressRetrieved["updateb_by_id"],
-              deletedById: addressRetrieved["deleted_by_id"],
-              localityId: addressRetrieved["locality_id"],
-              address: addressRetrieved["address"],
-              details: addressRetrieved["details"],
-              reference: addressRetrieved["reference"],
-              latitude: addressRetrieved["latitude"],
-              longitude: addressRetrieved["longitude"],
-              googlePlaceId: addressRetrieved["google_place_id"],
-              country: addressRetrieved["country"],
-              state: addressRetrieved["state"],
-              city: addressRetrieved["city"],
-              contactName: addressRetrieved["name"],
-              contactPhone: addressRetrieved["contact_phone"],
-              contactMobile: addressRetrieved["contact_mobile"],
-              contactEmail: addressRetrieved["contact_email"],
-              locality: localityModel,
+          id: addressRetrieved["id"],
+          createdAt: addressRetrieved["created_at"],
+          updatedAt: addressRetrieved["updated_at"],
+          deletedAt: addressRetrieved["deleted_at"],
+          createdById: addressRetrieved["created_by_id"],
+          updatedById: addressRetrieved["updateb_by_id"],
+          deletedById: addressRetrieved["deleted_by_id"],
+          localityId: addressRetrieved["locality_id"],
+          address: addressRetrieved["address"],
+          details: addressRetrieved["details"],
+          reference: addressRetrieved["reference"],
+          latitude: addressRetrieved["latitude"],
+          longitude: addressRetrieved["longitude"],
+          googlePlaceId: addressRetrieved["google_place_id"],
+          country: addressRetrieved["country"],
+          state: addressRetrieved["state"],
+          city: addressRetrieved["city"],
+          contactName: addressRetrieved["name"],
+          contactPhone: addressRetrieved["contact_phone"],
+          contactMobile: addressRetrieved["contact_mobile"],
+          contactEmail: addressRetrieved["contact_email"],
+          locality: localityModel,
         ));
       });
       return listOfAddresses;
@@ -2158,23 +2162,24 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateAddress(AddressModel address, SyncState syncState) async {
+  Future<int> UpdateAddress(int addressId, AddressModel address, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "localities" WHERE id = ${address.locality.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateLocality(address.locality, syncState);
+      UpdateLocality(address.locality.id, address.locality, syncState);
     else
       CreateLocality(address.locality, syncState);
 
     return await db.rawUpdate(
       '''
       UPDATE "addresses" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -2198,22 +2203,22 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${address.id}
+      WHERE id = ${addressId}
       ''',
-      [...[address.createdAt, address.updatedAt, address.deletedAt,
-      address.createdById, address.updatedById, address.deletedById,
-      address.localityId, address.address, address.details, address.reference,
-      address.latitude, address.longitude, address.googlePlaceId,
-      address.country, address.state, address.city, address.contactName,
-      address.contactPhone, address.contactMobile, address.contactEmail],
-      ...paramsBySyncState[syncState]],
+      [...[address.id, address.createdAt, address.updatedAt, address.deletedAt,
+    address.createdById, address.updatedById, address.deletedById,
+    address.localityId, address.address, address.details, address.reference,
+    address.latitude, address.longitude, address.googlePlaceId,
+    address.country, address.state, address.city, address.contactName,
+    address.contactPhone, address.contactMobile, address.contactEmail],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteAddressById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "addresses" WHERE id = $id
       '''
     );
@@ -2237,7 +2242,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "addresses"
       '''
     );
@@ -2283,7 +2288,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT id FROM "addresses"
       '''
     );
@@ -2302,7 +2307,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers" WHERE id = ${customer.id}
       '''
     );
@@ -2334,10 +2339,10 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt,
-      customer.deletedAt, customer.createdById, customer.updatedById,
-      customer.deletedById, customer.name, customer.code, customer.phone,
-      customer.email, customer.contactName, customer.details],
-      ...paramsBySyncState[syncState]],
+    customer.deletedAt, customer.createdById, customer.updatedById,
+    customer.deletedById, customer.name, customer.code, customer.phone,
+    customer.email, customer.contactName, customer.details],
+    ...paramsBySyncState[syncState]],
     );
   }
 
@@ -2345,7 +2350,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers" WHERE id = $id
       '''
     );
@@ -2375,7 +2380,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers"
       '''
     );
@@ -2485,11 +2490,12 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomer(CustomerModel customer, SyncState syncState) async {
+  Future<int> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
     final db = await database;
     return await db.rawUpdate(
       '''
       UPDATE "customers" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -2505,20 +2511,20 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${customer.id}
+      WHERE id = ${customerId}
       ''',
-      [...[customer.createdAt, customer.updatedAt, customer.deletedAt,
-      customer.createdById, customer.updatedById, customer.deletedById,
-      customer.name, customer.code, customer.phone, customer.email,
-      customer.contactName, customer.details],
-      ...paramsBySyncState[syncState]],
+      [...[customer.id, customer.createdAt, customer.updatedAt, customer.deletedAt,
+    customer.createdById, customer.updatedById, customer.deletedById,
+    customer.name, customer.code, customer.phone, customer.email,
+    customer.contactName, customer.details],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteCustomerById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "customers" WHERE id = $id
       '''
     );
@@ -2542,7 +2548,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers"
       '''
     );
@@ -2620,7 +2626,7 @@ class DatabaseProvider {
     CreateResponsible(task.responsible, syncState);
 
     return await db.rawInsert(
-      '''
+        '''
       INSERT INTO "tasks"(
         id,
         created_at,
@@ -2651,13 +2657,13 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[task.id, task.createdAt, task.updatedAt, task.deletedAt,
-      task.createdById, task.updatedById, task.deletedById, task.formId,
-      task.responsibleId, task.customerId, task.addressId, task.name,
-      task.planningDate, task.checkinDate, task.checkinLatitude,
-      task.checkinLongitude, task.checkinDistance, task.checkoutDate,
-      task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
-      task.status], ...paramsBySyncState[syncState]],
+        [...[task.id, task.createdAt, task.updatedAt, task.deletedAt,
+    task.createdById, task.updatedById, task.deletedById, task.formId,
+    task.responsibleId, task.customerId, task.addressId, task.name,
+    task.planningDate, task.checkinDate, task.checkinLatitude,
+    task.checkinLongitude, task.checkinDistance, task.checkoutDate,
+    task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
+    task.status], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -2665,7 +2671,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "tasks" WHERE id = $id
       '''
     );
@@ -2719,7 +2725,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "tasks"
       '''
     );
@@ -2901,19 +2907,19 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateTask(TaskModel task, SyncState syncState) async {
+  Future<int> UpdateTask(int taskId, TaskModel task, SyncState syncState) async {
     final db = await database;
 
     task.customValues.forEach((customValue) async {
       List<Map<String, dynamic>> data;
       data = await db.rawQuery(
-      '''
+          '''
       SELECT * FROM "custom_values" WHERE id = ${customValue.id}
       '''
       );
 
       if (data.isNotEmpty)
-        UpdateCustomValue(customValue, syncState);
+        UpdateCustomValue(customValue.id, customValue, syncState);
       else
         CreateCustomValue(customValue, syncState);
     });
@@ -2921,52 +2927,53 @@ class DatabaseProvider {
     // individual items
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "forms" WHERE id = ${task.form.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateForm(task.form, syncState);
+      UpdateForm(task.form.id, task.form, syncState);
     else
       CreateForm(task.form, syncState);
 
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "addresses" WHERE id = ${task.address.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateAddress(task.address, syncState);
+      UpdateAddress(task.address.id, task.address, syncState);
     else
       CreateAddress(task.address, syncState);
 
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers" WHERE id = ${task.customer.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateCustomer(task.customer, syncState);
+      UpdateCustomer(task.customer.id, task.customer, syncState);
     else
       CreateCustomer(task.customer, syncState);
 
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateResponsible(task.responsible, syncState);
+      UpdateResponsible(task.responsible.id, task.responsible, syncState);
     else
       CreateResponsible(task.responsible, syncState);
 
     return await db.rawUpdate(
-      '''
+        '''
       UPDATE "tasks" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -2991,22 +2998,22 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = ${task.id}
+      WHERE id = ${taskId}
       ''',
-      [...[task.createdAt, task.updatedAt, task.deletedAt, task.createdById,
-      task.updatedById, task.deletedById, task.formId, task.responsibleId,
-      task.customerId, task.addressId, task.name, task.planningDate,
-      task.checkinDate, task.checkinLatitude, task.checkinLongitude,
-      task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
-      task.checkoutLongitude, task.checkoutDistance, task.status],
-      ...paramsBySyncState[syncState]],
+        [...[task.id, task.createdAt, task.updatedAt, task.deletedAt, task.createdById,
+    task.updatedById, task.deletedById, task.formId, task.responsibleId,
+    task.customerId, task.addressId, task.name, task.planningDate,
+    task.checkinDate, task.checkinLatitude, task.checkinLongitude,
+    task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
+    task.checkoutLongitude, task.checkoutDistance, task.status],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteTaskById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "tasks" WHERE id = $id
       '''
     );
@@ -3030,7 +3037,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "tasks"
       '''
     );
@@ -3085,8 +3092,8 @@ class DatabaseProvider {
 
   // Operations on custom_users
   Future<int> CreateCustomerUser(int id, String createdAt, String updatedAt,
-                                 String deletedAt, int customerId,
-                                 int userId, SyncState syncState) async {
+      String deletedAt, int customerId,
+      int userId, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -3115,7 +3122,7 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
-      ...paramsBySyncState[syncState]],
+    ...paramsBySyncState[syncState]],
     );
   }
 
@@ -3123,32 +3130,32 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customers_users" WHERE id = $id
       '''
     );
 
     if (data.isNotEmpty) {
-        return({
-          "id": data.first["id"],
-          "created_at": data.first["created_at"],
-          "updated_at": data.first["updated_at"],
-          "deleted_at": data.first["deleted_at"],
-          "customer_id": data.first["customer_id"],
-          "user_id": data.first["user_id"],
-        });
+      return({
+        "id": data.first["id"],
+        "created_at": data.first["created_at"],
+        "updated_at": data.first["updated_at"],
+        "deleted_at": data.first["deleted_at"],
+        "customer_id": data.first["customer_id"],
+        "user_id": data.first["user_id"],
+      });
     }
     else
       return null;
   }
 
   Future<List<Map>> QueryCustomerUser(int id, String createdAt, String updatedAt,
-                                      String deletedAt, int customerId,
-                                      int userId) async {
+      String deletedAt, int customerId,
+      int userId) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customer_users"
       '''
     );
@@ -3221,13 +3228,14 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomerUser(int id, String createdAt, String updatedAt,
-                                 String deletedAt, int customerId,
-                                 int userId, SyncState syncState) async {
+  Future<int> UpdateCustomerUser(int customerUserId, int id, String createdAt, String updatedAt,
+      String deletedAt, int customerId,
+      int userId, SyncState syncState) async {
     final db = await database;
     return await db.rawUpdate(
       '''
       UPDATE "customer_users" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -3248,17 +3256,17 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = $id
+      WHERE id = $customerUserId
       ''',
-      [...[createdAt, updatedAt, deletedAt, customerId, userId],
-      ...paramsBySyncState[syncState]],
+      [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
+    ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteCustomerUserById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "customer_users" WHERE id = $id
       '''
     );
@@ -3282,7 +3290,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customer_users"
       '''
     );
@@ -3364,9 +3372,9 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[customValue.id, customValue.createdAt, customValue.updatedAt,
-      customValue.formId, customValue.sectionId, customValue.fieldId,
-      customValue.customizableType, customValue.customizableId,
-      customValue.value], ...paramsBySyncState[syncState]],
+    customValue.formId, customValue.sectionId, customValue.fieldId,
+    customValue.customizableType, customValue.customizableId,
+    customValue.value], ...paramsBySyncState[syncState]],
     );
 
   }
@@ -3375,7 +3383,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_values" WHERE id = $id
       '''
     );
@@ -3429,7 +3437,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_values"
       '''
     );
@@ -3575,41 +3583,44 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomValue(CustomValueModel customValue, SyncState syncState) async {
+  Future<int> UpdateCustomValue(int customValueId, CustomValueModel customValue, SyncState syncState) async {
     final db = await database;
 
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_fields" WHERE id = ${customValue.field.id}
       '''
     );
 
     if (data.isNotEmpty)
-      UpdateCustomField(SectionModel(
-        id: customValue.field.id,
-        createdAt: customValue.field.createdAt,
-        entityId: customValue.field.entityId,
-        sectionId: customValue.field.sectionId,
-        name: customValue.field.name,
-        deletedById: customValue.field.deletedById,
-        updatedById: customValue.field.updatedById,
-        createdById: customValue.field.createdById,
-        deletedAt: customValue.field.deletedAt,
-        code: customValue.field.code,
-        entityType: customValue.field.entityType,
-        fieldCollection: customValue.field.fieldCollection,
-        fieldDefaultValue: customValue.field.fieldDefaultValue,
-        fieldOptions: customValue.field.fieldOptions,
-        fieldPlaceholder: customValue.field.fieldPlaceholder,
-        fieldRequired: customValue.field.fieldRequired,
-        fieldType: customValue.field.fieldType,
-        fieldWidth: customValue.field.fieldWidth,
-        position: customValue.field.position,
-        subtitle: customValue.field.subtitle,
-        type: customValue.field.type,
-        updatedAt: customValue.field.updatedAt,
-      ), syncState);
+      UpdateCustomField(
+          customValue.field.id,
+          SectionModel(
+            id: customValue.field.id,
+            createdAt: customValue.field.createdAt,
+            entityId: customValue.field.entityId,
+            sectionId: customValue.field.sectionId,
+            name: customValue.field.name,
+            deletedById: customValue.field.deletedById,
+            updatedById: customValue.field.updatedById,
+            createdById: customValue.field.createdById,
+            deletedAt: customValue.field.deletedAt,
+            code: customValue.field.code,
+            entityType: customValue.field.entityType,
+            fieldCollection: customValue.field.fieldCollection,
+            fieldDefaultValue: customValue.field.fieldDefaultValue,
+            fieldOptions: customValue.field.fieldOptions,
+            fieldPlaceholder: customValue.field.fieldPlaceholder,
+            fieldRequired: customValue.field.fieldRequired,
+            fieldType: customValue.field.fieldType,
+            fieldWidth: customValue.field.fieldWidth,
+            position: customValue.field.position,
+            subtitle: customValue.field.subtitle,
+            type: customValue.field.type,
+            updatedAt: customValue.field.updatedAt,
+          ),
+          syncState);
     else
       CreateCustomField(SectionModel(
         id: customValue.field.id,
@@ -3639,6 +3650,7 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "custom_values" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -3651,19 +3663,19 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,  
-      WHERE id = ${customValue.id}
+      WHERE id = ${customValueId}
       ''',
-      [...[customValue.createdAt, customValue.updatedAt, customValue.formId,
-      customValue.sectionId, customValue.fieldId,
-      customValue.customizableType, customValue.customizableId,
-      customValue.value], ...paramsBySyncState[syncState]],
+      [...[customValue.id, customValue.createdAt, customValue.updatedAt, customValue.formId,
+    customValue.sectionId, customValue.fieldId,
+    customValue.customizableType, customValue.customizableId,
+    customValue.value], ...paramsBySyncState[syncState]],
     );
   }
 
   Future<int> DeleteCustomValueById(int id) async {
     final db = await database;
     return await db.rawDelete(
-      '''
+        '''
       DELETE FROM "custom_values" WHERE id = $id
       '''
     );
@@ -3687,7 +3699,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "custom_values"
       '''
     );
@@ -3743,10 +3755,10 @@ class DatabaseProvider {
   }
 
   // Operations on customer_addresses
-  Future<int> CreateCustomerAdress(int id, String createdAt,
-                                   String updatedAt, String deletedAt,
-                                   int customerId, int addressId,
-                                   bool approved, SyncState syncState) async {
+  Future<int> CreateCustomerAddress(int id, String createdAt,
+      String updatedAt, String deletedAt,
+      int customerId, int addressId,
+      bool approved, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -3776,43 +3788,43 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
-      approved], ...paramsBySyncState[syncState]],
+    approved], ...paramsBySyncState[syncState]],
     );
   }
 
-  Future<Map> ReadCustomerAdressById(int id) async {
+  Future<Map> ReadCustomerAddressById(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customer_addresses" WHERE id = $id
       '''
     );
 
     if (data.isNotEmpty) {
       return({
-          "id": data.first["id"],
-          "created_at": data.first["created_at"],
-          "updated_at": data.first["updated_at"],
-          "deleted_at": data.first["deleted_at"],
-          "customer_id": data.first["customer_id"],
-          "address_id": data.first["address_id"],
-          "approved": data.first["approved"],
-        });
+        "id": data.first["id"],
+        "created_at": data.first["created_at"],
+        "updated_at": data.first["updated_at"],
+        "deleted_at": data.first["deleted_at"],
+        "customer_id": data.first["customer_id"],
+        "address_id": data.first["address_id"],
+        "approved": data.first["approved"],
+      });
     }
     else
       return null;
   }
 
   Future<List<Map>> QueryCustomerAddress(int id, String createdAt,
-                                         String updatedAt, String deletedAt,
-                                         int customerId, int addressId,
-                                         bool approved,
-                                         SyncState syncState) async {
+      String updatedAt, String deletedAt,
+      int customerId, int addressId,
+      bool approved,
+      SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customer_addresses"
       '''
     );
@@ -3890,14 +3902,15 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomerAdress(int id, String createdAt,
-                                   String updatedAt, String deletedAt,
-                                   int customerId, int addressId,
-                                   bool approved, SyncState syncState) async {
+  Future<int> UpdateCustomerAddress(int id, String createdAt,
+      String updatedAt, String deletedAt,
+      int customerId, int addressId,
+      bool approved, SyncState syncState) async {
     final db = await database;
     return await db.rawUpdate(
       '''
       UPDATE "customer_addresses" SET
+      id = ?,
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
@@ -3918,23 +3931,23 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
-      WHERE id = $id
+      WHERE customer_id = $customerId AND address_id = $addressId
       ''',
-      [...[createdAt, updatedAt, deletedAt, customerId, addressId,
-      approved], ...paramsBySyncState[syncState]],
+      [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
+    approved], ...paramsBySyncState[syncState]],
     );
   }
 
-  Future<int> DeleteCustomerAdressById(int id) async {
+  Future<int> DeleteCustomerAddressById(int customerId, addressId) async {
     final db = await database;
     return await db.rawDelete(
-      '''
-      DELETE FROM "customer_addresses" WHERE id = $id
+        '''
+      DELETE FROM "customer_addresses" WHERE customer_id = $customerId AND address_id = $addressId
       '''
     );
   }
 
-  Future<int> ChangeSyncStateCustomerAddress(int id, SyncState syncState) async {
+  Future<int> ChangeSyncStateCustomerAddress(int customerId, int addressId, SyncState syncState) async {
     final db = await database;
     return await db.rawUpdate(
       '''
@@ -3942,17 +3955,17 @@ class DatabaseProvider {
       in_server = ? AND
       updated = ? AND
       deleted = ? AND
-      WHERE id = $id
+      WHERE customer_id = $customerId AND address_id = $addressId
       ''',
       paramsBySyncState[syncState],
     );
   }
 
-  Future<List<Map>> ListCustomerAdresses() async {
+  Future<List<Map>> ListCustomerAddresses() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT * FROM "customer_addresses"
       '''
     );
@@ -3980,7 +3993,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-      '''
+        '''
       SELECT customer_id, address_id FROM "customer_addresses"
       '''
     );
@@ -3988,13 +4001,12 @@ class DatabaseProvider {
     if (data.isNotEmpty) {
       List<String> relations = new List<String>();
       data.forEach((relation) => relations.add(
-        relation["customer_id"] + "-" + relation["address_id"]
-        )
+          relation["customer_id"] + "-" + relation["address_id"]
+      )
       );
       return relations;
     }
     else
       return null;
   }
-
 }
