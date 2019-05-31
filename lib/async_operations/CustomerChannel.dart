@@ -31,10 +31,8 @@ class CustomerChannel {
       if (createCustomerResponseServer.statusCode==200) {
         CustomerModel customerServer = CustomerModel.fromJson(createCustomerResponseServer.body);
         // Cambiar el SyncState Local
-        // DatabaseProvider.db.ChangeSyncState(customerObj.id, SyncState.synchronized);
-
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // var updateCustomerLocalResponse = await DatabaseProvider.db.UpdateCustomer(customerLocal.id, customerServer);
+        // DatabaseProvider.db.UpdateCustomer(customerLocal.id, customerServer, SyncState.synchronized);
       }
     });
 
@@ -53,8 +51,8 @@ class CustomerChannel {
 
     customersServer.data.forEach((customerServer) async {
       if (idsToCreate.contains(customerServer.id)) {
-        var createCustomerResponseLocal = await DatabaseProvider.db.CreateCustomer(customerServer);
         // Cambiar el SyncState Local
+        DatabaseProvider.db.CreateCustomer(customerServer, SyncState.synchronized);
       }
     });
   }
@@ -69,7 +67,7 @@ class CustomerChannel {
     customersLocal.forEach((customerLocal) async {
       var deleteCustomerResponseServer = await deleteCustomer(customerLocal.id.toString(), customer, authorization);
       if (deleteCustomerResponseServer.statusCode==200) {
-        var deleteCustomerResponseLocal = await DatabaseProvider.db.DeleteCustomer(customerLocal.id);
+        DatabaseProvider.db.DeleteCustomerById(customerLocal.id);
       }
     });
 
@@ -82,12 +80,12 @@ class CustomerChannel {
       idsCustomersServer.add(customerServer.id);
     });
 
-    Set idsCustomersLocal = new Set.from([1,2,3]); //método de albert
+    Set idsCustomersLocal = new Set.from(await DatabaseProvider.db.RetrieveAllCustomerIds()); //método de albert
 
     Set idsToDelete = idsCustomersLocal.difference(idsCustomersServer);
 
     idsToDelete.forEach((idToDelete) {
-      var deleteCustomerLocalResponse = DatabaseProvider.db.DeleteCustomer(idToDelete);
+      DatabaseProvider.db.DeleteCustomerById(idToDelete);
     });
   }
 
@@ -100,7 +98,7 @@ class CustomerChannel {
 
     customersServer.data.forEach((customerServer) async {
 
-      CustomerModel customerLocal = await DatabaseProvider.db.ReadCustomer(customerServer.id);
+      CustomerModel customerLocal = await DatabaseProvider.db.ReadCustomerById(customerServer.id);
       DateTime updateDateLocal  = DateTime.parse(customerLocal.updatedAt); 
       DateTime updateDateServer = DateTime.parse(customerServer.updatedAt);
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
@@ -110,13 +108,11 @@ class CustomerChannel {
         if (updateCustomerServerResponse.statusCode == 200) {
           CustomerModel customerServerUpdated = CustomerModel.fromJson(updateCustomerServerResponse.body);
           //Cambiar el sycn state
-          // DatabaseProvider.db.ChangeSyncState(customerLocal.id, SyncState.synchronized);
-
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          var updateCustomerLocalResponse = await DatabaseProvider.db.UpdateCustomer(customerServerUpdated);
+          // DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        var updateCustomerLocalResponse = await DatabaseProvider.db.UpdateCustomer(customerServer);
+        // DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
       }
     });
   } 

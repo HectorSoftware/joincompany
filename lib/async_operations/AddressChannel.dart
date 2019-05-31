@@ -20,10 +20,8 @@ class AddressChannel {
       if (createAddressResponseServer.statusCode==200) {
         AddressModel addressServer = AddressModel.fromJson(createAddressResponseServer.body);
         // Cambiar el SyncState Local
-        // DatabaseProvider.db.ChangeSyncState(addressObj.id, SyncState.synchronized);
-
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer);
+        // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
       }
     });
 
@@ -36,14 +34,14 @@ class AddressChannel {
       idsAddressesServer.add(addressServer.id);
     });
 
-    Set idsAddressesLocal = new Set.from([1,2,3]); //método de albert
+    Set idsAddressesLocal = new Set.from(await DatabaseProvider.db.RetrieveAllAddressIds()); //método de albert
 
     Set idsToCreate = idsAddressesServer.difference(idsAddressesLocal);
 
     addressesServer.data.forEach((addressServer) async {
       if (idsToCreate.contains(addressServer.id)) {
-        var createAddressResponseLocal = await DatabaseProvider.db.CreateAddress(addressServer);
         // Cambiar el SyncState Local
+        DatabaseProvider.db.CreateAddress(addressServer, SyncState.synchronized);
       }
     });
   }
@@ -58,7 +56,7 @@ class AddressChannel {
     addressesLocal.forEach((addressLocal) async {
       var deleteAddressResponseServer = await deleteAddress(addressLocal.id.toString(), customer, authorization);
       if (deleteAddressResponseServer.statusCode==200) {
-        var deleteAddressResponseLocal = await DatabaseProvider.db.DeleteAddress(addressLocal.id);
+        DatabaseProvider.db.DeleteAddressById(addressLocal.id);
       }
     });
 
@@ -71,12 +69,12 @@ class AddressChannel {
       idsAddressesServer.add(addressServer.id);
     });
 
-    Set idsAddressesLocal = new Set.from([1,2,3]); //método de albert
+    Set idsAddressesLocal = new Set.from(await DatabaseProvider.db.RetrieveAllAddressIds()); //método de albert
 
     Set idsToDelete = idsAddressesLocal.difference(idsAddressesServer);
 
     idsToDelete.forEach((idToDelete) {
-      var deleteAddressLocalResponse = DatabaseProvider.db.DeleteAddress(idToDelete);
+      DatabaseProvider.db.DeleteAddressById(idToDelete);
     });
   }
 
@@ -89,7 +87,7 @@ class AddressChannel {
 
     addressesServer.data.forEach((addressServer) async {
 
-      AddressModel addressLocal = await DatabaseProvider.db.ReadAddress(addressServer.id);
+      AddressModel addressLocal = await DatabaseProvider.db.ReadAddressById(addressServer.id);
       DateTime updateDateLocal  = DateTime.parse(addressLocal.updatedAt); 
       DateTime updateDateServer = DateTime.parse(addressServer.updatedAt);
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
@@ -99,13 +97,13 @@ class AddressChannel {
         if (updateAddressServerResponse.statusCode == 200) {
           AddressModel addressServerUpdated = AddressModel.fromJson(updateAddressServerResponse.body);
           //Cambiar el sycn state
-          // DatabaseProvider.db.ChangeSyncState(addressLocal.id, SyncState.synchronized);
+          // DatabaseProvider.db.UpdateAddress(addressLocal.id, SyncState.synchronized);
 
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServerUpdated);
+          // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServerUpdated);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServer);
+        // DatabaseProvider.db.UpdateAddress(addressServer);
       }
     });
   } 

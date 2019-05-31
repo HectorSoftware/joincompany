@@ -22,12 +22,8 @@ class CustomerAddressesChannel {
       if (relateCustomerAddressResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerAddressResponseServer.body);
         // Cambiar el SyncState Local
-        // DatabaseProvider.db.ChangeSyncState(customerAddressLocal["id"], SyncState.synchronized);
-
-
-
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // var updateCustomerAddressesLocalResponse = await DatabaseProvider.db.UpdateCustomerAddresses(customerAddressLocal["id"], jsonResponse);
+        // DatabaseProvider.db.UpdateCustomerAddress(customerAddressLocal["id"], jsonResponse);
       }
     });
 
@@ -41,7 +37,7 @@ class CustomerAddressesChannel {
       customersAddressesServer.add("${customerWithAddress.customerId}-${customerWithAddress.addressId}");
     });
 
-    Set customersAddressesLocal = new Set.from( [ "419-345" ] ); //método de albert
+    Set customersAddressesLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerAddressRelations() ); //método de albert
 
     Set customersAddressesToCreate = customersAddressesServer.difference(customersAddressesLocal);
 
@@ -49,8 +45,8 @@ class CustomerAddressesChannel {
       var customerAddressIds = customerAddressToCreate.split("-");
     	int customerId = customerAddressIds[0];
     	int addressId = customerAddressIds[1];
-      var createCustomerAddressResponseLocal = await DatabaseProvider.db.CreateCustomerAdress(null, null, null, null, customerId, addressId, true);
       // Cambiar el SyncState Local
+      // DatabaseProvider.db.CreateCustomerAddress(null, null, null, null, customerId, addressId, true, SyncState.synchronized);
     });
   }
 
@@ -64,7 +60,7 @@ class CustomerAddressesChannel {
     customerAdressesLocal.forEach((customerAddressLocal) async {
       var unrelateCustomerAddressResponseServer = await unrelateCustomerAddress(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
       if (unrelateCustomerAddressResponseServer.statusCode==200) {
-        var deleteCustomerAddressesResponseLocal = await DatabaseProvider.db.DeleteCustomerAdress(customerAddressLocal["id"]);
+        DatabaseProvider.db.DeleteCustomerAdressById(customerAddressLocal["id"]);
       }
     });
 
@@ -78,7 +74,7 @@ class CustomerAddressesChannel {
       customersAddressesServer.add("${customerWithAddress.customerId}-${customerWithAddress.addressId}");
     });
 
-    Set customersAddressesLocal = new Set.from( [ "419-345" ] ); //método de albert
+    Set customersAddressesLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerAddressRelations() ); //método de albert
 
     Set customersAddressesToDelete = customersAddressesLocal.difference(customersAddressesServer);
 
@@ -87,7 +83,7 @@ class CustomerAddressesChannel {
     	int customerId = customerAddressIds[0];
     	int addressId = customerAddressIds[1];
       // sobrecargar método para eliminar con los parámetros customerId, addressId
-      // var deleteCustomerAddressResponseLocal = await DatabaseProvider.db.DeleteCustomerAdress(customerId, addressId);
+      // DatabaseProvider.db.DeleteCustomerAdressBy(customerId, addressId);
     });
   }
 }
