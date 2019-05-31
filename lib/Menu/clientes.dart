@@ -15,7 +15,16 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+
+
+// ignore: must_be_immutable
 class Cliente extends StatefulWidget {
+
+  bool vista;
+  Cliente(vista){
+    this.vista = vista;
+  }
+
   @override
   _ClienteState createState() => _ClienteState();
 }
@@ -42,7 +51,6 @@ class _ClienteState extends State<Cliente> {
   }
 
   void connectionChanged(dynamic hasConnection) {
-    print("entre");
     setState(() {
       isOffline = !hasConnection;
     });
@@ -51,7 +59,7 @@ class _ClienteState extends State<Cliente> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -225,7 +233,10 @@ class _ClienteState extends State<Cliente> {
                         context,
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
                   },),
-                  onTap: (){
+                  onTap:
+                  widget.vista ? (){
+                    Navigator.of(context).pop(snapshot.data[index]);
+                  }: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(

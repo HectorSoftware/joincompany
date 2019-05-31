@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget{
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>TaskHomePage(),
         "/formularioTareas": (context) =>FormTask(),
-        "/cliente": (context) =>Cliente(),
+        "/cliente": (context) =>Cliente(false),
         "/firma": (context) =>FirmTouch(),
       },
       theme: ThemeData(
