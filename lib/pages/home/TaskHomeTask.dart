@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
@@ -37,6 +38,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
   List<DateTime> ListCalender = new List<DateTime>();
+  CustomerWithAddressModel directionClient = CustomerWithAddressModel();
 
   @override
   void initState() {
@@ -85,7 +87,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             onPressed: (){
               Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                  new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: directionClient,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),

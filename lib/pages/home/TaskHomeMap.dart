@@ -141,11 +141,11 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 snippet: mark.address,
                 onTap: (){
                   if(mark.status == 0){
-                   /* Navigator.push(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
-                        builder: (context) => FormTask(directioncliente: null,)
-                  )*/
+                        builder: (context) => FormTask(directioncliente:mark.CustomerAddress )));
+
                   }
                 }
             ),
