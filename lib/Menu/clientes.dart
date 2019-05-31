@@ -16,6 +16,8 @@ import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
+import 'businesList.dart';
+
 
 // ignore: must_be_immutable
 class Cliente extends StatefulWidget {
@@ -87,6 +89,7 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
+  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -120,8 +123,8 @@ class _ClienteState extends State<Cliente> {
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-//                Navigator.pushNamed(context, '/cliente');
-//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cliente');
               },
             ),
           ),
@@ -130,21 +133,23 @@ class _ClienteState extends State<Cliente> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -154,12 +159,9 @@ class _ClienteState extends State<Cliente> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) => new  ConfigCli()));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/configuracion');
               },
             ),
           ),
@@ -167,7 +169,6 @@ class _ClienteState extends State<Cliente> {
       ),
     );
   }
-
 
   extraerUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');

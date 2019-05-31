@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -114,7 +115,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           : NeverScrollableScrollPhysics(),
     );
   }
-  bool drawerTask = true;
+
+  //drawer
+  bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
@@ -130,42 +133,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               backgroundImage: new AssetImage('assets/images/user.jpg'),
             ),
           ),
-          /*Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: PrimaryColor,
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 40),
-                    height: 50,
-                    child: CircleAvatar(
-                      minRadius: 25.0,
-                      maxRadius: 25.0,
-                      backgroundImage: new AssetImage('assets/images/user.jpg'),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
-                  )
-
-                ],
-              ),
-            )
-          ),*/
           Container(
-              color: drawerTask ? Colors.grey[200] :  null,
               child: ListTile(
                 trailing: new Icon(Icons.assignment),
                 title: new Text('Tareas'),
                 onTap: () {
+                  Navigator.pop(context);
                   Navigator.pop(context);
                 },
               )
@@ -176,8 +149,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
-//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -186,20 +159,24 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            color: drawerCustomer ? Colors.grey[200] :  null,
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -208,19 +185,18 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Configuración"),
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
-               // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) => new  ConfigCli()));
+                // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/configuracion');
               },
             ),
           ),
         ],
       ),
     );
- }
+  }
+
 
   List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{

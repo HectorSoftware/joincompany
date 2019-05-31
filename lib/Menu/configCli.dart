@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
 
-import '../main.dart';
 import 'contactView.dart';
 
 enum type{
@@ -197,6 +197,7 @@ class _ConfigCliState extends State<ConfigCli> {
     return null;
   }
 
+  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -239,21 +240,23 @@ class _ConfigCliState extends State<ConfigCli> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -264,7 +267,9 @@ class _ConfigCliState extends State<ConfigCli> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.of(context).pop();
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/configuracion');
               },
             ),
           ),
@@ -272,6 +277,7 @@ class _ConfigCliState extends State<ConfigCli> {
       ),
     );
   }
+
 
   setUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');

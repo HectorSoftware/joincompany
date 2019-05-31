@@ -399,13 +399,7 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<AddressModel> getDirections() async{
-    return showDialog<AddressModel>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return SearchAddress();
-      },
-    );
+
   }
 
   Future<String> getContact() async{
@@ -427,7 +421,6 @@ class _FormClientState extends State<FormClient> {
       },
     );
   }//TODO
-
 
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
