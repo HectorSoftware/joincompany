@@ -8,6 +8,7 @@ import 'package:joincompany/models/AccountModel.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -411,12 +412,12 @@ class _LoginPageState extends State<LoginPage> {
 
       // Task Create
       // TaskModel taskNew = new TaskModel(
-      //   name: 'Enrolamiento eHuapi',
-      //   formId: 3,
-      //   responsibleId: 3,
-      //   customerId: 408,
-      //   addressId: 345,
-      //   customValuesMap: [{"18": "hola"}, {"20" : "Test"}]
+        // name: 'Enrolamiento eHuapi',
+        // formId: 3,
+        // responsibleId: 3,
+        // customerId: 408,
+        // addressId: 345,
+        // customValuesMap: {"18": "test", "20": "valor test"}
       // );
       // var createTaskResponse = await createTask(taskNew, customer, authorization);
       // print(createTaskResponse.request);

@@ -95,7 +95,7 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                     saveTask.customValuesMap = dataSaveState;
+                                    //  saveTask.customValuesMap = dataSaveState;
                                    }
                                    saveTaskApi();
                                    Navigator.pop(context);
