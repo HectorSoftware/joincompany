@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
@@ -17,6 +18,7 @@ import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -27,7 +29,7 @@ class FormTask extends StatefulWidget {
 
 
   FormTask({this.directioncliente});
-   final  AddressModel  directioncliente;
+   final  CustomerWithAddressModel  directioncliente;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -110,15 +112,14 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                     saveTask.addressId = directionClient.id;
-                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
-                                     saveTask.customValuesMap = dataSaveState;
-//                                     print(saveTask.formId);
-//                                     print(saveTask.responsibleId);
-//                                     print(saveTask.name);
+                                     //saveTask.customerId = 408;
 
-                                     saveTaskApi();
+                                     saveTask.addressId = 345;
+                                   //  saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                    saveTask.customValuesMap = dataInfo;
+                                    //  saveTask.customValuesMap = dataSaveState;
                                    }
+                                   saveTaskApi();
                                    Navigator.pop(context);
                                    Navigator.pop(context);
                                  },
@@ -297,6 +298,15 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+  Future<Image> getImg() async{
+    return showDialog<Image>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return PickerImg();
+      },
+    );
+  }
   Stack returnsStack(){
     return Stack(
       children: <Widget>[
@@ -720,6 +730,11 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
+              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage' )
+                {
+                  return IconButton(icon: Icon(Icons.add), onPressed: (){});
+
+                }
             }
         ),
 
