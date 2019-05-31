@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -35,11 +37,10 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  final companyController = TextEditingController(text : 'duperu');
+     final nameController = TextEditingController(text : 'eibanez@duperu.com');
+     final companyController = TextEditingController(text : 'duperu');
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
