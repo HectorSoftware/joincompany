@@ -129,13 +129,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   allmark(List<Place> listPlaces) async {
     
-    Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
-
-
-
-    Map<markersId, String> markersIconsFromId = {
-      markersId.markerRed: "marker_red1",
-    };
+    //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
     for(Place mark in listPlaces){
       _markers.add(
