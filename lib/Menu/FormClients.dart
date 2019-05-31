@@ -11,7 +11,6 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
-import 'clientes.dart';
 
 enum type{NAME,CODE,NOTE}
 

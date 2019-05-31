@@ -1,16 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:intl/intl.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
-import 'package:joincompany/pages/FirmTouch.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
@@ -77,7 +73,7 @@ class _FormTaskState extends State<FormTask> {
            iconSize: 35,
            onPressed: ()=> showDialog(
                context: context,
-               child: SimpleDialog(
+                child: SimpleDialog(
 
                  title: Text('Guardar Tarea'),
                  children: <Widget>[
@@ -117,7 +113,7 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.planningDate = _dateTask.toString().substring(0,19);
                                      saveTask.customValuesMap = dataInfo;
                                     //  saveTask.customValuesMap = dataSaveState;
-                                     saveTaskApi();
+                                 //    saveTaskApi();
                                    }
 
                                    Navigator.pop(context);
@@ -189,7 +185,7 @@ class _FormTaskState extends State<FormTask> {
                            color: Colors.white,
                              onPressed: (){
                                setState(() {
-                                 dataInfo = null;
+                                 dataInfo = new Map();
                                  pass= false;
                                  dropdownValue = null;
                                  image = null;
@@ -266,7 +262,6 @@ class _FormTaskState extends State<FormTask> {
                       context: context,
                       builder: (BuildContext context) {
                         return  formType != null ?
-
                         new ListView.builder(
                           itemCount: formType.data.length,
                           itemBuilder: (BuildContext context, index){
@@ -277,14 +272,13 @@ class _FormTaskState extends State<FormTask> {
                               onTap: () async {
                                 var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                 FormModel form = FormModel.fromJson(getFormResponse.body);
-//                                getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                 lisC(form);
                                 setState(() {
                                   directionClient.address = null;
                                   dropdownValue = null;
                                   pass = true;
                                   image = null;
-                                  dataInfo = null;
+                                  dataInfo = new Map();
                                 });
                                 Navigator.pop(context);
                               },
@@ -304,7 +298,7 @@ class _FormTaskState extends State<FormTask> {
   Future<Image> getImg() async{
     return showDialog<Image>(
       context: context,
-      barrierDismissible: true, // user must tap button for close dialog!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return PickerImg();
       },
@@ -520,9 +514,9 @@ class _FormTaskState extends State<FormTask> {
                 }
                 //COLUMNAS
                 Container columna(Color col,int intCard){
-                  List<Widget> ListCard = new List<Widget>();
+                  List<Widget> listCard = new List<Widget>();
                   for(int i = 0; i < intCard; i++){
-                    ListCard.add(card());
+                    listCard.add(card());
                   }
                   return Container(
                     width: MediaQuery.of(context).size.width * 0.5,
@@ -538,9 +532,9 @@ class _FormTaskState extends State<FormTask> {
                           width: MediaQuery.of(context).size.width * 0.5,
                           height: MediaQuery.of(context).size.height * 0.25,
                           child: ListView.builder(
-                            itemCount: ListCard.length,
+                            itemCount: listCard.length,
                             itemBuilder: (contex,index){
-                              return ListCard[index];
+                              return listCard[index];
                             },
                           ),
                         )
@@ -549,11 +543,11 @@ class _FormTaskState extends State<FormTask> {
                   );
                 }
                 //LISTA DE COLUMNAS
-                List<Widget> ListColuma = new List<Widget>();
-                ListColuma.add(columna(Colors.red[50],2));
-                ListColuma.add(columna(Colors.blue[50],5));
-                ListColuma.add(columna(Colors.grey[200],3));
-                ListColuma.add(columna(Colors.green[100],1));
+                List<Widget> listColuma = new List<Widget>();
+                listColuma.add(columna(Colors.red[50],2));
+                listColuma.add(columna(Colors.blue[50],5));
+                listColuma.add(columna(Colors.grey[200],3));
+                listColuma.add(columna(Colors.green[100],1));
                 return SingleChildScrollView(
                   child: Container(
                     margin: EdgeInsets.all(10),
@@ -561,9 +555,9 @@ class _FormTaskState extends State<FormTask> {
                     height: MediaQuery.of(context).size.height * 0.4,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: ListColuma.length,
+                      itemCount: listColuma.length,
                       itemBuilder: (context,index){
-                        return ListColuma[index];
+                        return listColuma[index];
                       },
                       // This next line does the trick.
                     ) ,
@@ -643,48 +637,9 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-                return Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10,left: 5),
-                              child: RaisedButton(
-                                onPressed: (){
-                                  pickerPhoto(Method.CAMERA);
-                                },
-                                child: Text(listFieldsModels[index].name),
-                                color: PrimaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                      ],
-
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
-
-                      child: new Center(
-                        child: Container(
-                          child: image == null
-                              ? new Text('')
-
-                              : new Card(
-                                    elevation: 12,
-                                         child:  Image.file(image,height: 200,width: 200,),
-
-                                               )
-
-                        ),
-
-                      ),
-                    )
-                  ],
-                );
+                return IconButton(icon: Icon(Icons.add), onPressed: ()async{
+                  getImg();
+                });
 
               }
               if(listFieldsModels[index].fieldType == 'Image'){
@@ -735,7 +690,9 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage' )
                 {
-                  return IconButton(icon: Icon(Icons.add), onPressed: (){});
+                  return IconButton(icon: Icon(Icons.add), onPressed: ()async{
+                    getImg();
+                  });
 
                 }
             }

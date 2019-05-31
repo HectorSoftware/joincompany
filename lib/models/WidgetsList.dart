@@ -211,11 +211,8 @@ Future<Null> selectDate(BuildContext context )async{
     setState(() {
       _date = picked;
     });
-
   }
-
 }
-
 Widget dateT(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(

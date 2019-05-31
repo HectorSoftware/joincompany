@@ -173,8 +173,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     paginador++;
 
-    print(desdef);
-    print(hastaf);
 
     String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';

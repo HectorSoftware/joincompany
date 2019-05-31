@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
-import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
 class AddContact extends StatelessWidget {
