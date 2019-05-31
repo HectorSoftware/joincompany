@@ -36,9 +36,9 @@ class _FormClientState extends State<FormClient> {
 
   CustomerWithAddressModel client;
 
-  List<AddressModel> directionsNews = List<AddressModel>();
-  List<AddressModel> directionsOld = List<AddressModel>();
-  List<AddressModel> directionsAll = List<AddressModel>();
+  List<CustomerWithAddressModel> directionsNews = List<CustomerWithAddressModel>();
+  List<CustomerWithAddressModel> directionsOld = List<CustomerWithAddressModel>();
+  List<CustomerWithAddressModel> directionsAll = List<CustomerWithAddressModel>();
 
   List<String> contacts = List<String>();
 
@@ -130,8 +130,8 @@ class _FormClientState extends State<FormClient> {
     //Directions
     if(widget.client != null){
       var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
-      directionsOld =  new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
-      for(AddressModel direction in directionsOld){
+      directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
+      for(CustomerWithAddressModel direction in directionsOld){
         directionsAll.add(direction);
       }
     }
@@ -170,12 +170,12 @@ class _FormClientState extends State<FormClient> {
     });
   }
 
-  Future<int> deletedAddressUser(AddressModel direction)async{
+  Future<int> deletedAddressUser(CustomerWithAddressModel direction)async{
      var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
      return resp.statusCode;
   }
 
-  Future<int> addAddressUser(AddressModel direction)async{
+  Future<int> addAddressUser(CustomerWithAddressModel direction)async{
     var resp = await relateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
@@ -311,7 +311,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool oldToEliminated(AddressModel direction){
+  bool oldToEliminated(CustomerWithAddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
         return false;
@@ -380,8 +380,8 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
-  Future<AddressModel> getDirections() async{
-    return showDialog<AddressModel>(
+  Future<CustomerWithAddressModel> getDirections() async{
+    return showDialog<CustomerWithAddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
