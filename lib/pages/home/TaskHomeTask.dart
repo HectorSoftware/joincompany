@@ -245,6 +245,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
             (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
               DateTask = listTaskModellocal[PosicionActual].createdAt;
+              res = true;
             } else {
               res = false;
             }

@@ -57,11 +57,11 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
+    initFormType();
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    initFormType();
     globalContext = context;
     return new Scaffold(
        appBar: AppBar(
@@ -73,61 +73,55 @@ class _FormTaskState extends State<FormTask> {
            iconSize: 35,
            onPressed: ()=> showDialog(
                context: context,
-                child: SimpleDialog(
-
-                 title: Text('Guardar Tarea'),
-                 children: <Widget>[
-                   Padding(
-                     padding: const EdgeInsets.only(left: 100),
-                     child: Column(
-                       children: <Widget>[
-                         Padding(
-                           padding: const EdgeInsets.all(10),
-                           child: Row(
-                             children: <Widget>[
-
-                               RaisedButton(
-                                 child:  Text('Aceptar'),
-                                 color: Colors.white,
-                                 elevation: 0,
-                                 onPressed: (){
-                                   dataSaveState.clear();
-                                   List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
-                                   dataInfo.forEach((key, value) {
-                                      listOfMaps.add({key: value});
-                                    }
-                                   );
-                                   dataSaveState = listOfMaps;
+               builder: (BuildContext context) {
+                 return
+                   AlertDialog(
+                     title: Text('ELIMINIAR'),
+                     content: const Text(
+                         'Desea Guardar Tarea'),
+                     actions: <Widget>[
+                       FlatButton(
+                         child: const Text('CANCELAR'),
+                         onPressed: () {
+                           Navigator.of(context).pop();
+                         },
+                       ),
+                       FlatButton(
+                         child: const Text('ACEPTAR'),
+                         onPressed: (){
+                           dataSaveState.clear();
+                           List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
+                           dataInfo.forEach((key, value) {
+                             listOfMaps.add({key: value});
+                           }
+                           );
+                           dataSaveState = listOfMaps;
 //                                   print(dataSaveState);
-                                   if(dataSaveState.isNotEmpty) {
-                                     // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
-                                     // print(createCustomerResponse.request);
-                                     // print(createCustomerResponse.statusCode);
-                                     // print(createCustomerResponse.body);
+                           if(dataSaveState.isNotEmpty) {
+                             // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
+                             // print(createCustomerResponse.request);
+                             // print(createCustomerResponse.statusCode);
+                             // print(createCustomerResponse.body);
 
-                                     saveTask.formId = formGlobal.id;
-                                     saveTask.responsibleId = responsibleId;
-                                     saveTask.name = formGlobal.name;
-                                     saveTask.customerId = widget.directioncliente.customerId;
-                                     saveTask.addressId = widget.directioncliente.addressId;
-                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
-                                     saveTask.customValuesMap = dataInfo;
-                                    //  saveTask.customValuesMap = dataSaveState;
-                                 //    saveTaskApi();
-                                   }
+                             saveTask.formId = formGlobal.id;
+                             saveTask.responsibleId = responsibleId;
+                             saveTask.name = formGlobal.name;
+                             saveTask.customerId = widget.directioncliente.customerId;
+                             saveTask.addressId = widget.directioncliente.addressId;
+                             saveTask.planningDate = _dateTask.toString().substring(0,19);
+                             saveTask.customValuesMap = dataInfo;
+                             //  saveTask.customValuesMap = dataSaveState;
+                             saveTaskApi();
+                           }
 
-                                   Navigator.pop(context);
-                                   Navigator.pop(context);
-                                 },
-                               ),
-                             ],
-                           ),
-                         ),
-                       ],
-                     ),
-                   ),
-                 ],
-               ))
+                           Navigator.pop(context);
+                           Navigator.pop(context);
+                         },
+                       )
+                     ],
+                   );
+               }
+                )
          ) ,
         actions: <Widget>[
           IconButton(
@@ -637,10 +631,46 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-                return IconButton(icon: Icon(Icons.add), onPressed: ()async{
-                  getImg();
-                });
+                File image;
+                File imageR;
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 5),
+                              child: RaisedButton(
+                                onPressed: () async {
+                                imageR = await  pickerPhoto(image);
+                                },
+                                child: Text(listFieldsModels[index].name),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
 
+                      ],
+
+                    ),
+
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
+
+                      child: Container(
+                          child: image == null ? new Text('')
+                              : new Card(
+                            elevation: 12,
+                            child:  Image.file(image,height: 200,width: 250,),
+
+                          )
+
+                      ),
+                    )
+                  ],
+                );
               }
               if(listFieldsModels[index].fieldType == 'Image'){
                 return Row(
@@ -805,14 +835,16 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-  pickerPhoto(Method m) async {
+  Future<File>pickerPhoto(File image) async {
 
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
     if (img != null) {
       setState(() {
         image = img;
+
       });
     }
+    return image;
   }
 
 

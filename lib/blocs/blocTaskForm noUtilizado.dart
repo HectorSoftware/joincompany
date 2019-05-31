@@ -5,8 +5,65 @@ import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+showDialog(
+               context: context,
+                child: SimpleDialog(
 
+                 title: Text('Guardar Tarea'),
+                 children: <Widget>[
+                   Padding(
+                     padding: const EdgeInsets.only(left: 100),
+                     child: Column(
+                       children: <Widget>[
+                         Padding(
+                           padding: const EdgeInsets.all(10),
+                           child: Row(
+                             children: <Widget>[
+
+                               RaisedButton(
+                                 child:  Text('Aceptar'),
+                                 color: Colors.white,
+                                 elevation: 0,
+                                 onPressed: (){
+                                   dataSaveState.clear();
+                                   List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
+                                   dataInfo.forEach((key, value) {
+                                      listOfMaps.add({key: value});
+                                    }
+                                   );
+                                   dataSaveState = listOfMaps;
+//                                   print(dataSaveState);
+                                   if(dataSaveState.isNotEmpty) {
+                                     // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
+                                     // print(createCustomerResponse.request);
+                                     // print(createCustomerResponse.statusCode);
+                                     // print(createCustomerResponse.body);
+
+                                     saveTask.formId = formGlobal.id;
+                                     saveTask.responsibleId = responsibleId;
+                                     saveTask.name = formGlobal.name;
+                                     saveTask.customerId = widget.directioncliente.customerId;
+                                     saveTask.addressId = widget.directioncliente.addressId;
+                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                     saveTask.customValuesMap = dataInfo;
+                                    //  saveTask.customValuesMap = dataSaveState;
+                                     saveTaskApi();
+                                   }
+
+                                   Navigator.pop(context);
+                                   Navigator.pop(context);
+                                 },
+                               ),
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ],
+               ))
 */
+
 
 /*class BlocTaskForm  {
 
