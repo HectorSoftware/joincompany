@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -13,7 +15,17 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+
+
+// ignore: must_be_immutable
 class Cliente extends StatefulWidget {
+
+  bool vista;
+  Cliente(vista){
+    this.vista = vista;
+  }
+
   @override
   _ClienteState createState() => _ClienteState();
 }
@@ -21,6 +33,9 @@ class Cliente extends StatefulWidget {
 class _ClienteState extends State<Cliente> {
 
   ListWidgets ls = ListWidgets();
+
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
@@ -32,13 +47,21 @@ class _ClienteState extends State<Cliente> {
   @override
   void initState() {
     extraerUser();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     super.initState();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -47,7 +70,7 @@ class _ClienteState extends State<Cliente> {
       ),
       body: Stack(
         children: <Widget>[
-          listViewCustomers(),
+          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -251,7 +274,10 @@ class _ClienteState extends State<Cliente> {
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
                         //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
-                  onTap: (){
+                  onTap:
+                  widget.vista ? (){
+                    Navigator.of(context).pop(snapshot.data[index]);
+                  }: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(

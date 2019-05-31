@@ -13,12 +13,12 @@ import 'configCli.dart';
 // ignore: must_be_immutable
 class ContactView extends StatefulWidget {
   bool vista;
-  @override
 
   ContactView(vista){
     this.vista = vista;
   }
 
+  @override
   _ContactViewState createState() => _ContactViewState();
 }
 
@@ -40,22 +40,6 @@ class _ContactViewState extends State<ContactView> {
       appBar: AppBar(
         title: Text(""),
       ),
-//      body: FutureBuilder<List<String>>(//TODO: change String for Contacts
-//        future: null, //TODO: getAllContacts()
-//        builder: (BuildContext contex, AsyncSnapshot<List<String>> snapshot){//TODO: change String for Contacts
-//          if (snapshot.hasData) {
-//            return ListView.builder(
-//                itemCount: snapshot.data.length,
-//                itemBuilder: (BuildContext contex, int index){
-//                  String item = snapshot.data[index]; //TODO: change String for Contacts
-//                  return contactCard(item);
-//                }
-//            );
-//          }else{
-//            return Center(child: CircularProgressIndicator());
-//          }
-//        },
-//      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -124,7 +108,6 @@ class _ContactViewState extends State<ContactView> {
       ),
     );
   }
-
 
   bool drawerCustomer = true;
   Drawer buildDrawer() {
@@ -203,7 +186,6 @@ class _ContactViewState extends State<ContactView> {
       ),
     );
   }
-
 
   extraerUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
