@@ -7,6 +7,7 @@ import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:sentry/sentry.dart';
 
@@ -35,6 +36,7 @@ class _SearchAddressState extends State<SearchAddress> {
   static const kGoogleApiKeyy = kGoogleApiKey;
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
   List<AddressModel> _ListAddress;
+  ListWidgets ls = ListWidgets();
 
   @override
   void initState() {
@@ -142,7 +144,7 @@ class _SearchAddressState extends State<SearchAddress> {
           if(_ListAddress.length != 0){
             listPlacemark = new List<AddressModel>();
             for(int cost= 0; cost < _ListAddress.length; cost++){
-              if(_ListAddress[cost].address.contains(text) && (text != '')){
+              if(ls.createState().checkSearchInText(_ListAddress[cost].address, text)) {
                 listPlacemark.add(_ListAddress[cost]);
               }
             }
@@ -209,18 +211,15 @@ class _SearchAddressState extends State<SearchAddress> {
 
   Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
     List<Placemark> placemark ;
-
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
     }
-
     return placemark;
   }
 
   Future _addMarker(LatLng location, String address) async {
     _markers.clear();
-
     _markers.add(Marker(markerId: MarkerId(_lastPosition.toString()),
         position: location,
         infoWindow: InfoWindow(
@@ -297,9 +296,7 @@ class _SearchAddressState extends State<SearchAddress> {
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllAddressessResponse = await getAllAddresses(UserActiv.company,UserActiv.token);
     AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
-
     if(getAllAddressessResponse.statusCode == 200){
-
       for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
         if(AddresseS.data[cantAddress] != null){
           _ListAddress.add(AddresseS.data[cantAddress]);
