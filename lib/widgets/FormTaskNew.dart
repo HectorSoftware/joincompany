@@ -112,14 +112,14 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                     //saveTask.customerId = 408;
-
-                                     saveTask.addressId = 345;
-                                   //  saveTask.planningDate = _dateTask.toString().substring(0,19);
-                                    saveTask.customValuesMap = dataInfo;
+                                     saveTask.customerId = widget.directioncliente.customerId;
+                                     saveTask.addressId = widget.directioncliente.addressId;
+                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                     saveTask.customValuesMap = dataInfo;
                                     //  saveTask.customValuesMap = dataSaveState;
+                                     saveTaskApi();
                                    }
-                                   saveTaskApi();
+
                                    Navigator.pop(context);
                                    Navigator.pop(context);
                                  },
@@ -175,6 +175,7 @@ class _FormTaskState extends State<FormTask> {
                            icon: Icon(Icons.delete),
                              onPressed: (){
                                setState(() {
+                                 dataInfo = null;
                                  pass= false;
                                  dropdownValue = null;
                                });
@@ -188,6 +189,7 @@ class _FormTaskState extends State<FormTask> {
                            color: Colors.white,
                              onPressed: (){
                                setState(() {
+                                 dataInfo = null;
                                  pass= false;
                                  dropdownValue = null;
                                  image = null;
@@ -225,7 +227,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                  child: Padding(
                    padding: const EdgeInsets.all(8.0),
-                   child: directionClient.address != null ? Text('Direccion:  ${directionClient.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                   child: widget.directioncliente.address != null ? Text('Direccion:  ${widget.directioncliente.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
                  ),
 
                 ),
@@ -234,7 +236,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                    child: Padding(
                      padding: const EdgeInsets.all(8.0),
-                     child: directionClient.address != null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                     child: widget.directioncliente.address!= null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
                    ),
 
                 ),
@@ -282,6 +284,7 @@ class _FormTaskState extends State<FormTask> {
                                   dropdownValue = null;
                                   pass = true;
                                   image = null;
+                                  dataInfo = null;
                                 });
                                 Navigator.pop(context);
                               },

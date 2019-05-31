@@ -284,8 +284,6 @@ Widget timeWidget(BuildContext context, String string){
     dataSaveState.add(dataInfo);
   }
 
-
-
   Widget textArea(BuildContext context,placeholder, String id){
     return
         Padding(
