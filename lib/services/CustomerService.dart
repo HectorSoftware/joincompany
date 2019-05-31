@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -5,7 +7,7 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/customers';
 
-Future<http.Response> getAllCustomers(String customer, String authorization, { String perPage, String urlPage } ) async{
+Future<http.Response> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async{
   
   var params = new Map<String, String>();
 
@@ -13,10 +15,14 @@ Future<http.Response> getAllCustomers(String customer, String authorization, { S
       params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<http.Response> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String urlPage } ) async{
+Future<http.Response> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page } ) async{
   
   String resourcePath = '/customer_addresses';
 
@@ -26,7 +32,11 @@ Future<http.Response> getAllCustomersWithAddress(String customer, String authori
       params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
 Future<http.Response> getCustomer(String id, String customer, String authorization) async{
@@ -49,6 +59,33 @@ Future<http.Response> updateCustomer(String id, CustomerModel customerObj, Strin
 }
 
 Future<http.Response> deleteCustomer(String id, String customer, String authorization) async{
+  String resourcePath = '/customer/delete';
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, false);
+}
+
+Future<http.Response> getCustomerAddresses(String id, String customer, String authorization ) async{
+  
+  String extraPath = "/addresses";
+
+  return await httpGet(customer, authorization, resourcePath, id: id, extraPath: extraPath);
+}
+
+Future<http.Response> relateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+  String resourcePath = '/addresses/customers/relate';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'address_id': idAddress,
+    'approved' : 1,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
+}
+
+Future<http.Response> unrelateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+  String resourcePath = '/customer/delete_address';
+  String id = '$idCustomer/$idAddress';
+  
+  return await httpGet(customer, authorization, resourcePath, id: id);
 }

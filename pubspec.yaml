@@ -4,11 +4,14 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
+  #LISTAR
+  loadmore: ^1.0.3
 
   #ICONOS
   cupertino_icons: ^0.1.2
@@ -33,9 +36,13 @@ dependencies:
 
   #DATE TIME
   date_format: ^1.0.6
+  date_range_picker: ^1.0.6
+  datetime_picker_formfield: ^0.1.8
   #IMAGEN
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
+  painter2: any
+  flutter_colorpicker: any
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +53,9 @@ flutter:
   uses-material-design: true
   assets:
   - assets/images/cliente.png
+  - assets/images/final-logo.png
+  - assets/images/user.jpg
+  - assets/images/user.png
   fonts:
     - family: Roboto
       fonts:

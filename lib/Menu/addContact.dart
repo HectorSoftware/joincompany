@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Menu/clientes.dart';
+import 'package:joincompany/models/FieldModel.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 
 class AddContact extends StatelessWidget {
+  ListWidgets lw = ListWidgets();
   final String a = "";
 
   Widget customTextField(String title,String savedData,int maxLines,bool isRequered){
@@ -57,14 +61,22 @@ class AddContact extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: IconButton(
                           icon: Icon(Icons.add),
-                          onPressed: (){},
+                          onPressed: (){
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (BuildContext context) => new  Cliente()));
+                          },
                         ),
                       ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: IconButton(
                           icon: Icon(Icons.visibility),
-                          onPressed: (){},
+                          onPressed: (){
+
+                          },
                         ),
                       ),
                     ],

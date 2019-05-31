@@ -5,7 +5,7 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/addresses';
 
-Future<http.Response> getAllAddresses(String customer, String authorization, {String perPage, String urlPage} ) async{
+Future<http.Response> getAllAddresses(String customer, String authorization, {String perPage, String page} ) async{
   
   var params = new Map<String, String>();
 
@@ -13,7 +13,11 @@ Future<http.Response> getAllAddresses(String customer, String authorization, {St
     params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
 Future<http.Response> getAddress(String id, String customer, String authorization) async{
@@ -37,5 +41,5 @@ Future<http.Response> updateAddress(String id, AddressModel addressObj, String c
 
 Future<http.Response> deleteAddress(String id, String customer, String authorization) async{
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, true);
 }

@@ -2,16 +2,11 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/main.dart';
 
-Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String urlPage }) async{
+Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String extraPath }) async{
 
-  var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : ''), params);
-  var url = '';
-  
-  if (urlPage!=null && urlPage!='') {
-    url = urlPage;
-  }
+  var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : '') + (extraPath!=null && extraPath!='' ? '$extraPath' : ''), params);
 
-  final response = await http.get(url!='' ? url : uri,
+  final response = await http.get(uri,
     headers: {
       'customer': customer,
       'Authorization': 'Bearer $authorization',
@@ -23,12 +18,13 @@ Future<http.Response> httpGet(String customer, String authorization, String reso
 
 Future<http.Response> httpPost(String bodyJson, String customer, String authorization, String resourcePath) async{
   var uri = Uri.https(hostApi, versionApi + resourcePath);
-
+  
   final response = await http.post(uri,
     headers: {
       'customer': customer,
       'Authorization': 'Bearer $authorization',
       'Content-Type' : 'application/json',
+      'Accept': 'application/json',
     },
     body: bodyJson
   );
@@ -52,15 +48,21 @@ Future<http.Response> httpPut(String id, String bodyJson, String customer, Strin
 }
 
 
-Future<http.Response> httpDelete(String id, String customer, String authorization, String resourcePath) async{
+Future<http.Response> httpDelete(String id, String customer, String authorization, String resourcePath, bool standardCall) async{
+
+  var response = null;
   var uri = Uri.https(hostApi, versionApi + resourcePath + '/$id');
+  
+  var headers = {
+    'customer': customer,
+    'Authorization': 'Bearer $authorization',
+  };
 
-  final response = await http.delete(uri,
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
-
+  if (standardCall) {
+    response = await http.delete(uri, headers: headers);
+  } else {
+    response = await http.get(uri, headers: headers);
+  }
+  
   return response;
 }

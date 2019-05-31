@@ -1,40 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/blocs/blocListTaskCalendar.dart';
+import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
-import 'package:joincompany/Menu/clientes.dart';
+import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:joincompany/services/UserService.dart';
 
-class taskHomePage extends StatefulWidget {
-  _MytaskPageState createState() => _MytaskPageState();
+class TaskHomePage extends StatefulWidget {
+  _MyTaskPageState createState() => _MyTaskPageState();
 }
 
-class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStateMixin{
+class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStateMixin{
+
+  ListWidgets ls = ListWidgets();
+
   TabController _controller;
-  bool CondicionalTarea = false;
-  bool CondicionalMapa = true;
-  bool CondicionalHome = true;
+  bool conditionalTask = false;
+  bool conditionalMap = true;
+  bool conditionalHome = true;
+  blocListTaskFilter blocListTaskresFilter;
+  blocListTaskCalendar blocListTaskCalendarRes;
+  var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
+  var DatepickedEnd = new DateTime.now();
+  String nameUser = '';
+  String emailUser = '';
+
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Join');
+  final TextEditingController _filter = new TextEditingController();
+  List<DateTime> _listCalendar = List<DateTime>();
 
   @override
-  Future initState() {
+  void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
-          () {
-        setState(() {});
+          () {setState((){});
       },
     );
+    extraerUser();
+    _listCalendar.add(DatepickedInit);
+    _listCalendar.add(DatepickedEnd);
     super.initState();
   }
 
   @override
   void dispose(){
     _controller.dispose();
+    blocListTaskCalendarRes.dispose();
+    blocListTaskresFilter.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +64,9 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       drawer: buildDrawer(),
       appBar: new AppBar(
         backgroundColor: PrimaryColor,
-        title: new Text('Join'),
+        title: _appBarTitle,
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            tooltip: 'Eliminar Cliente',
-            iconSize: 25,
-            onPressed: (){
-              //FUNCION DE BUSQUEDA EN TAREAS
-              //Navigator.pushNamed(context,'/SearchAddress');MaterialPageRoute(builder: (context) => SearchAddress()
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchAddress()),
-              );*/
-            },
-          ),
+          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Cliente', 25),
           IconButton(
             icon: Icon(Icons.calendar_today),
             //ICONO DE ALMANAQUE NO LO ENCUENTRO
@@ -64,6 +74,7 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
+              selectDate(context);
             },
           ),
         ],
@@ -72,24 +83,28 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
       body: getTabBarView(),
     );
   }
-  TabBar getTabBar(){
+
+  TabBar getTabBar() {
     return TabBar(
       indicatorColor : Colors.white,
       labelColor: Colors.white,
       unselectedLabelColor: Colors.white30,
       labelStyle: TextStyle(fontSize: 20),
       tabs: <Tab>[
-        Tab(text: 'Tareas',),
-        Tab(text: 'Mapa',),
+        Tab(child: Text('TAREAS',style: TextStyle(fontSize: 15.5),),),
+        Tab(child: Text('MAPA',style: TextStyle(fontSize: 15.5),),),
       ],
       controller: _controller,
     );
   }
 
-  TabBarView getTabBarView(){
+  TabBarView getTabBarView() {
+
+    blocListTaskresFilter = new blocListTaskFilter(_filter);
+    blocListTaskCalendarRes = new blocListTaskCalendar(/*_listCalendar*/);
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(),
+        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -98,105 +113,85 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
           : NeverScrollableScrollPhysics(),
     );
   }
-
-  Container TabBarButton(){
-    return Container(
-      margin: EdgeInsets.only(top: 0),
-      padding: EdgeInsets.only(top: 0),
-      child: Row(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: CondicionalTarea? Colors.grey : Colors.white,
-                child: Text('Tarea'),
-                onPressed: (){
-                  setState(() {
-                    CondicionalTarea = false;
-                    CondicionalMapa = true;
-                    CondicionalHome = true;
-                  });
-                },
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: RaisedButton(
-                elevation: 10,
-                color: CondicionalTarea? Colors.grey : Colors.white,
-                child: Text('Mapa'),
-                onPressed: (){
-                  setState(() {
-                    CondicionalTarea = true;
-                    CondicionalMapa = false;
-                    CondicionalHome = false;
-                  });
-                },
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
- Drawer buildDrawer() {
+  bool drawerTask = true;
+  Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
       child: new ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor,
+            decoration: new BoxDecoration(color: SecondaryColor),
+            margin: EdgeInsets.only(bottom: 0),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
+            currentAccountPicture: CircleAvatar(
+              radius: 1,
+              backgroundColor: Colors.white,
+              backgroundImage: new AssetImage('assets/images/user.png'),
             ),
-            accountName: new Text('Nombre de la empresa:',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-              ),
-            ),
-            accountEmail : Text('Nombre de Usuario',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 17,
-              ),),),
-          new ListTile(
-            trailing: new Icon(Icons.assignment),
-            title: new Text('Tareas'),
+          ),
+          /*Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            color: PrimaryColor,
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 40),
+                    height: 50,
+                    child: CircleAvatar(
+                      minRadius: 25.0,
+                      maxRadius: 25.0,
+                      backgroundImage: new AssetImage('assets/images/user.jpg'),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
+                  )
 
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/vistap');
-            },
+                ],
+              ),
+            )
+          ),*/
+          Container(
+              color: drawerTask ? Colors.grey[200] :  null,
+              child: ListTile(
+                trailing: new Icon(Icons.assignment),
+                title: new Text('Tareas'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
           ),
-          new ListTile(
-            title: new Text("Clientes"),
-            trailing: new Icon(Icons.business),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  Cliente()));
-            },
+          Container(
+            child: ListTile(
+              title: new Text("Clientes"),
+              trailing: new Icon(Icons.business),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
+              },
+            ),
           ),
-          new ListTile(
-            title: new Text("Contactos"),
-            trailing: new Icon(Icons.contacts),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ContactView()));
-            },
+          Container(
+            child: new ListTile(
+              title: new Text("Contactos"),
+              trailing: new Icon(Icons.contacts),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+              },
+            ),
           ),
           /*new ListTile(
             title: new Text("Negocios"),
@@ -208,21 +203,98 @@ class _MytaskPageState extends State<taskHomePage> with SingleTickerProviderStat
           Divider(
             height: 30.0,
           ),
-          new ListTile(
-            title: new Text("Configuracion"),
-            trailing: new Icon(Icons.filter_vintage),
-            onTap: () {
-             // Navigator.pushReplacementNamed(context, "/intro");
-              Navigator.of(context).pop();
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (BuildContext context) => new  ConfigCli()));
-            },
+          Container(
+            child: new ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.filter_vintage),
+              onTap: () {
+               // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new  ConfigCli()));
+              },
+            ),
           ),
         ],
       ),
     );
  }
+
+  Future<Null> selectDate( context )async{
+    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    context: context,
+    initialFirstDate: DatepickedInit,
+    initialLastDate: DatepickedEnd,
+    firstDate: new DateTime(1990),
+    lastDate: new DateTime(2030)
+    );
+    if(picked != null){
+      bool updateVarDataTime = false;
+      if(picked.length == 1){
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[0])){
+          updateVarDataTime = true; DatepickedInit = DatepickedEnd = picked[0];
+        }
+      }else{
+        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[1])){
+          updateVarDataTime = true;
+          DatepickedInit = picked[0];
+          DatepickedEnd = picked[1];
+        }
+      }
+
+      if(updateVarDataTime){
+        _listCalendar = new List<DateTime>();
+        _listCalendar.add(picked[0]);
+        if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
+        blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
+        setState(() {
+          DatepickedInit; DatepickedEnd;
+        });
+      }
+    }
+  }
+
+  String textFilter = '';
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = Container(
+          child: new TextField(
+            controller: _filter,
+            style: TextStyle(color: Colors.white),
+            decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search,color: Colors.white,),
+              hintText: 'Buscar',
+              fillColor: Colors.white,
+            ),
+            onChanged: (value){
+              setState(() {
+                textFilter = value.toString();
+                blocListTaskresFilter;
+              });
+            },
+          ),
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Join');
+        _filter.clear();
+      }
+    });
+  }
+
+  extraerUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
+    });
+  }
 
 }

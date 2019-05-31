@@ -25,15 +25,19 @@ class ClientDatabaseProvider{
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(
-              "CREATE TABLE User(idTable INT PRIMARY KEY, name TEXT, password TEXT , company TEXT, token TEXT)");
+              "CREATE TABLE User(idTable INT PRIMARY KEY,idUserCompany INT, name TEXT, password TEXT , company TEXT, token TEXT)");
     });
   }
 
   //muestra un solo cliente por el id la base de datos
   Future<UserDataBase> getCodeId(String codigo) async {
-    final db = await database;
-    var response = await db.query("User", where: "idTable = ?", whereArgs: [codigo]);
-    return response.isNotEmpty ? UserDataBase.fromMap(response.first) : null;
+    try{
+      final db = await database;
+      var response = await db.query("User", where: "idTable = ?", whereArgs: [codigo]);
+      return response.isNotEmpty ? UserDataBase.fromMap(response.first) : null;
+    }catch(e){
+      return null;
+    }
   }
 
   //Insert

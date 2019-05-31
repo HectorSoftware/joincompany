@@ -7,7 +7,7 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/tasks';
 
-Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String urlPage} ) async{
+Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
   
   var params = new Map<String, String>();
 
@@ -34,7 +34,11 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
     params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
 Future<http.Response> getTask(String id, String customer, String authorization) async{
@@ -43,8 +47,17 @@ Future<http.Response> getTask(String id, String customer, String authorization) 
 }
 
 Future<http.Response> createTask(TaskModel taskObj, String customer, String authorization) async{
-  
-  var bodyJson = taskObj.toJson();
+
+  var taskMapAux = taskObj.toMap();
+  var taskMap = new Map<String, dynamic>();
+
+  taskMapAux.forEach((key, value) {
+    if (value != null) {
+      taskMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(taskMap);
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
@@ -58,7 +71,7 @@ Future<http.Response> updateTask(String id, TaskModel taskObj, String customer, 
 
 Future<http.Response> deleteTask(String id, String customer, String authorization) async{
   
-  return await httpDelete(id, customer, authorization, resourcePath);
+  return await httpDelete(id, customer, authorization, resourcePath, true);
 }
 
 Future<http.Response> checkInTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async{
