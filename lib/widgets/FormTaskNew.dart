@@ -26,6 +26,9 @@ import 'package:joincompany/services/TaskService.dart';
 class FormTask extends StatefulWidget {
 
 
+  FormTask({this.directioncliente});
+   final  AddressModel  directioncliente;
+
   @override
   _FormTaskState createState() => new _FormTaskState();
 
@@ -38,15 +41,10 @@ class _FormTaskState extends State<FormTask> {
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
-  bool lleno = false;
    Map<String,String> dataInfo = Map<String,String>();
   List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
-  ListWidgets items = new ListWidgets();
   BuildContext globalContext;
-  List<String> listElement = List<String>();
-  List<Widget> listWidgetMain = List<Widget>();
   List<FieldModel> listFieldsModels = List<FieldModel>();
-  SectionModel section;
   FormModel formGlobal;
   UserDataBase userToken ;
   String token;
@@ -57,10 +55,7 @@ class _FormTaskState extends State<FormTask> {
   bool pass = false;
   AddressModel  directionClient = new  AddressModel();
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
-   List<MapEntry<String,String>> lstMapEntries = new List<MapEntry<String,String>> ();
-
   TaskModel saveTask = new TaskModel();
-  TextEditingController nameController;
 
   @override
   void initState(){
@@ -115,17 +110,15 @@ class _FormTaskState extends State<FormTask> {
                                      saveTask.formId = formGlobal.id;
                                      saveTask.responsibleId = responsibleId;
                                      saveTask.name = formGlobal.name;
-                                     saveTask.customValuesMap = dataSaveState;
                                      saveTask.addressId = directionClient.id;
-                                     saveTask.planningDate = _timeTask.toString();
-                                    // saveTask.customValuesMap = dataSaveState;
+                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                     saveTask.customValuesMap = dataSaveState;
 //                                     print(saveTask.formId);
 //                                     print(saveTask.responsibleId);
 //                                     print(saveTask.name);
-//                                     print(saveTask.customValuesMap);
+
                                      saveTaskApi();
                                    }
-
                                    Navigator.pop(context);
                                    Navigator.pop(context);
                                  },
@@ -196,6 +189,7 @@ class _FormTaskState extends State<FormTask> {
                                setState(() {
                                  pass= false;
                                  dropdownValue = null;
+                                 image = null;
                                });
                                Navigator.pop(context);
                              }
@@ -212,39 +206,43 @@ class _FormTaskState extends State<FormTask> {
         ],
         title: Text('Agregar Tareas'),
       ),
-      body:pass?
-      Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.70, //0.4
-              child: returnsStack(),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.05, //0.2
-             child: Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: directionClient.address != null ? Text('Direccion:  ${directionClient.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
-             ),
+      body:  pass? ListView(
+        children: <Widget>[
 
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.05, //0.2
-               child: Padding(
-                 padding: const EdgeInsets.all(8.0),
-                 child: directionClient.address != null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
-               ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.70, //0.4
+                  child: returnsStack(),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.05, //0.2
+                 child: Padding(
+                   padding: const EdgeInsets.all(8.0),
+                   child: directionClient.address != null ? Text('Direccion:  ${directionClient.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                 ),
 
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.05, //0.2
+                   child: Padding(
+                     padding: const EdgeInsets.all(8.0),
+                     child: directionClient.address != null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                   ),
+
+                ),
+              ],
             ),
-          ],
-        ),
-      )
-      : Center(child: Text('Seleccione un Formulario')),
+          )
+
+        ],
+      ) : Center(child: Text('Seleccione un Formulario')),
 
 
 
@@ -282,6 +280,7 @@ class _FormTaskState extends State<FormTask> {
                                   directionClient.address = null;
                                   dropdownValue = null;
                                   pass = true;
+                                  image = null;
                                 });
                                 Navigator.pop(context);
                               },
@@ -655,10 +654,19 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
+
                       child: new Center(
-                        child: image == null
-                            ? new Text('')
-                            : new Image.file(image),
+                        child: Container(
+                          child: image == null
+                              ? new Text('')
+
+                              : new Card(
+                                    elevation: 12,
+                                         child:  Image.file(image,height: 200,width: 200,),
+
+                                               )
+
+                        ),
 
                       ),
                     )
@@ -719,8 +727,6 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
-
-
    direction(){
     setState(() {
       directionClient;
@@ -731,7 +737,6 @@ class _FormTaskState extends State<FormTask> {
   }
   addDirection() async{
     AddressModel resp = await getDirections();
-      print(resp.address);
     if(resp != null) {
       setState(() {
         directionClient = resp;
@@ -865,16 +870,13 @@ class _FormTaskState extends State<FormTask> {
   initFormType()async{
     formType = await getAll();
   }
-
   getElements()async{
     userToken = await ClientDatabaseProvider.db.getCodeId('1');
     token = userToken.token;
     customer = userToken.company;
     user = userToken.name;
     responsibleId = userToken.idUserCompany;
-
   }
-
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
@@ -888,9 +890,7 @@ class _FormTaskState extends State<FormTask> {
                 onTap: () {
                   Navigator.pop(context);
                   addDirection();
-
                 },
-
               ),
               new ListTile(
                 leading: new Icon(Icons.access_time),
@@ -906,7 +906,6 @@ class _FormTaskState extends State<FormTask> {
         });
   }
   Future saveTaskApi() async{
-
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.request);
 //
@@ -914,9 +913,7 @@ class _FormTaskState extends State<FormTask> {
     print('--------------------------------------');
    print(createTaskResponse.body);
   }
-
   void saveData(String dataController, String id) {
-
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;

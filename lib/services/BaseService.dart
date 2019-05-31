@@ -2,16 +2,11 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/main.dart';
 
-Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String urlPage, String extraPath }) async{
+Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String extraPath }) async{
 
   var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : '') + (extraPath!=null && extraPath!='' ? '$extraPath' : ''), params);
-  var url = '';
-  
-  if (urlPage!=null && urlPage!='') {
-    url = urlPage;
-  }
 
-  final response = await http.get(url!='' ? url : uri,
+  final response = await http.get(uri,
     headers: {
       'customer': customer,
       'Authorization': 'Bearer $authorization',

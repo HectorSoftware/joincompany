@@ -6,6 +6,7 @@ import 'package:joincompany/api/rutahttp.dart';
 import 'package:joincompany/blocs/blocTaskMap.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/Marker.dart';
+import 'package:joincompany/widgets/FormTaskNew.dart';
 
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
@@ -142,11 +143,15 @@ class _MytaskPageMapState extends State<taskHomeMap> {
             markerId: MarkerId(mark.id.toString()),
             position: LatLng(mark.latitude, mark.longitude),
             infoWindow: InfoWindow(
-                title: (mark.customer) ,
+                title: (mark.customer + '             ') ,
                 snippet: mark.address,
                 onTap: (){
                   if(mark.status == 0){
-                    Navigator.pushNamed(context, '/formularioTareas');
+                   /* Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => FormTask(directioncliente: null,)
+                  )*/
                   }
                 }
             ),

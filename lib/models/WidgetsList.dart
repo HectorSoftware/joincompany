@@ -278,7 +278,6 @@ Widget timeWidget(BuildContext context, String string){
         dataInfo.putIfAbsent(id ,()=> value);
         dataInfo[id] = value;
         dataSaveState.add(dataInfo);
-        print(dataSaveState.length);
   }
   void saveString(value, String string){
     dataInfo.putIfAbsent(string, value);

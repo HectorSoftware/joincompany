@@ -10,12 +10,14 @@ import 'package:joincompany/models/AccountModel.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AccountService.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
 
@@ -34,10 +36,10 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  //   final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
-  //    final companyController = TextEditingController(/*text : 'duperu'*/);
-  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
- final companyController = TextEditingController(text : 'getkem');
+     final nameController = TextEditingController(text : 'eibanez@duperu.com');
+     final companyController = TextEditingController(text : 'duperu');
+//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//  final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -212,7 +214,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos(nameController.text,passwordController.text,companyController.text);
-                //testApi();
               },
               child: Center(
                   child: Center(
@@ -327,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
   testApi() async{
 
     try {
-   //   print("---------------- Inicia test. ----------------------------");
+      print("---------------- Inicia test. ----------------------------");
 
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
@@ -355,27 +356,23 @@ class _LoginPageState extends State<LoginPage> {
       // print(getCustomerResponse.body);
 
       // Customer Update
-      // customerObj.name = 'test 15';
-      // var updateCustomerResponse = await updateCustomer('387', customerObj, customer, authorization);
-      // print(customerObj.name);
-      // print(customerObj.toJson());
-      // print(updateCustomerResponse.statusCode);
+      // customerObj.name += ' rr';
+      // var updateCustomerResponse = await updateCustomer('2', customerObj, customer, authorization);
       // print(updateCustomerResponse.body);
 
       // Customer Create
       // CustomerModel customerObjNew = CustomerModel(
-      //   name : '123Test test test',
-      //   code : '1132154654',
-      //   email : "test12@test.com",
-      //   phone : "79879812",
-      //   contactName : "name12 conact",
-      //   details : "nota 12"
+      //   name : '123Test test test', 
+      //   code : '1132154654', 
+      //   email : "test12@test.com", 
+      //   phone : "79879812", 
+      //   contactName : "name12 conact", 
+      //   details : "nota 12" 
       // );
       // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
       // print(createCustomerResponse.request);
       // print(createCustomerResponse.statusCode);
       // print(createCustomerResponse.body);
-
 
       // Customer Delete
       // var deleteCustomerResponse = await deleteCustomer('411', customer, authorization);
@@ -395,23 +392,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
-
-      // Customer Addresses
-      // var getCustomerAddressesResponse = await getCustomerAddresses('387', customer, authorization);
-      // List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
-      // print(customerAddresses.length);
-      // print(customerAddresses[0].address);
-
-      // Customer Address Relate
-      // var relateCustomerAddressResponse = await relateCustomerAddress('417', '345', customer, authorization);
-      // print(relateCustomerAddressResponse.statusCode);
-      // print(relateCustomerAddressResponse.body);
-
-      // Customer Address Unrelate
-      // var unrelateCustomerAddressResponse = await unrelateCustomerAddress('417', '345', customer, authorization);
-      // print(unrelateCustomerAddressResponse.request);
-      // print(unrelateCustomerAddressResponse.statusCode);
-      // print(unrelateCustomerAddressResponse.body);
 
       // Customer Addresses
       // var getCustomerAddressesResponse = await getCustomerAddresses('387', customer, authorization);
