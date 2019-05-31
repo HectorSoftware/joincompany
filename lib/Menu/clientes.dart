@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -89,42 +91,7 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
-    String title = titleCli;
-    String subtitle = subtitleCli;
-    int id = idCli;
-    return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
-              ),
-            ],
-          ),
-          IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){},),
-        ],
-      ),
-    );
-  }
-
+  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -177,13 +144,17 @@ class _ClienteState extends State<Cliente> {
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -206,7 +177,6 @@ class _ClienteState extends State<Cliente> {
       ),
     );
   }
-
 
   extraerUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
