@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,7 +26,7 @@ class FormTask extends StatefulWidget {
 
 
   FormTask({this.directioncliente});
-   final  CustomerWithAddressModel  directioncliente;
+   final CustomerWithAddressModel  directioncliente;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -34,6 +35,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   File image;
+  File image2;
   String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
@@ -51,12 +53,14 @@ class _FormTaskState extends State<FormTask> {
   int responsibleId;
   FormsModel formType;
   bool pass = false;
-  AddressModel  directionClient = new  AddressModel();
+  bool taskEnd = false;
+  CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
   TaskModel saveTask = new TaskModel();
-
+  CustomerWithAddressModel  directioncliente;
   @override
   void initState(){
+    directioncliente = widget.directioncliente;
     initFormType();
     super.initState();
   }
@@ -76,7 +80,7 @@ class _FormTaskState extends State<FormTask> {
                builder: (BuildContext context) {
                  return
                    AlertDialog(
-                     title: Text('ELIMINIAR'),
+                     title: Text('Guardar'),
                      content: const Text(
                          'Desea Guardar Tarea'),
                      actions: <Widget>[
@@ -88,34 +92,35 @@ class _FormTaskState extends State<FormTask> {
                        ),
                        FlatButton(
                          child: const Text('ACEPTAR'),
-                         onPressed: (){
-                           dataSaveState.clear();
+                         onPressed: () async {
+
+                          /* dataSaveState.clear();
+
                            List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
                            dataInfo.forEach((key, value) {
                              listOfMaps.add({key: value});
                            }
-                           );
-                           dataSaveState = listOfMaps;
-//                                   print(dataSaveState);
-                           if(dataSaveState.isNotEmpty) {
-                             // var createCustomerResponse = await createCustomer(customerObjNew, customer, authorization);
-                             // print(createCustomerResponse.request);
-                             // print(createCustomerResponse.statusCode);
-                             // print(createCustomerResponse.body);
-
+                           );*/
+                           if(dataInfo.isNotEmpty) {
                              saveTask.formId = formGlobal.id;
                              saveTask.responsibleId = responsibleId;
                              saveTask.name = formGlobal.name;
-                             saveTask.customerId = widget.directioncliente.customerId;
-                             saveTask.addressId = widget.directioncliente.addressId;
+                             saveTask.customerId = directioncliente.customerId;
+                             saveTask.addressId = directioncliente.addressId;
                              saveTask.planningDate = _dateTask.toString().substring(0,19);
                              saveTask.customValuesMap = dataInfo;
-                             //  saveTask.customValuesMap = dataSaveState;
-                             saveTaskApi();
+                             saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
+                             if(taskEnd == true)
+                               {
+                                 print('tarea creada');
+                                 Navigator.pop(context);
+                                 Navigator.pop(context);
+                               }else{
+                               print('NO');
+                             }
+
                            }
 
-                           Navigator.pop(context);
-                           Navigator.pop(context);
                          },
                        )
                      ],
@@ -130,71 +135,38 @@ class _FormTaskState extends State<FormTask> {
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
-            child: SimpleDialog(
-              title: Text('Descartar Formulario'),
-              children: <Widget>[
-               Padding(
-                 padding: const EdgeInsets.only(right: 80),
-                 child: Column(
-                   children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 0),
-                        child: Row(
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(Icons.arrow_back),
-                              onPressed: (){
-                                Navigator.pop(context);
-                              },
-                            ),
-                            RaisedButton(
-                              elevation: 0,
-                              color: Colors.white,
-                              child: Text('Volver'),
-                              onPressed: () {
-
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
+                builder: (BuildContext context) {
+                  return
+                    AlertDialog(
+                      title: Text('Descartar'),
+                      content: const Text(
+                          'Desea descartar Formulario'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: const Text('CANCELAR'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
-                      ),
-                     Row(
-                       children: <Widget>[
-                         IconButton(
-                           icon: Icon(Icons.delete),
-                             onPressed: (){
-                               setState(() {
-                                 dataInfo = null;
-                                 pass= false;
-                                 dropdownValue = null;
-                               });
+                        FlatButton(
+                          child: const Text('ACEPTAR'),
+                          onPressed: (){
+                            setState(() {
+                              dataInfo = new Map();
+                              pass= false;
+                              dropdownValue = null;
+                              image = null;
+                            });
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
 
-                               //Navigator.pop(context);
-                             }
-                         ),
-                         RaisedButton(
-                           child: Text('Descartar Formulario'),
-                           elevation: 0,
-                           color: Colors.white,
-                             onPressed: (){
-                               setState(() {
-                                 dataInfo = new Map();
-                                 pass= false;
-                                 dropdownValue = null;
-                                 image = null;
-                               });
-                               Navigator.pop(context);
-                             }
-                         ),
-                       ],
-                     ),
+                }
 
-                   ],
-                 ),
-               ),
-              ],
-            ))
+
+            )
           )
         ],
         title: Text('Agregar Tareas'),
@@ -217,7 +189,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                  child: Padding(
                    padding: const EdgeInsets.all(8.0),
-                   child: widget.directioncliente.address != null ? Text('Direccion:  ${widget.directioncliente.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                   child: directioncliente.address != null ? Text('Direccion:  ${directioncliente.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
                  ),
 
                 ),
@@ -226,7 +198,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                    child: Padding(
                      padding: const EdgeInsets.all(8.0),
-                     child: widget.directioncliente.address!= null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                     child: directioncliente.address!= null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
                    ),
 
                 ),
@@ -289,8 +261,8 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-  Future<Image> getImg() async{
-    return showDialog<Image>(
+  Future<Uint8List> getImg() async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -631,8 +603,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-                File image;
-                File imageR;
+
                 return Row(
                   children: <Widget>[
                     Column(
@@ -643,7 +614,12 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async {
-                                imageR = await  pickerPhoto(image);
+                                  File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  if (img != null) {
+                                    setState(() {
+                                      image = img;
+                                    });
+                                  }
                                 },
                                 child: Text(listFieldsModels[index].name),
                                 color: PrimaryColor,
@@ -658,14 +634,16 @@ class _FormTaskState extends State<FormTask> {
 
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
+                      height: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
                           child: image == null ? new Text('')
-                              : new Card(
-                            elevation: 12,
-                            child:  Image.file(image,height: 200,width: 250,),
-
-                          )
+                              : new Image.file(image,height: 200,width: 200,)
+//                          Card(
+//                            elevation: 12,
+//                            child:  Image.file(image,height: 200,width: 250,),
+//
+//                          )
 
                       ),
                     )
@@ -718,11 +696,18 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage' )
+              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'combo' )
                 {
-                  return IconButton(icon: Icon(Icons.add), onPressed: ()async{
-                    getImg();
-                  });
+                  Uint8List saveImage;
+                  return
+                    Row(
+                      children: <Widget>[
+                        IconButton(icon: Icon(Icons.image),
+                              onPressed: ()async{
+                              saveImage = await getImg();
+                  }),
+                      ],
+                    );
 
                 }
             }
@@ -732,19 +717,13 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
-   direction(){
-    setState(() {
-      directionClient;
-    });
-    return Text(directionClient.address,style: TextStyle(
-        fontSize: 13
-    ),);
-  }
+
   addDirection() async{
-    AddressModel resp = await getDirections();
+    CustomerWithAddressModel resp = await getDirections();
+    print(resp.address);
     if(resp != null) {
       setState(() {
-        directionClient = resp;
+        directioncliente = resp;
       });
     }
   }
@@ -801,8 +780,8 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-  Future<AddressModel> getDirections() async{
-    return showDialog<AddressModel>(
+  Future<CustomerWithAddressModel> getDirections() async{
+    return showDialog<CustomerWithAddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -835,16 +814,10 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-  Future<File>pickerPhoto(File image) async {
+  pickerPhoto(String name) async {
 
-    File img = await ImagePicker.pickImage(source: ImageSource.camera);
-    if (img != null) {
-      setState(() {
-        image = img;
 
-      });
-    }
-    return image;
+
   }
 
 
@@ -912,19 +885,24 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-  Future saveTaskApi() async{
+   saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.request);
 //
     print(createTaskResponse.statusCode);
     print('--------------------------------------');
    print(createTaskResponse.body);
+   if(createTaskResponse.statusCode == 201){
+     setState(() {
+       taskEnd = true;
+     });
+   }
+
   }
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
-
   }
 
 }

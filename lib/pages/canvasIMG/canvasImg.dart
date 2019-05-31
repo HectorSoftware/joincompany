@@ -62,7 +62,7 @@ class _CanvasImgState extends State<CanvasImg> {
             icon: Icon(Icons.check),
             onPressed: () async {
               Uint8List bytes = await _controller.exportAsPNGBytes();
-              Navigator.of(context).pop(Image.memory(bytes));
+              Navigator.of(context).pop(bytes);
             }),
       ];
     return Scaffold(
