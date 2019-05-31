@@ -8,7 +8,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 
 
 
-class BlocTaskForm  {
+/*class BlocTaskForm  {
 
 
   ListWidgets items = new ListWidgets();
@@ -34,7 +34,7 @@ class BlocTaskForm  {
       {
         for(FieldModel k in v.fields)
         {
-          camposWidgets = k;
+
           switch(k.fieldType){
             case 'Combo':
               {
@@ -137,4 +137,4 @@ class BlocTaskForm  {
   BlocTaskForm(context) {
     updateListWidget(context);
   }
-}
+}*/

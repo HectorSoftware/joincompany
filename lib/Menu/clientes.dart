@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -15,8 +17,6 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-
-import 'businesList.dart';
 
 
 // ignore: must_be_immutable
@@ -103,7 +103,8 @@ class _ClienteState extends State<Cliente> {
             accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
             currentAccountPicture: CircleAvatar(
               radius: 1,
-              backgroundImage: new AssetImage('assets/images/user.jpg'),
+              backgroundColor: Colors.white,
+              backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
           Container(
@@ -123,8 +124,8 @@ class _ClienteState extends State<Cliente> {
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/cliente');
+//                Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -133,9 +134,11 @@ class _ClienteState extends State<Cliente> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
+                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/contactos');
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
               },
             ),
           ),
@@ -159,9 +162,12 @@ class _ClienteState extends State<Cliente> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new  ConfigCli()));
               },
             ),
           ),
@@ -227,7 +233,7 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14),),
+                  title: Text(name , style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                     Navigator.push(

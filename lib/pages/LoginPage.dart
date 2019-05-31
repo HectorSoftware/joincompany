@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AccountModel.dart';
@@ -29,10 +32,10 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-//  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-//  final companyController = TextEditingController(text : 'duperu');
-  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-  final companyController = TextEditingController(text : 'getkem');
+  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  final companyController = TextEditingController(text : 'duperu');
+//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//  final companyController = TextEditingController(text : 'getkem');
 
   final passwordController = TextEditingController(text : '123');
 
@@ -379,6 +382,23 @@ class _LoginPageState extends State<LoginPage> {
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
+
+      // Customer Addresses
+      // var getCustomerAddressesResponse = await getCustomerAddresses('387', customer, authorization);
+      // List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+      // print(customerAddresses.length);
+      // print(customerAddresses[0].address);
+
+      // Customer Address Relate
+      // var relateCustomerAddressResponse = await relateCustomerAddress('417', '345', customer, authorization);
+      // print(relateCustomerAddressResponse.statusCode);
+      // print(relateCustomerAddressResponse.body);
+
+      // Customer Address Unrelate
+      // var unrelateCustomerAddressResponse = await unrelateCustomerAddress('417', '345', customer, authorization);
+      // print(unrelateCustomerAddressResponse.request);
+      // print(unrelateCustomerAddressResponse.statusCode);
+      // print(unrelateCustomerAddressResponse.body);
 
       // Task Get
       // var getTaskResponse = await getTask('2427', customer, authorization);

@@ -58,6 +58,7 @@ flutter:
   - assets/images/cliente.png
   - assets/images/final-logo.png
   - assets/images/user.jpg
+  - assets/images/user.png
   fonts:
     - family: Roboto
       fonts:

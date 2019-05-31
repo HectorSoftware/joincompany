@@ -18,6 +18,11 @@ class taskHomeMap extends StatefulWidget {
 * AIzaSyA0t37sy5FEo5QWzA16hzxX2AWfF3eYz4M
 * */
 
+enum markersId {
+  none,
+  markerRed,
+}
+
 class _MytaskPageMapState extends State<taskHomeMap> {
 
   GoogleMapController mapController;
@@ -39,7 +44,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   @override
   void dispose(){
-    streamSubscription.cancel();
     _Bloc.dispose();
     super.dispose();
   }
@@ -87,26 +91,26 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   void _onCameraMove(CameraPosition position) {
-    setState(() {
+    //setState(() {
       _lastPosition = position.target;
-    });
+    //});
   }
 
   static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 15);
 
   void onMapCreated(controller) {
-    setState(() {
+    //setState(() {
       mapController = controller;
-    });
+    //});
     _addMarker();
   }
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-    setState(() {
+    //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
-    });
+    //});
   }
   List<Place> listplace = new List<Place>();
   Future _addMarker() async {
@@ -123,6 +127,15 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   allmark(List<Place> listPlaces) async {
+    
+    Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
+
+
+
+    Map<markersId, String> markersIconsFromId = {
+      markersId.markerRed: "marker_red1",
+    };
+
     for(Place mark in listPlaces){
       _markers.add(
         Marker(
@@ -137,13 +150,15 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                   }
                 }
             ),
-            icon: await ColorMarker(mark),
-      ));
+            onTap: (){ },
+          icon: await ColorMarker(mark)
+        ),
+      );
     }
-    setState((){
-    _markers;
-    _polyLines;
-    });
+//    //setState((){
+//    _markers;
+//    _polyLines;
+//    //});
   }
 
   Future createRoute(Place mark) async {
@@ -158,6 +173,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   Future<BitmapDescriptor> ColorMarker(Place mark) async {
     if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
+    //if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context),Image.network('https://picsum.photos/250?image=9')); }
     if(mark.status == 2){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
     if(mark.status == 1){
       //createRoute(mark);
@@ -230,6 +246,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
 
+  // ignore: non_constant_identifier_names
   ListClientes(){
 
     List<Place> listas_porhacer = new List<Place>();
@@ -249,7 +266,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
             itemCount: listas_porhacer.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(listas_porhacer[index].customer + ' ' + listas_porhacer[index].id.toString()),
+                title: Text(listas_porhacer[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
                 subtitle: Text(listas_porhacer[index].address),
                 leading: Icon(Icons.location_on,color: Colors.red,),
                 onTap: (){

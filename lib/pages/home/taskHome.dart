@@ -82,7 +82,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
-  TabBar getTabBar(){
+  TabBar getTabBar() {
     return TabBar(
       indicatorColor : Colors.white,
       labelColor: Colors.white,
@@ -96,17 +96,17 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
-  TabBarView getTabBarView(){
+  TabBarView getTabBarView() {
 
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    blocListTaskRes = new blocListTask(valueselectDate);
+    //blocListTaskRes = new blocListTask(valueselectDate);
     /*setState(() {
       blocListTaskresFilter;
       blocListTaskRes;
     });*/
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskFilterRes: blocListTaskresFilter,blocListTaskRes: blocListTaskRes,),
+        taskHomeTask(blocListTaskFilterRes: blocListTaskresFilter,blocListTaskRes: blocListTaskRes = new blocListTask(valueselectDate),),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -130,7 +130,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
             currentAccountPicture: CircleAvatar(
               radius: 1,
-              backgroundImage: new AssetImage('assets/images/user.jpg'),
+              backgroundColor: Colors.white,
+              backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
           Container(
@@ -227,7 +228,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         );
         setState(() {
           DatepickedInit; DatepickedEnd;
-          blocListTaskRes;
+          //blocListTaskRes;
         });
       }
     }
