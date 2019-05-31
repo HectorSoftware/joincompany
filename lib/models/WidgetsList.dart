@@ -8,6 +8,8 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
+import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
+import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 
 enum Method{
   CAMERA,
@@ -209,11 +211,8 @@ Future<Null> selectDate(BuildContext context )async{
     setState(() {
       _date = picked;
     });
-
   }
-
 }
-
 Widget dateT(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
@@ -276,14 +275,11 @@ Widget timeWidget(BuildContext context, String string){
         dataInfo.putIfAbsent(id ,()=> value);
         dataInfo[id] = value;
         dataSaveState.add(dataInfo);
-        print(dataSaveState.length);
   }
   void saveString(value, String string){
     dataInfo.putIfAbsent(string, value);
     dataSaveState.add(dataInfo);
   }
-
-
 
   Widget textArea(BuildContext context,placeholder, String id){
     return
@@ -401,6 +397,17 @@ Widget timeWidget(BuildContext context, String string){
           });
       }
   }
+
+  Future<Image> getImg() async{
+    return showDialog<Image>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return PickerImg();
+      },
+    );
+  }
+
   Widget imageImage(BuildContext context, String string){
     return Row(
       children: <Widget>[

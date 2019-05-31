@@ -36,8 +36,8 @@ class blocListTask {
     }
 
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    //var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
+   // var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
     while(true){

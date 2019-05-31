@@ -1,21 +1,12 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:joincompany/async_database/Database.dart';
-import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AccountModel.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/services/AccountService.dart';
-import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
 
@@ -28,17 +19,15 @@ class LoginPage extends StatefulWidget {
     return _LoginPageState();
   }
 }
-
 class _LoginPageState extends State<LoginPage> {
 
   UserDataBase saveUser;
   UserDataBase userVe;
 
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  final companyController = TextEditingController(text : 'duperu');
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-//  final companyController = TextEditingController(text : 'getkem');
-
+     final companyController = TextEditingController(text : 'duperu');
+  //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+  //   final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -408,15 +397,14 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerAddressResponse.request);
       // print(unrelateCustomerAddressResponse.statusCode);
       // print(unrelateCustomerAddressResponse.body);
-
       // Task Create
       // TaskModel taskNew = new TaskModel(
-      //   name: 'Enrolamiento eHuapi',
-      //   formId: 3,
-      //   responsibleId: 3,
-      //   customerId: 408,
-      //   addressId: 345,
-      //   customValuesMap: [{"18": "hola"}, {"20" : "Test"}]
+        // name: 'Enrolamiento eHuapi',
+        // formId: 3,
+        // responsibleId: 3,
+        // customerId: 408,
+        // addressId: 345,
+        // customValuesMap: {"18": "test", "20": "valor test"}
       // );
       // var createTaskResponse = await createTask(taskNew, customer, authorization);
       // print(createTaskResponse.request);
@@ -485,8 +473,7 @@ class _LoginPageState extends State<LoginPage> {
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
-      print(error);
-      print(stackTrace);
+
     }
 
   }

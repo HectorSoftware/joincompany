@@ -248,7 +248,7 @@ class _ClienteState extends State<Cliente> {
                   trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
                     Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                        new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
                         //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
                   onTap: (){

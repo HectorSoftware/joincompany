@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
@@ -38,6 +39,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
   List<DateTime> ListCalender = new List<DateTime>();
+  CustomerWithAddressModel directionClient = CustomerWithAddressModel();
 
   @override
   void initState() {
@@ -87,7 +89,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             onPressed: (){
               Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                  new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: directionClient,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
@@ -96,6 +98,28 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
   ListViewTareas(){
+
+    /*bloctasks = widget.blocListTaskRes;
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
+      => setState((){
+        listTaskModellocal = new List<TaskModel>();
+        setState(() {
+          listTaskModellocal;
+        });
+        for(int h = 0; h < 255; h++){
+          var hasta = new DateTime.now().add(Duration(days: -h));
+          for(int k = 0; k < newVal.length; k++){
+            if ((hasta.day == DateTime.parse(newVal[k].createdAt).day)&&
+                (hasta.month == DateTime.parse(newVal[k].createdAt).month)&&
+                (hasta.year == DateTime.parse(newVal[k].createdAt).year)) {
+              listTaskModellocal.add(newVal[k]);
+            }
+          }
+        }
+      }));
+    }catch(e){ }*/
 
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try{
@@ -175,7 +199,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     String DateTask = "1990-05-05 20:00:04Z";
     return ListView.builder(
-
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
           int PosicionActual = index;
@@ -201,7 +224,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           if (listTaskModellocal[PosicionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[PosicionActual].name + ' - ' + listTaskModellocal[PosicionActual].id.toString();
+            title = listTaskModellocal[PosicionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
           }
 
           if (listTaskModellocal[PosicionActual].address == null) {
@@ -257,13 +280,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       color: PrimaryColor,
                       child: Text(dateTitulo, style: TextStyle(
                           fontSize: 16, color: Colors.white)),
-                    )
-                    : Container(),
+                    ) : Container(),
                     ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
                   ],
                 ),
               );
-          } else {
+          }else{
             if(ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
                 ls.createState().checkSearchInText(customerName, filterText)){
@@ -320,7 +342,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
-
     return Container(
         child: Card(
           child: Column(
@@ -337,7 +358,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     value: listTaskModellocalbool[index],
                     onChanged: (bool value) async {
                       if(value){
-                        print(value);
                         setState(() {
                           listTaskModellocalbool[index] = true;
                         });
@@ -347,9 +367,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                             listTaskModellocalbool[index] = false;
                           });
                         }
-
                       }else{
-                        print(value);
                         setState(() {
                           listTaskModellocalbool[index] = false;
                         });
@@ -359,7 +377,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                             listTaskModellocalbool[index] = false;
                           });
                         }
-
                       }
                     },
                   ),

@@ -30,7 +30,7 @@ class TaskModel {
  String status;
  List<CustomSectionModel> customSections;
  List<CustomValueModel> customValues;
- List<Map<String, String>> customValuesMap;
+ Map<String, String> customValuesMap;
  FormModel form;
  AddressModel address;
  CustomerModel customer;
@@ -127,7 +127,7 @@ class TaskModel {
    "checkout_distance": checkoutDistance,
    "status": status,
    "custom_sections": customSections != null ? new List<CustomSectionModel>.from(customSections.map((x) => x.toMap())) : null,
-   "custom_values": customValuesMap != null ? new List<Map<String, String>>.from(customValuesMap.map((x) => x )) : null,
+   "custom_values": customValuesMap != null ? new Map<String, String>.from(customValuesMap) : null,
    "form": form != null ? form.toMap() : null,
    "address": address != null ? address.toMap() : null,
    "customer": customer != null ? customer.toMap() : null,
