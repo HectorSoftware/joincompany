@@ -32,6 +32,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   UserDataBase UserActiv;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
+  List<bool> listTaskModellocalbool;
   String filterText = '';
 
   blocListTaskFilter bloctasksFilter;
@@ -42,6 +43,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   void initState() {
     _getUserLocation();
     listTaskModellocal = new List<TaskModel>();
+    listTaskModellocalbool = new List<bool>();
     actualizarusuario();
     super.initState();
   }
@@ -95,35 +97,13 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   ListViewTareas(){
 
-    /*bloctasks = widget.blocListTaskRes;
-    try{
-      // ignore: cancel_subscriptions
-      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
-      => setState((){
-        listTaskModellocal = new List<TaskModel>();
-        setState(() {
-          listTaskModellocal;
-        });
-        for(int h = 0; h < 255; h++){
-          var hasta = new DateTime.now().add(Duration(days: -h));
-          for(int k = 0; k < newVal.length; k++){
-            if ((hasta.day == DateTime.parse(newVal[k].createdAt).day)&&
-                (hasta.month == DateTime.parse(newVal[k].createdAt).month)&&
-                (hasta.year == DateTime.parse(newVal[k].createdAt).year)) {
-              listTaskModellocal.add(newVal[k]);
-            }
-          }
-        }
-      }));
-    }catch(e){ }*/
-
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
       => setState((){
         listTaskModellocal.clear();
-        paginador = 0;
+        listTaskModellocalbool.clear();
         getdatalist(onData[1],onData[0],1);
       }));
     }catch(e){}
@@ -166,13 +146,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
   }
 
-  int paginador = 0;
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
-
-    paginador++;
-
-    print(desdef);
-    print(hastaf);
 
     String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
@@ -187,11 +161,13 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
         for(int i = 0; i < tasks.data.length; i++ ){
           _listTask.add(tasks.data[i]);
+          listTaskModellocalbool.add(tasks.data[i].status.contains('done'));
         }
       }
     }catch(e){}
     setState(() {
       listTaskModellocal = _listTask;
+      listTaskModellocalbool;
     });
   }
 
@@ -201,7 +177,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     return ListView.builder(
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
-
           int PosicionActual = index;
           String voidFieldMessage = "";
 
@@ -281,12 +256,13 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                       color: PrimaryColor,
                       child: Text(dateTitulo, style: TextStyle(
                           fontSize: 16, color: Colors.white)),
-                    ) : Container(),
+                    )
+                    : Container(),
                     ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
                   ],
                 ),
               );
-          }else{
+          } else {
             if(ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
                 ls.createState().checkSearchInText(customerName, filterText)){
@@ -343,6 +319,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   Container ListCard(String title, String address, String date,TaskModel listTask, int index){
+
     return Container(
         child: Card(
           child: Column(
@@ -356,28 +333,32 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     ),
                   ),
                   Checkbox(
-                    value: listTask.status.contains('done'),
+                    value: listTaskModellocalbool[index],
                     onChanged: (bool value) async {
                       if(value){
+                        print(value);
                         setState(() {
-                          listTaskModellocal[index].status = 'done';
+                          listTaskModellocalbool[index] = true;
                         });
                         var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-                            listTaskModellocal[index].status = 'working';
+                            listTaskModellocalbool[index] = false;
                           });
                         }
+
                       }else{
+                        print(value);
                         setState(() {
-                          listTaskModellocal[index].status = 'working';
+                          listTaskModellocalbool[index] = false;
                         });
                         var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-                            listTaskModellocal[index].status = 'done';
+                            listTaskModellocalbool[index] = false;
                           });
                         }
+
                       }
                     },
                   ),
@@ -420,8 +401,10 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
     if(deleteTaskResponse.statusCode == 200){
       listTaskModellocal.removeAt(index);
+      listTaskModellocalbool.removeAt(index);
       setState(() {
         listTaskModellocal;
+        listTaskModellocalbool;
       });
     }
   }
