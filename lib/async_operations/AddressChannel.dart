@@ -21,7 +21,7 @@ class AddressChannel {
         AddressModel addressServer = AddressModel.fromJson(createAddressResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
+        DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
       }
     });
 
@@ -97,13 +97,11 @@ class AddressChannel {
         if (updateAddressServerResponse.statusCode == 200) {
           AddressModel addressServerUpdated = AddressModel.fromJson(updateAddressServerResponse.body);
           //Cambiar el sycn state
-          // DatabaseProvider.db.UpdateAddress(addressLocal.id, SyncState.synchronized);
-
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServerUpdated);
+          DatabaseProvider.db.UpdateAddress(addressServerUpdated.id, addressServerUpdated, SyncState.synchronized);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        // DatabaseProvider.db.UpdateAddress(addressServer);
+        DatabaseProvider.db.UpdateAddress(addressServer.id, addressServer, SyncState.synchronized);
       }
     });
   } 

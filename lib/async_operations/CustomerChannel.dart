@@ -32,7 +32,7 @@ class CustomerChannel {
         CustomerModel customerServer = CustomerModel.fromJson(createCustomerResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // DatabaseProvider.db.UpdateCustomer(customerLocal.id, customerServer, SyncState.synchronized);
+        DatabaseProvider.db.UpdateCustomer(customerLocal.id, customerServer, SyncState.synchronized);
       }
     });
 
@@ -109,10 +109,10 @@ class CustomerChannel {
           CustomerModel customerServerUpdated = CustomerModel.fromJson(updateCustomerServerResponse.body);
           //Cambiar el sycn state
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          // DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
+          DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        // DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
+        DatabaseProvider.db.UpdateCustomer(customerServer.id, customerServer, SyncState.synchronized);
       }
     });
   } 

@@ -71,7 +71,7 @@ class FormChannel {
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       
       if ( diffInMilliseconds < 0 ) { // Actualizar Local
-        // DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+        DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
       }
     });
   }
