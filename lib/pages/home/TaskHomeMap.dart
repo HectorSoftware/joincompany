@@ -140,12 +140,11 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 title: (mark.customer + '             ') ,
                 snippet: mark.address,
                 onTap: (){
-                  if(mark.status == 0){
+                  if(mark.statusTask == status.cliente){
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                         builder: (context) => FormTask(directioncliente:mark.CustomerAddress )));
-
                   }
                 }
             ),
@@ -171,10 +170,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   Future<BitmapDescriptor> ColorMarker(Place mark) async {
-    if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
+    if(mark.statusTask == status.cliente){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
     //if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context),Image.network('https://picsum.photos/250?image=9')); }
-    if(mark.status == 2){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
-    if(mark.status == 1){
+    if(mark.statusTask == status.culminada){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
+    if(mark.statusTask == status.planificado){
       //createRoute(mark);
     }
     return BitmapDescriptor.defaultMarker;
@@ -250,7 +249,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
     List<Place> listas_porhacer = new List<Place>();
     for(Place p in listplace){
-      if(p.status == 1){
+      if(p.statusTask == status.planificado){
         listas_porhacer.add(p);
       }else{
       }
