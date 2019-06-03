@@ -4181,9 +4181,30 @@ class DatabaseProvider {
 
     if (data.isNotEmpty) {
       List<AddressModel> listOfAddressModels = new List<AddressModel>();
-      data.forEach((customerWithAddressResponse) async {
+      data.forEach((addressResponse) async {
         listOfAddressModels.add(new AddressModel(
-
+          id: addressResponse["id"],
+          createdAt: addressResponse["created_at"],
+          updatedAt: addressResponse["updated_at"],
+          deletedAt: addressResponse["deleted_at"],
+          createdById: addressResponse["created_by_id"],
+          updatedById: addressResponse["updated_by_id"],
+          deletedById: addressResponse["deleted_by_id"],
+          contactName: addressResponse["contact_name"],
+          details: addressResponse["details"],
+          address: addressResponse["address"],
+          locality: addressResponse["locality"],
+          reference: addressResponse["reference"],
+          longitude: addressResponse["longitude"],
+          latitude: addressResponse["latitude"],
+          localityId: addressResponse["locality_id"],
+          googlePlaceId: addressResponse["google_place_id"],
+          country: addressResponse["country"],
+          state: addressResponse["state"],
+          city: addressResponse["city"],
+          contactPhone: addressResponse["contact_phone"],
+          contactMobile: addressResponse["contact_mobile"],
+          contactEmail: addressResponse["contact_email"],
         ));
       });
       return listOfAddressModels;
