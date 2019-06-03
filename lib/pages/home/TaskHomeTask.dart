@@ -54,6 +54,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
     ListCalender.add(DateTime.now());
     ListCalender.add(DateTime.now().add(Duration(days: -15)));
+    lastPageTasks = 0;
     getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
     setState(() {
     UserActiv;ListCalender;
@@ -128,6 +129,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       => setState((){
         listTaskModellocal.clear();
         listTaskModellocalbool.clear();
+        lastPageTasks = 0;
         getdatalist(onData[1],onData[0],1);
       }));
     }catch(e){}
@@ -170,29 +172,34 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
   }
 
+  int lastPageTasks = 0;
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
 
-    String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
-    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
+    if(lastPageTasks <= pageTasks){
+      pageTasks = 1;
+      String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
+      String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    TasksModel tasks = new TasksModel();
-    var getAllTasksResponse;
-    List<TaskModel> _listTask = new List<TaskModel>();
-    try{
+      TasksModel tasks = new TasksModel();
+      var getAllTasksResponse;
+      List<TaskModel> _listTask = new List<TaskModel>();
+      try{
 
-      getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
-      if(getAllTasksResponse.statusCode == 200){
-        tasks = TasksModel.fromJson(getAllTasksResponse.body);
-        for(int i = 0; i < tasks.data.length; i++ ){
-          _listTask.add(tasks.data[i]);
-          listTaskModellocalbool.add(tasks.data[i].status.contains('done'));
+        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
+        if(getAllTasksResponse.statusCode == 200){
+          tasks = TasksModel.fromJson(getAllTasksResponse.body);
+          lastPageTasks = tasks.lastPage;
+          for(int i = 0; i < tasks.data.length; i++ ){
+            _listTask.add(tasks.data[i]);
+            listTaskModellocalbool.add(tasks.data[i].status.contains('done'));
+          }
         }
-      }
-    }catch(e){}
-    setState(() {
-      listTaskModellocal = _listTask;
-      listTaskModellocalbool;
-    });
+      }catch(e){}
+      setState(() {
+        listTaskModellocal = _listTask;
+        listTaskModellocalbool;
+      });
+    }
   }
 
   listando(){
