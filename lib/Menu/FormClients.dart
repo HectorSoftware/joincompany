@@ -11,6 +11,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
+import 'businesList.dart';
 import 'clientes.dart';
 
 enum type{NAME,CODE,NOTE}
@@ -399,7 +400,13 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<AddressModel> getDirections() async{
-
+    return showDialog<AddressModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SearchAddress();
+      },
+    );
   }
 
   Future<String> getContact() async{
@@ -417,10 +424,11 @@ class _FormClientState extends State<FormClient> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return ContactView(true);
+        return BusinessList(true);
       },
     );
   }//TODO
+
 
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();

@@ -159,7 +159,6 @@ class _SearchAddressState extends State<SearchAddress> {
 
   List<PlacesSearchResult> places = [];
 
-
   sendRequest2(String value) async {
     final location = Location(_initialPosition.latitude, _initialPosition.longitude);
     final result = await _places.searchNearbyWithRadius(location, 5000);
@@ -179,6 +178,7 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   sendRequest(String intendedLocation) async {
+    intendedLocation = intendedLocation.toUpperCase();
     List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
     listPlacemark.clear();
     _markers.clear();

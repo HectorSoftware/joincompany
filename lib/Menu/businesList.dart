@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-
-import 'configCli.dart';
-import 'contactView.dart';
 import 'formBusiness.dart';
 
+// ignore: must_be_immutable
 class BusinessList extends StatefulWidget {
+  bool vista;
+  BusinessList(bool vista){
+    this.vista = vista;
+  }
   @override
   _BusinessListState createState() => _BusinessListState();
 }
@@ -133,7 +135,7 @@ class _BusinessListState extends State<BusinessList> {
     });
   }
 
-  Widget CardBusines(String bussines){
+  Widget cardBusines(String bussines){
     var padding = 16.0;
     double por = 0.1;
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
@@ -197,7 +199,7 @@ class _BusinessListState extends State<BusinessList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista? null:buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -207,14 +209,13 @@ class _BusinessListState extends State<BusinessList> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            CardBusines("test"),
+            cardBusines("test"),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed:(){
-          Navigator.of(context).pop();
           Navigator.push(
               context,
               new MaterialPageRoute(

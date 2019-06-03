@@ -449,8 +449,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-  pickerPhoto(Method m) async {
 
+  pickerPhoto(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
     if (img != null) {
       setState(() {
@@ -458,6 +458,7 @@ Widget timeWidget(BuildContext context, String string){
       });
     }
   }
+
   Widget imagePhoto(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -493,8 +494,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-  Widget loadingTask(String string)
-  {
+
+  Widget loadingTask(String string){
     return Center(
       child: Column(
         children: <Widget>[
@@ -507,10 +508,8 @@ Widget timeWidget(BuildContext context, String string){
     );
   }
 
-
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
-
   Widget combo(List<FieldOptionModel> elements, String string)
   {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);

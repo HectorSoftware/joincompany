@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget{
         "/cliente": (context) =>Cliente(false),
         "/firma": (context) =>FirmTouch(),
         "/contactos": (context) =>ContactView(false),
-        "/negocios": (context) =>BusinessList(),
+        "/negocios": (context) =>BusinessList(false),
         "/configuracion": (context) =>ConfigCli(),
       },
       theme: ThemeData(

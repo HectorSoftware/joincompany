@@ -77,7 +77,7 @@ class _ClienteState extends State<Cliente> {
         child: Icon(Icons.add),
         elevation: 12,
         backgroundColor: PrimaryColor,
-        tooltip: 'Agregar Tarea',
+        tooltip: 'Agregar Cliente',
         onPressed: (){
           Navigator.push(
               context,
@@ -89,7 +89,6 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -134,11 +133,9 @@ class _ClienteState extends State<Cliente> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
@@ -153,6 +150,13 @@ class _ClienteState extends State<Cliente> {
               },
             ),
           ),
+          /*new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),*/
           Divider(
             height: 30.0,
           ),
@@ -291,6 +295,7 @@ class _ClienteState extends State<Cliente> {
 
   @override
   void dispose(){
+    _connectionChangeStream.cancel();
     _filter.dispose();
     super.dispose();
   }

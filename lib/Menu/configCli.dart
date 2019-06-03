@@ -197,7 +197,6 @@ class _ConfigCliState extends State<ConfigCli> {
     return null;
   }
 
-  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -248,6 +247,7 @@ class _ConfigCliState extends State<ConfigCli> {
             ),
           ),
           Container(
+            color: drawerCustomer ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
@@ -268,9 +268,7 @@ class _ConfigCliState extends State<ConfigCli> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
+                Navigator.of(context).pop();
               },
             ),
           ),
@@ -278,8 +276,6 @@ class _ConfigCliState extends State<ConfigCli> {
       ),
     );
   }
-
-
   setUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
     var getUserResponse = await getUser(userAct.company, userAct.token);
