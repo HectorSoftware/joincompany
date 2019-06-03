@@ -172,7 +172,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
 
-    String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
+    String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
     TasksModel tasks = new TasksModel();
