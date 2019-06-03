@@ -187,7 +187,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
     }catch(e){ }
   }
-
   allmark(List<Place> listPlaces) async {
     
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
