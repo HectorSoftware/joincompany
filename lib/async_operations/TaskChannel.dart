@@ -7,10 +7,6 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 
-const Map<String, int> HttpCode = {
-  "Okay": 200,
-};
-
 class TaskChannel {
   static void createTasksInBothLocalAndServer() async {
     UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
@@ -18,7 +14,7 @@ class TaskChannel {
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
     tasksFromLocal.forEach((task) async {
       var createTaskInServerRes = await createTask(task, null /*lastLoggedUser.company*/, lastLoggedUser.rememberToken);
-      if (createTaskInServerRes.statusCode == HttpCode["Okay"]) {
+      if (createTaskInServerRes.statusCode == 200) {
         TaskModel createdTask = TaskModel.fromJson(createTaskInServerRes.body);
         DatabaseProvider.db.UpdateTask(task.id, createdTask, SyncState.synchronized);
       }
@@ -47,7 +43,7 @@ class TaskChannel {
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.deleted);
     tasksFromLocal.forEach((task) async {
       var deleteTaskInServerRes = await deleteTask(task.id.toString(), null /*lastLoggedUser.company*/, lastLoggedUser.rememberToken);
-      if (deleteTaskInServerRes.statusCode == HttpCode["Okay"])
+      if (deleteTaskInServerRes.statusCode == 200)
         DatabaseProvider.db.DeleteTaskById(task.id);
     });
 
@@ -77,12 +73,18 @@ class TaskChannel {
       DateTime updateDateLocal  = DateTime.parse(taskFromLocal.updatedAt);
       DateTime updateDateServer = DateTime.parse(taskFromServer.updatedAt);
       int diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
-
-      if ( diffInMilliseconds < 0 ) {
+      if (diffInMilliseconds > 0) {
+        List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.updated);
+        tasksFromLocal.forEach((task) async {
+          var updateTaskInServerRes = await updateTask(task.id.toString(), task, null /*lastLoggedUser.company*/, lastLoggedUser.rememberToken);
+          if (updateTaskInServerRes.statusCode == 200) {
+            TaskModel updatedTaskFromServer = TaskModel.fromJson(updateTaskInServerRes.body);
+            DatabaseProvider.db.UpdateTask(task.id, updatedTaskFromServer, SyncState.synchronized);
+          }
+        });
+      } else if ( diffInMilliseconds < 0 ) {
         DatabaseProvider.db.UpdateTask(taskFromServer.id, taskFromServer, SyncState.synchronized);
       }
     });
   }
-
-
 }

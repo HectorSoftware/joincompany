@@ -2754,7 +2754,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks" WHERE id = $id
       '''
     );
@@ -2808,7 +2808,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks"
       '''
     );
@@ -4110,4 +4110,86 @@ class DatabaseProvider {
     else
       return null;
   }
+
+  Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      Select c.*, a.*
+      from customers as c
+      inner join customers_users as cu on cu.customer_id = c.id
+      inner join users as u on cu.user_id = u.id
+      inner join customers_addresses as ca on ca.customer_id = c.id
+      inner join addresses as a on a.id = ca.address_id
+      WHERE u.remember_token = $userToken;
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
+      data.forEach((customerWithAddressResponse) async {
+        listOfCustomersWithAddresses.add(new CustomerWithAddressModel(
+          id: customerWithAddressResponse["id"],
+          createdAt: customerWithAddressResponse["created_at"],
+          updatedAt: customerWithAddressResponse["updated_at"],
+          deletedAt: customerWithAddressResponse["deleted_at"],
+          createdById: customerWithAddressResponse["created_by_id"],
+          updatedById: customerWithAddressResponse["updated_by_id"],
+          deletedById: customerWithAddressResponse["deleted_by_id"],
+          name: customerWithAddressResponse["name"],
+          code: customerWithAddressResponse["code"],
+          phone: customerWithAddressResponse["phone"],
+          email: customerWithAddressResponse["email"],
+          contactName: customerWithAddressResponse["contact_name"],
+          details: customerWithAddressResponse["details"],
+          address: customerWithAddressResponse["address"],
+          locality: customerWithAddressResponse["locality"],
+          reference: customerWithAddressResponse["reference"],
+          longitude: customerWithAddressResponse["longitude"],
+          latitude: customerWithAddressResponse["latitude"],
+          localityId: customerWithAddressResponse["locality_id"],
+          googlePlaceId: customerWithAddressResponse["google_place_id"],
+          country: customerWithAddressResponse["country"],
+          state: customerWithAddressResponse["state"],
+          city: customerWithAddressResponse["city"],
+          contactPhone: customerWithAddressResponse["contact_phone"],
+          contactMobile: customerWithAddressResponse["contact_mobile"],
+          contactEmail: customerWithAddressResponse["contact_email"],
+          addressId: customerWithAddressResponse["address_id"],
+          approved: customerWithAddressResponse["approved"],
+          customerId: customerWithAddressResponse["customer_id"],
+        ));
+      });
+      return listOfCustomersWithAddresses;
+    }
+    else
+      return null;
+  }
+
+  Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT a.*
+      from "addresses" as a
+      inner join "customers_addresses" as ca on ca.customer_id = c.id
+      WHERE c.id = $customerId;
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<AddressModel> listOfAddressModels = new List<AddressModel>();
+      data.forEach((customerWithAddressResponse) async {
+        listOfAddressModels.add(new AddressModel(
+
+        ));
+      });
+      return listOfAddressModels;
+    }
+    else
+      return null;
+  }
+
 }
