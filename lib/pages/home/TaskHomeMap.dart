@@ -2,14 +2,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/api/rutahttp.dart';
+import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocTaskMap.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
+import 'package:joincompany/models/TasksModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
+
+  taskHomeMap({this.blocListTaskCalendarReswidget});
+
+  final blocListTaskCalendar blocListTaskCalendarReswidget;
 }
 
 /*
@@ -33,19 +44,19 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   static const kGoogleApiKeyy = kGoogleApiKey;
-  TaskBloc _Bloc;
   StreamSubscription streamSubscription;
+  blocListTaskCalendar blocListTaskCalendarRes;
+  DateTime FechaActual = DateTime.now();
 
   @override
   Future initState() {
-    _Bloc = new TaskBloc();
     _getUserLocation();
     super.initState();
   }
 
   @override
   void dispose(){
-    _Bloc.dispose();
+    blocListTaskCalendarRes.dispose();
     super.dispose();
   }
 
@@ -56,6 +67,17 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     if (mediaQueryData.orientation == Orientation.portrait) {
       por = 0.807;
     }
+
+    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+      => setState((){
+        listplace.clear();
+        _addMarker(onData[0]);
+      }));
+    }catch(e){}
+
     return _initialPosition == null ?
     Container(
       alignment: Alignment.center,
@@ -103,7 +125,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //setState(() {
       mapController = controller;
     //});
-    _addMarker();
+    _addMarker(FechaActual);
   }
 
   void _getUserLocation() async{
@@ -113,16 +135,55 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       _initialPosition = LatLng(position.latitude, position.longitude);
     //});
   }
+
   List<Place> listplace = new List<Place>();
-  Future _addMarker() async {
+  Future _addMarker(DateTime hasta) async {
+
+    List<Place> _listMarker = new List<Place>();
+
+    String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
+    String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
+
+    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: UserActiv.idUserCompany.toString());
+    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+    status sendStatus = status.cliente;
+    for(int i=0; i < tasks.data.length;i++){
+      Place marker;
+      String valadde = 'N/A';
+      if(tasks.data[i].address != null){
+        valadde = tasks.data[i].address.address;
+        if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
+        if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
+        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus,CustomerAddress: null);
+        _listMarker.add(marker);
+      }
+    }
+    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    for(int y = 0; y < customersWithAddress.data.length; y++){
+      Place marker;
+      String valadde = 'N/A';
+      if(customersWithAddress.data[y].address != null){
+        valadde = customersWithAddress.data[y].address;
+        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,CustomerAddress: customersWithAddress.data[y]);
+        _listMarker.add(marker);
+      }
+    }
+
+    setState(() {
+      listplace = _listMarker;
+      allmark(listplace);
+    });
+
 
     try{
       // ignore: cancel_subscriptions
-      streamSubscription = _Bloc.outTask.listen((newVal)
-      => setState((){
-        listplace = newVal;
-        allmark(listplace);
-      }));
+//      streamSubscription = _Bloc.outTask.listen((newVal)
+//      => setState((){
+//        listplace = newVal;
+//        allmark(listplace);
+//      }));
 
     }catch(e){ }
   }

@@ -26,8 +26,8 @@ class _LoginPageState extends State<LoginPage> {
 
   final nameController = TextEditingController(text : 'eibanez@duperu.com');
      final companyController = TextEditingController(text : 'duperu');
-  //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-  //   final companyController = TextEditingController(text : 'getkem');
+//    final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//     final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
