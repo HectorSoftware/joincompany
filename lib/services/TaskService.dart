@@ -9,7 +9,7 @@ String resourcePath = '/tasks';
 
 Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
 
-  String resourcePath = '/tasks';
+  String resourcePath = '/tasks2';
 
   var params = new Map<String, String>();
 
