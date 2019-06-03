@@ -61,7 +61,7 @@ class _FormTaskState extends State<FormTask> {
   @override
   void initState(){
     directioncliente = widget.directioncliente;
-    initFormType();
+    initFormsTypes();
     super.initState();
   }
   @override
@@ -84,6 +84,13 @@ class _FormTaskState extends State<FormTask> {
                      content: const Text(
                          'Desea Guardar Tarea'),
                      actions: <Widget>[
+                       FlatButton(
+                         child: const Text('SALIR'),
+                         onPressed: () {
+                           Navigator.of(context).pop();
+                           Navigator.of(context).pop();
+                         },
+                       ),
                        FlatButton(
                          child: const Text('CANCELAR'),
                          onPressed: () {
@@ -109,7 +116,7 @@ class _FormTaskState extends State<FormTask> {
                              saveTask.addressId = directioncliente.addressId;
                              saveTask.planningDate = _dateTask.toString().substring(0,19);
                              saveTask.customValuesMap = dataInfo;
-                             saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
+                           //  saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
                              Navigator.pop(context);
                              Navigator.pop(context);
                            }
@@ -839,7 +846,7 @@ class _FormTaskState extends State<FormTask> {
     return formType;
   }
 
-  initFormType()async{
+  initFormsTypes()async{
     formType = await getAll();
   }
   getElements()async{
