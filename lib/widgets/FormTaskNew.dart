@@ -401,7 +401,7 @@ class _FormTaskState extends State<FormTask> {
                   ),
                 );
               }
-           /*   if(listFieldsModels[index].fieldType == 'Combo'){
+              if(listFieldsModels[index].fieldType == 'Combo'){
                 List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
                 return  Padding(
@@ -428,7 +428,7 @@ class _FormTaskState extends State<FormTask> {
                     }).toList(),
                   ),
                 );
-              }*/
+              }
               if(listFieldsModels[index].fieldType == 'Date'){
                 return Row(
                   children: <Widget>[
@@ -486,7 +486,7 @@ class _FormTaskState extends State<FormTask> {
                   ],
                 );
               }
-              if(listFieldsModels[index].fieldType =='Combo'){
+              if(listFieldsModels[index].fieldType =='Table'){
 
 
                 List<FieldOptionModel> listOptions = List<FieldOptionModel>();
@@ -622,11 +622,7 @@ class _FormTaskState extends State<FormTask> {
                       child: Container(
                           child: image == null ? new Text('')
                               : new Image.file(image,height: 200,width: 200,)
-//                          Card(
-//                            elevation: 12,
-//                            child:  Image.file(image,height: 200,width: 250,),
-//
-//                          )
+
 
                       ),
                     )
