@@ -73,7 +73,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "users" WHERE id = ${user.id}
       '''
     );
@@ -102,6 +102,7 @@ class DatabaseProvider {
         profile,
         password,
         remember_token,
+        logged_at,
         in_server,
         updated,
         deleted
@@ -113,7 +114,7 @@ class DatabaseProvider {
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken],
+    user.profile, user.password, user.rememberToken, user.loggedAt],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -122,7 +123,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "users" WHERE id = $id
       '''
     );
@@ -147,6 +148,42 @@ class DatabaseProvider {
         details: data.first["details"],
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
+        loggedAt: data.first["logged_at"],
+      );
+    else
+      return null;
+  }
+
+  Future<UserModel> RetrieveLastLoggedUser() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT MAX(logged_at) FROM "users" 
+      '''
+    );
+
+    if (data.isNotEmpty)
+      return UserModel(
+        id: data.first["id"],
+        createdAt: data.first["created_at"],
+        updatedAt: data.first["updated_at"],
+        deletedAt: data.first["deleted_at"],
+        createdById: data.first["created_by_id"],
+        updatedById: data.first["updated_by_id"],
+        deletedById: data.first["deleted_by_id"],
+        supervisorId: data.first["supervisor_id"],
+        name: data.first["name"],
+        code: data.first["code"],
+        email: data.first["email"],
+        phone: data.first["phone"],
+        mobile: data.first["mobile"],
+        title: data.first["title"],
+        password: data.first["password"],
+        details: data.first["details"],
+        profile: data.first["profile"],
+        rememberToken: data.first["remember_token"],
+        loggedAt: data.first["logged_at"],
       );
     else
       return null;
@@ -156,7 +193,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "users"
       '''
     );
@@ -218,6 +255,9 @@ class DatabaseProvider {
         if (query.rememberToken != null)
           if (query.rememberToken != userRetrieved["remember_token"])
             return;
+        if (query.loggedAt != null)
+          if (query.loggedAt != userRetrieved["logged_at"])
+            return;
 
         listOfUsers.add(UserModel(
           id: userRetrieved["id"],
@@ -238,6 +278,7 @@ class DatabaseProvider {
           details: userRetrieved["details"],
           profile: userRetrieved["profile"],
           rememberToken: userRetrieved["remember_token"],
+          loggedAt: userRetrieved["logged_at"],
         ));
       });
       return listOfUsers;
@@ -280,6 +321,7 @@ class DatabaseProvider {
         details: data.first["details"],
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
+        loggedAt: data.first["logged_at"],
       )));
 
       return users;
@@ -314,13 +356,14 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ?,
+      logged_at = ?,
       WHERE id = ${userId}
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken],
+    user.profile, user.password, user.rememberToken, user.loggedAt],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -342,7 +385,7 @@ class DatabaseProvider {
   Future<int> DeleteUserById(int id) async {
     final db = await database;
     return await db.rawDelete(
-        '''
+      '''
       DELETE FROM "users" WHERE id = $id
       '''
     );
@@ -352,7 +395,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "users"
       '''
     );
@@ -378,6 +421,7 @@ class DatabaseProvider {
         details: data.first["details"],
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
+        loggedAt: data.first["logged_at"],
       )));
 
       return users;
@@ -2597,12 +2641,51 @@ class DatabaseProvider {
       return null;
   }
 
+  Future<List<CustomerModel>> RetrieveCustomersByUserToken(String userToken) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      Select c.* 
+      from "customers" as c
+      inner join "customers_users" as cu on cu.customer_id = c.id
+      inner join "users" as u on cu.user_id = u.id
+      WHERE u.remember_token = $userToken;
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<CustomerModel> listOfCustomers = new List<CustomerModel>();
+      data.forEach((customerResponse) async {
+        listOfCustomers.add(new CustomerModel(
+          id: customerResponse["id"],
+          createdAt: customerResponse["created_at"],
+          updatedAt: customerResponse["updated_at"],
+          deletedAt: customerResponse["deleted_at"],
+          createdById: customerResponse["created_by_id"],
+          updatedById: customerResponse["updated_by_id"],
+          deletedById: customerResponse["deleted_by_id"],
+          name: customerResponse["name"],
+          code: customerResponse["code"],
+          phone: customerResponse["phone"],
+          email: customerResponse["email"],
+          contactName: customerResponse["contact_name"],
+          details: customerResponse["details"],
+          pivot: null,
+        ));
+      });
+      return listOfCustomers;
+    }
+    else
+      return null;
+  }
+
   // Operations on tasks
   Future<int> CreateTask(TaskModel task, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks" WHERE id = ${task.id}
       '''
     );
@@ -2671,7 +2754,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks" WHERE id = $id
       '''
     );
@@ -2725,7 +2808,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks"
       '''
     );
@@ -3090,6 +3173,24 @@ class DatabaseProvider {
       return null;
   }
 
+  Future<List<int>> RetrieveAllTaskIds() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT id FROM "tasks"
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<int> ids = new List<int>();
+      data.forEach((task) => ids.add(task["id"]));
+      return ids;
+    }
+    else
+      return null;
+  }
+
   // Operations on custom_users
   Future<int> CreateCustomerUser(int id, String createdAt, String updatedAt,
       String deletedAt, int customerId,
@@ -3097,7 +3198,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "customers_users" WHERE id = $id
       '''
     );
@@ -3965,7 +4066,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "customer_addresses"
       '''
     );
@@ -3993,7 +4094,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT customer_id, address_id FROM "customer_addresses"
       '''
     );
@@ -4009,4 +4110,107 @@ class DatabaseProvider {
     else
       return null;
   }
+
+  Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      Select c.*, a.*
+      from customers as c
+      inner join customers_users as cu on cu.customer_id = c.id
+      inner join users as u on cu.user_id = u.id
+      inner join customers_addresses as ca on ca.customer_id = c.id
+      inner join addresses as a on a.id = ca.address_id
+      WHERE u.remember_token = $userToken;
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
+      data.forEach((customerWithAddressResponse) async {
+        listOfCustomersWithAddresses.add(new CustomerWithAddressModel(
+          id: customerWithAddressResponse["id"],
+          createdAt: customerWithAddressResponse["created_at"],
+          updatedAt: customerWithAddressResponse["updated_at"],
+          deletedAt: customerWithAddressResponse["deleted_at"],
+          createdById: customerWithAddressResponse["created_by_id"],
+          updatedById: customerWithAddressResponse["updated_by_id"],
+          deletedById: customerWithAddressResponse["deleted_by_id"],
+          name: customerWithAddressResponse["name"],
+          code: customerWithAddressResponse["code"],
+          phone: customerWithAddressResponse["phone"],
+          email: customerWithAddressResponse["email"],
+          contactName: customerWithAddressResponse["contact_name"],
+          details: customerWithAddressResponse["details"],
+          address: customerWithAddressResponse["address"],
+          locality: customerWithAddressResponse["locality"],
+          reference: customerWithAddressResponse["reference"],
+          longitude: customerWithAddressResponse["longitude"],
+          latitude: customerWithAddressResponse["latitude"],
+          localityId: customerWithAddressResponse["locality_id"],
+          googlePlaceId: customerWithAddressResponse["google_place_id"],
+          country: customerWithAddressResponse["country"],
+          state: customerWithAddressResponse["state"],
+          city: customerWithAddressResponse["city"],
+          contactPhone: customerWithAddressResponse["contact_phone"],
+          contactMobile: customerWithAddressResponse["contact_mobile"],
+          contactEmail: customerWithAddressResponse["contact_email"],
+          addressId: customerWithAddressResponse["address_id"],
+          approved: customerWithAddressResponse["approved"],
+          customerId: customerWithAddressResponse["customer_id"],
+        ));
+      });
+      return listOfCustomersWithAddresses;
+    }
+    else
+      return null;
+  }
+
+  Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT a.*
+      from "addresses" as a
+      inner join "customers_addresses" as ca on ca.customer_id = c.id
+      WHERE c.id = $customerId;
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      List<AddressModel> listOfAddressModels = new List<AddressModel>();
+      data.forEach((addressResponse) async {
+        listOfAddressModels.add(new AddressModel(
+          id: addressResponse["id"],
+          createdAt: addressResponse["created_at"],
+          updatedAt: addressResponse["updated_at"],
+          deletedAt: addressResponse["deleted_at"],
+          createdById: addressResponse["created_by_id"],
+          updatedById: addressResponse["updated_by_id"],
+          deletedById: addressResponse["deleted_by_id"],
+          contactName: addressResponse["contact_name"],
+          details: addressResponse["details"],
+          address: addressResponse["address"],
+          locality: addressResponse["locality"],
+          reference: addressResponse["reference"],
+          longitude: addressResponse["longitude"],
+          latitude: addressResponse["latitude"],
+          localityId: addressResponse["locality_id"],
+          googlePlaceId: addressResponse["google_place_id"],
+          country: addressResponse["country"],
+          state: addressResponse["state"],
+          city: addressResponse["city"],
+          contactPhone: addressResponse["contact_phone"],
+          contactMobile: addressResponse["contact_mobile"],
+          contactEmail: addressResponse["contact_email"],
+        ));
+      });
+      return listOfAddressModels;
+    }
+    else
+      return null;
+  }
+
 }
