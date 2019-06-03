@@ -204,4 +204,78 @@ showDialog(
   BlocTaskForm(context) {
     updateListWidget(context);
   }
+
+    listOptions = listFieldsModels[index].fieldOptions;
+                for(FieldOptionModel varV in listOptions)
+                  {
+                    print(varV.name);
+                    print(varV.value);
+                    listName.add(varV.name);
+                    listValues.add(varV.value.toString());
+                  }
+                Card card(){
+                  return Card(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: '',
+                      ),
+                    ),
+                  );
+                }
+                Card title(String title)
+                 {
+                   return Card(
+                     child: Text(title),
+
+                   );
+                 }
+                //COLUMNAS
+                Container columna(Color col,int intCard){
+                  List<Widget> listCard = new List<Widget>();
+                  for(int i = 0; i < intCard; i++){
+                    listCard.add(card());
+                  }
+                  return Container(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    color: col,
+                    child: Column(
+                      children: <Widget>[
+                        card(),
+                        Divider(
+                          height: 20,
+                          color: Colors.black,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: ListView.builder(
+                            itemCount: listCard.length,
+                            itemBuilder: (context,index){
+                              return listCard[index];
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+                //LISTA DE COLUMNAS
+                List<Widget> listColuma = new List<Widget>();
+                 listColuma.add(columna(Colors.red[50],listValues.length));
+                return SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: listColuma.length,
+                      itemBuilder: (context,index){
+                        return listColuma[index];
+                      },
+                      // This next line does the trick.
+                    ) ,
+                  ),
+                );
+              }
 }*/
