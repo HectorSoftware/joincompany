@@ -20,6 +20,7 @@ class UserModel {
   String password;
   String rememberToken;
   String loggedAt;
+  String company;
 
   UserModel({
     this.id,
@@ -40,6 +41,7 @@ class UserModel {
     this.profile,
     this.password,
     this.rememberToken,
+    this.company,
     this.loggedAt,
   });
 

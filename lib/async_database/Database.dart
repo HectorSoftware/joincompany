@@ -102,19 +102,20 @@ class DatabaseProvider {
         profile,
         password,
         remember_token,
+        company,
         logged_at,
         in_server,
         updated,
         deleted
       )
       
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken, user.loggedAt],
+    user.profile, user.password, user.rememberToken, user.company, user.loggedAt],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -149,6 +150,7 @@ class DatabaseProvider {
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
         loggedAt: data.first["logged_at"],
+        company: data.first["company"],
       );
     else
       return null;
@@ -184,6 +186,7 @@ class DatabaseProvider {
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
         loggedAt: data.first["logged_at"],
+        company: data.first["company"],
       );
     else
       return null;
@@ -258,6 +261,8 @@ class DatabaseProvider {
         if (query.loggedAt != null)
           if (query.loggedAt != userRetrieved["logged_at"])
             return;
+        if (query.company != null)
+          if (query.company != userRetrieved["company"])
 
         listOfUsers.add(UserModel(
           id: userRetrieved["id"],
@@ -279,6 +284,7 @@ class DatabaseProvider {
           profile: userRetrieved["profile"],
           rememberToken: userRetrieved["remember_token"],
           loggedAt: userRetrieved["logged_at"],
+          company: userRetrieved["company"],
         ));
       });
       return listOfUsers;
@@ -322,6 +328,7 @@ class DatabaseProvider {
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
         loggedAt: data.first["logged_at"],
+        company: data.first["company"],
       )));
 
       return users;
@@ -357,13 +364,14 @@ class DatabaseProvider {
       updated = ?,
       deleted = ?,
       logged_at = ?,
+      company = ?,
       WHERE id = ${userId}
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken, user.loggedAt],
+    user.profile, user.password, user.rememberToken, user.loggedAt, user.company],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -422,6 +430,7 @@ class DatabaseProvider {
         profile: data.first["profile"],
         rememberToken: data.first["remember_token"],
         loggedAt: data.first["logged_at"],
+        company: data.first["company"],
       )));
 
       return users;
@@ -1951,11 +1960,11 @@ class DatabaseProvider {
   }
 
   // Operations on addresses
-  Future<int> CreateAddress(AddressModel address, SyncState syncState) async {
+  Future<AddressModel> CreateAddress(AddressModel address, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "addresses" WHERE id = ${address.id}
       '''
     );
@@ -1965,7 +1974,7 @@ class DatabaseProvider {
 
     CreateLocality(address.locality, syncState);
 
-    return await db.rawInsert(
+    address.id = await db.rawInsert(
       '''
       INSERT INTO "addresses"(
         id,
@@ -2005,6 +2014,8 @@ class DatabaseProvider {
     address.contactName, address.contactPhone, address.contactMobile,
     address.contactEmail], ...paramsBySyncState[syncState]],
     );
+
+    return address;
   }
 
   Future<AddressModel> ReadAddressById(int id) async {
@@ -2206,11 +2217,11 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateAddress(int addressId, AddressModel address, SyncState syncState) async {
+  Future<AddressModel> UpdateAddress(int addressId, AddressModel address, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "localities" WHERE id = ${address.locality.id}
       '''
     );
@@ -2220,7 +2231,7 @@ class DatabaseProvider {
     else
       CreateLocality(address.locality, syncState);
 
-    return await db.rawUpdate(
+    address.id = await db.rawUpdate(
       '''
       UPDATE "addresses" SET
       id = ?,
@@ -2257,6 +2268,8 @@ class DatabaseProvider {
     address.contactPhone, address.contactMobile, address.contactEmail],
     ...paramsBySyncState[syncState]],
     );
+
+    return address;
   }
 
   Future<int> DeleteAddressById(int id) async {
