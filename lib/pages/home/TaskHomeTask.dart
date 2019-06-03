@@ -174,7 +174,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   int lastPageTasks = 0;
   getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
-
     if(lastPageTasks <= pageTasks){
       pageTasks = 1;
       String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
