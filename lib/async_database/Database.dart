@@ -2347,7 +2347,7 @@ class DatabaseProvider {
   }
 
   // Operations on customers
-  Future<int> CreateCustomer(CustomerModel customer, SyncState syncState) async {
+  Future<CustomerModel> CreateCustomer(CustomerModel customer, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -2359,7 +2359,7 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    return await db.rawInsert(
+    customer.id = await db.rawInsert(
       '''
       INSERT INTO "customers"(
         id,
@@ -2388,6 +2388,8 @@ class DatabaseProvider {
     customer.email, customer.contactName, customer.details],
     ...paramsBySyncState[syncState]],
     );
+
+    return customer;
   }
 
   Future<CustomerModel> ReadCustomerById(int id) async {
@@ -2534,9 +2536,9 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<int> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
+  Future<CustomerModel> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
     final db = await database;
-    return await db.rawUpdate(
+    customer.id = await db.rawUpdate(
       '''
       UPDATE "customers" SET
       id = ?,
@@ -2563,6 +2565,8 @@ class DatabaseProvider {
     customer.contactName, customer.details],
     ...paramsBySyncState[syncState]],
     );
+
+    return customer;
   }
 
   Future<int> DeleteCustomerById(int id) async {
