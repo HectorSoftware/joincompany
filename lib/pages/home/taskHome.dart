@@ -106,7 +106,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     return TabBarView(
       children: <Widget>[
         taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
-        taskHomeMap(),
+        taskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
       ],
       controller: _controller,
       physics: _controller.index == 0

@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
@@ -21,6 +20,12 @@ import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
+class WidgetDynamic{
+  var value;
+  var state;
+  WidgetDynamic({this.value, this.state});
+
+}
 
 class FormTask extends StatefulWidget {
 
@@ -34,7 +39,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  File image;
+  Image image;
   File image2;
   String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
@@ -52,6 +57,7 @@ class _FormTaskState extends State<FormTask> {
   String user;
   int responsibleId;
   FormsModel formType;
+  bool taskCU = false;
   bool pass = false;
   bool taskEnd = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
@@ -108,18 +114,19 @@ class _FormTaskState extends State<FormTask> {
                              listOfMaps.add({key: value});
                            }
                            );*/
-                           if(dataInfo.isNotEmpty) {
-                             saveTask.formId = formGlobal.id;
-                             saveTask.responsibleId = responsibleId;
-                             saveTask.name = formGlobal.name;
-                             saveTask.customerId = directioncliente.customerId;
-                             saveTask.addressId = directioncliente.addressId;
-                             saveTask.planningDate = _dateTask.toString().substring(0,19);
-                             saveTask.customValuesMap = dataInfo;
-                           //  saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
-                             Navigator.pop(context);
-                             Navigator.pop(context);
-                           }
+
+                            if(dataInfo.isNotEmpty) {
+                              saveTask.formId = formGlobal.id;
+                              saveTask.responsibleId = responsibleId;
+                              saveTask.name = formGlobal.name;
+                              saveTask.customerId = directioncliente.customerId;
+                              saveTask.addressId = directioncliente.addressId;
+                              saveTask.planningDate = _dateTask.toString().substring(0,19);
+                              saveTask.customValuesMap = dataInfo;
+                              saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
+                              Navigator.pop(context);
+                              Navigator.of(context).pop(saveTask);
+                            }
 
                          },
                        )
@@ -156,6 +163,7 @@ class _FormTaskState extends State<FormTask> {
                               pass= false;
                               dropdownValue = null;
                               image = null;
+                              taskCU = false;
                             });
                             Navigator.pop(context);
                           },
@@ -198,7 +206,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                    child: Padding(
                      padding: const EdgeInsets.all(8.0),
-                     child: directioncliente.address!= null ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                     child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
                    ),
 
                 ),
@@ -227,30 +235,33 @@ class _FormTaskState extends State<FormTask> {
                   showModalBottomSheet<String>(
                       context: context,
                       builder: (BuildContext context) {
-                        return  formType != null ?
-                        new ListView.builder(
-                          itemCount: formType.data.length,
-                          itemBuilder: (BuildContext context, index){
-                            return ListTile(
-                             contentPadding: EdgeInsets.all(10),
-                              title: Text('${formType.data[index].name}'),
-                              leading: Icon(Icons.poll),
-                              onTap: () async {
-                                var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                FormModel form = FormModel.fromJson(getFormResponse.body);
-                                lisC(form);
-                                setState(() {
-                                  directionClient.address = null;
-                                  dropdownValue = null;
-                                  pass = true;
-                                  image = null;
-                                  dataInfo = new Map();
-                                });
-                                Navigator.pop(context);
-                              },
-                            );
-                          },
-                        ) :  Center(child: CircularProgressIndicator());
+                        return  Container(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          child: formType != null ?
+                          new ListView.builder(
+                            itemCount: formType.data.length,
+                            itemBuilder: (BuildContext context, index){
+                              return ListTile(
+                                title: Text('${formType.data[index].name}'),
+                                leading: Icon(Icons.poll),
+                                onTap: () async {
+                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  lisC(form);
+                                  setState(() {
+                                    directionClient.address = null;
+                                    dropdownValue = null;
+                                    pass = true;
+                                    image = null;
+                                    dataInfo = new Map();
+                                    taskCU = false;
+                                  });
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
+                          ) :  Center(child: CircularProgressIndicator()),
+                        );
                       }
                   );
                 }
@@ -393,6 +404,7 @@ class _FormTaskState extends State<FormTask> {
                 List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
                 return  Padding(
+
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
                   child: DropdownButton<String>(
                     isDense: false,
@@ -442,7 +454,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                   ],
                 );
-              }//CAMBIAR A DATETIME
+              }
               if(listFieldsModels[index].fieldType == 'DateTime'){
                 return Row(
                   children: <Widget>[
@@ -463,30 +475,50 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_date.toString().substring(0,10)}'),
-                        onPressed: (){selectDate(context);},
+                        child: Text('${_date.toString().substring(0,10)}' + ' ' +'${_time.format(context) }'),
+                        onPressed: (){
+                          selectTime(context);
+                          selectDate(context);
+                          },
                       ),
                     ),
                   ],
                 );
               }
-              if(listFieldsModels[index].fieldType =='table'){
+              if(listFieldsModels[index].fieldType =='Table'){
+
+
+                List<FieldOptionModel> listOptions = List<FieldOptionModel>();
+                List<String> listName = List<String>();
+                List<String> listValues = List<String>();
+                listOptions = listFieldsModels[index].fieldOptions;
+                for(FieldOptionModel varV in listOptions)
+                {
+                  listName.add(varV.name);
+                  listValues.add(varV.value.toString());
+                }
                 Card card(){
                   return Card(
-                    child:
-                    TextField(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: '',
+                      ),
                     ),
                   );
                 }
+                Card title(String title) {
+                  return Card(
+                    child: Text(title),
+                  );
+                }
                 //COLUMNAS
-                Container columna(Color col,int intCard){
+                Container columna(int intCard){
                   List<Widget> listCard = new List<Widget>();
                   for(int i = 0; i < intCard; i++){
                     listCard.add(card());
                   }
                   return Container(
                     width: MediaQuery.of(context).size.width * 0.5,
-                    color: col,
                     child: Column(
                       children: <Widget>[
                         card(),
@@ -499,7 +531,7 @@ class _FormTaskState extends State<FormTask> {
                           height: MediaQuery.of(context).size.height * 0.25,
                           child: ListView.builder(
                             itemCount: listCard.length,
-                            itemBuilder: (contex,index){
+                            itemBuilder: (context,index){
                               return listCard[index];
                             },
                           ),
@@ -510,10 +542,11 @@ class _FormTaskState extends State<FormTask> {
                 }
                 //LISTA DE COLUMNAS
                 List<Widget> listColuma = new List<Widget>();
-                listColuma.add(columna(Colors.red[50],2));
-                listColuma.add(columna(Colors.blue[50],5));
-                listColuma.add(columna(Colors.grey[200],3));
-                listColuma.add(columna(Colors.green[100],1));
+                for(String v in listName)
+                  {
+                    listColuma.add(columna(1*(listValues.length/listName.length).toInt()));
+                  }
+
                 return SingleChildScrollView(
                   child: Container(
                     margin: EdgeInsets.all(10),
@@ -530,50 +563,6 @@ class _FormTaskState extends State<FormTask> {
                   ),
                 );
               }
-              if(listFieldsModels[index].fieldType == 'ComboSearch'){
-                return Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width*0.5,
-                        height: 40,
-                        padding: EdgeInsets.only(
-                            top: 4,left: 16, right: 16, bottom: 4
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10)
-                            ),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5
-                              )
-                            ]
-                        ),
-                        child: TextField(
-                          maxLines: 1,
-                          //  controller: nameController,
-                          decoration: InputDecoration(
-
-                            border: InputBorder.none,
-
-                            hintText: listFieldsModels[index].name,
-                          ),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.search),
-                      tooltip: 'Busqueda',
-                      iconSize: 20,
-                      onPressed: (){},
-                    ),
-                  ],
-                );
-              }
               if(listFieldsModels[index].fieldType == 'Time')
               {
                 return Row(
@@ -588,9 +577,7 @@ class _FormTaskState extends State<FormTask> {
                             ),
                           ],
                         ),
-
                       ],
-
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
@@ -603,7 +590,6 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-
                 return Row(
                   children: <Widget>[
                     Column(
@@ -613,8 +599,10 @@ class _FormTaskState extends State<FormTask> {
                             Padding(
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
-                                onPressed: () async {
-                                  File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                onPressed: () async{
+                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  var bytes = await getImg();
+                                  Image img = Image.memory(bytes);
                                   if (img != null) {
                                     setState(() {
                                       image = img;
@@ -627,23 +615,14 @@ class _FormTaskState extends State<FormTask> {
                             ),
                           ],
                         ),
-
                       ],
-
                     ),
-
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
                           child: image == null ? new Text('')
-                              : new Image.file(image,height: 200,width: 200,)
-//                          Card(
-//                            elevation: 12,
-//                            child:  Image.file(image,height: 200,width: 250,),
-//
-//                          )
-
+                              : image
                       ),
                     )
                   ],
@@ -677,7 +656,7 @@ class _FormTaskState extends State<FormTask> {
                       child: new Center(
                         child: image == null
                             ? new Text(listFieldsModels[index].name)
-                            : new Image.file(image),
+                            : image,
 
                       ),
                     )
@@ -695,20 +674,51 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'combo' )
-                {
-                  Uint8List saveImage;
-                  return
-                    Row(
+              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
+                Row(
+                  children: <Widget>[
+                    Column(
                       children: <Widget>[
-                        IconButton(icon: Icon(Icons.image),
-                              onPressed: ()async{
-                              saveImage = await getImg();
-                  }),
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 5),
+                              child: RaisedButton(
+                                onPressed: () async{
+                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  var bytes = await getImg();
+                                  Image img = Image.memory(bytes);
+                                  if (img != null) {
+                                    setState(() {
+                                      image = img;
+                                    });
+                                  }
+                                },
+                                child: Text(listFieldsModels[index].name),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    );
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
 
+                      child: Container(
+                          child: image == null ? new Text('')
+                              : image
+                      ),
+                    )
+                  ],
+                );
+              if(listFieldsModels[index].fieldType == 'Boolean')
+                {
+                  return Container(
+                      width: 30,
+                      child: Switch(value: true, onChanged: null));
                 }
+
             }
         ),
 
@@ -809,7 +819,7 @@ class _FormTaskState extends State<FormTask> {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
       setState(() {
-        image = img;
+        image = Image.file(img);
       });
     }
   }
@@ -857,6 +867,9 @@ class _FormTaskState extends State<FormTask> {
     responsibleId = userToken.idUserCompany;
   }
   void _showModalDateTimeAndDirections() {
+    setState(() {
+      taskCU= true;
+    });
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -889,7 +902,6 @@ class _FormTaskState extends State<FormTask> {
     print(createTaskResponse.request);
 //
     print(createTaskResponse.statusCode);
-    print('--------------------------------------');
    print(createTaskResponse.body);
    if(createTaskResponse.statusCode == 201){
      setState(() {

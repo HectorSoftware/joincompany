@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
@@ -398,8 +400,8 @@ Widget timeWidget(BuildContext context, String string){
       }
   }
 
-  Future<Image> getImg() async{
-    return showDialog<Image>(
+  Future<Uint8List> getImg() async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true, // user must tap button for close dialog!
       builder: (BuildContext context) {

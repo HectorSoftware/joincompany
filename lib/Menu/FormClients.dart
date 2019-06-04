@@ -416,7 +416,7 @@ class _FormClientState extends State<FormClient> {
     Navigator.push(
         context,
         new MaterialPageRoute(
-            builder: (BuildContext context) => Cliente()));
+            builder: (BuildContext context) => Cliente(false)));
   }
 
   void deleteCli()async{
@@ -511,6 +511,7 @@ class _FormClientState extends State<FormClient> {
             IconButton(
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
+              color: Colors.white,
               iconSize: 25,
               onPressed: widget.client != null ? deleteCli:null,
             )

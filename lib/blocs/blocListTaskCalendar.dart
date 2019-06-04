@@ -9,7 +9,7 @@ import 'package:joincompany/services/TaskService.dart';
 
 class blocListTaskCalendar {
 
-  var _tasksCalendarController = StreamController<List<DateTime>>();
+  var _tasksCalendarController = StreamController<List<DateTime>>.broadcast();
   Stream<List<DateTime>> get outTaksCalendar => _tasksCalendarController.stream;
   Sink<List<DateTime>> get inTaksCalendar => _tasksCalendarController.sink;
 
