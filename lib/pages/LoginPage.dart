@@ -23,6 +23,9 @@ import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
@@ -217,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -229,6 +232,44 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  ValidarDatos_DB(String email, String password, String company) async {
+    var query = UserModel(email: email);
+    var usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+
+    if (usersFromDatabaseByEmail.isNotEmpty) {
+
+      var user = usersFromDatabaseByEmail.first;
+      var loginDate = DateTime.parse(user.loggedAt);
+
+      if (loginDate.difference(DateTime.now()).inHours > 24) {
+
+        var loginResponse = await login(email, password, company);
+        var userFromResponse = UserModel.fromJson(loginResponse.body);
+
+        user.rememberToken = userFromResponse.rememberToken;
+        DatabaseProvider.db.UpdateUser(
+            user.id,
+            user,
+            SyncState.synchronized
+        );
+
+      } else {
+        var hashedPassword = md5.convert(utf8.encode(password)).toString();
+        if (hashedPassword == user.password)
+          ;// TODO: Grant access
+      }
+    } else {
+      var loginResponse = await login(email, password, company);
+      var userFromResponse = UserModel.fromJson(loginResponse.body);
+
+      userFromResponse.password = md5.convert(utf8.encode(password)).toString();
+      DatabaseProvider.db.CreateUser(
+        userFromResponse,
+        SyncState.synchronized,
+      );
+    }
   }
 
   ValidarDatos(String Usr, String pwd, String compy) async {

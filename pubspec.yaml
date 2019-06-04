@@ -28,6 +28,7 @@ dependencies:
   sqflite: ^1.1.5
   path_provider: ^1.0.0
   json_to_form: ^0.0.2
+  crypto: ^2.0.6
 
   #Manejo de errores
   sentry: ^2.2.0
