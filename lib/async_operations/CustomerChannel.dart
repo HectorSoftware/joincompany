@@ -27,7 +27,7 @@ class CustomerChannel {
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.created);
 
     customersLocal.forEach((customerLocal) async {
-      var createCustomerResponseServer = await createCustomer(customerLocal, customer, authorization);
+      var createCustomerResponseServer = await createCustomerFromServer(customerLocal, customer, authorization);
       if (createCustomerResponseServer.statusCode==200) {
         CustomerModel customerServer = CustomerModel.fromJson(createCustomerResponseServer.body);
         // Cambiar el SyncState Local
@@ -37,7 +37,7 @@ class CustomerChannel {
     });
 
     // Create Server To Local
-    var customersServerResponse = await getAllCustomers(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
@@ -65,14 +65,14 @@ class CustomerChannel {
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.deleted);
 
     customersLocal.forEach((customerLocal) async {
-      var deleteCustomerResponseServer = await deleteCustomer(customerLocal.id.toString(), customer, authorization);
+      var deleteCustomerResponseServer = await deleteCustomerFromServer(customerLocal.id.toString(), customer, authorization);
       if (deleteCustomerResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerById(customerLocal.id);
       }
     });
 
     // Delete Server To Local
-    var customersServerResponse = await getAllCustomers(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
@@ -93,7 +93,7 @@ class CustomerChannel {
     String customer = '';
     String authorization = '';
     
-    var customersServerResponse = await getAllCustomers(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     customersServer.data.forEach((customerServer) async {
@@ -104,7 +104,7 @@ class CustomerChannel {
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       
       if (diffInMilliseconds > 0) { // Actualizar Server
-        var updateCustomerServerResponse = await updateCustomer(customerLocal.id.toString(), customerLocal, customer, authorization);
+        var updateCustomerServerResponse = await updateCustomerFromServer(customerLocal.id.toString(), customerLocal, customer, authorization);
         if (updateCustomerServerResponse.statusCode == 200) {
           CustomerModel customerServerUpdated = CustomerModel.fromJson(updateCustomerServerResponse.body);
           //Cambiar el sycn state

@@ -2654,7 +2654,7 @@ class DatabaseProvider {
       from "customers" as c
       inner join "customers_users" as cu on cu.customer_id = c.id
       inner join "users" as u on cu.user_id = u.id
-      WHERE u.remember_token = $userToken;
+      WHERE u.remember_token = '$userToken';
       '''
     );
 
@@ -4126,7 +4126,7 @@ class DatabaseProvider {
       inner join users as u on cu.user_id = u.id
       inner join customers_addresses as ca on ca.customer_id = c.id
       inner join addresses as a on a.id = ca.address_id
-      WHERE u.remember_token = $userToken;
+      WHERE u.remember_token = '$userToken';
       '''
     );
 
@@ -4168,7 +4168,7 @@ class DatabaseProvider {
       return listOfCustomersWithAddresses;
     }
     else
-      return null;
+      return List<CustomerWithAddressModel>();
   }
 
   Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
