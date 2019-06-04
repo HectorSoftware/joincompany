@@ -1,9 +1,11 @@
 
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:joincompany/main.dart';
 
 import 'canvasImg.dart';
 
@@ -26,6 +28,7 @@ class _PickerImgState extends State<PickerImg> {
             child: Center(child: Text("si no desea escoger foto presione continuar"),),
           ) : Image.file(img),
           img != null ? IconButton(
+            color: PrimaryColor,
             icon: Icon(Icons.close),
             onPressed: (){
               setState(() {
@@ -65,8 +68,8 @@ class _PickerImgState extends State<PickerImg> {
     );
   }
 
-  Future<Image> editImg(File img) async{
-    return showDialog<Image>(
+  Future<Uint8List> editImg(File img) async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {

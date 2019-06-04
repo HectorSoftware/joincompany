@@ -7,7 +7,7 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/customers';
 
-Future<http.Response> getAllCustomers(String customer, String authorization, { String perPage, String urlPage } ) async{
+Future<http.Response> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async{
   
   var params = new Map<String, String>();
 
@@ -15,10 +15,14 @@ Future<http.Response> getAllCustomers(String customer, String authorization, { S
       params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<http.Response> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String urlPage } ) async{
+Future<http.Response> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page } ) async{
   
   String resourcePath = '/customer_addresses';
 
@@ -28,7 +32,11 @@ Future<http.Response> getAllCustomersWithAddress(String customer, String authori
       params["per_page"]=perPage;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params, urlPage: urlPage);
+  if (page != null && page!=''){
+    params["page"]=page;
+  }
+
+  return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
 Future<http.Response> getCustomer(String id, String customer, String authorization) async{

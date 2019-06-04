@@ -15,18 +15,18 @@ import '../models/TaskModel.dart';
 import '../models/UserModel.dart';
 
 enum SyncState {
-  none,
+  synchronized,
   created,
   updated,
   deleted,
 }
 
-final Map<SyncState, List<dynamic>> paramsBySyncState = {
+final Map<SyncState, List<int>> paramsBySyncState = {
   // [in_server, updated, deleted]
-  SyncState.none: [],
-  SyncState.created: [false, true, false],
-  SyncState.updated: [true, true, false],
-  SyncState.deleted: [true, false, true],
+  SyncState.synchronized: [1, 0, 0],
+  SyncState.created:      [0, 1, 0],
+  SyncState.updated:      [1, 1, 0],
+  SyncState.deleted:      [1, 0, 1],
 };
 
 class DatabaseProvider {
@@ -47,13 +47,15 @@ class DatabaseProvider {
     String path = join(documentsDirectory.path, "db.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
       onCreate: (Database db, int version) async {
-        await db.execute(asyncSQLInstructionsOnCreate);
+        databaseInstructions.forEach((key, value) async {
+          await db.execute(value);
+        });
       }
     );
   }
 
   // Operations on users
-  Future<dynamic> CreateUser(UserModel user) async {
+  Future<int> CreateUser(UserModel user) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -78,7 +80,7 @@ class DatabaseProvider {
         remember_token,
         in_server,
         updated,
-        deleted,
+        deleted
       )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -92,7 +94,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadUser(int id) async {
+  Future/*Type: <UserModel>*/ ReadUser(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -103,24 +105,25 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadUsersBySyncState(SyncState syncState) async {
+  Future/*Type: <List<UserModel>>*/ ReadUsersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "users" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
+
     return data;
   }
 
-  Future<dynamic> UpdateUser(UserModel user) async {
+  Future<int> UpdateUser(UserModel user) async {
     final db = await database;
-    db.rawUpdate(
+    return db.rawUpdate(
       '''
       UPDATE "users" SET
       created_at = ?,
@@ -154,21 +157,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteUser(int id) async {
-    final db = await database;
+  Future<int> ChangeSyncStateUser(int id, SyncState syncState) async {
+    final db = await database;return
     db.rawUpdate(
       '''
       UPDATE "users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> DeleteUser(int id) async {
+  Future<int> DeleteUser(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -177,7 +180,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ListUsers() async {
+  Future/*Type: <List<UserModel>>*/ ListUsers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -190,7 +193,7 @@ class DatabaseProvider {
   }
 
   // Operations on forms
-  Future<dynamic> CreateForm(FormModel form) async {
+  Future<int> CreateForm(FormModel form) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -207,7 +210,7 @@ class DatabaseProvider {
         active,
         in_server,
         updated,
-        deleted,
+        deleted
       )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -219,7 +222,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadForm(int id) async {
+  Future/*Type: <FormModel>*/ ReadForm(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -231,15 +234,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadFormsBySyncState(SyncState syncState) async {
+  Future/*Type: <List<FormModel>>*/ ReadFormsBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "forms" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -247,9 +250,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateForm(FormModel form) async {
+  Future<int> UpdateForm(FormModel form) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "forms" SET
       created_at = ?,
@@ -273,7 +276,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteForm(int id) async {
+  Future<int> DeleteForm(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -282,21 +285,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteForm(int id) async {
+  Future<int> ChangeSyncStateForm(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "forms" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListForms() async {
+  Future/*Type: <List<FormModel>>*/ ListForms() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -309,7 +312,7 @@ class DatabaseProvider {
   }
 
   // Operations on localities
-  Future<dynamic> CreateLocality(LocalityModel locality) async {
+  Future<int> CreateLocality(LocalityModel locality) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -326,8 +329,8 @@ class DatabaseProvider {
           value,
           in_server,
           updated,
-          deleted,
-        );
+          deleted
+        )
         
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
@@ -338,7 +341,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadLocality(int id) async {
+  Future/*Type: <LocalityModel>*/ ReadLocality(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -350,15 +353,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadLocalitiesBySyncState(SyncState syncState) async {
+  Future/*Type: <List<LocalityModel>>*/ ReadLocalitiesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "localities" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -366,9 +369,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateLocality(LocalityModel locality) async {
+  Future<int> UpdateLocality(LocalityModel locality) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "localities" SET
       created_at,
@@ -392,7 +395,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteLocality(int id) async {
+  Future<int> DeleteLocality(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -401,21 +404,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteLocality(int id) async {
+  Future<int> ChangeSyncStateLocality(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "localities" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListLocalities() async {
+  Future/*Type: <List<LocalityModel>>*/ ListLocalities() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -428,7 +431,7 @@ class DatabaseProvider {
   }
 
   // Operations on responsibles
-  Future<dynamic> CreateResponsible(ResponsibleModel responsible) async {
+  Future<int> CreateResponsible(ResponsibleModel responsible) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -451,8 +454,8 @@ class DatabaseProvider {
         profile,
         in_server,
         updated,
-        deleted,
-      );
+        deleted
+      )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -465,7 +468,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadResponsible(int id) async {
+  Future/*Type: <ResponsibleModel>*/ ReadResponsible(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -477,15 +480,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadResponsiblesBySyncState(SyncState syncState) async {
+  Future/*Type: <List<ResponsibleModel>>*/ ReadResponsiblesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "responsibles" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -493,9 +496,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateResponsible(ResponsibleModel responsible) async {
+  Future<int> UpdateResponsible(ResponsibleModel responsible) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "responsibles" SET
       created_at = ?,
@@ -527,7 +530,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteResponsible(int id) async {
+  Future<int> DeleteResponsible(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -536,21 +539,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteResponsible(int id) async {
+  Future<int> ChangeSyncStateResponsible(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "responsibles" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListResponsibles() async {
+  Future/*Type: <List<ResponsibleModel>>*/ ListResponsibles() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -563,7 +566,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_fields
-  Future<dynamic> CreateCustomField(SectionModel section) async {
+  Future<int> CreateCustomField(SectionModel section) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -592,7 +595,7 @@ class DatabaseProvider {
         field_width,
         in_server,
         updated,
-        deleted,
+        deleted
       )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -610,7 +613,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadCustomField(int id) async {
+  Future/*Type: <SectionModel>*/ ReadCustomField(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -622,15 +625,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadCustomFieldsBySyncState(SyncState syncState) async {
+  Future/*Type: <List<SectionModel>>*/ ReadCustomFieldsBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "custom_fields" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -638,9 +641,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomField(SectionModel section) async {
+  Future<int> UpdateCustomField(SectionModel section) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "custom_fields" SET
       created_at = ?,
@@ -679,7 +682,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomField(int id) async {
+  Future<int> DeleteCustomField(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -688,21 +691,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomField(int id) async {
+  Future<int> ChangeSyncStateCustomField(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "custom_fields" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListCustomFields() async {
+  Future/*Type: <List<SectionModel>>*/ ListCustomFields() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -715,7 +718,7 @@ class DatabaseProvider {
   }
 
   // Operations on addresses
-  Future<dynamic> CreateAddress(AddressModel address) async {
+  Future<int> CreateAddress(AddressModel address) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -743,8 +746,8 @@ class DatabaseProvider {
         contact_email,
         in_server,
         updated,
-        deleted,
-      );
+        deleted
+      )
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -760,7 +763,7 @@ class DatabaseProvider {
 
   }
 
-  Future<dynamic> ReadAddress(int id) async {
+  Future/*Type: <AddressModel>*/ ReadAddress(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -772,15 +775,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadAddressesBySyncState(SyncState syncState) async {
+  Future/*Type: <List<AddressModel>>*/ ReadAddressesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "addresses" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -788,9 +791,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateAddress(AddressModel address) async {
+  Future<int> UpdateAddress(AddressModel address) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "addresses" SET
       created_at = ?,
@@ -828,7 +831,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteAddress(int id) async {
+  Future<int> DeleteAddress(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -837,21 +840,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteAddress(int id) async {
+  Future<int> ChangeSyncStateAddress(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "addresses" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListAddresses() async {
+  Future/*Type: <List<AddressModel>>*/ ListAddresses() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -864,7 +867,7 @@ class DatabaseProvider {
   }
 
   // Operations on customers
-  Future<dynamic> CreateCustomer(CustomerModel customer) async {
+  Future<int> CreateCustomer(CustomerModel customer) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -897,7 +900,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadCustomer(int id) async {
+  Future/*Type: <CustomerModel>*/ ReadCustomer(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -909,15 +912,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadCustomersBySyncState(SyncState syncState) async {
+  Future/*Type: <List<CustomerModel>>*/ ReadCustomersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "customers" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -925,9 +928,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomer(CustomerModel customer) async {
+  Future<int> UpdateCustomer(CustomerModel customer) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customers" SET
       created_at = ?,
@@ -955,7 +958,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomer(int id) async {
+  Future<int> DeleteCustomer(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -964,21 +967,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomer(int id) async {
+  Future<int> ChangeSyncStateCustomer(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customers" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListCustomers() async {
+  Future/*Type: <List<CustomerModel>>*/ ListCustomers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -991,7 +994,7 @@ class DatabaseProvider {
   }
 
   // Operations on tasks
-  Future<dynamic> CreateTask(TaskModel task) async {
+  Future<int> CreateTask(TaskModel task) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -1020,8 +1023,8 @@ class DatabaseProvider {
         status,
         in_server,
         updated,
-        deleted,
-      );
+        deleted
+      )
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -1035,7 +1038,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadTask(int id) async {
+  Future/*Type: <TaskModel>*/ ReadTask(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1047,15 +1050,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadTasksBySyncState(SyncState syncState) async {
+  Future/*Type: <List<TaskModel>>*/ ReadTasksBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "tasks" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -1063,9 +1066,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateTask(TaskModel task) async {
+  Future<int> UpdateTask(TaskModel task) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "tasks" SET
       created_at = ?,
@@ -1104,7 +1107,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteTask(int id) async {
+  Future<int> DeleteTask(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1113,21 +1116,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteTaks(int id) async {
+  Future<int> ChangeSyncStateTaks(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "tasks" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListTasks() async {
+  Future/*Type: <List<TaskModel>>*/ ListTasks() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1140,7 +1143,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_users
-  Future<dynamic> CreateCustomerUser(int id, String createdAt, String updatedAt,
+  Future<int> CreateCustomerUser(int id, String createdAt, String updatedAt,
                                      String deletedAt, int customerId,
                                      int userId) async {
     final db = await database;
@@ -1155,8 +1158,8 @@ class DatabaseProvider {
         user_id,
         in_server,
         updated,
-        deleted,
-      );
+        deleted
+      )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -1165,7 +1168,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadCustomerUser(int id) async {
+  Future/*Type: <Map>*/ ReadCustomerUser(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1177,15 +1180,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadCustomerUsersBySyncState(SyncState syncState) async {
+  Future/*Type: <List<Map>>*/ ReadCustomerUsersBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "customer_users" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -1193,11 +1196,11 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomerUser(int id, String createdAt, String updatedAt,
-                                     String deletedAt, int customerId,
-                                     int userId) async {
+  Future<int> UpdateCustomerUser(int id, String createdAt, String updatedAt,
+                                 String deletedAt, int customerId,
+                                 int userId) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customer_users" SET
       created_at = ?,
@@ -1227,7 +1230,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomerUser(int id) async {
+  Future<int> DeleteCustomerUser(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1236,21 +1239,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomerUser(int id) async {
+  Future<int> ChangeSyncStateCustomerUser(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customer_users" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListCustomerUsers() async {
+  Future/*Type: <List<Map>>*/ ListCustomerUsers() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1263,7 +1266,7 @@ class DatabaseProvider {
   }
 
   // Operations on custom_values
-  Future<dynamic> CreateCustomValue(CustomValueModel customValue) async {
+  Future<int> CreateCustomValue(CustomValueModel customValue) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -1280,8 +1283,8 @@ class DatabaseProvider {
         value,
         in_server,
         updated,
-        deleted,  
-      );
+        deleted  
+      )
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
@@ -1293,7 +1296,7 @@ class DatabaseProvider {
 
   }
 
-  Future<dynamic> ReadCustomValue(int id) async {
+  Future/*Type: <CustomValueModel>*/ ReadCustomValue(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1305,15 +1308,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadCustomValuesBySyncState(SyncState syncState) async {
+  Future/*Type: <List<CustomValueModel>>*/ ReadCustomValuesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "custom_values" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -1321,9 +1324,9 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomValue(CustomValueModel customValue) async {
+  Future<int> UpdateCustomValue(CustomValueModel customValue) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "custom_values" SET
       created_at = ?,
@@ -1347,7 +1350,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomValue(int id) async {
+  Future<int> DeleteCustomValue(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1356,21 +1359,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomValue(int id) async {
+  Future<int> ChangeSyncStateCustomValue(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "custom_values" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListCustomValues() async {
+  Future/*Type: <List<CustomValueModel>>*/ ListCustomValues() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1383,10 +1386,10 @@ class DatabaseProvider {
   }
 
   // Operations on customer_addresses
-  Future<dynamic> CreateCustomerAdress(int id, String createdAt,
-                                       String updatedAt, String deletedAt,
-                                       int customerId, int addressId,
-                                       bool approved) async {
+  Future<int> CreateCustomerAdress(int id, String createdAt,
+                                   String updatedAt, String deletedAt,
+                                   int customerId, int addressId,
+                                   bool approved) async {
     final db = await database;
     return await db.rawInsert(
       '''
@@ -1400,7 +1403,7 @@ class DatabaseProvider {
         approved,
         in_server,
         updated,
-        deleted,
+        deleted
       )
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -1410,7 +1413,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> ReadCustomerAdress(int id) async {
+  Future/*Type: <Map>*/ ReadCustomerAdress(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -1422,15 +1425,15 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> ReadCustomerAddressesBySyncState(SyncState syncState) async {
+  Future/*Type: <List<Map>>*/ ReadCustomerAddressesBySyncState(SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
       SELECT * FROM "customer_addresses" WHERE 
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
       ''',
       paramsBySyncState[syncState],
     );
@@ -1438,12 +1441,12 @@ class DatabaseProvider {
     return data;
   }
 
-  Future<dynamic> UpdateCustomerAdress(int id, String createdAt,
-                                       String updatedAt, String deletedAt,
-                                       int customerId, int addressId,
-                                       bool approved) async {
+  Future<int> UpdateCustomerAdress(int id, String createdAt,
+                                   String updatedAt, String deletedAt,
+                                   int customerId, int addressId,
+                                   bool approved) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customer_addresses" SET
       created_at = ?,
@@ -1473,7 +1476,7 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> DeleteCustomerAdress(int id) async {
+  Future<int> DeleteCustomerAdress(int id) async {
     final db = await database;
     await db.rawDelete(
       '''
@@ -1482,21 +1485,21 @@ class DatabaseProvider {
     );
   }
 
-  Future<dynamic> SoftDeleteCustomerAddress(int id) async {
+  Future<int> ChangeSyncStateCustomerAddress(int id, SyncState syncState) async {
     final db = await database;
-    await db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "customer_addresses" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      in_server = ? AND
+      updated = ? AND
+      deleted = ? AND
       WHERE id = ${id}
       ''',
-      paramsBySyncState[SyncState.deleted],
+      paramsBySyncState[syncState],
     );
   }
 
-  Future<dynamic> ListCustomerAdresses() async {
+  Future/*Type: <List<Map>>*/ ListCustomerAdresses() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(

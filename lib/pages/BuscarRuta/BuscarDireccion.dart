@@ -6,8 +6,12 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart';
 
 import '../../main.dart';
@@ -34,11 +38,12 @@ class _SearchAddressState extends State<SearchAddress> {
   bool llenadoListaEncontrador = false;
   static const kGoogleApiKeyy = kGoogleApiKey;
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
-  List<AddressModel> _ListAddress;
+  List<CustomerWithAddressModel> _ListAddress;
+  ListWidgets ls = ListWidgets();
 
   @override
   void initState() {
-    _ListAddress = new List<AddressModel>();
+    _ListAddress = new List<CustomerWithAddressModel>();
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -136,13 +141,13 @@ class _SearchAddressState extends State<SearchAddress> {
         ),
         onSubmitted: (value){
           //sendRequest2(value);
-          sendRequest(value);
+          //sendRequest(value);
         },
         onChanged: (text){
           if(_ListAddress.length != 0){
-            listPlacemark = new List<AddressModel>();
+            listPlacemark = new List<CustomerWithAddressModel>();
             for(int cost= 0; cost < _ListAddress.length; cost++){
-              if(_ListAddress[cost].address.contains(text) && (text != '')){
+              if(ls.createState().checkSearchInText(_ListAddress[cost].address, text) && (text.length != 0)) {
                 listPlacemark.add(_ListAddress[cost]);
               }
             }
@@ -159,68 +164,65 @@ class _SearchAddressState extends State<SearchAddress> {
 
   List<PlacesSearchResult> places = [];
 
-  sendRequest2(String value) async {
-    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
-    final result = await _places.searchNearbyWithRadius(location, 5000);
 
-    if (result.status == "OK") {
-      this.places = result.results;
-      String direccion = '';
-      result.results.forEach((f) {
-        direccion = f.name;
-        if(direccion.contains(value)){
+//  sendRequest2(String value) async {
+//    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
+//    final result = await _places.searchNearbyWithRadius(location, 5000);
+//
+//    if (result.status == "OK") {
+//      this.places = result.results;
+//      String direccion = '';
+//      result.results.forEach((f) {
+//        direccion = f.name;
+//        if(direccion.contains(value)){
+//
+//        }
+//      });
+//    } else {
+//
+//    }
+//  }
 
-        }
-      });
-    } else {
-
-    }
-  }
-
-  sendRequest(String intendedLocation) async {
-    intendedLocation = intendedLocation.toUpperCase();
-    List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
-    listPlacemark.clear();
-    _markers.clear();
-
-    var center = LatLng(_initialPosition.latitude, _initialPosition.longitude);
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: center == null ? LatLng(0, 0) : center, zoom: 14.0)));
-
-    if(placemark !=null){
-      for(int i=0; i < placemark.length;i++){
-        double latitude = placemark[i].position.latitude;
-        double longitude = placemark[i].position.longitude;
-        LatLng destination = LatLng(latitude, longitude);
-        _addMarker(destination, intendedLocation);
-        llenadoListaEncontrador = true;
-        //listPlacemark.add(placemark[i]);
-      }
-      setState(() {
-        llenadoListaEncontrador;
-        listPlacemark;
-      });
-    }else{
-      setState(() {
-        llenadoListaEncontrador = false;
-      });
-    }
-  }
+//  sendRequest(String intendedLocation) async {
+//    List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
+//    listPlacemark.clear();
+//    _markers.clear();
+//
+//    var center = LatLng(_initialPosition.latitude, _initialPosition.longitude);
+//    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+//        target: center == null ? LatLng(0, 0) : center, zoom: 14.0)));
+//
+//    if(placemark !=null){
+//      for(int i=0; i < placemark.length;i++){
+//        double latitude = placemark[i].position.latitude;
+//        double longitude = placemark[i].position.longitude;
+//        LatLng destination = LatLng(latitude, longitude);
+//        _addMarker(destination, intendedLocation);
+//        llenadoListaEncontrador = true;
+//        //listPlacemark.add(placemark[i]);
+//      }
+//      setState(() {
+//        llenadoListaEncontrador;
+//        listPlacemark;
+//      });
+//    }else{
+//      setState(() {
+//        llenadoListaEncontrador = false;
+//      });
+//    }
+//  }
 
   Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
     List<Placemark> placemark ;
-
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
     }catch(e) {
     }
-
     return placemark;
   }
 
   Future _addMarker(LatLng location, String address) async {
     _markers.clear();
-
     _markers.add(Marker(markerId: MarkerId(_lastPosition.toString()),
         position: location,
         infoWindow: InfoWindow(
@@ -256,7 +258,7 @@ class _SearchAddressState extends State<SearchAddress> {
     );
   }
 
-  List<AddressModel> listPlacemark = new List<AddressModel>();
+  List<CustomerWithAddressModel> listPlacemark = new List<CustomerWithAddressModel>();
   // 0 : name - 1 : lat - 2 : log - 3 : direccion
   listaLugaresEncontrados(){
     return ListView.builder(
@@ -295,14 +297,23 @@ class _SearchAddressState extends State<SearchAddress> {
 
   getListAnddress() async {
     UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllAddressessResponse = await getAllAddresses(UserActiv.company,UserActiv.token);
-    AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
+//    var getAllAddressessResponse = await getAllAddresses(UserActiv.company,UserActiv.token);
+//    AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
+//    if(getAllAddressessResponse.statusCode == 200){
+//      for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
+//        if(AddresseS.data[cantAddress] != null){
+//          _ListAddress.add(AddresseS.data[cantAddress]);
+//        }
+//      }
+//    }
 
-    if(getAllAddressessResponse.statusCode == 200){
+    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company, UserActiv.token);
+    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
-      for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
-        if(AddresseS.data[cantAddress] != null){
-          _ListAddress.add(AddresseS.data[cantAddress]);
+    if(customersWithAddressResponse.statusCode == 200){
+      for(int cantAddress = 0; cantAddress < customersWithAddress.data.length; cantAddress++){
+        if(customersWithAddress.data[cantAddress].address != null){
+          _ListAddress.add(customersWithAddress.data[cantAddress]);
         }
       }
     }

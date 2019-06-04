@@ -211,11 +211,8 @@ Future<Null> selectDate(BuildContext context )async{
     setState(() {
       _date = picked;
     });
-
   }
-
 }
-
 Widget dateT(BuildContext context, String string){
   //------------------------------DATE--------------------------
   return Row(
@@ -278,14 +275,11 @@ Widget timeWidget(BuildContext context, String string){
         dataInfo.putIfAbsent(id ,()=> value);
         dataInfo[id] = value;
         dataSaveState.add(dataInfo);
-        print(dataSaveState.length);
   }
   void saveString(value, String string){
     dataInfo.putIfAbsent(string, value);
     dataSaveState.add(dataInfo);
   }
-
-
 
   Widget textArea(BuildContext context,placeholder, String id){
     return

@@ -3,7 +3,7 @@ import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/blocs/blocListTask.dart';
+import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserDataBase.dart';
@@ -27,7 +27,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalMap = true;
   bool conditionalHome = true;
   blocListTaskFilter blocListTaskresFilter;
-  blocListTask blocListTaskRes;
+  blocListTaskCalendar blocListTaskCalendarRes;
   var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var DatepickedEnd = new DateTime.now();
   String nameUser = '';
@@ -36,6 +36,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
   final TextEditingController _filter = new TextEditingController();
+  List<DateTime> _listCalendar = List<DateTime>();
 
   @override
   void initState() {
@@ -45,14 +46,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       },
     );
     extraerUser();
+    _listCalendar.add(DatepickedInit);
+    _listCalendar.add(DatepickedEnd);
     super.initState();
   }
 
   @override
   void dispose(){
     _controller.dispose();
+    blocListTaskCalendarRes.dispose();
     blocListTaskresFilter.dispose();
-    blocListTaskRes.dispose();
     super.dispose();
   }
 
@@ -99,14 +102,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   TabBarView getTabBarView() {
 
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    //blocListTaskRes = new blocListTask(valueselectDate);
-    /*setState(() {
-      blocListTaskresFilter;
-      blocListTaskRes;
-    });*/
+    blocListTaskCalendarRes = new blocListTaskCalendar(/*_listCalendar*/);
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskFilterRes: blocListTaskresFilter,blocListTaskRes: blocListTaskRes = new blocListTask(valueselectDate),),
+        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
         taskHomeMap(),
       ],
       controller: _controller,
@@ -227,7 +226,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
-  List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
     context: context,
@@ -251,12 +249,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       }
 
       if(updateVarDataTime){
-        setState(() =>
-        valueselectDate = picked,
-        );
+        _listCalendar = new List<DateTime>();
+        _listCalendar.add(picked[0]);
+        if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
+        blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
         setState(() {
           DatepickedInit; DatepickedEnd;
-          //blocListTaskRes;
         });
       }
     }

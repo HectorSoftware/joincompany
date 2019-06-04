@@ -1,11 +1,78 @@
-import 'dart:async';
+/*import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+showDialog(
+                context: context,
+            child: SimpleDialog(
+              title: Text('Descartar Formulario'),
+              children: <Widget>[
+               Padding(
+                 padding: const EdgeInsets.only(right: 80),
+                 child: Column(
+                   children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                            ),
+                            RaisedButton(
+                              elevation: 0,
+                              color: Colors.white,
+                              child: Text('Volver'),
+                              onPressed: () {
 
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                     Row(
+                       children: <Widget>[
+                         IconButton(
+                           icon: Icon(Icons.delete),
+                             onPressed: (){
+                               setState(() {
+                                 dataInfo = null;
+                                 pass= false;
+                                 dropdownValue = null;
+                               });
+
+                               //Navigator.pop(context);
+                             }
+                         ),
+                         RaisedButton(
+                           child: Text('Descartar Formulario'),
+                           elevation: 0,
+                           color: Colors.white,
+                             onPressed: (){
+                               setState(() {
+                                 dataInfo = new Map();
+                                 pass= false;
+                                 dropdownValue = null;
+                                 image = null;
+                               });
+                               Navigator.pop(context);
+                             }
+                         ),
+                       ],
+                     ),
+
+                   ],
+                 ),
+               ),
+              ],
+            ))
+*/
 
 
 /*class BlocTaskForm  {
@@ -36,48 +103,48 @@ import 'package:joincompany/models/WidgetsList.dart';
         {
 
           switch(k.fieldType){
-            case 'Combo':
+            case 'Combo':*
               {
                 optionsElements = k.fieldOptions;
                 listWidget.add(items.createState().combo(optionsElements,k.name));
               //  listWidget.add(items.createState().dateTime());
               }
               break;
-            case 'Text':
+            case 'Text':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().text(context,k.name,nameController,v.id.toString() ));
               }
               break;
-            case 'Textarea':
+            case 'Textarea':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().textArea(context,k.name,nameController,v.id.toString()));
               }
               break;
-            case 'Number':
+            case 'Number':*
               {
                 final nameController = TextEditingController();
                 listWidget.add(items.createState().number(context,k.name,nameController));
               }
               break;
-            case 'Date':
+            case 'Date':*
               {
                 listWidget.add(items.createState().dateT(context,k.name));
               }
               break;
-            case 'Table':
+            case 'Table':*
               {
                 optionsElements = k.fieldOptions;
                 listWidget.add(items.createState().tab(optionsElements,context));
               }
               break;
-            case 'CanvanSignature':
+            case 'CanvanSignature':////
               {
                 listWidget.add(items.createState().newFirm(context, k.name));
               }
               break;
-            case 'Photo':
+            case 'Photo':**
               {
                 listWidget.add(items.createState().imagePhoto(context,k.name));
               }
