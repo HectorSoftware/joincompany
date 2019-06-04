@@ -73,6 +73,7 @@ class _FormTaskState extends State<FormTask> {
     initFormsTypes();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     globalContext = context;
@@ -276,7 +277,6 @@ class _FormTaskState extends State<FormTask> {
   }
 
   Widget generatedTable(List<FieldOptionModel> listOptions){
-
     data["table"] = new Map();
 
     for(FieldOptionModel varV in listOptions)
@@ -357,6 +357,7 @@ class _FormTaskState extends State<FormTask> {
       ),
     );
   }
+
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
       context: context,
@@ -366,6 +367,7 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
+
   Stack returnsStack(){
     return Stack(
       children: <Widget>[
@@ -736,6 +738,7 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
+
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     print(resp.address);
@@ -745,6 +748,7 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
+
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -760,6 +764,7 @@ class _FormTaskState extends State<FormTask> {
     }
 
   }
+
   Future<Null> selectDateTask(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -775,6 +780,7 @@ class _FormTaskState extends State<FormTask> {
     }
 
   }
+
   Future<Null> selectTimeTask(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -786,6 +792,7 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
+
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -797,6 +804,7 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
+
   Future<CustomerWithAddressModel> getDirections() async{
     return showDialog<CustomerWithAddressModel>(
       context: context,
@@ -806,6 +814,7 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
+
   Future<Null> lisC(FormModel form)async {
     listFieldsModels.clear();
     setState(() {
@@ -820,6 +829,7 @@ class _FormTaskState extends State<FormTask> {
       }
 
   }
+
   pickerImage(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
@@ -828,6 +838,7 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
+
   pickerPhoto(String name) async {}
   Widget buildView(){
     return  ListView.builder(
@@ -836,6 +847,7 @@ class _FormTaskState extends State<FormTask> {
         }
     ) ;
   }
+
   getAll()async{
     FormsModel forms;
     FormsModel formType;
@@ -854,9 +866,11 @@ class _FormTaskState extends State<FormTask> {
     }
     return formType;
   }
+
   initFormsTypes()async{
     formType = await getAll();
   }
+
   getElements()async{
     userToken = await ClientDatabaseProvider.db.getCodeId('1');
     token = userToken.token;
@@ -864,6 +878,7 @@ class _FormTaskState extends State<FormTask> {
     user = userToken.name;
     responsibleId = userToken.idUserCompany;
   }
+
   void _showModalDateTimeAndDirections() {
     setState(() {
       taskCU= true;
@@ -895,7 +910,8 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-   saveTaskApi() async{
+
+  saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.request);
 //
@@ -908,10 +924,34 @@ class _FormTaskState extends State<FormTask> {
    }
 
   }
+
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
+  }
+
+  String savedDataTablet(){
+    String dat="";
+    var keys = data.keys;
+    if(!keys.contains("tablet")){
+      return dat;
+    }else{
+      var titules = data["table"].keys;
+      for(String titule in titules){
+        dat = dat + titule + "," ;
+      }
+      for(String titule in titules){
+        Map dataColumn = data["table"][titule];
+        for (var key in dataColumn.keys){
+          if(key != "name"){
+            dat = dat +  data["table"][titule][key].text;
+          }
+        }
+        dat = dat + "*";
+      }
+    }
+    return dat;
   }
 }
 

@@ -233,18 +233,12 @@ class _ClienteState extends State<Cliente> {
         case ConnectionState.none:
           return new Container(
             child: Center(
-              child: Text("Ha ocurrido un error"),
+              child: Text("no hay datos disponibles"),
             ),
           );
         case ConnectionState.waiting:
           return new Center(
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: CircularProgressIndicator(),
-                ),
-                Text("Esperando datos"),
-              ],
+            child: CircularProgressIndicator(
             ),
           );
         case ConnectionState.done:
@@ -268,7 +262,7 @@ class _ClienteState extends State<Cliente> {
                         trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                           Navigator.push(
                               context,
-                              new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                              new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
                         },),
                         onTap:
                         widget.vista ? (){
@@ -311,7 +305,6 @@ class _ClienteState extends State<Cliente> {
         }
       }
     );
-
   }
 
   @override
