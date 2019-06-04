@@ -64,6 +64,9 @@ class _FormTaskState extends State<FormTask> {
   List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directioncliente;
+
+  Map data = new Map();
+
   @override
   void initState(){
     directioncliente = widget.directioncliente;
@@ -272,6 +275,88 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+  Widget generatedTable(List<FieldOptionModel> listOptions){
+
+    data["table"] = new Map();
+
+    for(FieldOptionModel varV in listOptions)
+    {
+      data["table"][varV.name] = new Map();
+      data["table"][varV.name]["name"] = varV.name;
+      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+    }
+
+    Card card(TextEditingController t){
+      return Card(
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: '',
+          ),
+          controller: t,
+        ),
+      );
+    }
+
+    //COLUMNAS
+    Container columna(Map column){
+      List<Widget> listCard = new List<Widget>();
+      for(var key in column.keys){
+        if(key != 'name'){
+          listCard.add(card(column[key]));
+        }
+      }
+      return Container(
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: Column(
+          children: <Widget>[
+            Card(
+              child: Container(
+                child: Text(column["name"]),
+              ),
+            ),
+            Divider(
+              height: 20,
+              color: Colors.black,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.25,
+              child: ListView.builder(
+                itemCount: listCard.length,
+                itemBuilder: (context,index){
+                  return listCard[index];
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
+    //LISTA DE COLUMNAS
+    List<Widget> listColuma = new List<Widget>();
+    Map column = data["table"];
+    for(var key in column.keys)
+    {
+      listColuma.add(columna(column[key]));
+    }
+
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(10),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.4,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: listColuma.length,
+          itemBuilder: (context,index){
+            return listColuma[index];
+          },
+          // This next line does the trick.
+        ) ,
+      ),
+    );
+  }
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
       context: context,
@@ -486,82 +571,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-
-
-                List<FieldOptionModel> listOptions = List<FieldOptionModel>();
-                List<String> listName = List<String>();
-                List<String> listValues = List<String>();
-                listOptions = listFieldsModels[index].fieldOptions;
-                for(FieldOptionModel varV in listOptions)
-                {
-                  listName.add(varV.name);
-                  listValues.add(varV.value.toString());
-                }
-                Card card(){
-                  return Card(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: '',
-                      ),
-                    ),
-                  );
-                }
-                Card title(String title) {
-                  return Card(
-                    child: Text(title),
-                  );
-                }
-                //COLUMNAS
-                Container columna(int intCard){
-                  List<Widget> listCard = new List<Widget>();
-                  for(int i = 0; i < intCard; i++){
-                    listCard.add(card());
-                  }
-                  return Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: Column(
-                      children: <Widget>[
-                        card(),
-                        Divider(
-                          height: 20,
-                          color: Colors.black,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: ListView.builder(
-                            itemCount: listCard.length,
-                            itemBuilder: (context,index){
-                              return listCard[index];
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }
-                //LISTA DE COLUMNAS
-                List<Widget> listColuma = new List<Widget>();
-                for(String v in listName)
-                  {
-                    listColuma.add(columna((listValues.length/listName.length).toInt()));
-                  }
-
-                return SingleChildScrollView(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: listColuma.length,
-                      itemBuilder: (context,index){
-                        return listColuma[index];
-                      },
-                      // This next line does the trick.
-                    ) ,
-                  ),
-                );
+                generatedTable(listFieldsModels[index].fieldOptions);
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
@@ -675,19 +685,43 @@ class _FormTaskState extends State<FormTask> {
 
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
-                {
-                  Uint8List saveImage;
-                  return
-                    Row(
+                Row(
+                  children: <Widget>[
+                    Column(
                       children: <Widget>[
-                        IconButton(icon: Icon(Icons.image),
-                              onPressed: ()async{
-                              saveImage = await getImg();
-                  }),
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 5),
+                              child: RaisedButton(
+                                onPressed: () async{
+                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  var bytes = await getImg();
+                                  Image img = Image.memory(bytes);
+                                  if (img != null) {
+                                    setState(() {
+                                      image = img;
+                                    });
+                                  }
+                                },
+                                child: Text(listFieldsModels[index].name),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    );
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
 
-                }
+                      child: Container(
+                          child: image == null ? new Text('')
+                              : image
+                      ),
+                    )
+                  ],
+                );
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                   return Container(
@@ -702,9 +736,9 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
-
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
+    print(resp.address);
     if(resp != null) {
       setState(() {
         directioncliente = resp;
@@ -752,7 +786,6 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -773,8 +806,6 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
-
-
   Future<Null> lisC(FormModel form)async {
     listFieldsModels.clear();
     setState(() {
@@ -790,7 +821,6 @@ class _FormTaskState extends State<FormTask> {
 
   }
   pickerImage(Method m) async {
-
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
       setState(() {
@@ -798,13 +828,7 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-  pickerPhoto(String name) async {
-
-
-
-  }
-
-
+  pickerPhoto(String name) async {}
   Widget buildView(){
     return  ListView.builder(
         itemBuilder: (BuildContext context, int index) {
@@ -830,7 +854,6 @@ class _FormTaskState extends State<FormTask> {
     }
     return formType;
   }
-
   initFormsTypes()async{
     formType = await getAll();
   }
@@ -890,7 +913,6 @@ class _FormTaskState extends State<FormTask> {
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
   }
-
 }
 
 

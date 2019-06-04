@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/api/rutahttp.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
-import 'package:joincompany/blocs/blocTaskMap.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
@@ -14,6 +13,8 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:image_picker_saver/image_picker_saver.dart';
 
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
@@ -159,7 +160,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         valadde = tasks.data[i].address.address;
         if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
         if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
-        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus,CustomerAddress: null);
+        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
         _listMarker.add(marker);
       }
     }
@@ -170,7 +171,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       String valadde = 'N/A';
       if(customersWithAddress.data[y].address != null){
         valadde = customersWithAddress.data[y].address;
-        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,CustomerAddress: customersWithAddress.data[y]);
+        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,customerAddress: customersWithAddress.data[y]);
         _listMarker.add(marker);
       }
     }
@@ -181,6 +182,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     });
 
   }
+
   allmark(List<Place> listPlaces) async {
     
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
@@ -200,12 +202,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                        builder: (context) => FormTask(directioncliente:mark.CustomerAddress )));
+                        builder: (context) => FormTask(directioncliente:mark.customerAddress )));
                   }
                 }
             ),
             onTap: (){ },
-          icon: await ColorMarker(mark)
+          icon: await colorMarker(mark,listPlaces.indexOf(mark))
         ),
       );
     }
@@ -225,16 +227,39 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         color: Colors.red[200]));
   }
 
-  Future<BitmapDescriptor> ColorMarker(Place mark) async {
-    if(mark.statusTask == status.cliente){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png"); }
-    //if(mark.status == 0){ return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context),Image.network('https://picsum.photos/250?image=9')); }
-    if(mark.statusTask == status.culminada){ return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen); }
-    if(mark.statusTask == status.planificado){
-      //createRoute(mark);
+  Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
+
+    ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
+    number = number +1;
+
+    switch(mark.statusTask){
+      case status.cliente:{
+          var data = await getNetworkImageData(
+              'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
+                  number.toString() + '.png', useCache: true);
+          var path = await ImagePickerSaver.saveFile(fileData: data);
+          return BitmapDescriptor.fromAssetImage(imageConfig, path);
+          //return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
+      }
+      case status.planificado:{
+        //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red'+number.toString()+'.png', useCache: true);
+        //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+//        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+        break;
+      }
+
+      case status.culminada:
+        {
+          //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
+          //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+          return BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen);
+//        createRoute(mark);
+//      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
+        }
     }
     return BitmapDescriptor.defaultMarker;
   }
-
 
   List<LatLng> convertToLatLng(List points){
     List<LatLng> result = <LatLng>[];
