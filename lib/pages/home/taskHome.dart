@@ -256,7 +256,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
         blocListTaskCalendarRes.inTaksCalendarMap.add(_listCalendar);
         setState(() {
-          DatepickedInit; DatepickedEnd;_listCalendar;
+          DatepickedInit; DatepickedEnd;
         });
       }
     }

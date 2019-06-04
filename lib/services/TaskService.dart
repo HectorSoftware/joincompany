@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/services/BaseService.dart';
 
-String resourcePath = '/tasks2';
+String resourcePath = '/tasks';
 
 Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
 
