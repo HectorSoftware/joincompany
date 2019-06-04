@@ -19,6 +19,7 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:joincompany/widgets/prueba.dart';
 
 class WidgetDynamic{
   var value;
@@ -167,6 +168,8 @@ class _FormTaskState extends State<FormTask> {
                               dropdownValue = null;
                               image = null;
                               taskCU = false;
+                              image2= null;
+                              listFieldsModels.clear();
                             });
                             Navigator.pop(context);
                           },
@@ -258,6 +261,7 @@ class _FormTaskState extends State<FormTask> {
                                     image = null;
                                     dataInfo = new Map();
                                     taskCU = false;
+                                    image2 = null;
                                   });
                                   Navigator.pop(context);
                                 },
@@ -308,6 +312,7 @@ class _FormTaskState extends State<FormTask> {
       return Container(
         width: MediaQuery.of(context).size.width * 0.5,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Card(
               child: Container(
@@ -366,16 +371,22 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
+  Future<File> photoAndImage() async{
+    return showDialog<File>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return TomarImage();
+      },
+    );
+  }
   Stack returnsStack(){
     return Stack(
       children: <Widget>[
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
-              if(listFieldsModels[index].fieldType == null) {
-                return Center(child: Text('Formulario no Disponible'),);
-              }
-              if(listFieldsModels[index].fieldType == 'Textarea'){
+              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'){
                 //TEXTAREA
                 return Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -486,7 +497,9 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Combo'){
-                List<String> dropdownMenuItems = List<String>();
+
+                return generatedTable(listFieldsModels[index].fieldOptions);
+              /*  List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
                 return  Padding(
 
@@ -511,8 +524,9 @@ class _FormTaskState extends State<FormTask> {
                       );
                     }).toList(),
                   ),
-                );
+                );*/
               }
+
               if(listFieldsModels[index].fieldType == 'Date'){
                 return Row(
                   children: <Widget>[
@@ -534,7 +548,10 @@ class _FormTaskState extends State<FormTask> {
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: Text('${_date.toString().substring(0,10)}'),
-                        onPressed: (){selectDate(context);},
+                        onPressed: (){selectDate(context);
+                        saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
+
+                        },
                       ),
                     ),
                   ],
@@ -564,6 +581,8 @@ class _FormTaskState extends State<FormTask> {
                         onPressed: (){
                           selectTime(context);
                           selectDate(context);
+                          var dateCo = _date.toString().substring(0,10) + _time.format(context).toString();
+                          saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                           },
                       ),
                     ),
@@ -593,14 +612,17 @@ class _FormTaskState extends State<FormTask> {
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: Text(_time.format(context)),
-                        onPressed: (){selectTime(context);},
+                        onPressed: (){selectTime(context);
+                        saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
+                        },
+
                       ),
                     ),
                   ],
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-                return Row(
+                return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -610,12 +632,10 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async{
-                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                                  var bytes = await getImg();
-                                  Image img = Image.memory(bytes);
+                                  var img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
-                                      image = img;
+                                      image2 = img;
                                     });
                                   }
                                 },
@@ -630,11 +650,15 @@ class _FormTaskState extends State<FormTask> {
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
 
-                      child: Container(
-                          child: image == null ? new Text('')
-                              : image
+                      child: Center(
+                        child: Container(
+                            child: image2 == null ? new Text('')
+                                : new Text('Imagen Guardada', style: TextStyle(
+                              color: PrimaryColor,
+                            ),)
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 );
               }
@@ -661,15 +685,17 @@ class _FormTaskState extends State<FormTask> {
                       ],
 
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
-                      child: new Center(
-                        child: image == null
-                            ? new Text(listFieldsModels[index].name)
-                            : image,
+              Container(
+              width: MediaQuery.of(context).size.width* 0.5,
 
-                      ),
-                    )
+              child: Container(
+              child: image2 == null ? new Text('')
+                  : new Text('Imagen Guardada',style: TextStyle(
+                color: PrimaryColor,
+              ),),
+
+              ),
+              ),
                   ],
                 );
 
@@ -685,7 +711,7 @@ class _FormTaskState extends State<FormTask> {
 
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
-                Row(
+              return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -700,6 +726,7 @@ class _FormTaskState extends State<FormTask> {
                                   Image img = Image.memory(bytes);
                                   if (img != null) {
                                     setState(() {
+                                      print(bytes);
                                       image = img;
                                     });
                                   }
@@ -716,10 +743,11 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image == null ? new Text('')
-                              : image
+                          child: image2 == null ? new Text('')
+                              : new Image.file(image2,height: 200,width: 200,)
+
                       ),
-                    )
+                    ),
                   ],
                 );
               if(listFieldsModels[index].fieldType == 'Boolean')
@@ -810,6 +838,7 @@ class _FormTaskState extends State<FormTask> {
     listFieldsModels.clear();
     setState(() {
       formGlobal = form;
+      listFieldsModels.clear();
     });
     for(SectionModel section in form.sections)
       {
