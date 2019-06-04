@@ -290,7 +290,7 @@ class DatabaseProvider {
       return listOfUsers;
     }
     else
-      return null;
+      return List<UserModel>();
   }
 
   Future<List<UserModel>> ReadUsersBySyncState(SyncState syncState) async {
@@ -4181,7 +4181,7 @@ class DatabaseProvider {
       return listOfCustomersWithAddresses;
     }
     else
-      return null;
+      return List<CustomerWithAddressModel>();
   }
 
   Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
