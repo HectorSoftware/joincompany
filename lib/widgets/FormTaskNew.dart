@@ -19,11 +19,26 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:joincompany/widgets/prueba.dart';
 
-class WidgetDynamic{
+class photo extends StatefulWidget{
   var value;
   var state;
-  WidgetDynamic({this.value, this.state});
+
+  photo({this.value, this.state});
+
+  pickerPhoto(String name) async {
+
+
+
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return null;
+  }
+
 
 }
 
@@ -164,6 +179,7 @@ class _FormTaskState extends State<FormTask> {
                               dropdownValue = null;
                               image = null;
                               taskCU = false;
+                              image2= null;
                             });
                             Navigator.pop(context);
                           },
@@ -255,6 +271,7 @@ class _FormTaskState extends State<FormTask> {
                                     image = null;
                                     dataInfo = new Map();
                                     taskCU = false;
+                                    image2 = null;
                                   });
                                   Navigator.pop(context);
                                 },
@@ -278,6 +295,15 @@ class _FormTaskState extends State<FormTask> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return PickerImg();
+      },
+    );
+  }
+  Future<File> photoAndImage() async{
+    return showDialog<File>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return TomarImage();
       },
     );
   }
@@ -402,6 +428,8 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Combo'){
                 List<String> dropdownMenuItems = List<String>();
+
+
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
                 return  Padding(
 
@@ -416,6 +444,7 @@ class _FormTaskState extends State<FormTask> {
                     onChanged: (newValue) {
                       setState(() {
                         dropdownValue = newValue;
+                       // dropdownValue = newValue;
                       });
                       saveData(dropdownValue,index.toString());
                     },
@@ -544,7 +573,7 @@ class _FormTaskState extends State<FormTask> {
                 List<Widget> listColuma = new List<Widget>();
                 for(String v in listName)
                   {
-                    listColuma.add(columna(1*(listValues.length/listName.length).toInt()));
+
                   }
 
                 return SingleChildScrollView(
@@ -590,7 +619,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-                return Row(
+                return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -600,12 +629,10 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async{
-                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                                  var bytes = await getImg();
-                                  Image img = Image.memory(bytes);
+                                  var img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
-                                      image = img;
+                                      image2 = img;
                                     });
                                   }
                                 },
@@ -621,8 +648,8 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image == null ? new Text('')
-                              : image
+                          child: image2 == null ? new Text('')
+                              : image2
                       ),
                     )
                   ],
@@ -675,7 +702,7 @@ class _FormTaskState extends State<FormTask> {
 
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
-                Row(
+              return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
