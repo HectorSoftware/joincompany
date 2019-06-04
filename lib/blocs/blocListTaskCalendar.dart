@@ -13,13 +13,19 @@ class blocListTaskCalendar {
   Stream<List<DateTime>> get outTaksCalendar => _tasksCalendarController.stream;
   Sink<List<DateTime>> get inTaksCalendar => _tasksCalendarController.sink;
 
+  var _tasksCalendarControllerMap = StreamController<List<DateTime>>.broadcast();
+  Stream<List<DateTime>> get outTaksCalendarMap => _tasksCalendarControllerMap.stream;
+  Sink<List<DateTime>> get inTaksCalendarMap => _tasksCalendarControllerMap.sink;
+
   updateCalendar(List<DateTime> calendar){
     inTaksCalendar.add(calendar);
+    inTaksCalendarMap.add(calendar);
   }
 
   @override
   void dispose() {
     _tasksCalendarController.close();
+    _tasksCalendarControllerMap.close();
   }
 
   blocListTaskCalendar(/*List<DateTime> calendar*/) {

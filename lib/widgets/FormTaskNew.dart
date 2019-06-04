@@ -545,7 +545,7 @@ class _FormTaskState extends State<FormTask> {
                 List<Widget> listColuma = new List<Widget>();
                 for(String v in listName)
                   {
-                    listColuma.add(columna(1*(listValues.length/listName.length).toInt()));
+                    listColuma.add(columna((listValues.length/listName.length).toInt()));
                   }
 
                 return SingleChildScrollView(
@@ -706,7 +706,6 @@ class _FormTaskState extends State<FormTask> {
 
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
-    print(resp.address);
     if(resp != null) {
       setState(() {
         directioncliente = resp;

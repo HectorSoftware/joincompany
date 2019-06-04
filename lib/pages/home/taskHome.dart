@@ -101,11 +101,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   TabBarView getTabBarView() {
 
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    blocListTaskCalendarRes = new blocListTaskCalendar(/*_listCalendar*/);
+    blocListTaskCalendarRes = new blocListTaskCalendar();
+
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
-        taskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
+        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
+        taskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar),
       ],
       controller: _controller,
       physics: _controller.index == 0
@@ -249,8 +250,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         _listCalendar.add(picked[0]);
         if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
+        blocListTaskCalendarRes.inTaksCalendarMap.add(_listCalendar);
         setState(() {
-          DatepickedInit; DatepickedEnd;
+          DatepickedInit; DatepickedEnd;_listCalendar;
         });
       }
     }

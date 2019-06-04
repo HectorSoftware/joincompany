@@ -19,10 +19,11 @@ import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget});
+  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
 
   final blocListTaskFilter blocListTaskFilterReswidget;
   final blocListTaskCalendar blocListTaskCalendarReswidget;
+  final List<DateTime> listCalendarRes;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
@@ -35,6 +36,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   List<TaskModel> listTaskModellocal;
   List<bool> listTaskModellocalbool;
   String filterText = '';
+  List<DateTime> listCalendar = new List<DateTime>();
+
 
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
@@ -46,17 +49,17 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     _getUserLocation();
     listTaskModellocal = new List<TaskModel>();
     listTaskModellocalbool = new List<bool>();
+    listCalendar = widget.listCalendarRes;
     actualizarusuario();
     super.initState();
   }
 
   actualizarusuario() async{
     UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    ListCalender.add(DateTime.now());
-    ListCalender.add(DateTime.now().add(Duration(days: -15)));
+    ListCalender = widget.listCalendarRes;
     lastPageTasks = 0;
     PageTasks = 0;
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+    getdatalist(listCalendar[1],listCalendar[0],1);
     setState(() {
     UserActiv;ListCalender;
     });
@@ -129,7 +132,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     Container(
       child: RefreshIndicator(
         child: LoadMore(
-          isFinish: countTaskList >= 100,
+          isFinish: countTaskList >= 20,
           onLoadMore: _loadMore,
           child: listando(),
           whenEmptyLoad: false,
@@ -155,7 +158,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
 
     print("Page $PageTasks");
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),2);
+    getdatalist(listCalendar[1],listCalendar[0],1);
     return true;
   }
 
@@ -166,7 +169,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       PageTasks = 0;
       listTaskModellocal.clear();
     });
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+    getdatalist(listCalendar[1],listCalendar[0],1);
   }
 
   int lastPageTasks = 0;int PageTasks = 0;

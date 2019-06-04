@@ -18,9 +18,10 @@ import 'package:joincompany/widgets/FormTaskNew.dart';
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
-  taskHomeMap({this.blocListTaskCalendarReswidget});
+  taskHomeMap({this.blocListTaskCalendarReswidget,this.listCalendarRes});
 
   final blocListTaskCalendar blocListTaskCalendarReswidget;
+  final List<DateTime> listCalendarRes;
 }
 
 /*
@@ -47,10 +48,13 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   StreamSubscription streamSubscription;
   blocListTaskCalendar blocListTaskCalendarRes;
   DateTime FechaActual = DateTime.now();
+  List<DateTime> listCalendar = new List<DateTime>();
 
   @override
   Future initState() {
     _getUserLocation();
+    listCalendar = widget.listCalendarRes;
+    FechaActual = listCalendar[1];
     super.initState();
   }
 
@@ -71,7 +75,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try{
       // ignore: cancel_subscriptions
-      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
       => setState((){
         listplace.clear();
         _addMarker(onData[0]);
@@ -176,20 +180,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       allmark(listplace);
     });
 
-
-    try{
-      // ignore: cancel_subscriptions
-//      streamSubscription = _Bloc.outTask.listen((newVal)
-//      => setState((){
-//        listplace = newVal;
-//        allmark(listplace);
-//      }));
-
-    }catch(e){ }
   }
   allmark(List<Place> listPlaces) async {
     
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
+
+    _markers.clear();
 
     for(Place mark in listPlaces){
       _markers.add(
