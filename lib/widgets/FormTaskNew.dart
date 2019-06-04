@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
@@ -40,7 +39,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  File image;
+  Image image;
   File image2;
   String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
@@ -601,7 +600,9 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async{
-                                  File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  var bytes = await getImg();
+                                  Image img = Image.memory(bytes);
                                   if (img != null) {
                                     setState(() {
                                       image = img;
@@ -621,9 +622,7 @@ class _FormTaskState extends State<FormTask> {
 
                       child: Container(
                           child: image == null ? new Text('')
-                              : new Image.file(image,height: 200,width: 200,)
-
-
+                              : image
                       ),
                     )
                   ],
@@ -657,7 +656,7 @@ class _FormTaskState extends State<FormTask> {
                       child: new Center(
                         child: image == null
                             ? new Text(listFieldsModels[index].name)
-                            : new Image.file(image),
+                            : image,
 
                       ),
                     )
@@ -796,7 +795,7 @@ class _FormTaskState extends State<FormTask> {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
       setState(() {
-        image = img;
+        image = Image.file(img);
       });
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -113,6 +114,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           : NeverScrollableScrollPhysics(),
     );
   }
+
   bool drawerTask = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -155,7 +157,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                     margin: EdgeInsets.only(left: 20),
                     child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
                   )
-
                 ],
               ),
             )
@@ -186,20 +187,23 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -208,7 +212,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Configuración"),
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
-               // Navigator.pushReplacementNamed(context, "/intro");
+                // Navigator.pushReplacementNamed(context, "/intro");
                 Navigator.of(context).pop();
                 Navigator.push(
                     context,
@@ -220,7 +224,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         ],
       ),
     );
- }
+  }
 
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(

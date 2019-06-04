@@ -5,10 +5,15 @@ import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
-import 'pages/BuscarRuta/BuscarDireccion.dart';
+import 'Menu/businesList.dart';
+import 'Menu/configCli.dart';
+import 'Menu/contactView.dart';
 
 void main() async {
+  ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+  connectionStatus.initialize();
   runApp(MyApp());
 }
 
@@ -27,8 +32,11 @@ class MyApp extends StatelessWidget{
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>TaskHomePage(),
         "/formularioTareas": (context) =>FormTask(),
-        "/cliente": (context) =>Cliente(),
+        "/cliente": (context) =>Cliente(false),
         "/firma": (context) =>FirmTouch(),
+        "/contactos": (context) =>ContactView(false),
+        "/negocios": (context) =>BusinessList(false),
+        "/configuracion": (context) =>ConfigCli(),
       },
       theme: ThemeData(
         primaryColor: PrimaryColor,

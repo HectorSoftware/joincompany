@@ -31,7 +31,7 @@ class _CanvasImgState extends State<CanvasImg> {
     if(widget.img != null){
       controller.backgroundImage = Image.file(widget.img);
     }
-    controller.backgroundColor = Colors.green;
+    controller.backgroundColor = Colors.white;
     return controller;
   }
 

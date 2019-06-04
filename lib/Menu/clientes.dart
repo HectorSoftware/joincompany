@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -7,20 +11,31 @@ import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+
+
+// ignore: must_be_immutable
 class Cliente extends StatefulWidget {
+
+  bool vista;
+  Cliente(vista){
+    this.vista = vista;
+  }
+
   @override
   _ClienteState createState() => _ClienteState();
 }
 
 class _ClienteState extends State<Cliente> {
-
   ListWidgets ls = ListWidgets();
+
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
@@ -32,13 +47,21 @@ class _ClienteState extends State<Cliente> {
   @override
   void initState() {
     extraerUser();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     super.initState();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -47,14 +70,14 @@ class _ClienteState extends State<Cliente> {
       ),
       body: Stack(
         children: <Widget>[
-          listViewCustomers(),
+          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         elevation: 12,
         backgroundColor: PrimaryColor,
-        tooltip: 'Agregar Tarea',
+        tooltip: 'Agregar Cliente',
         onPressed: (){
           Navigator.push(
               context,
@@ -62,42 +85,6 @@ class _ClienteState extends State<Cliente> {
                   builder: (BuildContext context) => new  FormClient(null)));
         },
 
-      ),
-    );
-  }
-
-  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
-    String title = titleCli;
-    String subtitle = subtitleCli;
-    int id = idCli;
-    return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
-              ),
-            ],
-          ),
-          IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){},),
-        ],
       ),
     );
   }
@@ -146,11 +133,20 @@ class _ClienteState extends State<Cliente> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
               },
             ),
           ),
@@ -184,12 +180,10 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-
   extraerUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
-
     setState(() {
       nameUser = user.name;
       emailUser = user.email;
@@ -243,15 +237,17 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name , style: TextStyle(fontSize: 14,color: Colors.black)),
+                  title: Text(name , style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
+                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                     Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
-                        //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
+                        new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
                   },),
-                  onTap: (){
+                  onTap:
+                  widget.vista ? (){
+                    Navigator.of(context).pop(snapshot.data[index]);
+                  }: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(
@@ -267,7 +263,7 @@ class _ClienteState extends State<Cliente> {
               var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
               return Card(
                 child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14,color: Colors.black)),
+                  title: Text(name, style: TextStyle(fontSize: 14),),
                   subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                   onTap: (){
                     Navigator.push(
@@ -299,6 +295,7 @@ class _ClienteState extends State<Cliente> {
 
   @override
   void dispose(){
+    _connectionChangeStream.cancel();
     _filter.dispose();
     super.dispose();
   }

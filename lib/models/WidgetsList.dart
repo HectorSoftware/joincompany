@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
@@ -398,8 +400,8 @@ Widget timeWidget(BuildContext context, String string){
       }
   }
 
-  Future<Image> getImg() async{
-    return showDialog<Image>(
+  Future<Uint8List> getImg() async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -443,8 +445,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-  pickerPhoto(Method m) async {
 
+  pickerPhoto(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
     if (img != null) {
       setState(() {
@@ -452,6 +454,7 @@ Widget timeWidget(BuildContext context, String string){
       });
     }
   }
+
   Widget imagePhoto(BuildContext context, String string){
     return Row(
       children: <Widget>[
@@ -487,8 +490,8 @@ Widget timeWidget(BuildContext context, String string){
       ],
     );
   }
-  Widget loadingTask(String string)
-  {
+
+  Widget loadingTask(String string){
     return Center(
       child: Column(
         children: <Widget>[
@@ -501,10 +504,8 @@ Widget timeWidget(BuildContext context, String string){
     );
   }
 
-
   List<String> dropdownMenuItems = List<String>();
   String dropdownValue = null ;
-
   Widget combo(List<FieldOptionModel> elements, String string)
   {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
