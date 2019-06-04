@@ -180,6 +180,7 @@ class _FormTaskState extends State<FormTask> {
                               image = null;
                               taskCU = false;
                               image2= null;
+                              listFieldsModels.clear();
                             });
                             Navigator.pop(context);
                           },
@@ -264,6 +265,7 @@ class _FormTaskState extends State<FormTask> {
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
                                   lisC(form);
+                                  getFormResponse.body.split(' ').forEach((word) => print(" " + word));
                                   setState(() {
                                     directionClient.address = null;
                                     dropdownValue = null;
@@ -313,10 +315,7 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
-              if(listFieldsModels[index].fieldType == null) {
-                return Center(child: Text('Formulario no Disponible'),);
-              }
-              if(listFieldsModels[index].fieldType == 'Textarea'){
+              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'){
                 //TEXTAREA
                 return Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -427,35 +426,39 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Combo'){
-                List<String> dropdownMenuItems = List<String>();
+                try{
+                  List<String> dropdownMenuItems = List<String>();
+                  for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
+                  return  Padding(
+                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                    child: DropdownButton<String>(
+                      isDense: false,
+                      icon: Icon(Icons.arrow_drop_down),
+                      elevation: 10,
+                      value: dropdownValue,
+                      hint: Text(listFieldsModels[index].name),
 
+                      onChanged: (newValue) {
+                        setState(() {
+                          dropdownValue = newValue;
+                          if(dropdownMenuItems.isNotEmpty)
+                          {
+                            dropdownMenuItems = new List<String>() ;
+                          }
+                        });
+                        saveData(dropdownValue,index.toString());
+                      },
+                      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  );
 
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
-                return  Padding(
+                }catch(e){}
 
-                  padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: DropdownButton<String>(
-                    isDense: false,
-                    icon: Icon(Icons.arrow_drop_down),
-                    elevation: 10,
-                    value: dropdownValue,
-                    hint: Text(listFieldsModels[index].name),
-
-                    onChanged: (newValue) {
-                      setState(() {
-                        dropdownValue = newValue;
-                       // dropdownValue = newValue;
-                      });
-                      saveData(dropdownValue,index.toString());
-                    },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                );
               }
               if(listFieldsModels[index].fieldType == 'Date'){
                 return Row(
@@ -478,7 +481,10 @@ class _FormTaskState extends State<FormTask> {
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: Text('${_date.toString().substring(0,10)}'),
-                        onPressed: (){selectDate(context);},
+                        onPressed: (){selectDate(context);
+                        saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
+
+                        },
                       ),
                     ),
                   ],
@@ -508,6 +514,8 @@ class _FormTaskState extends State<FormTask> {
                         onPressed: (){
                           selectTime(context);
                           selectDate(context);
+                          var dateCo = _date.toString().substring(0,10) + _time.format(context).toString();
+                          saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                           },
                       ),
                     ),
@@ -612,7 +620,10 @@ class _FormTaskState extends State<FormTask> {
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: Text(_time.format(context)),
-                        onPressed: (){selectTime(context);},
+                        onPressed: (){selectTime(context);
+                        saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
+                        },
+
                       ),
                     ),
                   ],
@@ -647,11 +658,15 @@ class _FormTaskState extends State<FormTask> {
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
 
-                      child: Container(
-                          child: image2 == null ? new Text('')
-                              : image2
+                      child: Center(
+                        child: Container(
+                            child: image2 == null ? new Text('')
+                                : new Text('Imagen Guardada', style: TextStyle(
+                              color: PrimaryColor,
+                            ),)
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 );
               }
@@ -678,15 +693,17 @@ class _FormTaskState extends State<FormTask> {
                       ],
 
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
-                      child: new Center(
-                        child: image == null
-                            ? new Text(listFieldsModels[index].name)
-                            : image,
+              Container(
+              width: MediaQuery.of(context).size.width* 0.5,
 
-                      ),
-                    )
+              child: Container(
+              child: image2 == null ? new Text('')
+                  : new Text('Imagen Guardada',style: TextStyle(
+                color: PrimaryColor,
+              ),),
+
+              ),
+              ),
                   ],
                 );
 
@@ -717,6 +734,7 @@ class _FormTaskState extends State<FormTask> {
                                   Image img = Image.memory(bytes);
                                   if (img != null) {
                                     setState(() {
+                                      print(bytes);
                                       image = img;
                                     });
                                   }
@@ -733,10 +751,11 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image == null ? new Text('')
-                              : image
+                          child: image2 == null ? new Text('')
+                              : new Image.file(image2,height: 200,width: 200,)
+
                       ),
-                    )
+                    ),
                   ],
                 );
               if(listFieldsModels[index].fieldType == 'Boolean')
@@ -829,8 +848,12 @@ class _FormTaskState extends State<FormTask> {
 
   Future<Null> lisC(FormModel form)async {
     listFieldsModels.clear();
+    listFieldsModels.clear();
+    listFieldsModels.clear();
+
     setState(() {
       formGlobal = form;
+      listFieldsModels.clear();
     });
     for(SectionModel section in form.sections)
       {
