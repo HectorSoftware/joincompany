@@ -1,12 +1,8 @@
-
-
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/main.dart';
-
 import 'canvasImg.dart';
 
 class PickerImg extends StatefulWidget {
@@ -16,7 +12,6 @@ class PickerImg extends StatefulWidget {
 
 class _PickerImgState extends State<PickerImg> {
   File img;
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

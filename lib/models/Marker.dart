@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'CustomerModel.dart';
+
 enum status{
   cliente,
   planificado,
   culminada
 }
+
 class Place {
   const Place({
     @required this.id,
@@ -15,7 +15,7 @@ class Place {
     @required this.latitude,
     @required this.longitude,
     @required this.statusTask,
-    @required this.CustomerAddress,
+    @required this.customerAddress,
   })  : assert(id != null),
         assert(customer != null),
         assert(address != null),
@@ -29,7 +29,7 @@ class Place {
   final double latitude;
   final double longitude;
   final status statusTask;
-  final CustomerWithAddressModel CustomerAddress;
+  final CustomerWithAddressModel customerAddress;
 
   Place copyWith({
     int id,
@@ -38,7 +38,7 @@ class Place {
     double latitude,
     double longitude,
     status t, //0 : azul / 1 : rojo / 2 : verde
-    CustomerWithAddressModel CustomerAddress,
+    CustomerWithAddressModel customerAddress,
   }) {
     return Place(
       id: id ?? this.id,
@@ -47,7 +47,7 @@ class Place {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       statusTask: t ?? this.statusTask,
-      CustomerAddress: CustomerAddress ?? this.CustomerAddress,
+      customerAddress: customerAddress ?? this.customerAddress,
     );
   }
 }
