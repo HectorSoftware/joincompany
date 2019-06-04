@@ -511,6 +511,7 @@ class _FormClientState extends State<FormClient> {
             IconButton(
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
+              color: Colors.white,
               iconSize: 25,
               onPressed: widget.client != null ? deleteCli:null,
             )

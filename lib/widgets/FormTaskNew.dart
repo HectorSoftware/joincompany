@@ -675,19 +675,43 @@ class _FormTaskState extends State<FormTask> {
 
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
-                {
-                  Uint8List saveImage;
-                  return
-                    Row(
+                Row(
+                  children: <Widget>[
+                    Column(
                       children: <Widget>[
-                        IconButton(icon: Icon(Icons.image),
-                              onPressed: ()async{
-                              saveImage = await getImg();
-                  }),
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 5),
+                              child: RaisedButton(
+                                onPressed: () async{
+                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                  var bytes = await getImg();
+                                  Image img = Image.memory(bytes);
+                                  if (img != null) {
+                                    setState(() {
+                                      image = img;
+                                    });
+                                  }
+                                },
+                                child: Text(listFieldsModels[index].name),
+                                color: PrimaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    );
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
 
-                }
+                      child: Container(
+                          child: image == null ? new Text('')
+                              : image
+                      ),
+                    )
+                  ],
+                );
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                   return Container(

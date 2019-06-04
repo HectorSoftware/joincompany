@@ -242,7 +242,7 @@ class _ClienteState extends State<Cliente> {
                   trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                     Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                        new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));//Necesario para Eviar un cliente a tarea yh asociarlo NO BORRAR PARAMETRO
                   },),
                   onTap:
                   widget.vista ? (){
