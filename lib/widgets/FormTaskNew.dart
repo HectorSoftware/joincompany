@@ -21,10 +21,10 @@ import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/prueba.dart';
 
-class WidgetDynamic{
+class Combo{
   var value;
   var state;
-  WidgetDynamic({this.value, this.state});
+  Combo({this.value, this.state});
 
 }
 
@@ -635,7 +635,9 @@ class _FormTaskState extends State<FormTask> {
                                   var img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
+
                                       image2 = img;
+                                      saveData(img.readAsBytesSync().toString(), listFieldsModels[index].id.toString());
                                     });
                                   }
                                 },
