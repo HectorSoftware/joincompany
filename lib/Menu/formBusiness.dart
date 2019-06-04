@@ -57,26 +57,27 @@ class _FormBusinessState extends State<FormBusiness> {
               )
             ]
         ),
-        child: DropdownButton<String>(
-          isDense: false,
-          icon: Icon(Icons.arrow_drop_down),
-          elevation: 10,
-          value: value,
-          hint: Text(title),
-          isExpanded: true,
-          onChanged: (String newValue) {
-            setState(() {
-              value = newValue;
-            });
-          // ignore: strong_mode_invalid_cast_literal_list
-          }, //items: <DropdownMenuItem>[],
-//        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-//          return DropdownMenuItem<String>(
-//            value: value,
-//            child: Text(value),
-//          );
-//        }).toList(),
-        ),
+        child: Text(""),//TODO
+//        DropdownButton<String>(
+//          isDense: false,
+//          icon: Icon(Icons.arrow_drop_down),
+//          elevation: 10,
+//          value: value,
+//          hint: Text(title),
+//          isExpanded: true,
+//          onChanged: (String newValue) {
+//            setState(() {
+//              value = newValue;
+//            });
+//          // ignore: strong_mode_invalid_cast_literal_list
+//          }, //items: <DropdownMenuItem>[],
+////        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+////          return DropdownMenuItem<String>(
+////            value: value,
+////            child: Text(value),
+////          );
+////        }).toList(),
+//        ),
     );
   }
 

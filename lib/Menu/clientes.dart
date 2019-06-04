@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -9,7 +6,6 @@ import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
@@ -32,6 +28,7 @@ class Cliente extends StatefulWidget {
 }
 
 class _ClienteState extends State<Cliente> {
+
   ListWidgets ls = ListWidgets();
 
   StreamSubscription _connectionChangeStream;
@@ -49,7 +46,15 @@ class _ClienteState extends State<Cliente> {
     extraerUser();
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    checkConnection(connectionStatus);
     super.initState();
+  }
+
+  void checkConnection(ConnectionStatusSingleton connectionStatus) async {
+    isOffline = await connectionStatus.checkConnection();
+    setState(() {
+      isOffline = !isOffline;
+    });
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -220,74 +225,90 @@ class _ClienteState extends State<Cliente> {
   listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
 
-    // ignore: missing_required_param
     return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
-      if (snapshot.data.isNotEmpty) {
-        return ListView.builder(
-          itemCount: snapshot.data.length,
-          itemBuilder: (BuildContext context, int index) {
-            var name = snapshot.data[index].name;
-            var dir = snapshot.data[index].address;
-            //var name = snapshot.data[index].name;
-            if(textFilter == ''){
-              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-              return Card(
-                child: ListTile(
-                  title: Text(name , style: TextStyle(fontSize: 14),),
-                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
-                  },),
-                  onTap:
-                  widget.vista ? (){
-                    Navigator.of(context).pop(snapshot.data[index]);
-                  }: (){
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                            new  FormClient(snapshot.data[index])
-                        )
-                    );
-                  },
+      switch(snapshot.connectionState){
+        case ConnectionState.none:
+          return new Container(
+            child: Center(
+              child: Text("Ha ocurrido un error"),
+            ),
+          );
+        case ConnectionState.waiting:
+          return new Center(
+            child: Column(
+              children: <Widget>[
+                Center(
+                  child: CircularProgressIndicator(),
                 ),
-              );
-            }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(dir, textFilter)){
-              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-              return Card(
-                child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14),),
-                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  onTap: (){
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                            new  FormClient(snapshot.data[index])
-                        )
+                Text("Esperando datos"),
+              ],
+            ),
+          );
+        case ConnectionState.done:
+          return new Container(
+            child: Center(
+              child: Text("Ha ocurrido un error"),
+            ),
+          );
+        case ConnectionState.active:
+          if (snapshot.data.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                  var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                  if(textFilter == ''){
+                    return Card(
+                      child: ListTile(
+                        title: Text(name , style: TextStyle(fontSize: 14),),
+                        subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                        trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(builder: (BuildContext context) => FormTask()));
+                        },),
+                        onTap:
+                        widget.vista ? (){
+                          Navigator.of(context).pop(snapshot.data[index]);
+                        }: (){
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                  new  FormClient(snapshot.data[index])
+                              )
+                          );
+                        },
+                      ),
                     );
-                  },
-                ),
-              );
-            }else{
-              return Container();
-            }
+                  }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
+                    var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                    var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                    return Card(
+                      child: ListTile(
+                        title: Text(name, style: TextStyle(fontSize: 14),),
+                        subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                  new  FormClient(snapshot.data[index])
+                              )
+                          );
+                        },
+                      ),
+                    );
+                  }else{
+                    return Container();
+                  }
+                }
+            );
           }
-        );
-      }else{
-        return new Container(
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
+        }
       }
     );
 
