@@ -279,7 +279,7 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-  Widget generatedTable(List<FieldOptionModel> listOptions){
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
     data["table"] = new Map();
 
@@ -311,6 +311,7 @@ class _FormTaskState extends State<FormTask> {
       }
       return Container(
         width: MediaQuery.of(context).size.width * 0.5,
+        height: MediaQuery.of(context).size.height *(listCard.length*0.1),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -325,7 +326,7 @@ class _FormTaskState extends State<FormTask> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.25,
+              height: MediaQuery.of(context).size.height *(listCard.length*0.1),
               child: ListView.builder(
                 itemCount: listCard.length,
                 itemBuilder: (context,index){
@@ -350,7 +351,7 @@ class _FormTaskState extends State<FormTask> {
       child: Container(
         margin: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.4,
+        height: MediaQuery.of(context).size.height * 0.3,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: listColuma.length,
@@ -498,8 +499,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Combo'){
 
-                return generatedTable(listFieldsModels[index].fieldOptions);
-              /*  List<String> dropdownMenuItems = List<String>();
+               List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
                 return  Padding(
 
@@ -524,7 +524,7 @@ class _FormTaskState extends State<FormTask> {
                       );
                     }).toList(),
                   ),
-                );*/
+                );
               }
 
               if(listFieldsModels[index].fieldType == 'Date'){
@@ -590,7 +590,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-                generatedTable(listFieldsModels[index].fieldOptions);
+                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
