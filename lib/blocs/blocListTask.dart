@@ -14,6 +14,7 @@ class blocListTask {
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
+
   Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
@@ -47,12 +48,20 @@ class blocListTask {
         }
       }
     }catch(e){}
+
+    inListTaksTotal.add(tasks.total);
     inListTaks.add(_listTaskModellocal);
   }
+
+  var _tasksTotalController = StreamController<int>.broadcast();
+  Stream<int> get outListTaksTotal => _tasksTotalController.stream;
+  Sink<int> get inListTaksTotal => _tasksTotalController.sink;
+
 
   @override
   void dispose() {
     _tasksController.close();
+    _tasksTotalController.close();
   }
 
   blocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
