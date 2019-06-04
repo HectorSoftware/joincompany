@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -13,7 +17,17 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+
+
+// ignore: must_be_immutable
 class Cliente extends StatefulWidget {
+
+  bool vista;
+  Cliente(vista){
+    this.vista = vista;
+  }
+
   @override
   _ClienteState createState() => _ClienteState();
 }
@@ -21,6 +35,9 @@ class Cliente extends StatefulWidget {
 class _ClienteState extends State<Cliente> {
 
   ListWidgets ls = ListWidgets();
+
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
@@ -32,13 +49,21 @@ class _ClienteState extends State<Cliente> {
   @override
   void initState() {
     extraerUser();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     super.initState();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -47,7 +72,7 @@ class _ClienteState extends State<Cliente> {
       ),
       body: Stack(
         children: <Widget>[
-          listViewCustomers(),
+          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -66,42 +91,7 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-  Widget clientCard(String titleCli, String subtitleCli, int idCli) {//TODO: change String for Client
-    String title = titleCli;
-    String subtitle = subtitleCli;
-    int id = idCli;
-    return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(12.0),
-                child: Align(alignment: Alignment.centerLeft,child: Text(subtitle),),
-              ),
-            ],
-          ),
-          IconButton(icon: Icon(Icons.format_list_bulleted),onPressed: (){},),
-        ],
-      ),
-    );
-  }
-
+  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -154,13 +144,17 @@ class _ClienteState extends State<Cliente> {
               },
             ),
           ),
-          /*new ListTile(
-            title: new Text("Negocios"),
-            trailing: new Icon(Icons.poll),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),*/
+          Container(
+            child: new ListTile(
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/negocios');
+              },
+            ),
+          ),
           Divider(
             height: 30.0,
           ),
@@ -183,7 +177,6 @@ class _ClienteState extends State<Cliente> {
       ),
     );
   }
-
 
   extraerUser() async {
     UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
@@ -251,7 +244,10 @@ class _ClienteState extends State<Cliente> {
                         new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
                         //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
                   },),
-                  onTap: (){
+                  onTap:
+                  widget.vista ? (){
+                    Navigator.of(context).pop(snapshot.data[index]);
+                  }: (){
                     Navigator.push(
                         context,
                         new MaterialPageRoute(

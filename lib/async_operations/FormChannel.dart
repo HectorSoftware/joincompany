@@ -8,7 +8,7 @@ class FormChannel {
   
   FormChannel();
 
-  static void createFormsInBothLocalAndServer() async {
+  static void _createFormsInBothLocalAndServer() async {
 
     String customer = '';
     String authorization = '';
@@ -29,12 +29,12 @@ class FormChannel {
     formsServer.data.forEach((formServer) async {
       if (idsToCreate.contains(formServer.id)) {
         // Cambiar el SyncState Local
-        DatabaseProvider.db.CreateForm(formServer, SyncState.synchronized);
+        await DatabaseProvider.db.CreateForm(formServer, SyncState.synchronized);
       }
     });
   }
 
-  static void deleteFormsInBothLocalAndServer() async {
+  static void _deleteFormsInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
 
@@ -51,12 +51,12 @@ class FormChannel {
 
     Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
 
-    idsToDelete.forEach((idToDelete) {
-      DatabaseProvider.db.DeleteFormById(idToDelete);
+    idsToDelete.forEach((idToDelete) async{
+      await DatabaseProvider.db.DeleteFormById(idToDelete);
     });
   }
 
-  static void updateFormsInBothLocalAndServer() async {
+  static void _updateFormsInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
     
@@ -71,9 +71,15 @@ class FormChannel {
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       
       if ( diffInMilliseconds < 0 ) { // Actualizar Local
-        DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+        await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
       }
     });
+  }
+
+  static void syncEverything() async {
+    await FormChannel._deleteFormsInBothLocalAndServer();
+    await FormChannel._updateFormsInBothLocalAndServer();
+    await FormChannel._createFormsInBothLocalAndServer();
   }
 
 

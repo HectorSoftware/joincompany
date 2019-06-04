@@ -1,32 +1,30 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:joincompany/Menu/clientes.dart';
-import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
+
+import 'clientes.dart';
 
 enum type{
-  NAME,
-  CODE,
-  CARGO,
-  TLF_F,
-  TLF_M,
-  EMAIL,
-  NOTE
+  POSS,
+  CLIENT,
+  CONTACT,
+  DATE,
+  MOUNT,
 }
 
-class AddContact extends StatefulWidget {
+class FormBusiness extends StatefulWidget {
   @override
-  _AddContactState createState() => _AddContactState();
+  _FormBusinessState createState() => _FormBusinessState();
 }
 
-class _AddContactState extends State<AddContact> {
-
-  List<CustomerWithAddressModel> clients = List<CustomerWithAddressModel>();
+class _FormBusinessState extends State<FormBusiness> {
+  List<TaskModel> task = List<TaskModel>();
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
 
-  Future<CustomerWithAddressModel> getClient() async{
-    return showDialog<CustomerWithAddressModel>(
+  Future<TaskModel> getTask() async{
+    return showDialog<TaskModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -64,73 +62,42 @@ class _AddContactState extends State<AddContact> {
 
   String getErrorText(type t){
     switch(t){
-      case type.NAME:{
-        return errorTextFieldName;
-      }
-      case type.CODE:{
-        return errorTextFieldCode;
-      }
-      case type.NOTE:{
-        return errorTextFieldNote;
-      }
-      case type.NOTE:{
-        //TODO
+      case type.POSS:
+        // TODO: Handle this case.
         break;
-      }
-      case type.CARGO:{
-        //TODO
+      case type.CLIENT:
+        // TODO: Handle this case.
         break;
-      }
-      case type.EMAIL:{
-        //TODO
+      case type.CONTACT:
+        // TODO: Handle this case.
         break;
-      }
-      case type.TLF_F:{
-        //TODO
+      case type.DATE:
+        // TODO: Handle this case.
         break;
-      }
-      case type.TLF_M:{
-        //TODO
+      case type.MOUNT:
+        // TODO: Handle this case.
         break;
-      }
     }
     return "";
   }
 
   _onChanges(type t){
     switch(t){
-      case type.NAME:{
-        setState(() {
-          errorTextFieldName = '';
-        });
+      case type.POSS:
+        // TODO: Handle this case.
         break;
-      }
-      case type.CODE:{
-        setState(() {
-          errorTextFieldCode = '';
-        });
+      case type.CLIENT:
+        // TODO: Handle this case.
         break;
-      }
-      case type.NOTE:{
-        //TODO
+      case type.CONTACT:
+        // TODO: Handle this case.
         break;
-      }
-      case type.CARGO:{
-        //TODO
+      case type.DATE:
+        // TODO: Handle this case.
         break;
-      }
-      case type.EMAIL:{
-        //TODO
+      case type.MOUNT:
+        // TODO: Handle this case.
         break;
-      }
-      case type.TLF_F:{
-        //TODO
-        break;
-      }
-      case type.TLF_M:{
-        //TODO
-        break;
-      }
     }
   }
 
@@ -154,27 +121,21 @@ class _AddContactState extends State<AddContact> {
 
   TextEditingController getController(type t){
     switch (t){
-      case type.NAME:{
-        return name;
-      }
-      case type.CODE:{
-        return code;
-      }
-      case type.TLF_F:{
-        return tlfF;
-      }
-      case type.TLF_M:{
-        return tlfM;
-      }
-      case type.EMAIL:{
-        return email;
-      }
-      case type.NOTE:{
-        return note;
-      }
-      case type.CARGO:{
-        return cargo;
-      }
+      case type.POSS:
+        // TODO: Handle this case.
+        break;
+      case type.CLIENT:
+        // TODO: Handle this case.
+        break;
+      case type.CONTACT:
+        // TODO: Handle this case.
+        break;
+      case type.DATE:
+        // TODO: Handle this case.
+        break;
+      case type.MOUNT:
+        // TODO: Handle this case.
+        break;
     }
     return null;
   }
@@ -182,17 +143,16 @@ class _AddContactState extends State<AddContact> {
   ListView getClientBuilder() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: clients.length,
+        itemCount: task.length,
         itemBuilder: (context, int index) {
           return Container(
             child: ListTile(
               leading: const Icon(Icons.account_box,
                   size: 25.0),
-              title: Text(clients[index].name),
-              subtitle: Text(clients[index].address),
+              title: Text(task[index].name),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
                 setState(() {
-                  clients.remove(clients[index]);
+                  task.remove(task[index]);
                 });
               }),
             ),
@@ -217,25 +177,23 @@ class _AddContactState extends State<AddContact> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Contacto"),
+        title: Text("Negocio"),
         automaticallyImplyLeading: true,
       ),
       body:SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            customTextField("Nombre / apellido *",type.NAME,1),
-            customTextField("Codigo *",type.CODE,1),
-            customTextField("Cargo",type.CARGO,1),
-            customTextField("Telefono fijo",type.TLF_F,1),
-            customTextField("Telefono movil",type.TLF_M,1),
-            customTextField("Emails",type.EMAIL,1),
-            customTextField("Notas",type.NOTE,4),
+            customTextField('Posicionamiento cliente',type.POSS,1),
+            customTextField('Cliente B',type.CLIENT,1),
+            customTextField('Primer Contacto',type.CONTACT,1),
+            customTextField('Fecha',type.DATE,1),
+            customTextField('Monto',type.MOUNT,1),
             Container(
                 margin: EdgeInsets.all(12.0),
                 child:Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text("cliente"),
+                    Text("Tarea o Nota"),
                     Row(
                       children: <Widget>[
                         Align(
@@ -243,12 +201,12 @@ class _AddContactState extends State<AddContact> {
                           child: IconButton(
                             icon: Icon(Icons.add),
                             onPressed: ()async{
-                              var client = await getClient();
-                              if (client != null){
-                                setState(() {
-                                  clients.add(client);
-                                });
-                              }
+//                              var t = await getTask();
+//                              if (t != null){
+//                                setState(() {
+//                                  task.add(t);
+//                                });
+//                              }
                             },
                           ),
                         ),
@@ -257,7 +215,7 @@ class _AddContactState extends State<AddContact> {
                           child: IconButton(
                             icon: Icon(Icons.visibility),
                             onPressed: (){
-                              getClient();
+//                              getTask();
                             },
                           ),
                         ),
@@ -267,9 +225,9 @@ class _AddContactState extends State<AddContact> {
                 )
             ),
             Container(
-              child: clients.isNotEmpty ? Container(
+              child: task.isNotEmpty ? Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * (0.1 * clients.length),
+                  height: MediaQuery.of(context).size.height * (0.1 * task.length),
                   child:getClientBuilder()): Container() ,
             ),
           ],

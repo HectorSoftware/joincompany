@@ -7,7 +7,7 @@ class AddressChannel {
   
   AddressChannel();
   
-  static void createAddressesInBothLocalAndServer() async {
+  static void _createAddressesInBothLocalAndServer() async {
 
     String customer = '';
     String authorization = '';
@@ -21,7 +21,7 @@ class AddressChannel {
         AddressModel addressServer = AddressModel.fromJson(createAddressResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
+        await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
       }
     });
 
@@ -41,12 +41,12 @@ class AddressChannel {
     addressesServer.data.forEach((addressServer) async {
       if (idsToCreate.contains(addressServer.id)) {
         // Cambiar el SyncState Local
-        DatabaseProvider.db.CreateAddress(addressServer, SyncState.synchronized);
+        await DatabaseProvider.db.CreateAddress(addressServer, SyncState.synchronized);
       }
     });
   }
 
-  static void deleteAddressesInBothLocalAndServer() async {
+  static void _deleteAddressesInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
 
@@ -56,7 +56,7 @@ class AddressChannel {
     addressesLocal.forEach((addressLocal) async {
       var deleteAddressResponseServer = await deleteAddress(addressLocal.id.toString(), customer, authorization);
       if (deleteAddressResponseServer.statusCode==200) {
-        DatabaseProvider.db.DeleteAddressById(addressLocal.id);
+        await DatabaseProvider.db.DeleteAddressById(addressLocal.id);
       }
     });
 
@@ -73,12 +73,12 @@ class AddressChannel {
 
     Set idsToDelete = idsAddressesLocal.difference(idsAddressesServer);
 
-    idsToDelete.forEach((idToDelete) {
-      DatabaseProvider.db.DeleteAddressById(idToDelete);
+    idsToDelete.forEach((idToDelete) async {
+      await DatabaseProvider.db.DeleteAddressById(idToDelete);
     });
   }
 
-  static void updateAddressesInBothLocalAndServer() async {
+  static void _updateAddressesInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
     
@@ -98,11 +98,17 @@ class AddressChannel {
           AddressModel addressServerUpdated = AddressModel.fromJson(updateAddressServerResponse.body);
           //Cambiar el sycn state
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          DatabaseProvider.db.UpdateAddress(addressServerUpdated.id, addressServerUpdated, SyncState.synchronized);
+          await DatabaseProvider.db.UpdateAddress(addressServerUpdated.id, addressServerUpdated, SyncState.synchronized);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        DatabaseProvider.db.UpdateAddress(addressServer.id, addressServer, SyncState.synchronized);
+        await DatabaseProvider.db.UpdateAddress(addressServer.id, addressServer, SyncState.synchronized);
       }
     });
-  } 
+  }
+
+  static void syncEverything() async {
+    await AddressChannel._deleteAddressesInBothLocalAndServer();
+    await AddressChannel._updateAddressesInBothLocalAndServer();
+    await AddressChannel._createAddressesInBothLocalAndServer();
+  }
 }
