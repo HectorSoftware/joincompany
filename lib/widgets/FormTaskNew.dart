@@ -62,7 +62,6 @@ class _FormTaskState extends State<FormTask> {
   bool pass = false;
   bool taskEnd = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
-  List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directioncliente;
 
@@ -165,7 +164,7 @@ class _FormTaskState extends State<FormTask> {
                             setState(() {
                               dataInfo = new Map();
                               pass= false;
-                             // dropdownValue = null;
+                            //  dropdownValue = null;
                               image = null;
                               taskCU = false;
                               image2= null;
@@ -256,7 +255,7 @@ class _FormTaskState extends State<FormTask> {
                                   lisC(form);
                                   setState(() {
                                     directionClient.address = null;
-                                    //dropdownValue = null;
+                                 //   dropdownValue = null;
                                     pass = true;
                                     image = null;
                                     dataInfo = new Map();
@@ -503,31 +502,26 @@ class _FormTaskState extends State<FormTask> {
 
                 }
 
-                if(dataInfo[index].toString().isEmpty){
-                  saveData(listFieldsModels[index].name,index.toString());
-                  print('********************************');
-                }
-
-               //String dropdownValue ;
-                return  Padding(
+               String dropdownValue ;
+                return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: DropdownButton<String>(
+                  child: new DropdownButton<String>(
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dataInfo[index],
-                    hint: Text(listFieldsModels[index].name),
+                    value: dataInfo[[index].toString()],
+                    hint:  dataInfo[index.toString()] != null  ? Text(dataInfo[index.toString()]): Text(listFieldsModels[index].name),
 
                     onChanged: (newValue) {
 
                       setState(() {
                         //dropdownValue = newValue;
+                        dataInfo.putIfAbsent([index].toString() ,()=> newValue);
                       });
-                      saveData(newValue,index.toString());
-                      print( dataInfo[index]);
+
                     },
                     items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
+                      return new DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
                       );
@@ -603,7 +597,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
-                return Row(
+                return new Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -620,9 +614,11 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text(_time.format(context)),
+                        child: dataInfo[listFieldsModels[index].id.toString()] == null ? Text('${dataInfo[listFieldsModels[index].id]}') : Text('Sin Asignar'),
                         onPressed: (){selectTime(context);
                         saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
+                        print(dataInfo[listFieldsModels[index].id]);
+                        print(_time.format(context).toString());
                         },
 
                       ),

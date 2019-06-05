@@ -216,7 +216,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 //    _polyLines;
 //    //});
   }
-
   Future createRoute(Place mark) async {
     LatLng destination = LatLng(mark.latitude, mark.longitude);
     String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination,kGoogleApiKeyy);
@@ -226,9 +225,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         points: convertToLatLng(decodePoly(route)),
         color: Colors.red[200]));
   }
-
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
-
     ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
     number = number +1;
 

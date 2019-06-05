@@ -124,7 +124,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
       => setState((){
-        print(listTaskModellocal.length);
         listTaskModellocal = onDataList;
         for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
           //listTaskModellocal.add(onDataList[cantlistTaskModellocal]);
@@ -174,7 +173,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
     PageTasks++;
-    print(PageTasks);
 //    print("onLoadMore ${listTaskModellocal.length}");
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
 //    print("Page $PageTasks");
