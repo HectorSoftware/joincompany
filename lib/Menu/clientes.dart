@@ -229,89 +229,113 @@ class _ClienteState extends State<Cliente> {
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
-      switch(snapshot.connectionState){
-        case ConnectionState.none:
-          return new Container(
-            child: Center(
-              child: Text("Ha ocurrido un error"),
-            ),
-          );
-        case ConnectionState.waiting:
-          return new Center(
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: CircularProgressIndicator(),
+        if(snapshot != null){
+          switch(snapshot.connectionState){
+            case ConnectionState.none:
+              return new Container(
+                child: Center(
+                  child: Text("no hay datos disponibles"),
                 ),
-                Text("Esperando datos"),
-              ],
-            ),
-          );
-        case ConnectionState.done:
+              );
+            case ConnectionState.waiting:
+              return new Stack(
+                children: <Widget>[
+                  Center(
+                    child: SizedBox(
+                      height: 100.0,
+                      width: 100.0,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.blue),
+                        strokeWidth: 5.0,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text("cargando"),
+                  )
+                ],
+              );
+            case ConnectionState.done:
+              return new Container(
+                child: Center(
+                  child: Text("Ha ocurrido un error"),
+                ),
+              );
+            case ConnectionState.active:
+              if(snapshot != null){
+                if (snapshot.data.isNotEmpty) {
+                  return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                        var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                        if(textFilter == ''){
+                          return Card(
+                            child: ListTile(
+                              title: Text(name , style: TextStyle(fontSize: 14),),
+                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                              trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
+                              },),
+                              onTap:
+                              widget.vista ? (){
+                                Navigator.of(context).pop(snapshot.data[index]);
+                              }: (){
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                        new  FormClient(snapshot.data[index])
+                                    )
+                                );
+                              },
+                            ),
+                          );
+                        }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
+                          var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                          var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                          return Card(
+                            child: ListTile(
+                              title: Text(name, style: TextStyle(fontSize: 14),),
+                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                              onTap: (){
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                        new  FormClient(snapshot.data[index])
+                                    )
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      }
+                  );
+                }else{
+                  return new Container(
+                    child: Center(
+                      child: Text("No hay contactos "),
+                    ),
+                  );
+                }
+              } return new Container(
+                child: Center(
+                  child: Text("Ha ocurrido un error"),
+                ),
+              );
+          }
+        }else{
           return new Container(
             child: Center(
               child: Text("Ha ocurrido un error"),
             ),
           );
-        case ConnectionState.active:
-          if (snapshot.data.isNotEmpty) {
-            return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-                  var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-                  if(textFilter == ''){
-                    return Card(
-                      child: ListTile(
-                        title: Text(name , style: TextStyle(fontSize: 14),),
-                        subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                        trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
-                        },),
-                        onTap:
-                        widget.vista ? (){
-                          Navigator.of(context).pop(snapshot.data[index]);
-                        }: (){
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  new  FormClient(snapshot.data[index])
-                              )
-                          );
-                        },
-                      ),
-                    );
-                  }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
-                    var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-                    var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-                    return Card(
-                      child: ListTile(
-                        title: Text(name, style: TextStyle(fontSize: 14),),
-                        subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                        onTap: (){
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  new  FormClient(snapshot.data[index])
-                              )
-                          );
-                        },
-                      ),
-                    );
-                  }else{
-                    return Container();
-                  }
-                }
-            );
-          }
         }
       }
     );
-
   }
 
   @override

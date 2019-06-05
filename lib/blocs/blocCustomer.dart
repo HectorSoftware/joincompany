@@ -25,8 +25,10 @@ class CustomersBloc{
     var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     _listCustomersWithAddress = customersWithAddress.data;
+    if(_listCustomersWithAddress != null){
+      _customerscontroller.add(_listCustomersWithAddress);
+    }
 
-    _customerscontroller.add(_listCustomersWithAddress);
   }
 
   @override
