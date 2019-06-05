@@ -42,7 +42,6 @@ class _FormTaskState extends State<FormTask> {
 
   Image image;
   File image2;
-  String dropdownValue ;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -62,7 +61,6 @@ class _FormTaskState extends State<FormTask> {
   bool pass = false;
   bool taskEnd = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
-  List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directioncliente;
 
@@ -165,7 +163,7 @@ class _FormTaskState extends State<FormTask> {
                             setState(() {
                               dataInfo = new Map();
                               pass= false;
-                              dropdownValue = null;
+                            //  dropdownValue = null;
                               image = null;
                               taskCU = false;
                               image2= null;
@@ -256,7 +254,7 @@ class _FormTaskState extends State<FormTask> {
                                   lisC(form);
                                   setState(() {
                                     directionClient.address = null;
-                                    dropdownValue = null;
+                                 //   dropdownValue = null;
                                     pass = true;
                                     image = null;
                                     dataInfo = new Map();
@@ -501,6 +499,7 @@ class _FormTaskState extends State<FormTask> {
 
                List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
+               String dropdownValue ;
                 return  Padding(
 
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
