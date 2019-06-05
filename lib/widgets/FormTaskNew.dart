@@ -677,33 +677,17 @@ class _FormTaskState extends State<FormTask> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5,left: 10),
-                              child: RaisedButton(
-                                onPressed: (){
-                                  pickerImage(Method.GALLERY);
-                                },
-                                child: Text(''),
-                                color: PrimaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-
+                        Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
                       ],
 
                     ),
               Container(
-              width: MediaQuery.of(context).size.width* 0.5,
+              width: MediaQuery.of(context).size.width* 0.4,
 
               child: Container(
-              child: image2 == null ? new Text('')
-                  : new Text('Imagen Guardada',style: TextStyle(
+              child: new Text(listFieldsModels[index].name,style: TextStyle(
                 color: PrimaryColor,
               ),),
-
               ),
               ),
                   ],
