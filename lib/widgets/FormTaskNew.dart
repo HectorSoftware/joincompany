@@ -119,6 +119,7 @@ class _FormTaskState extends State<FormTask> {
                            );*/
 
                             if(dataInfo.isNotEmpty) {
+                              print(dataInfo);
                               saveTask.formId = formGlobal.id;
                               saveTask.responsibleId = responsibleId;
                               saveTask.name = formGlobal.name;
@@ -516,7 +517,7 @@ class _FormTaskState extends State<FormTask> {
 
                       setState(() {
                         //dropdownValue = newValue;
-                        dataInfo.putIfAbsent([index].toString() ,()=> newValue);
+                        dataInfo.putIfAbsent(index.toString() ,()=> newValue);
                       });
 
                     },
