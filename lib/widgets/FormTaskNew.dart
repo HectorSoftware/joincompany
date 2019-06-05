@@ -42,6 +42,7 @@ class _FormTaskState extends State<FormTask> {
 
   Image image;
   File image2;
+
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -450,9 +451,7 @@ class _FormTaskState extends State<FormTask> {
                       maxLines: 1,
                       //controller: nameController,
                       decoration: InputDecoration(
-
                         border: InputBorder.none,
-
                         hintText: listFieldsModels[index].name,
                       ),
                     ),
@@ -498,26 +497,31 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Combo'){
 
                List<String> dropdownMenuItems = List<String>();
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
-               String dropdownValue ;
-                return  Padding(
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+                    dropdownMenuItems.add(v.name);
 
+                }
+
+               String dropdownValue ;
+                return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: DropdownButton<String>(
+                  child: new DropdownButton<String>(
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dropdownValue,
-                    hint: Text(listFieldsModels[index].name),
+                    value: dataInfo[[index].toString()],
+                    hint:  dataInfo[index.toString()] != null  ? Text(dataInfo[index.toString()]): Text(listFieldsModels[index].name),
 
                     onChanged: (newValue) {
+
                       setState(() {
-                        dropdownValue = newValue;
+                        //dropdownValue = newValue;
+                        dataInfo.putIfAbsent([index].toString() ,()=> newValue);
                       });
-                      saveData(dropdownValue,index.toString());
+
                     },
                     items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
+                      return new DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
                       );
@@ -593,7 +597,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
-                return Row(
+                return new Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -610,9 +614,11 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text(_time.format(context)),
+                        child: dataInfo[listFieldsModels[index].id.toString()] == null ? Text('${dataInfo[listFieldsModels[index].id]}') : Text('Sin Asignar'),
                         onPressed: (){selectTime(context);
                         saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
+                        print(dataInfo[listFieldsModels[index].id]);
+                        print(_time.format(context).toString());
                         },
 
                       ),
