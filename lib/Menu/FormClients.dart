@@ -8,7 +8,8 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
@@ -37,9 +38,9 @@ class _FormClientState extends State<FormClient> {
 
   CustomerWithAddressModel client;
 
-  List<CustomerWithAddressModel> directionsNews = List<CustomerWithAddressModel>();
-  List<CustomerWithAddressModel> directionsOld = List<CustomerWithAddressModel>();
-  List<CustomerWithAddressModel> directionsAll = List<CustomerWithAddressModel>();
+  List<AddressModel> directionsNews = List<AddressModel>();
+  List<AddressModel> directionsOld = List<AddressModel>();
+  List<AddressModel> directionsAll = List<AddressModel>();
 
   List<String> contacts = List<String>();
 
@@ -171,12 +172,12 @@ class _FormClientState extends State<FormClient> {
     });
   }
 
-  Future<int> deletedAddressUser(CustomerWithAddressModel direction)async{
+  Future<int> deletedAddressUser(AddressModel direction)async{
      var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
      return resp.statusCode;
   }
 
-  Future<int> addAddressUser(CustomerWithAddressModel direction)async{
+  Future<int> addAddressUser(AddressModel direction)async{
     var resp = await relateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
@@ -381,8 +382,8 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
-  Future<CustomerWithAddressModel> getDirections() async{
-    return showDialog<CustomerWithAddressModel>(
+  Future<AddressModel> getDirections() async{
+    return showDialog<AddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
