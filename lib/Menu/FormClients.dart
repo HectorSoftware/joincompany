@@ -172,12 +172,15 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> deletedAddressUser(CustomerWithAddressModel direction)async{
-     var resp = await unrelateCustomerAddress(direction.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+     print(resp.body);
      return resp.statusCode;
   }
 
   Future<int> addAddressUser(CustomerWithAddressModel direction, int id)async{
     var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),userAct.company,userAct.token);
+    print(id);
+    print(direction.id);
     print(resp.statusCode);
     print(resp.body);
     return resp.statusCode;

@@ -38,7 +38,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   List<bool> listTaskModellocalbool;
   String filterText = '';
   List<DateTime> listCalendar = new List<DateTime>();
-
+  StreamSubscription streamSubscriptionList;
 
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
@@ -71,6 +71,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   @override
   void dispose(){
     bloctasksFilter.dispose();
+    streamSubscriptionList.cancel();
     super.dispose();
   }
 
@@ -102,7 +103,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       child: Scaffold(
         body: Stack(
           children: <Widget>[
-            ListViewTareas(),
+            listViewTareas(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -117,20 +118,17 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-  ListViewTareas(){
+  listViewTareas(){
 
     blocList = new blocListTask(listCalendar[1],listCalendar[0],1);
     try{
       // ignore: cancel_subscriptions
-      StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
+      streamSubscriptionList = blocList.outListTaks.listen((onDataList)
       => setState((){
-
         listTaskModellocal = onDataList;
         for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < listTaskModellocal.length; cantlistTaskModellocal++){
           listTaskModellocalbool.add(listTaskModellocal[cantlistTaskModellocal].status.contains('done'));
         }
-
-
       }));
     }catch(e){  }
 
