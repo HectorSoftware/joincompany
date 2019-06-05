@@ -372,8 +372,8 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
-  Future<File> photoAndImage() async{
-    return showDialog<File>(
+  Future<Uint64List> photoAndImage() async{
+    return showDialog<Uint64List>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -510,14 +510,14 @@ class _FormTaskState extends State<FormTask> {
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dataInfo[[index].toString()],
-                    hint:  dataInfo[index.toString()] != null  ? Text(dataInfo[index.toString()]): Text(listFieldsModels[index].name),
+                    value: dataInfo[listFieldsModels[index].id],
+                    hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
                     onChanged: (newValue) {
 
                       setState(() {
                         //dropdownValue = newValue;
-                        dataInfo.putIfAbsent(index.toString() ,()=> newValue);
+                        dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
                       });
 
                     },
@@ -629,6 +629,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
+
                 return  Row(
                   children: <Widget>[
                     Column(
@@ -642,9 +643,8 @@ class _FormTaskState extends State<FormTask> {
                                   var img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
-
-                                      image2 = img;
-                                      saveData(img.readAsBytesSync().toString(), listFieldsModels[index].id.toString());
+                                      saveData(img.buffer.asUint32List().toString(), listFieldsModels[index].id.toString());
+                                      dataInfo;
                                     });
                                   }
                                 },
@@ -661,10 +661,11 @@ class _FormTaskState extends State<FormTask> {
 
                       child: Center(
                         child: Container(
-                            child: image2 == null ? new Text('')
-                                : new Text('Imagen Guardada', style: TextStyle(
-                              color: PrimaryColor,
-                            ),)
+                            child: dataInfo[listFieldsModels[index].id] != null ? new Text('Imagen Guardada',
+                              style: TextStyle(
+                                     color: PrimaryColor,
+                              ),)
+                                : new Text('')
                         ),
                       ),
                     ),
@@ -724,27 +725,29 @@ class _FormTaskState extends State<FormTask> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10,left: 5),
-                              child: RaisedButton(
-                                onPressed: () async{
-                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                                  var bytes = await getImg();
-                                  Image img = Image.memory(bytes);
-                                  if (img != null) {
-                                    setState(() {
-                                      print(bytes);
-                                      image = img;
-                                    });
-                                  }
-                                },
-                                child: Text(listFieldsModels[index].name),
-                                color: PrimaryColor,
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                child: RaisedButton(
+                                  onPressed: () async{
+                                    //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                    var bytes = await getImg();
+                                    Image img = Image.memory(bytes);
+                                    if (img != null) {
+                                      setState(() {
+                                        print(bytes);
+                                        image = img;
+                                      });
+                                    }
+                                  },
+                                  child:listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,15) + '...') :  Text(listFieldsModels[index].name),
+                                  color: PrimaryColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -752,8 +755,8 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image2 == null ? new Text('')
-                              : new Image.file(image2,height: 200,width: 200,)
+                          child: image == null ? new Text('')
+                              : new Image(image: image.image,height: 200,width: 200,)
 
                       ),
                     ),
@@ -762,8 +765,14 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                   return Container(
-                      width: 30,
-                      child: Switch(value: true, onChanged: null));
+                      width: MediaQuery.of(context).size.width*0.5,
+                      child:Row(
+                        children: <Widget>[
+                          Switch(value: true, onChanged: null)
+                        ],
+                      )
+
+                  );
                 }
 
             }
