@@ -317,20 +317,20 @@ class _ClienteState extends State<Cliente> {
                 }else{
                   return new Container(
                     child: Center(
-                      child: Text("No hay contactos "),
+                      child: Text("No hay contactos"),
                     ),
                   );
                 }
               } return new Container(
                 child: Center(
-                  child: Text("Ha ocurrido un error"),
+                  child: Text("Ha ocurrido un error interno"),
                 ),
               );
           }
         }else{
           return new Container(
             child: Center(
-              child: Text("Ha ocurrido un error"),
+              child: Text("Ha ocurrido un error interno"),
             ),
           );
         }
