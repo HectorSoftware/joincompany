@@ -235,40 +235,156 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos_DB(String email, String password, String company) async {
-    var query = UserModel(email: email);
-    var usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+    
+    Circuleprogress = true;
+    setState(() => Circuleprogress);
 
-    if (usersFromDatabaseByEmail.isNotEmpty) {
+    String companyLocal = companyEstable;
+    if (AgregarUser)
+      companyLocal = company;
+
+    if (email.isEmpty) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldTextemail = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldTextemail;
+      });
+    } else 
+      ErrorTextFieldEmail = false;
+
+    if (password.isEmpty) {
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldTextpwd = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldpsd;
+        ErrorTextFieldTextpwd;
+      });
+    } else 
+      ErrorTextFieldpsd = false;
+    
+    if (companyLocal.isEmpty) {
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextcompany = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextcompany;
+      });
+    } else
+      ErrorTextFieldcompany = false;
+
+    if (!ErrorTextFieldpsd &&
+        !ErrorTextFieldcompany &&
+        !ErrorTextFieldcompany) {
+      
+      var query = UserModel(email: email);
+      var usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+
+      if (usersFromDatabaseByEmail.isNotEmpty) {
 
       var user = usersFromDatabaseByEmail.first;
-      var loginDate = DateTime.parse(user.loggedAt);
+      var loginResponse = await login(email, password, companyLocal);
 
-      if (loginDate.difference(DateTime.now()).inHours > 24) {
-
-        var loginResponse = await login(email, password, company);
-        var userFromResponse = UserModel.fromJson(loginResponse.body);
-
-        user.rememberToken = userFromResponse.rememberToken;
-        DatabaseProvider.db.UpdateUser(
+      if(loginResponse != null){
+        if(loginResponse.statusCode == 401){
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldpsd = true;
+          ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldpsd;
+            ErrorTextFieldcompany;
+            ErrorTextFieldTextemail;
+            ErrorTextFieldTextpwd;
+            ErrorTextFieldTextcompany;
+          });
+          Circuleprogress = false; 
+          setState(() => Circuleprogress);
+        } else if (loginResponse.statusCode == 500) {
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldpsd = true;
+          ErrorTextFieldcompany = true;
+          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldpsd;
+            ErrorTextFieldcompany;
+            ErrorTextFieldTextemail;
+            ErrorTextFieldTextpwd;
+            ErrorTextFieldTextcompany;
+          });
+          Circuleprogress = false;
+          setState(() => Circuleprogress);
+        } else if (loginResponse.statusCode == 200) {
+          var authFromResponse = AuthModel.fromJson(loginResponse.body);
+          user.rememberToken = authFromResponse.accessToken;
+          DatabaseProvider.db.UpdateUser(
             user.id,
             user,
             SyncState.synchronized
-        );
+          );
 
-      } else {
-        var hashedPassword = md5.convert(utf8.encode(password)).toString();
-        if (hashedPassword == user.password)
-          ;// TODO: Grant access
+          var getUserResponseid = await getUser(companyLocal, authFromResponse.accessToken);
+          if(getUserResponseid != null){
+            if(AgregarUser){
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
+              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
+              int res = await ClientDatabaseProvider.db.saveUser(newuser);
+            }else{
+              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+            }
+            Navigator.pushReplacementNamed(context, '/vistap');
+          }else{
+            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false; setState(() {
+              Circuleprogress;
+            });
+          }
+        }
+      }else{
+        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false; setState(() {
+          Circuleprogress;
+        });
       }
+
+      var authFromResponse = AuthModel.fromJson(loginResponse.body);
+
+      
     } else {
-      var loginResponse = await login(email, password, company);
-      var userFromResponse = UserModel.fromJson(loginResponse.body);
+      var authResponse = await login(email, password, companyLocal);
+
+      // TODO: Validate this response
+
+      var authFromResponse = AuthModel.fromJson(authResponse.body);
+
+      var userResponse = await getUser(companyLocal, authFromResponse.accessToken);
+
+      // TODO: Validate this response
+      
+      var userFromResponse = UserModel.fromJson(userResponse.body);
 
       userFromResponse.password = md5.convert(utf8.encode(password)).toString();
+      userFromResponse.loggedAt = DateTime.now().toString();
+      userFromResponse.company = companyLocal;
+      userFromResponse.rememberToken = authFromResponse.accessToken;
+
       DatabaseProvider.db.CreateUser(
         userFromResponse,
         SyncState.synchronized,
       );
+    }
+
+      
     }
   }
 
