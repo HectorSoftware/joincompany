@@ -768,7 +768,9 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width*0.5,
                       child:Row(
                         children: <Widget>[
-                          Switch(value: true, onChanged: null)
+                          Switch(value: switchOn, onChanged:(valuenew){ setState(() {
+                            switchOn = valuenew;
+                          });},activeColor: PrimaryColor,)
                         ],
                       )
 
@@ -781,6 +783,12 @@ class _FormTaskState extends State<FormTask> {
 
       ],
     );
+  }
+  bool switchOn = false;
+  void _onSwitchChanged(bool value) {
+
+    switchOn = false;
+
   }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
