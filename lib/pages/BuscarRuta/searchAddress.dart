@@ -38,12 +38,12 @@ class _SearchAddressState extends State<SearchAddress> {
   bool llenadoListaEncontrador = false;
   static const kGoogleApiKeyy = kGoogleApiKey;
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
-  List<CustomerWithAddressModel> _ListAddress;
+  List<AddressModel> _ListAddress;
   ListWidgets ls = ListWidgets();
 
   @override
   void initState() {
-    _ListAddress = new List<CustomerWithAddressModel>();
+    _ListAddress = new List<AddressModel>();
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -145,7 +145,7 @@ class _SearchAddressState extends State<SearchAddress> {
         },
         onChanged: (text){
           if(_ListAddress.length != 0){
-            listPlacemark = new List<CustomerWithAddressModel>();
+            listPlacemark = new List<AddressModel>();
             for(int cost= 0; cost < _ListAddress.length; cost++){
               if(ls.createState().checkSearchInText(_ListAddress[cost].address, text) && (text.length != 0)) {
                 listPlacemark.add(_ListAddress[cost]);
@@ -258,7 +258,7 @@ class _SearchAddressState extends State<SearchAddress> {
     );
   }
 
-  List<CustomerWithAddressModel> listPlacemark = new List<CustomerWithAddressModel>();
+  List<AddressModel> listPlacemark = new List<AddressModel>();
   // 0 : name - 1 : lat - 2 : log - 3 : direccion
   listaLugaresEncontrados(){
     return ListView.builder(
@@ -307,13 +307,13 @@ class _SearchAddressState extends State<SearchAddress> {
 //      }
 //    }
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company, UserActiv.token);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    var AddressResponse = await getAllAddresses(UserActiv.company, UserActiv.token);
+    AddressesModel Address = AddressesModel.fromJson(AddressResponse.body);
 
-    if(customersWithAddressResponse.statusCode == 200){
-      for(int cantAddress = 0; cantAddress < customersWithAddress.data.length; cantAddress++){
-        if(customersWithAddress.data[cantAddress].address != null){
-          _ListAddress.add(customersWithAddress.data[cantAddress]);
+    if(AddressResponse.statusCode == 200){
+      for(int cantAddress = 0; cantAddress < Address.data.length; cantAddress++){
+        if(Address.data[cantAddress].address != null){
+          _ListAddress.add(Address.data[cantAddress]);
         }
       }
     }

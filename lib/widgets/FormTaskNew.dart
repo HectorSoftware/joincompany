@@ -13,7 +13,7 @@ import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
@@ -838,7 +838,7 @@ class _FormTaskState extends State<FormTask> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return SearchAddress();
+        return searchAddressWithClient();
       },
     );
   }
