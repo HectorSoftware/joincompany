@@ -1,30 +1,36 @@
+
+
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/main.dart';
-import 'canvasImg.dart';
 
-class PickerImg extends StatefulWidget {
+
+class TomarImage extends StatefulWidget {
   @override
-  _PickerImgState createState() => _PickerImgState();
+  _TomarImageState createState() => _TomarImageState();
 }
 
-class _PickerImgState extends State<PickerImg> {
+class _TomarImageState extends State<TomarImage> {
   File img;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('¿Desea Escoger Una Foto?'),
+      title: Text('Escoja Una Opcion'),
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text('IMAGEN'),
           img == null ? Container(
-            child: Center(child: Text("si no desea escoger foto presione continuar"),),
+            child: Center(child: Text(""),),
           ) : Image.file(img),
-          img != null ? IconButton(
-            color: PrimaryColor,
-            icon: Icon(Icons.close),
+          img != null ? RaisedButton(
+            color: Colors.transparent,
+            child: Text('Eliminar Imagen'),
+            elevation: 0,
+
             onPressed: (){
               setState(() {
                 img = null;
@@ -53,23 +59,13 @@ class _PickerImgState extends State<PickerImg> {
           },
         ),
         FlatButton(
-          child: const Text('Continuar'),
+          child: const Text('GUARDAR'),
           onPressed: () async {
-            var customImg = await editImg(img);
-            Navigator.of(context).pop(customImg);
+            Navigator.of(context).pop(img);
           },
         )
       ],
     );
   }
 
-  Future<Uint8List> editImg(File img) async{
-    return showDialog<Uint8List>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return CanvasImg(img);
-      },
-    );
-  }
 }

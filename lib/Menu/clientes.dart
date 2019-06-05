@@ -1,18 +1,12 @@
 import 'dart:async';
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
@@ -51,7 +45,15 @@ class _ClienteState extends State<Cliente> {
     extraerUser();
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    checkConnection(connectionStatus);
     super.initState();
+  }
+
+  void checkConnection(ConnectionStatusSingleton connectionStatus) async {
+    isOffline = await connectionStatus.checkConnection();
+    setState(() {
+      isOffline = !isOffline;
+    });
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -79,7 +81,7 @@ class _ClienteState extends State<Cliente> {
         child: Icon(Icons.add),
         elevation: 12,
         backgroundColor: PrimaryColor,
-        tooltip: 'Agregar Tarea',
+        tooltip: 'Agregar Cliente',
         onPressed: (){
           Navigator.push(
               context,
@@ -91,7 +93,6 @@ class _ClienteState extends State<Cliente> {
     );
   }
 
-  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -136,11 +137,9 @@ class _ClienteState extends State<Cliente> {
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(builder: (BuildContext context) => new  ContactView(false)));
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),
@@ -155,6 +154,13 @@ class _ClienteState extends State<Cliente> {
               },
             ),
           ),
+          /*new ListTile(
+            title: new Text("Negocios"),
+            trailing: new Icon(Icons.poll),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),*/
           Divider(
             height: 30.0,
           ),
@@ -179,10 +185,8 @@ class _ClienteState extends State<Cliente> {
   }
 
   extraerUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
-
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    
     setState(() {
       nameUser = user.name;
       emailUser = user.email;
@@ -219,82 +223,122 @@ class _ClienteState extends State<Cliente> {
   listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
 
-    // ignore: missing_required_param
     return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
-      if (snapshot.data.isNotEmpty) {
-        return ListView.builder(
-          itemCount: snapshot.data.length,
-          itemBuilder: (BuildContext context, int index) {
-            var name = snapshot.data[index].name;
-            var dir = snapshot.data[index].address;
-            //var name = snapshot.data[index].name;
-            if(textFilter == ''){
-              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-              return Card(
-                child: ListTile(
-                  title: Text(name , style: TextStyle(fontSize: 14),),
-                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
-                        //new MaterialPageRoute(builder : (BuildContext contex) => CanvasImg(null)));
-                  },),
-                  onTap:
-                  widget.vista ? (){
-                    Navigator.of(context).pop(snapshot.data[index]);
-                  }: (){
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                            new  FormClient(snapshot.data[index])
-                        )
-                    );
-                  },
+        if(snapshot != null){
+          switch(snapshot.connectionState){
+            case ConnectionState.none:
+              return new Container(
+                child: Center(
+                  child: Text("no hay datos disponibles"),
                 ),
               );
-            }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(dir, textFilter)){
-              var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-              var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-              return Card(
-                child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 14),),
-                  subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                  onTap: (){
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                            new  FormClient(snapshot.data[index])
-                        )
-                    );
-                  },
+            case ConnectionState.waiting:
+              return new Stack(
+                children: <Widget>[
+                  Center(
+                    child: SizedBox(
+                      height: 100.0,
+                      width: 100.0,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.blue),
+                        strokeWidth: 5.0,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text("cargando"),
+                  )
+                ],
+              );
+            case ConnectionState.done:
+              return new Container(
+                child: Center(
+                  child: Text("Ha ocurrido un error"),
                 ),
               );
-            }else{
-              return Container();
-            }
+            case ConnectionState.active:
+              if(snapshot != null){
+                if (snapshot.data.isNotEmpty) {
+                  return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                        var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                        if(textFilter == ''){
+                          return Card(
+                            child: ListTile(
+                              title: Text(name , style: TextStyle(fontSize: 14),),
+                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                              trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
+                              },),
+                              onTap:
+                              widget.vista ? (){
+                                Navigator.of(context).pop(snapshot.data[index]);
+                              }: (){
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                        new  FormClient(snapshot.data[index])
+                                    )
+                                );
+                              },
+                            ),
+                          );
+                        }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
+                          var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
+                          var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                          return Card(
+                            child: ListTile(
+                              title: Text(name, style: TextStyle(fontSize: 14),),
+                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                              onTap: (){
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                        new  FormClient(snapshot.data[index])
+                                    )
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      }
+                  );
+                }else{
+                  return new Container(
+                    child: Center(
+                      child: Text("No hay contactos "),
+                    ),
+                  );
+                }
+              } return new Container(
+                child: Center(
+                  child: Text("Ha ocurrido un error"),
+                ),
+              );
           }
-        );
-      }else{
-        return new Container(
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
+        }else{
+          return new Container(
+            child: Center(
+              child: Text("Ha ocurrido un error"),
+            ),
+          );
+        }
       }
     );
-
   }
 
   @override
   void dispose(){
+    _connectionChangeStream.cancel();
     _filter.dispose();
     super.dispose();
   }

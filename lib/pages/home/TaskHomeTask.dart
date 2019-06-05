@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
@@ -19,10 +20,11 @@ import '../../main.dart';
 
 class taskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget});
+  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
 
   final blocListTaskFilter blocListTaskFilterReswidget;
   final blocListTaskCalendar blocListTaskCalendarReswidget;
+  final List<DateTime> listCalendarRes;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
@@ -30,13 +32,17 @@ class taskHomeTask extends StatefulWidget {
 class _MytaskPageTaskState extends State<taskHomeTask> {
   ListWidgets ls = ListWidgets();
   bool MostrarLista = false;
-  UserDataBase UserActiv;
+  UserModel user;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
+  List<bool> listTaskModellocalbool;
   String filterText = '';
+  List<DateTime> listCalendar = new List<DateTime>();
+
 
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
+  blocListTask blocList;
   List<DateTime> ListCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
 
@@ -44,18 +50,22 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   void initState() {
     _getUserLocation();
     listTaskModellocal = new List<TaskModel>();
+    listTaskModellocalbool = new List<bool>();
+    listCalendar = widget.listCalendarRes;
     actualizarusuario();
     super.initState();
   }
 
   actualizarusuario() async{
-    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    ListCalender.add(DateTime.now());
-    ListCalender.add(DateTime.now().add(Duration(days: -15)));
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    ListCalender = widget.listCalendarRes;
+    PageTasks = 1;
+    //getdatalist(listCalendar[1],listCalendar[0],1);
     setState(() {
-    UserActiv;ListCalender;
+    user;ListCalender;
     });
+
+
   }
 
   @override
@@ -66,6 +76,19 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   @override
   Widget build(BuildContext context) {
+
+    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+      => setState((){
+        listTaskModellocal.clear();
+        listTaskModellocalbool.clear();
+        PageTasks = 1;
+        ListCalender = onData;
+        //getdatalist(onData[1],onData[0],1);
+      }));
+    }catch(e){}
 
     final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
     double aument = 0.7;
@@ -94,42 +117,27 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-
   ListViewTareas(){
 
-    /*bloctasks = widget.blocListTaskRes;
+    blocList = new blocListTask(listCalendar[1],listCalendar[0],PageTasks);
     try{
       // ignore: cancel_subscriptions
-      StreamSubscription streamSubscription = bloctasks.outListTaks.listen((newVal)
+      StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
       => setState((){
-        listTaskModellocal = new List<TaskModel>();
-        setState(() {
-          listTaskModellocal;
-        });
-        for(int h = 0; h < 255; h++){
-          var hasta = new DateTime.now().add(Duration(days: -h));
-          for(int k = 0; k < newVal.length; k++){
-            if ((hasta.day == DateTime.parse(newVal[k].createdAt).day)&&
-                (hasta.month == DateTime.parse(newVal[k].createdAt).month)&&
-                (hasta.year == DateTime.parse(newVal[k].createdAt).year)) {
-              listTaskModellocal.add(newVal[k]);
-            }
-          }
+        listTaskModellocal = onDataList;
+        for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
+          //listTaskModellocal.add(onDataList[cantlistTaskModellocal]);
+          listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
         }
       }));
-    }catch(e){ }*/
-
-    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    }catch(e){  }
     try{
       // ignore: cancel_subscriptions
-      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+      StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal)
       => setState((){
-        listTaskModellocal.clear();
-        paginador = 0;
-        getdatalist(onData[1],onData[0],1);
+        TareasTotales = onDataListTotal;
       }));
-    }catch(e){}
-
+    }catch(e){  }
 
     bloctasksFilter = widget.blocListTaskFilterReswidget;
     try{
@@ -138,71 +146,98 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       => setState((){
         filterText = newVal;
       }));
-    }catch(e){ }
+    }catch(e){  }
 
     return ((listTaskModellocal.length != 0)) ?
 
-    /*Container(
-        child: RefreshIndicator(
-          child: LoadMore(
-            isFinish: listTaskModellocal.length >= 20,
-            onLoadMore: getdatalist(ListCalender[0],ListCalender[1],paginador),
-            child : listando(),
-            delegate: DefaultLoadMoreDelegate(),
-            textBuilder: DefaultLoadMoreTextBuilder.chinese,
-          ),
-          onRefresh: _refresh,
+    Container(
+      child: RefreshIndicator(
+        child: LoadMore(
+          isFinish: countTaskList >= 100,
+          onLoadMore: _loadMore,
+          child: listando(),
+          whenEmptyLoad: false,
+          delegate: DefaultLoadMoreDelegate(),
+          textBuilder: DefaultLoadMoreTextBuilder.english,
         ),
-      )*/
-
-    listando()
-
+        onRefresh: _refresh,
+      ),
+    )
+//    listando()
       : Center(
       child: CircularProgressIndicator(),
     );
   }
 
+  int TareasTotales = 0;
+  int get countTaskList => listTaskModellocal.length;
+  Future<bool> _loadMore() async {
+    PageTasks++;
+//    print("onLoadMore ${listTaskModellocal.length}");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
+//    print("Page $PageTasks");
+    //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
+    return true;
+  }
+
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    listTaskModellocal.clear();
-    getdatalist(DateTime.now(),DateTime.now().add(Duration(days: -15)),1);
-  }
-
-  int paginador = 0;
-  getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
-
-    paginador++;
-
-    print(desdef);
-    print(hastaf);
-
-    String diaDesde = desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
-    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
-
-    TasksModel tasks = new TasksModel();
-    var getAllTasksResponse;
-    List<TaskModel> _listTask = new List<TaskModel>();
-    try{
-
-      getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
-      if(getAllTasksResponse.statusCode == 200){
-        tasks = TasksModel.fromJson(getAllTasksResponse.body);
-        for(int i = 0; i < tasks.data.length; i++ ){
-          _listTask.add(tasks.data[i]);
-        }
-      }
-    }catch(e){}
     setState(() {
-      listTaskModellocal = _listTask;
+      PageTasks = 1;
+      listTaskModellocal.clear();
     });
+    //getdatalist(listCalendar[1],listCalendar[0],1);
   }
+
+  int PageTasks = 1;
+//  getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+//    String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
+//    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
+//
+//    TasksModel tasks = new TasksModel();
+//    var getAllTasksResponse;
+//    List<TaskModel> _listTask = new List<TaskModel>();
+//    try{
+//      getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
+//      if(getAllTasksResponse.statusCode == 200){
+//        tasks = TasksModel.fromJson(getAllTasksResponse.body);
+//        setState(() {
+//          TareasTotales = tasks.total;
+//        });
+//        DateTime FechaNueva = DateTime.parse('1990-05-05');
+//        for(int i = 0; i < tasks.data.length; i++ ){
+//          DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
+//          int c = 0;
+//          for(int countPasar = 0; countPasar < listTaskModellocal.length; countPasar++){
+//            if(listTaskModellocal[countPasar].id == tasks.data[i].id){
+//              c++;
+//            }
+//          }
+//          if(c < 2){
+//            if((tasks.data.length == 1)||
+//                ((FechaNueva.day != Fechatask.day) || (FechaNueva.month != Fechatask.month) || (FechaNueva.year != Fechatask.year))){
+//              listTaskModellocal.add(tasks.data[i]);
+//              listTaskModellocalbool.add(tasks.data[i].status.contains('done'));
+//              FechaNueva = Fechatask;
+//            }
+//            listTaskModellocal.add(tasks.data[i]);
+//            listTaskModellocalbool.add(tasks.data[i].status.contains('done'));
+//          }
+//        }
+//      }
+//    }catch(e){}
+//    setState(() {
+//      listTaskModellocal;
+//      listTaskModellocalbool;
+//    });
+//
+//  }
 
   listando(){
     String DateTask = "1990-05-05 20:00:04Z";
     return ListView.builder(
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
-
           int PosicionActual = index;
           String voidFieldMessage = "";
 
@@ -240,14 +275,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           }
 
           if(filterText == ''){
-            bool res = true;
+            bool res = false;
 
-            if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
-            (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
-            (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
-              DateTask = listTaskModellocal[PosicionActual].createdAt;
-            } else {
-              res = false;
+            if((PosicionActual != listTaskModellocal.length - 1)){
+              if(listTaskModellocal[PosicionActual].id == listTaskModellocal[PosicionActual + 1].id){
+                res = true;
+              }
             }
 
               String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
@@ -270,22 +303,16 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
                 dateTitulo = 'Hoy, ' + dateTitulo;
               }
-              return Container(
-                child: Column(
-                  children: <Widget>[
-                    res ?
-                    Container(
-                      padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * por,
-                      color: PrimaryColor,
-                      child: Text(dateTitulo, style: TextStyle(
-                          fontSize: 16, color: Colors.white)),
-                    ) : Container(),
-                    ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
-                  ],
-                ),
-              );
+              return res ?
+              Container(
+                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * por,
+                color: PrimaryColor,
+                child: Text(dateTitulo, style: TextStyle(
+                    fontSize: 16, color: Colors.white)),
+              ) :
+              ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual);
           }else{
             if(ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
@@ -356,26 +383,26 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                     ),
                   ),
                   Checkbox(
-                    value: listTask.status.contains('done'),
+                    value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
                       if(value){
                         setState(() {
-                          listTaskModellocal[index].status = 'done';
+                          listTaskModellocal[index].status = 'working';
                         });
-                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-                            listTaskModellocal[index].status = 'working';
+                            listTaskModellocal[index].status = 'done';
                           });
                         }
                       }else{
                         setState(() {
-                          listTaskModellocal[index].status = 'working';
+                          listTaskModellocal[index].status = 'done';
                         });
-                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
-                            listTaskModellocal[index].status = 'done';
+                            listTaskModellocal[index].status = 'working';
                           });
                         }
                       }
@@ -417,12 +444,26 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
+    var deleteTaskResponse = await deleteTask(taskID, user.company, user.rememberToken);
     if(deleteTaskResponse.statusCode == 200){
-      listTaskModellocal.removeAt(index);
-      setState(() {
-        listTaskModellocal;
-      });
+//      if((listTaskModellocal[index].id == listTaskModellocal[index - 1].id) &&
+//          (
+//          (DateTime.parse(listTaskModellocal[index].createdAt).day != DateTime.parse(listTaskModellocal[index + 1].createdAt).day)||
+//          (DateTime.parse(listTaskModellocal[index].createdAt).month != DateTime.parse(listTaskModellocal[index + 1].createdAt).month)||
+//          (DateTime.parse(listTaskModellocal[index].createdAt).year != DateTime.parse(listTaskModellocal[index + 1].createdAt).year)
+//          )){
+//        listTaskModellocal.removeAt(index - 1);
+//        listTaskModellocalbool.removeAt(index - 1);
+//        listTaskModellocal.removeAt(index - 1);
+//        listTaskModellocalbool.removeAt(index - 1);
+//      }else{
+//        listTaskModellocal.removeAt(index);
+//        listTaskModellocalbool.removeAt(index);
+//      }
+//      setState(() {
+//        listTaskModellocal;
+//        listTaskModellocalbool;
+//      });
     }
   }
 

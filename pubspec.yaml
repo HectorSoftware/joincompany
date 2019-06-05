@@ -39,12 +39,14 @@ dependencies:
   date_format: ^1.0.6
   date_range_picker: ^1.0.6
   datetime_picker_formfield: ^0.1.8
+
   #IMAGEN
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
   painter2: any
   flutter_colorpicker: any
-
+  extended_image: ^0.3.8
+  image_picker_saver: ^0.3.0
   #CONECTIVITY
   connectivity: any
 

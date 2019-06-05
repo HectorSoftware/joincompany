@@ -31,7 +31,7 @@ class _CanvasImgState extends State<CanvasImg> {
     if(widget.img != null){
       controller.backgroundImage = Image.file(widget.img);
     }
-    controller.backgroundColor = Colors.green;
+    controller.backgroundColor = Colors.white;
     return controller;
   }
 
@@ -62,7 +62,8 @@ class _CanvasImgState extends State<CanvasImg> {
             icon: Icon(Icons.check),
             onPressed: () async {
               Uint8List bytes = await _controller.exportAsPNGBytes();
-              Navigator.of(context).pop(Image.memory(bytes));
+              Navigator.of(context).pop(bytes);
+
             }),
       ];
     return Scaffold(

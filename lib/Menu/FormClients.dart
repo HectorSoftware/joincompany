@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/pages/BuscarRuta/BuscarDireccion.dart';
+import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
+import 'businesList.dart';
 import 'clientes.dart';
 
 enum type{NAME,CODE,NOTE}
@@ -30,7 +32,7 @@ class FormClient extends StatefulWidget {
 
 class _FormClientState extends State<FormClient> {
 
-  UserDataBase userAct;
+  UserModel user;
 
   Widget popUp;
 
@@ -126,12 +128,12 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData() async {
-    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     //Directions
     if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
-      directionsOld =  new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
-      for(AddressModel direction in directionsOld){
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(), user.company, user.rememberToken);
+      directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
+      for(CustomerWithAddressModel direction in directionsOld){
         directionsAll.add(direction);
       }
     }
@@ -171,12 +173,17 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> deletedAddressUser(AddressModel direction)async{
-     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),user.company, user.rememberToken);
+     print(resp.body);
      return resp.statusCode;
   }
 
-  Future<int> addAddressUser(AddressModel direction, int idCli)async{
-    var resp = await relateCustomerAddress(idCli.toString(),direction.id.toString(),userAct.company,userAct.token);
+  Future<int> addAddressUser(AddressModel direction, int id)async{
+    var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),user.company, user.rememberToken);
+    print(id);
+    print(direction.id);
+    print(resp.statusCode);
+    print(resp.body);
     return resp.statusCode;
   }
 
@@ -229,10 +236,10 @@ class _FormClientState extends State<FormClient> {
               code: code.text,
               details: note.text,
             );
-            var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
 
+            var response = await updateCustomer(client.id.toString(), client, user.company, user.rememberToken);
             if(response.statusCode == 200){
-              bool saveDirections = await setDirections(widget.client.id);
+              bool saveDirections = await setDirections(client.id);
               if(!saveDirections){
                 return showDialog(
                     context: context,
@@ -243,8 +250,9 @@ class _FormClientState extends State<FormClient> {
                       );
                     }
                 );
+              }else{
+                return true;
               }
-             return true;
             }else{
               return showDialog(
                   context: context,
@@ -262,10 +270,10 @@ class _FormClientState extends State<FormClient> {
               code: code.text,
               details: note.text,
             );
-            var response = await createCustomer(client, userAct.company, userAct.token);
-
+            var response = await createCustomer(client, user.company, user.rememberToken);
+            var cli = CustomerModel.fromJson(response.body);
+            print(cli.id);
             if(response.statusCode == 200){
-              CustomerModel cli = CustomerModel.fromJson(response.body);
               bool saveDirections = await setDirections(cli.id);
               if(!saveDirections){
                 return showDialog(
@@ -297,23 +305,17 @@ class _FormClientState extends State<FormClient> {
     }
   }
 
-  Future<bool> setDirections(int idCli)async{
-    if(directionsNews.isNotEmpty){
-      for(var direction in directionsNews){
-        int resp = await addAddressUser(direction, idCli);
+  Future<bool> setDirections(int id)async{
+    for(var direction in directionsNews){
+      int resp = await addAddressUser(direction,id);
+      responceStatus(resp);
+    }
+    for(var direction in directionsOld){
+      if(oldToEliminated(direction)){
+        int resp = await deletedAddressUser(direction);
         responceStatus(resp);
       }
     }
-
-    if(directionsOld.isNotEmpty){
-      for(var direction in directionsOld){
-        if(oldToEliminated(direction)){
-          int resp = await deletedAddressUser(direction);
-          responceStatus(resp);
-        }
-      }
-    }
-
     return true;
   }
 
@@ -329,7 +331,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool oldToEliminated(AddressModel direction){
+  bool oldToEliminated(CustomerWithAddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
         return false;
@@ -399,7 +401,13 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<AddressModel> getDirections() async{
-
+    return showDialog<AddressModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SearchAddress();
+      },
+    );
   }
 
   Future<String> getContact() async{
@@ -417,17 +425,22 @@ class _FormClientState extends State<FormClient> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return ContactView(true);
+        return BusinessList(true);
       },
     );
   }//TODO
 
+  void exitDeletedClient()async{
+    await Future.delayed(Duration(seconds: 0, milliseconds: 300));
+    Navigator.of(context).pop();
+  }
+
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
-      var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
       if(responseDelete.statusCode == 200){
-        Navigator.of(context).pop();
+        exitDeletedClient();
       }else{
         return showDialog(
             context: context,
@@ -500,6 +513,7 @@ class _FormClientState extends State<FormClient> {
             IconButton(
               icon: Icon(Icons.delete),
               tooltip: 'Eliminar Cliente',
+              color: Colors.white,
               iconSize: 25,
               onPressed: widget.client != null ? deleteCli:null,
             )

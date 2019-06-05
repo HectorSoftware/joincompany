@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
 
@@ -112,9 +111,7 @@ class _ConfigCliState extends State<ConfigCli> {
   }
 
   void getConfig() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     name.text = user.name;
     code.text =  user.code;
@@ -197,7 +194,6 @@ class _ConfigCliState extends State<ConfigCli> {
     return null;
   }
 
-  //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
     return Drawer(
@@ -248,6 +244,7 @@ class _ConfigCliState extends State<ConfigCli> {
             ),
           ),
           Container(
+            color: drawerCustomer ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
@@ -268,9 +265,7 @@ class _ConfigCliState extends State<ConfigCli> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
+                Navigator.of(context).pop();
               },
             ),
           ),
@@ -278,12 +273,8 @@ class _ConfigCliState extends State<ConfigCli> {
       ),
     );
   }
-
-
   setUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     setState(() {
       nameUser = user.name;

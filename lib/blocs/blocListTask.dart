@@ -1,94 +1,71 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 
 class blocListTask {
 
-  List<TaskModel> _listTask = List<TaskModel>();
+  List<TaskModel> _listTaskModellocal = List<TaskModel>();
 
   var _tasksController = StreamController<List<TaskModel>>.broadcast();
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
-  Future updateListTask(List<DateTime> fechaCalendario) async {
-    _listTask = List<TaskModel>();
-    inListTaks.add(_listTask);
 
-    var hasta = new DateTime.now();
-    var desde = new DateTime.now().add(Duration(days: -15));
-    String diadesde = '';
-    String hastadesde = '';
-    if(fechaCalendario.length == 0){
-      diadesde = desde.year.toString() + '-' + desde.month.toString() + '-' + desde.day.toString() + ' 00:00:00';
-      hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
-    }else{
-      if(fechaCalendario.length == 1){
-        diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
-        hastadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 23:59:59';
-      }else{
-        diadesde = DateTime.parse(fechaCalendario[0].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[0].toString()).day.toString() + ' 00:00:00';
-        hastadesde = DateTime.parse(fechaCalendario[1].toString()).year.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).month.toString() + '-' + DateTime.parse(fechaCalendario[1].toString()).day.toString() + ' 23:59:59';
-      }
-    }
+  Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+    String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
+    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diadesde,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
-   // var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
-    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    while(true){
-      for(int i = 0; i < tasks.data.length; i++ ){
-        TaskModel task;
-        task = new TaskModel(
-            id: tasks.data[i].id,
-            createdAt:  tasks.data[i].createdAt,
-            updatedAt: tasks.data[i].updatedAt,
-            deletedAt: tasks.data[i].deletedAt,
-            createdById: tasks.data[i].createdById,
-            updatedById: tasks.data[i].updatedById,
-            deletedById: tasks.data[i].updatedById,
-            formId: tasks.data[i].formId,
-            responsibleId: tasks.data[i].responsibleId,
-            customerId: tasks.data[i].customerId,
-            addressId: tasks.data[i].addressId,
-            name: tasks.data[i].name,
-            planningDate: tasks.data[i].planningDate,
-            checkinDate: tasks.data[i].checkinDate,
-            checkinLatitude: tasks.data[i].checkinLatitude,
-            checkinLongitude: tasks.data[i].checkinLongitude,
-            checkoutDistance: tasks.data[i].checkinDistance,
-            checkoutDate: tasks.data[i].checkoutDate,
-            checkoutLatitude: tasks.data[i].checkoutLatitude,
-            checkoutLongitude: tasks.data[i].checkoutLongitude,
-            checkinDistance: tasks.data[i].checkoutDistance,
-            status: tasks.data[i].status,
-            customSections: tasks.data[i].customSections,
-            customValues: tasks.data[i].customValues,
-            form: tasks.data[i].form,
-            address: tasks.data[i].address,
-            customer: tasks.data[i].customer,
-            responsible: tasks.data[i].responsible);
-        _listTask.add(task);
-      }
-      if(tasks.nextPageUrl != null){
-        getAllTasksResponse = await getAllTasks(UserActiv.company, UserActiv.token,beginDate: diadesde, endDate: hastadesde,responsibleId: UserActiv.idUserCompany.toString());
+    TasksModel tasks = new TasksModel();
+    var getAllTasksResponse;
+    List<TaskModel> _listTask = new List<TaskModel>();
+    try{
+      getAllTasksResponse = await getAllTasks(user.company, user.rememberToken, beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: pageTasks.toString());
+      if(getAllTasksResponse.statusCode == 200){
         tasks = TasksModel.fromJson(getAllTasksResponse.body);
-      } else break;
-    }
-    inListTaks.add(_listTask);
+        DateTime FechaNueva = DateTime.parse('1990-05-05');
+        for(int i = 0; i < tasks.data.length; i++ ){
+          DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
+          int c = 0;
+          for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
+            if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
+              c++;
+            }
+          }
+          if(c < 2){
+            if((tasks.data.length == 1)||
+                ((FechaNueva.day != Fechatask.day) || (FechaNueva.month != Fechatask.month) || (FechaNueva.year != Fechatask.year))){
+              _listTaskModellocal.add(tasks.data[i]);
+              FechaNueva = Fechatask;
+            }
+            _listTaskModellocal.add(tasks.data[i]);
+          }
+        }
+      }
+    }catch(e){}
+
+    inListTaksTotal.add(tasks.total);
+    inListTaks.add(_listTaskModellocal);
   }
+
+  var _tasksTotalController = StreamController<int>.broadcast();
+  Stream<int> get outListTaksTotal => _tasksTotalController.stream;
+  Sink<int> get inListTaksTotal => _tasksTotalController.sink;
+
 
   @override
   void dispose() {
     _tasksController.close();
+    _tasksTotalController.close();
   }
 
-  blocListTask(List<DateTime> fechaCalendario) {
-    updateListTask(fechaCalendario);
+  blocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
+    getdatalist(hastaf,desdef,pageTasks);
   }
 }
 

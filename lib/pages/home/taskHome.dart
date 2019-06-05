@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
@@ -102,11 +101,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   TabBarView getTabBarView() {
 
     blocListTaskresFilter = new blocListTaskFilter(_filter);
-    blocListTaskCalendarRes = new blocListTaskCalendar(/*_listCalendar*/);
+    blocListTaskCalendarRes = new blocListTaskCalendar();
+
     return TabBarView(
       children: <Widget>[
-        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,),
-        taskHomeMap(),
+        taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
+        taskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar),
       ],
       controller: _controller,
       physics: _controller.index == 0
@@ -115,8 +115,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
-  //drawer
-  bool drawerCustomer = true;
+  bool drawerTask = true;
   Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
@@ -133,12 +132,41 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
+          /*Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            color: PrimaryColor,
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 40),
+                    height: 50,
+                    child: CircleAvatar(
+                      minRadius: 25.0,
+                      maxRadius: 25.0,
+                      backgroundImage: new AssetImage('assets/images/user.jpg'),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
+                  )
+                ],
+              ),
+            )
+          ),*/
           Container(
+              color: drawerTask ? Colors.grey[200] :  null,
               child: ListTile(
                 trailing: new Icon(Icons.assignment),
                 title: new Text('Tareas'),
                 onTap: () {
-                  Navigator.pop(context);
                   Navigator.pop(context);
                 },
               )
@@ -149,8 +177,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -166,7 +194,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             ),
           ),
           Container(
-            color: drawerCustomer ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
@@ -186,9 +213,11 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new  ConfigCli()));
               },
             ),
           ),
@@ -196,7 +225,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       ),
     );
   }
-
 
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
@@ -225,6 +253,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         _listCalendar.add(picked[0]);
         if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
+        blocListTaskCalendarRes.inTaksCalendarMap.add(_listCalendar);
         setState(() {
           DatepickedInit; DatepickedEnd;
         });
@@ -263,9 +292,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   extraerUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     setState(() {
       nameUser = user.name;

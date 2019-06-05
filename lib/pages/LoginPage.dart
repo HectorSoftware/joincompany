@@ -1,33 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
-import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AccountModel.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/services/AccountService.dart';
-import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
 
@@ -40,15 +32,11 @@ class LoginPage extends StatefulWidget {
     return _LoginPageState();
   }
 }
-
 class _LoginPageState extends State<LoginPage> {
 
   //singleton
   StreamSubscription _connectionChangeStream;
   bool isOnline = false;
-
-  UserDataBase saveUser;
-  UserDataBase userVe;
 
   // final nameController = TextEditingController(text : 'eibanez@duperu.com');
   // final companyController = TextEditingController(text : 'duperu');
@@ -66,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   String ErrorTextFieldTextpwd = '';
   String ErrorTextFieldTextcompany = '';
   bool Circuleprogress = false;
+
 
   @override
   void initState() {
@@ -463,104 +452,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  ValidarDatos(String Usr, String pwd, String compy) async {
-
-    Circuleprogress = true;
-    setState(() {
-      Circuleprogress;
-    });
-
-    String companylocal = companyEstable;
-    if(AgregarUser){
-      companylocal = compy;
-    }
-
-    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
-    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
-    });
-    }else{ErrorTextFieldEmail = false;}
-    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
-    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
-    });
-    }else{ErrorTextFieldpsd = false;}
-    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
-    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
-    });
-    }else{ErrorTextFieldcompany = false;}
-
-    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
-      var loginResponse;
-      try{
-        loginResponse = await login(Usr, pwd, companylocal);
-      }catch(e){ }
-
-      if(loginResponse != null){
-        if(loginResponse.statusCode == 401){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 500){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 200){
-          AuthModel auth = AuthModel.fromJson(loginResponse.body);
-
-          var getUserResponseid = await getUser(companylocal,auth.accessToken);
-          if(getUserResponseid != null){
-            if(AgregarUser){
-              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
-              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-              int res = await ClientDatabaseProvider.db.saveUser(newuser);
-            }else{
-              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-            }
-            Navigator.pushReplacementNamed(context, '/vistap');
-          }else{
-            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-            setState(() {
-              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-            });
-            Circuleprogress = false; setState(() {
-              Circuleprogress;
-            });
-          }
-        }
-      }else{
-        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-        setState(() {
-          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-        });
-        Circuleprogress = false; setState(() {
-          Circuleprogress;
-        });
-      }
-    }
-
-    /*
-
-    var loginResponse = await login(Usr, pwd, companylocal);
-    if(loginResponse.statusCode == 200){
-      Navigator.pushReplacementNamed(context, '/vistap');
-    }else{
-
-    }*/
-  }
-
   testApi() async{
 
     try {
@@ -645,7 +536,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerAddressResponse.request);
       // print(unrelateCustomerAddressResponse.statusCode);
       // print(unrelateCustomerAddressResponse.body);
-
       // Task Create
       // TaskModel taskNew = new TaskModel(
       //   name: 'Enrolamiento eHuapi',
@@ -723,8 +613,7 @@ class _LoginPageState extends State<LoginPage> {
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
-      print(error);
-      print(stackTrace);
+
     }
 
   }
