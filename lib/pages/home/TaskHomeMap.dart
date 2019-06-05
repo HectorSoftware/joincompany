@@ -241,7 +241,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
           BitmapDescriptor bit;
           setState(() {
-             bit = BitmapDescriptor.fromBytes(data );
+             bit = BitmapDescriptor.fromBytes(data);
           });
 
           return bit;// fromAssetImage(imageConfig, path);

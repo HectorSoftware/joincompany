@@ -42,7 +42,7 @@ class _FormTaskState extends State<FormTask> {
 
   Image image;
   File image2;
-  String dropdownValue ;
+
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -165,7 +165,7 @@ class _FormTaskState extends State<FormTask> {
                             setState(() {
                               dataInfo = new Map();
                               pass= false;
-                              dropdownValue = null;
+                             // dropdownValue = null;
                               image = null;
                               taskCU = false;
                               image2= null;
@@ -256,7 +256,7 @@ class _FormTaskState extends State<FormTask> {
                                   lisC(form);
                                   setState(() {
                                     directionClient.address = null;
-                                    dropdownValue = null;
+                                    //dropdownValue = null;
                                     pass = true;
                                     image = null;
                                     dataInfo = new Map();
@@ -452,9 +452,7 @@ class _FormTaskState extends State<FormTask> {
                       maxLines: 1,
                       //controller: nameController,
                       decoration: InputDecoration(
-
                         border: InputBorder.none,
-
                         hintText: listFieldsModels[index].name,
                       ),
                     ),
@@ -500,22 +498,33 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Combo'){
 
                List<String> dropdownMenuItems = List<String>();
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions) dropdownMenuItems.add(v.name);
-                return  Padding(
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+                    dropdownMenuItems.add(v.name);
 
+                }
+
+                if(dataInfo[index].toString().isEmpty){
+                  saveData(listFieldsModels[index].name,index.toString());
+                  print('********************************');
+                }
+
+               //String dropdownValue ;
+                return  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
                   child: DropdownButton<String>(
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dropdownValue,
+                    value: dataInfo[index],
                     hint: Text(listFieldsModels[index].name),
 
                     onChanged: (newValue) {
+
                       setState(() {
-                        dropdownValue = newValue;
+                        //dropdownValue = newValue;
                       });
-                      saveData(dropdownValue,index.toString());
+                      saveData(newValue,index.toString());
+                      print( dataInfo[index]);
                     },
                     items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
