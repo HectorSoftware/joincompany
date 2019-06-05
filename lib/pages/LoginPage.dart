@@ -45,15 +45,15 @@ class _LoginPageState extends State<LoginPage> {
 
   //singleton
   StreamSubscription _connectionChangeStream;
-  bool isOffline = false;
+  bool isOnline = false;
 
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  final companyController = TextEditingController(text : 'duperu');
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-//  final companyController = TextEditingController(text : 'getkem');
+  // final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  // final companyController = TextEditingController(text : 'duperu');
+ final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+ final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     setState(() {
-      isOffline = connectionStatus.connectionStatus;
+      isOnline = connectionStatus.connectionStatus;
     });
     TextViewVisible = widget.TextViewVisiblewidget;
     AgregarUser = widget.AgregarUserwidget;
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void connectionChanged(dynamic hasConnection) {
     setState(() {
-      isOffline = !hasConnection;
+      isOnline = !hasConnection;
     });
   }
   @override
@@ -342,7 +342,7 @@ class _LoginPageState extends State<LoginPage> {
     ValidatePassword(password);
     ValidateCompany(companyLocal);
 
-    if (!isOffline) {
+    if (isOnline) {
       if (EvalValidations()) {
         // Query by email:
         var query = UserModel(email: email);
@@ -361,7 +361,7 @@ class _LoginPageState extends State<LoginPage> {
             // Validate the http response (Is or isn't 200 the status code?)
             if (loginResponse.statusCode != 200) {
               HandleUnsuccessfulResponse(loginResponse);
-            } else if (loginResponse.statusCode == 200) {
+            } else {
               // If it was successful, then it SHOULD have a valid token and the like
               // so that it can be just stored in a authModel in order for us to use it.
               var authFromResponse = AuthModel.fromJson(loginResponse.body);
@@ -403,7 +403,7 @@ class _LoginPageState extends State<LoginPage> {
             // The login didn't success...
             if (loginResponse.statusCode != 200) {
               HandleUnsuccessfulResponse(loginResponse);
-            } else if (loginResponse.statusCode == 200) {
+            } else {
               // The login successed!
               var authFromResponse = AuthModel.fromJson(loginResponse.body);
               // Now get an user based on the given token from the server...

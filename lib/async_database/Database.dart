@@ -109,7 +109,7 @@ class DatabaseProvider {
         deleted
       )
       
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
@@ -161,7 +161,9 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT MAX(logged_at) FROM "users" 
+      SELECT * 
+      FROM "users"
+      ORDER BY logged_at DESC 
       '''
     );
 
