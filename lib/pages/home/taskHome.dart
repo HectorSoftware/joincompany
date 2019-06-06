@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
@@ -42,7 +44,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
-          () {setState((){});
+          () {
+            if (this.mounted){
+              setState((){
+                //Your state change code goes here
+              });
+            }
       },
     );
     extraerUser();
@@ -58,6 +65,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     blocListTaskresFilter.dispose();
     super.dispose();
   }
+
+  @override
+  void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +198,27 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
                 Navigator.of(context).pop();
-                Navigator.push(context,new MaterialPageRoute(
-                        builder: (BuildContext context) => new  ConfigCli()));
+                Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new  ConfigCli()));
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Cerrar Sesion"),
+              trailing: new Icon(Icons.person_add),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context,'/App');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
+              onTap: () {
+                exit(0);
               },
             ),
           ),
@@ -230,32 +264,36 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   String textFilter = '';
   void _searchPressed() {
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = Container(
-          child: new TextField(
-            controller: _filter,
-            style: TextStyle(color: Colors.white),
-            decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search,color: Colors.white,),
-              hintText: 'Buscar',
-              fillColor: Colors.white,
+    if (this.mounted){
+      setState((){
+        if (this._searchIcon.icon == Icons.search) {
+          this._searchIcon = new Icon(Icons.close);
+          this._appBarTitle = Container(
+            child: new TextField(
+              controller: _filter,
+              style: TextStyle(color: Colors.white),
+              decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.search,color: Colors.white,),
+                hintText: 'Buscar',
+                fillColor: Colors.white,
+              ),
+              onChanged: (value){
+                if (this.mounted){
+                  setState((){
+                    textFilter = value.toString();
+                    blocListTaskresFilter;
+                  });
+                }
+              },
             ),
-            onChanged: (value){
-              setState(() {
-                textFilter = value.toString();
-                blocListTaskresFilter;
-              });
-            },
-          ),
-        );
-      } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Join');
-        _filter.clear();
-      }
-    });
+          );
+        } else {
+          this._searchIcon = new Icon(Icons.search);
+          this._appBarTitle = new Text('Join');
+          _filter.clear();
+        }
+      });
+    }
   }
 
   extraerUser() async {
@@ -263,10 +301,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
 
-    setState(() {
-      nameUser = user.name;
-      emailUser = user.email;
-    });
+    if (this.mounted){
+      setState((){
+        nameUser = user.name;
+        emailUser = user.email;
+      });
+    }
   }
 
 }

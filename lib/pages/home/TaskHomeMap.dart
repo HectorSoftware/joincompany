@@ -66,6 +66,13 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   @override
+  void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     double por = 0.7;
@@ -75,12 +82,16 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try{
-      // ignore: cancel_subscriptions
-      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
-      => setState((){
-        listplace.clear();
-        _addMarker(onData[1]);
-      }));
+      if (this.mounted){
+        setState((){
+          // ignore: cancel_subscriptions
+          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
+          => setState((){
+            listplace.clear();
+            _addMarker(onData[1]);
+          }));
+        });
+      }
     }catch(e){}
 
     return _initialPosition == null ?
@@ -186,11 +197,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       }
     }
 
-    setState(() {
-      listplace = _listMarker;
-      allmark(listplace);
-    });
-
+    if (this.mounted){
+      setState((){
+        listplace = _listMarker;
+        allmark(listplace);
+      });
+    }
   }
 
   allmark(List<Place> listPlaces) async {

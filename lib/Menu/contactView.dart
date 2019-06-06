@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
@@ -185,6 +187,26 @@ class _ContactViewState extends State<ContactView> {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/configuracion');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Cerrar Sesion"),
+              trailing: new Icon(Icons.person_add),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context,'/App');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
+              onTap: () {
+                exit(0);
               },
             ),
           ),
