@@ -273,12 +273,13 @@ class _LoginPageState extends State<LoginPage> {
 
           var getUserResponseid = await getUser(companylocal,auth.accessToken);
           if(getUserResponseid != null){
+            UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
             if(AgregarUser){
-              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
               UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
               int res = await ClientDatabaseProvider.db.saveUser(newuser);
             }else{
-              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+              //int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+              int res2 = await ClientDatabaseProvider.db.updateUser(userIdLogueado.id.toString(), Usr, pwd, auth.accessToken);
             }
             Navigator.pushReplacementNamed(context, '/vistap');
           }else{
