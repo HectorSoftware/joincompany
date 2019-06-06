@@ -4,6 +4,7 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
+
 class CustomerChannel {
   
   CustomerChannel();
@@ -113,9 +114,9 @@ class CustomerChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    var a = await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
-    var b = await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
-    var c = await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
   }
 
 }

@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
@@ -648,6 +651,11 @@ class _LoginPageState extends State<LoginPage> {
 
       // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
       // print(data.toString());
+
+      await AddressChannel.syncEverything();
+      await CustomerChannel.syncEverything();
+      await CustomerAddressesChannel.syncEverything();
+      await FormChannel.syncEverything();
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

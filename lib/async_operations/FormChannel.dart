@@ -2,16 +2,14 @@
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/FormService.dart';
 
 class FormChannel {
   
   FormChannel();
 
-  static void _createFormsInBothLocalAndServer() async {
-
-    String customer = '';
-    String authorization = '';
+  static void _createFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Server To Local
     var formsServerResponse = await getAllForms(customer, authorization);
@@ -34,9 +32,7 @@ class FormChannel {
     });
   }
 
-  static void _deleteFormsInBothLocalAndServer() async {
-    String customer = '';
-    String authorization = '';
+  static void _deleteFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Delete Server To Local
     var formsServerResponse = await getAllForms(customer, authorization);
@@ -56,9 +52,7 @@ class FormChannel {
     });
   }
 
-  static void _updateFormsInBothLocalAndServer() async {
-    String customer = '';
-    String authorization = '';
+  static void _updateFormsInBothLocalAndServer(String customer, String authorization) async {
     
     var formsServerResponse = await getAllForms(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
@@ -66,20 +60,29 @@ class FormChannel {
     formsServer.data.forEach((formServer) async {
 
       FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
-      DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
-      DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
-      int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
-      
-      if ( diffInMilliseconds < 0 ) { // Actualizar Local
-        await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+      if (formLocal != null) {
+
+        DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
+        DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
+        int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
+        
+        if ( diffInMilliseconds < 0 ) { // Actualizar Local
+          await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+        }
       }
     });
   }
 
   static void syncEverything() async {
-    await FormChannel._deleteFormsInBothLocalAndServer();
-    await FormChannel._updateFormsInBothLocalAndServer();
-    await FormChannel._createFormsInBothLocalAndServer();
+
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+    String customer = user.company;
+    String authorization = user.rememberToken;
+
+    await FormChannel._deleteFormsInBothLocalAndServer(customer, authorization);
+    await FormChannel._updateFormsInBothLocalAndServer(customer, authorization);
+    await FormChannel._createFormsInBothLocalAndServer(customer, authorization);
   }
 
 

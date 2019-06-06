@@ -3,16 +3,14 @@ import 'dart:convert';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 class CustomerAddressesChannel {
   
   CustomerAddressesChannel();
   
-  static void _relateCustomerAddressesInBothLocalAndServer() async {
-
-    String customer = '';
-    String authorization = '';
+  static void _relateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
     List<Map> customerAddressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.created);
@@ -53,9 +51,7 @@ class CustomerAddressesChannel {
     });
   }
 
-  static void _unrelateCustomerAddressesInBothLocalAndServer() async {
-    String customer = '';
-    String authorization = '';
+  static void _unrelateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
     List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.deleted);
@@ -91,7 +87,13 @@ class CustomerAddressesChannel {
   }
 
   static void syncEverything() async {
-    await CustomerAddressesChannel._unrelateCustomerAddressesInBothLocalAndServer();
-    await CustomerAddressesChannel._relateCustomerAddressesInBothLocalAndServer();
+
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+    String customer = user.company;
+    String authorization = user.rememberToken;
+    
+    await CustomerAddressesChannel._unrelateCustomerAddressesInBothLocalAndServer(customer, authorization);
+    await CustomerAddressesChannel._relateCustomerAddressesInBothLocalAndServer(customer, authorization);
   }
 }
