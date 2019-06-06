@@ -120,6 +120,7 @@ class _FormTaskState extends State<FormTask> {
                            );*/
 
                             if(dataInfo.isNotEmpty) {
+                              print(dataInfo);
                               saveTask.formId = formGlobal.id;
                               saveTask.responsibleId = responsibleId;
                               saveTask.name = formGlobal.name;
@@ -707,7 +708,8 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
+              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage'){
+                String b64;
               return  Row(
                   children: <Widget>[
                     Column(
@@ -724,6 +726,8 @@ class _FormTaskState extends State<FormTask> {
                                     Image img = Image.memory(bytes);
                                     if (img != null) {
                                       setState(() {
+                                        b64 = base64String(bytes);
+                                        print(b64);
                                         dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
                                         image = img;
                                       });
@@ -749,6 +753,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                   ],
                 );
+              }
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                   return Container(
