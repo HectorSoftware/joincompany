@@ -124,7 +124,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //});
   }
 
-  static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 15);
+  static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 12);
 
   void onMapCreated(controller) {
     //setState(() {
@@ -135,7 +135,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
     //});
@@ -171,8 +171,18 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       String valadde = 'N/A';
       if(customersWithAddress.data[y].address != null){
         valadde = customersWithAddress.data[y].address;
-        marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,customerAddress: customersWithAddress.data[y]);
-        _listMarker.add(marker);
+        bool noExiste = true;
+        for(Place value in _listMarker) {
+          if((value.latitude == customersWithAddress.data[y].latitude) &&
+             (value.longitude == customersWithAddress.data[y].longitude)){
+            noExiste = false;
+          }
+        }
+        if(_listMarker.length == 0 || noExiste) {
+          marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,customerAddress: customersWithAddress.data[y]);
+          _listMarker.add(marker);
+        }
+
       }
     }
 
@@ -231,18 +241,18 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
     switch(mark.statusTask){
       case status.cliente:{
-          var data = await getNetworkImageData(
-              'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
-                  number.toString() + '.png', useCache: true);
-          //var path = await ImagePickerSaver.saveFile(fileData: data);
-
-          BitmapDescriptor bit;
-          setState(() {
-             bit = BitmapDescriptor.fromBytes(data);
-          });
-
-          return bit;// fromAssetImage(imageConfig, path);
-          //return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
+//          var data = await getNetworkImageData(
+//              'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
+//                  number.toString() + '.png', useCache: true);
+//          //var path = await ImagePickerSaver.saveFile(fileData: data);
+//
+//          BitmapDescriptor bit;
+//          setState(() {
+//             bit = BitmapDescriptor.fromBytes(data);
+//          });
+//
+//          return bit;// fromAssetImage(imageConfig, path);
+          return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
       }
       case status.planificado:{
         //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red'+number.toString()+'.png', useCache: true);
@@ -255,8 +265,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         {
           //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
           //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-          return BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen);
+          return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
 //        createRoute(mark);
 //      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
         }
@@ -327,10 +336,8 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     );
   }
 
-
   // ignore: non_constant_identifier_names
   ListClientes(){
-
     List<Place> listas_porhacer = new List<Place>();
     for(Place p in listplace){
       if(p.statusTask == status.planificado){

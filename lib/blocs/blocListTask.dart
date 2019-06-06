@@ -25,28 +25,35 @@ class blocListTask {
     var getAllTasksResponse;
     List<TaskModel> _listTask = new List<TaskModel>();
     try{
-      getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
-      if(getAllTasksResponse.statusCode == 200){
-        tasks = TasksModel.fromJson(getAllTasksResponse.body);
-        DateTime FechaNueva = DateTime.parse('1990-05-05');
-        for(int i = 0; i < tasks.data.length; i++ ){
-          DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
-          int c = 0;
-          for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
-            if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
-              c++;
+
+      DateTime FechaNueva = DateTime.parse('1990-05-05');
+
+      //for(int contar_pag = 1; contar_pag <= pageTasks;pageTasks++){
+        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
+        if(getAllTasksResponse.statusCode == 200){
+          tasks = TasksModel.fromJson(getAllTasksResponse.body);
+
+          for(int i = 0; i < tasks.data.length; i++ ){
+            DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
+            int c = 0;
+            for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
+              if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
+                c++;
+              }
             }
-          }
-          if(c < 2){
-            if((tasks.data.length == 1)||
-                ((FechaNueva.day != Fechatask.day) || (FechaNueva.month != Fechatask.month) || (FechaNueva.year != Fechatask.year))){
+            if(c < 2){
+              if((tasks.data.length == 1)||
+                  ((FechaNueva.day != Fechatask.day) ||
+                      (FechaNueva.month != Fechatask.month) ||
+                      (FechaNueva.year != Fechatask.year))){
+                _listTaskModellocal.add(tasks.data[i]);
+                FechaNueva = Fechatask;
+              }
               _listTaskModellocal.add(tasks.data[i]);
-              FechaNueva = Fechatask;
             }
-            _listTaskModellocal.add(tasks.data[i]);
           }
         }
-      }
+      //}
     }catch(e){}
 
     inListTaksTotal.add(tasks.total);

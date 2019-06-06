@@ -27,6 +27,11 @@ class _ContactViewState extends State<ContactView> {
   }
 
   @override
+  void dispose(){
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: widget.vista ? null : buildDrawer(),
@@ -57,7 +62,6 @@ class _ContactViewState extends State<ContactView> {
       ),
     );
   }
-
 
   Future<List<CustomersModel>> data() {
     //TODO
@@ -106,7 +110,6 @@ class _ContactViewState extends State<ContactView> {
 
   //drawer
   bool drawerCustomer = true;
-
   Drawer buildDrawer() {
     return Drawer(
       elevation: 12,
@@ -153,8 +156,6 @@ class _ContactViewState extends State<ContactView> {
               trailing: new Icon(Icons.contacts),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/contactos');
               },
             ),
           ),

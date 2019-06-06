@@ -173,10 +173,7 @@ class _ClienteState extends State<Cliente> {
                 // Navigator.pushReplacementNamed(context, "/intro");
                 Navigator.of(context).pop();
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) => new  ConfigCli()));
+                Navigator.pushNamed(context, '/configuracion');
               },
             ),
           ),
@@ -317,7 +314,7 @@ class _ClienteState extends State<Cliente> {
                 }else{
                   return new Container(
                     child: Center(
-                      child: Text("No hay contactos "),
+                      child: Text("No hay Clientes Registrados"),
                     ),
                   );
                 }

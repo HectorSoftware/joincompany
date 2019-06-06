@@ -102,6 +102,11 @@ class _BusinessListState extends State<BusinessList> {
     );
   }
 
+  @override
+  void dispose(){
+    super.dispose();
+  }
+
   //search
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');

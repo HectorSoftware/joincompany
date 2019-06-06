@@ -247,7 +247,6 @@ class _ConfigCliState extends State<ConfigCli> {
             ),
           ),
           Container(
-            color: drawerCustomer ? Colors.grey[200] :  null,
             child: new ListTile(
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
