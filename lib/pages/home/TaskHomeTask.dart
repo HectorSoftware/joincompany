@@ -150,23 +150,21 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     return ((listTaskModellocal.length != 0)) ?
 
-//    Container(
-//      child: RefreshIndicator(
-//        child: LoadMore(
-//          isFinish: countTaskList >= 100,
-//          onLoadMore: _loadMore,
-//          child: listando(),
-//          whenEmptyLoad: false,
-//          delegate: DefaultLoadMoreDelegate(),
-//          textBuilder: DefaultLoadMoreTextBuilder.english,
-//        ),
-//        onRefresh: _refresh,
-//      ),
-//    )
-    listando()
-      : Center(
-      child: CircularProgressIndicator(),
-    );
+    Container(
+      child: RefreshIndicator(
+        child: LoadMore(
+          isFinish: countTaskList >= 60,
+          onLoadMore: _loadMore,
+          child: listando(),
+          whenEmptyLoad: false,
+          delegate: DefaultLoadMoreDelegate(),
+          textBuilder: DefaultLoadMoreTextBuilder.english,
+        ),
+        onRefresh: _refresh,
+      ),
+    )
+//    listando()
+      : Center(child: CircularProgressIndicator(),);
   }
 
   int TareasTotales = 0;
@@ -175,7 +173,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     PageTasks++;
 //    print("onLoadMore ${listTaskModellocal.length}");
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
-//    print("Page $PageTasks");
     //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
   }

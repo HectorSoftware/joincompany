@@ -79,7 +79,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
       => setState((){
         listplace.clear();
-        _addMarker(onData[0]);
+        _addMarker(onData[1]);
       }));
     }catch(e){}
 
@@ -328,7 +328,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         context: context,
         // ignore: deprecated_member_use
         child: SimpleDialog(
-            title: Text('Tareas no realizadas :'),
+            title: Text('Tareas planificadas :'),
             children: <Widget>[
               ListClientes(),
             ]
@@ -374,7 +374,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Text('No existen Tareas no realizadas'),
+          Text('No existen tareas planificadas'),
           Center(
             child: Icon(
               Icons.not_listed_location,
