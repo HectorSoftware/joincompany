@@ -7,7 +7,7 @@ class AddressChannel {
   
   AddressChannel();
   
-  static void createAddressesInBothLocalAndServer() async {
+  static void _createAddressesInBothLocalAndServer() async {
 
     String customer = '';
     String authorization = '';
@@ -20,10 +20,8 @@ class AddressChannel {
       if (createAddressResponseServer.statusCode==200) {
         AddressModel addressServer = AddressModel.fromJson(createAddressResponseServer.body);
         // Cambiar el SyncState Local
-        // DatabaseProvider.db.ChangeSyncState(addressObj.id, SyncState.synchronized);
-
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer);
+        await DatabaseProvider.db.UpdateAddress(addressLocal.id, addressServer, SyncState.synchronized);
       }
     });
 
@@ -36,19 +34,19 @@ class AddressChannel {
       idsAddressesServer.add(addressServer.id);
     });
 
-    Set idsAddressesLocal = new Set.from([1,2,3]); //método de albert
+    Set idsAddressesLocal = new Set.from(await DatabaseProvider.db.RetrieveAllAddressIds()); //método de albert
 
     Set idsToCreate = idsAddressesServer.difference(idsAddressesLocal);
 
     addressesServer.data.forEach((addressServer) async {
       if (idsToCreate.contains(addressServer.id)) {
-        var createAddressResponseLocal = await DatabaseProvider.db.CreateAddress(addressServer);
         // Cambiar el SyncState Local
+        await DatabaseProvider.db.CreateAddress(addressServer, SyncState.synchronized);
       }
     });
   }
 
-  static void deleteAddressesInBothLocalAndServer() async {
+  static void _deleteAddressesInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
 
@@ -58,7 +56,7 @@ class AddressChannel {
     addressesLocal.forEach((addressLocal) async {
       var deleteAddressResponseServer = await deleteAddress(addressLocal.id.toString(), customer, authorization);
       if (deleteAddressResponseServer.statusCode==200) {
-        var deleteAddressResponseLocal = await DatabaseProvider.db.DeleteAddress(addressLocal.id);
+        await DatabaseProvider.db.DeleteAddressById(addressLocal.id);
       }
     });
 
@@ -71,16 +69,16 @@ class AddressChannel {
       idsAddressesServer.add(addressServer.id);
     });
 
-    Set idsAddressesLocal = new Set.from([1,2,3]); //método de albert
+    Set idsAddressesLocal = new Set.from(await DatabaseProvider.db.RetrieveAllAddressIds()); //método de albert
 
     Set idsToDelete = idsAddressesLocal.difference(idsAddressesServer);
 
-    idsToDelete.forEach((idToDelete) {
-      var deleteAddressLocalResponse = DatabaseProvider.db.DeleteAddress(idToDelete);
+    idsToDelete.forEach((idToDelete) async {
+      await DatabaseProvider.db.DeleteAddressById(idToDelete);
     });
   }
 
-  static void updateAddressesInBothLocalAndServer() async {
+  static void _updateAddressesInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
     
@@ -89,7 +87,7 @@ class AddressChannel {
 
     addressesServer.data.forEach((addressServer) async {
 
-      AddressModel addressLocal = await DatabaseProvider.db.ReadAddress(addressServer.id);
+      AddressModel addressLocal = await DatabaseProvider.db.ReadAddressById(addressServer.id);
       DateTime updateDateLocal  = DateTime.parse(addressLocal.updatedAt); 
       DateTime updateDateServer = DateTime.parse(addressServer.updatedAt);
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
@@ -99,14 +97,18 @@ class AddressChannel {
         if (updateAddressServerResponse.statusCode == 200) {
           AddressModel addressServerUpdated = AddressModel.fromJson(updateAddressServerResponse.body);
           //Cambiar el sycn state
-          // DatabaseProvider.db.ChangeSyncState(addressLocal.id, SyncState.synchronized);
-
           // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServerUpdated);
+          await DatabaseProvider.db.UpdateAddress(addressServerUpdated.id, addressServerUpdated, SyncState.synchronized);
         }
       } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        var updateAddressLocalResponse = await DatabaseProvider.db.UpdateAddress(addressServer);
+        await DatabaseProvider.db.UpdateAddress(addressServer.id, addressServer, SyncState.synchronized);
       }
     });
-  } 
+  }
+
+  static void syncEverything() async {
+    await AddressChannel._deleteAddressesInBothLocalAndServer();
+    await AddressChannel._updateAddressesInBothLocalAndServer();
+    await AddressChannel._createAddressesInBothLocalAndServer();
+  }
 }

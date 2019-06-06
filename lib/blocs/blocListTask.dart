@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 
@@ -19,41 +19,34 @@ class blocListTask {
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     TasksModel tasks = new TasksModel();
     var getAllTasksResponse;
     List<TaskModel> _listTask = new List<TaskModel>();
     try{
-
       DateTime FechaNueva = DateTime.parse('1990-05-05');
-
-      //for(int contar_pag = 1; contar_pag <= pageTasks;pageTasks++){
-        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
-        if(getAllTasksResponse.statusCode == 200){
-          tasks = TasksModel.fromJson(getAllTasksResponse.body);
-
-          for(int i = 0; i < tasks.data.length; i++ ){
-            DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
-            int c = 0;
-            for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
-              if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
-                c++;
-              }
-            }
-            if(c < 2){
-              if((tasks.data.length == 1)||
-                  ((FechaNueva.day != Fechatask.day) ||
-                      (FechaNueva.month != Fechatask.month) ||
-                      (FechaNueva.year != Fechatask.year))){
-                _listTaskModellocal.add(tasks.data[i]);
-                FechaNueva = Fechatask;
-              }
-              _listTaskModellocal.add(tasks.data[i]);
+      getAllTasksResponse = await getAllTasks(user.company, user.rememberToken, beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: pageTasks.toString());
+      if(getAllTasksResponse.statusCode == 200){
+        tasks = TasksModel.fromJson(getAllTasksResponse.body);
+        for(int i = 0; i < tasks.data.length; i++ ){
+          DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
+          int c = 0;
+          for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
+            if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
+              c++;
             }
           }
+          if(c < 2){
+            if((tasks.data.length == 1)||
+                ((FechaNueva.day != Fechatask.day) || (FechaNueva.month != Fechatask.month) || (FechaNueva.year != Fechatask.year))){
+              _listTaskModellocal.add(tasks.data[i]);
+              FechaNueva = Fechatask;
+            }
+            _listTaskModellocal.add(tasks.data[i]);
+          }
         }
-      //}
+      }
     }catch(e){}
 
     inListTaksTotal.add(tasks.total);

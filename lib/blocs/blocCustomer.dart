@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 
@@ -18,12 +18,12 @@ class CustomersBloc{
   }
 
   Future getCustomers() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    /*var customersResponse = await getAllCustomers(UserActiv.company,UserActiv.token);
-    CustomersModel customers = CustomersModel.fromJson(customersResponse.body);*/
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    // var customersResponse = await getAllCustomers(user.company, user.rememberToken);
+    // CustomersModel customers = CustomersModel.fromJson(customersResponse.body);
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
+    CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
     _listCustomersWithAddress = customersWithAddress.data;
     if(_listCustomersWithAddress != null){
       _customerscontroller.add(_listCustomersWithAddress);

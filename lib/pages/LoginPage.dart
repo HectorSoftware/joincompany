@@ -1,13 +1,28 @@
+import 'dart:async';
+import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
+
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
@@ -21,13 +36,14 @@ class LoginPage extends StatefulWidget {
 }
 class _LoginPageState extends State<LoginPage> {
 
-  UserDataBase saveUser;
-  UserDataBase userVe;
+  //singleton
+  StreamSubscription _connectionChangeStream;
+  bool isOnline = false;
 
-//  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-//     final companyController = TextEditingController(text : 'duperu');
-    final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-     final companyController = TextEditingController(text : 'getkem');
+  // final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  // final companyController = TextEditingController(text : 'duperu');
+ final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+ final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -44,16 +60,28 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    setState(() {
+      isOnline = connectionStatus.connectionStatus;
+    });
     TextViewVisible = widget.TextViewVisiblewidget;
     AgregarUser = widget.AgregarUserwidget;
     companyEstable = widget.companyEstablewidget;
     super.initState();
   }
-@override
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOnline = !hasConnection;
+    });
+  }
+  @override
   void dispose() {
   passwordController.dispose();
   nameController.dispose();
   companyController.dispose();
+  _connectionChangeStream.cancel();
     super.dispose();
   }
   @override
@@ -202,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -216,102 +244,239 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  ValidarDatos(String Usr, String pwd, String compy) async {
+  void ValidateEmail(String email) {
+    if (email.isEmpty) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldTextemail = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldTextemail;
+      });
+    } else
+      ErrorTextFieldEmail = false;
+  }
 
-    Circuleprogress = true;
-    setState(() {
-      Circuleprogress;
-    });
+  void ValidatePassword(String password) {
+    if (password.isEmpty) {
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldTextpwd = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldpsd;
+        ErrorTextFieldTextpwd;
+      });
+    } else
+      ErrorTextFieldpsd = false;
+  }
 
-    String companylocal = companyEstable;
-    if(AgregarUser){
-      companylocal = compy;
+  void ValidateCompany(String company) {
+    if (company.isEmpty) {
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextcompany = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextcompany;
+      });
+    } else
+      ErrorTextFieldcompany = false;
+  }
+
+  bool EvalValidations() {
+    return (!ErrorTextFieldpsd && !ErrorTextFieldcompany && !ErrorTextFieldcompany);
+  }
+
+  void HandleUnsuccessfulResponse(Response loginResponse) {
+    if (loginResponse.statusCode == 401) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+          ErrorTextFieldTextcompany = 'Datos incorrectos';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldpsd;
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextemail;
+        ErrorTextFieldTextpwd;
+        ErrorTextFieldTextcompany;
+      });
+      Circuleprogress = false;
+      setState(() => Circuleprogress);
+    } else if (loginResponse.statusCode == 500) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+          ErrorTextFieldTextcompany = 'Error en conexion';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldpsd;
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextemail;
+        ErrorTextFieldTextpwd;
+        ErrorTextFieldTextcompany;
+      });
+      Circuleprogress = false;
+      setState(() => Circuleprogress);
     }
+  }
 
-    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
-    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
-    });
-    }else{ErrorTextFieldEmail = false;}
-    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
-    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
-    });
-    }else{ErrorTextFieldpsd = false;}
-    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
-    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
-    });
-    }else{ErrorTextFieldcompany = false;}
+  ValidarDatos_DB(String email, String password, String company) async {
+    
+    Circuleprogress = true;
+    setState(() => Circuleprogress);
 
-    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
-      var loginResponse;
-      try{
-        loginResponse = await login(Usr, pwd, companylocal);
-      }catch(e){ }
+    String companyLocal = companyEstable;
+    if (AgregarUser)
+      companyLocal = company;
 
-      if(loginResponse != null){
-        if(loginResponse.statusCode == 401){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 500){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-          setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
-          });
-        }
-        if(loginResponse.statusCode == 200){
-          AuthModel auth = AuthModel.fromJson(loginResponse.body);
+    ValidateEmail(email);
+    ValidatePassword(password);
+    ValidateCompany(companyLocal);
 
-          var getUserResponseid = await getUser(companylocal,auth.accessToken);
-          if(getUserResponseid != null){
-            if(AgregarUser){
-              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
-              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-              int res = await ClientDatabaseProvider.db.saveUser(newuser);
-            }else{
-              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+    if (isOnline) {
+      if (EvalValidations()) {
+        // Query by email:
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(
+            query);
+
+        // If there is any user with that email in the db request login from server.
+        if (usersFromDatabaseByEmail.isNotEmpty) {
+          // Set user so that you don't have to dereference it by the first getter.
+          // (You will use it whether or not there is internet connection).
+          UserModel user = usersFromDatabaseByEmail.first;
+
+          // Send login request to the server.
+          Response loginResponse = await login(email, password, companyLocal);
+          if (loginResponse != null) {
+            // Validate the http response (Is or isn't 200 the status code?)
+            if (loginResponse.statusCode != 200) {
+              HandleUnsuccessfulResponse(loginResponse);
+            } else {
+              // If it was successful, then it SHOULD have a valid token and the like
+              // so that it can be just stored in a authModel in order for us to use it.
+              AuthModel authFromResponse = AuthModel.fromJson(loginResponse.body);
+              // Update the local user's access token.
+              user.rememberToken = authFromResponse.accessToken;
+              user.loggedAt = DateTime.now().toString();
+              user.password = md5.convert(utf8.encode(password)).toString();
+              user.company = companyLocal;
+              DatabaseProvider.db.UpdateUser(
+                  user.id,
+                  user,
+                  SyncState.synchronized
+              );
             }
-            Navigator.pushReplacementNamed(context, '/vistap');
-          }else{
-            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+          } else {
+            ErrorTextFieldEmail = true;
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+                ErrorTextFieldTextcompany = 'Error en conexion';
             setState(() {
-              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+              ErrorTextFieldEmail;
+              ErrorTextFieldpsd;
+              ErrorTextFieldcompany;
+              ErrorTextFieldTextemail;
+              ErrorTextFieldTextpwd;
+              ErrorTextFieldTextcompany;
             });
-            Circuleprogress = false; setState(() {
-              Circuleprogress;
+            Circuleprogress = false;
+            setState(() => Circuleprogress);
+          }
+        } else
+          /* A.K.A* the case in which there is no user with that email in the local db */ {
+          // If there is no user with that email in the db request login and store a new user in the local db...
+          // Send login request to the server.
+          var loginResponse = await login(email, password, companyLocal);
+          // The response has arrived!
+          if (loginResponse != null) {
+            // The login didn't success...
+            if (loginResponse.statusCode != 200) {
+              HandleUnsuccessfulResponse(loginResponse);
+            } else {
+              // The login successed!
+              var authFromResponse = AuthModel.fromJson(loginResponse.body);
+              // Now get an user based on the given token from the server...
+              var userFromServerResponse = await getUser(
+                  companyLocal, authFromResponse.accessToken);
+              // Validate it!
+              if (userFromServerResponse != null) {
+                UserModel userFromServer = UserModel.fromJson(
+                    userFromServerResponse.body);
+
+                userFromServer.rememberToken = authFromResponse.accessToken;
+                userFromServer.loggedAt = DateTime.now().toString();
+                userFromServer.password =
+                    md5.convert(utf8.encode(password)).toString();
+                userFromServer.company = companyLocal;
+                await DatabaseProvider.db.CreateUser(
+                    userFromServer, SyncState.synchronized);
+                Navigator.pushReplacementNamed(context, '/vistap');
+              }
+            }
+          } else {
+            // If response is null, do this...
+            ErrorTextFieldEmail = true;
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+                ErrorTextFieldTextcompany = 'Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;
+              ErrorTextFieldpsd;
+              ErrorTextFieldcompany;
+              ErrorTextFieldTextemail;
+              ErrorTextFieldTextpwd;
+              ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false;
+            setState(() => Circuleprogress);
+          }
+        }
+      }
+    } else {
+      if ((await DatabaseProvider.db.RetrieveLastLoggedUser()) == null) {
+        ErrorTextFieldEmail = true;
+        ErrorTextFieldpsd = true;
+        ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;
+          ErrorTextFieldpsd;
+          ErrorTextFieldcompany;
+          ErrorTextFieldTextemail;
+          ErrorTextFieldTextpwd;
+          ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false;
+        setState(() => Circuleprogress);
+      } else {
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+        if (usersFromDatabaseByEmail.isEmpty) {
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldTextemail = "No se ha encontrado ningun usuario con este correo.";
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldTextemail;
+          });
+        } else {
+          UserModel user = usersFromDatabaseByEmail.first;
+          password = md5.convert(utf8.encode(password)).toString();
+          if (user.password == password) {
+            Navigator.pushReplacementNamed(context, '/vistap');
+          } else {
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldTextpwd = "Las contraseñas no coinciden.";
+            setState(() {
+              ErrorTextFieldpsd;
+              ErrorTextFieldTextpwd;
             });
           }
         }
-      }else{
-        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-        setState(() {
-          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-        });
-        Circuleprogress = false; setState(() {
-          Circuleprogress;
-        });
       }
-    }
-
-    /*
-
-    var loginResponse = await login(Usr, pwd, companylocal);
-    if(loginResponse.statusCode == 200){
-      Navigator.pushReplacementNamed(context, '/vistap');
-    }else{
-
-    }*/
+    }      
   }
 
   testApi() async{
@@ -340,7 +505,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customer Get
       // var getCustomerResponse = await getCustomer('387', customer, authorization);
-      // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
+      // CustomerModel customerObj = getCustomerResponse.body;
       // print(customerObj.name);
       // print(getCustomerResponse.body);
 
@@ -377,7 +542,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customers With Address
       // var getAllCustomersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
-      // CustomersWithAddressModel customersWithAddres = CustomersWithAddressModel.fromJson(getAllCustomersWithAddressResponse.body);
+      // CustomersWithAddressModel customersWithAddres = getAllCustomersWithAddressResponse.body;
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
@@ -400,14 +565,15 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerAddressResponse.body);
       // Task Create
       // TaskModel taskNew = new TaskModel(
-        // name: 'Enrolamiento eHuapi',
-        // formId: 3,
-        // responsibleId: 3,
-        // customerId: 408,
-        // addressId: 345,
-        // customValuesMap: {"18": "test", "20": "valor test"}
+      //   name: 'Enrolamiento eHuapi',
+      //   formId: 3,
+      //   responsibleId: 3,
+      //   customerId: 408,
+      //   addressId: 345,
+      //   customValuesMap: {"18": "test", "20": "valor test"}
       // );
       // var createTaskResponse = await createTask(taskNew, customer, authorization);
+      // var body = createTaskResponse.body;
       // print(createTaskResponse.request);
       // print(createTaskResponse.statusCode);
       // print(createTaskResponse.body);
@@ -471,6 +637,17 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
+
+      // LocalityModel locality = new LocalityModel(id: 1, name: "Locality Manuel");
+      // AddressModel address = new AddressModel(id: 355, address: "Manuel Gonzalez Olachea", locality: locality);
+      // var res = await DatabaseProvider.db.CreateAddress(address, SyncState.synchronized);
+      // print(res);
+      // var data = await DatabaseProvider.db.QueryCustomerAddress(null, null, null, null, null, null, null, null);
+      // print(data.toString());
+
+
+      // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
+      // print(data.toString());
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

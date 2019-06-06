@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
@@ -183,9 +182,8 @@ class _ClienteState extends State<Cliente> {
   }
 
   extraerUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    
     setState(() {
       nameUser = user.name;
       emailUser = user.email;

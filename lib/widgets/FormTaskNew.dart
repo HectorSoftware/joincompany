@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'dart:io';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -12,13 +13,12 @@ import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/prueba.dart';
 
@@ -53,7 +53,7 @@ class _FormTaskState extends State<FormTask> {
   BuildContext globalContext;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   FormModel formGlobal;
-  UserDataBase userToken ;
+  UserModel userToken ;
   String token;
   String customer;
   String user;
@@ -904,11 +904,11 @@ class _FormTaskState extends State<FormTask> {
     formType = await getAll();
   }
   getElements()async{
-    userToken = await ClientDatabaseProvider.db.getCodeId('1');
-    token = userToken.token;
+    userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    token = userToken.rememberToken;
     customer = userToken.company;
     user = userToken.name;
-    responsibleId = userToken.idUserCompany;
+    responsibleId = userToken.id;
   }
   void _showModalDateTimeAndDirections() {
     setState(() {

@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
@@ -32,7 +32,7 @@ class taskHomeTask extends StatefulWidget {
 class _MytaskPageTaskState extends State<taskHomeTask> {
   ListWidgets ls = ListWidgets();
   bool MostrarLista = false;
-  UserDataBase UserActiv;
+  UserModel user;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
   List<bool> listTaskModellocalbool;
@@ -57,12 +57,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   actualizarusuario() async{
-    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     ListCalender = widget.listCalendarRes;
     PageTasks = 1;
     //getdatalist(listCalendar[1],listCalendar[0],1);
     setState(() {
-    UserActiv;ListCalender;
+    user;ListCalender;
     });
 
 
@@ -389,7 +389,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         setState(() {
                           listTaskModellocal[index].status = 'working';
                         });
-                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
                             listTaskModellocal[index].status = 'done';
@@ -399,7 +399,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         setState(() {
                           listTaskModellocal[index].status = 'done';
                         });
-                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           setState(() {
                             listTaskModellocal[index].status = 'working';
@@ -444,7 +444,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
+    var deleteTaskResponse = await deleteTask(taskID, user.company, user.rememberToken);
     if(deleteTaskResponse.statusCode == 200){
 //      if((listTaskModellocal[index].id == listTaskModellocal[index - 1].id) &&
 //          (
@@ -469,7 +469,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    // List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
     });

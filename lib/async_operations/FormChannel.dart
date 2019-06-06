@@ -8,7 +8,7 @@ class FormChannel {
   
   FormChannel();
 
-  static void createFormsInBothLocalAndServer() async {
+  static void _createFormsInBothLocalAndServer() async {
 
     String customer = '';
     String authorization = '';
@@ -22,19 +22,19 @@ class FormChannel {
       idsFormsServer.add(formServer.id);
     });
 
-    Set idsFormsLocal = new Set.from([1,2,3]); //método de albert
+    Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
 
     Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
 
     formsServer.data.forEach((formServer) async {
       if (idsToCreate.contains(formServer.id)) {
-        var createFormResponseLocal = await DatabaseProvider.db.CreateForm(formServer);
         // Cambiar el SyncState Local
+        await DatabaseProvider.db.CreateForm(formServer, SyncState.synchronized);
       }
     });
   }
 
-  static void deleteFormsInBothLocalAndServer() async {
+  static void _deleteFormsInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
 
@@ -47,16 +47,16 @@ class FormChannel {
       idsFormsServer.add(formServer.id);
     });
 
-    Set idsFormsLocal = new Set.from([1,2,3]); //método de albert
+    Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
 
     Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
 
-    idsToDelete.forEach((idToDelete) {
-      var deleteFormLocalResponse = DatabaseProvider.db.DeleteForm(idToDelete);
+    idsToDelete.forEach((idToDelete) async{
+      await DatabaseProvider.db.DeleteFormById(idToDelete);
     });
   }
 
-  static void updateFormsInBothLocalAndServer() async {
+  static void _updateFormsInBothLocalAndServer() async {
     String customer = '';
     String authorization = '';
     
@@ -65,15 +65,21 @@ class FormChannel {
 
     formsServer.data.forEach((formServer) async {
 
-      FormModel formLocal = await DatabaseProvider.db.ReadForm(formServer.id);
+      FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
       DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
       DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
       int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       
       if ( diffInMilliseconds < 0 ) { // Actualizar Local
-        var updateFormLocalResponse = await DatabaseProvider.db.UpdateForm(formServer);
+        await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
       }
     });
+  }
+
+  static void syncEverything() async {
+    await FormChannel._deleteFormsInBothLocalAndServer();
+    await FormChannel._updateFormsInBothLocalAndServer();
+    await FormChannel._createFormsInBothLocalAndServer();
   }
 
 

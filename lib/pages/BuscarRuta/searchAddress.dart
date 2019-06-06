@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/CustomerService.dart';
@@ -296,18 +296,18 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   getListAnddress() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-//    var getAllAddressessResponse = await getAllAddresses(UserActiv.company,UserActiv.token);
-//    AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
-//    if(getAllAddressessResponse.statusCode == 200){
-//      for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
-//        if(AddresseS.data[cantAddress] != null){
-//          _ListAddress.add(AddresseS.data[cantAddress]);
-//        }
-//      }
-//    }
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+  //  var getAllAddressessResponse = await getAllAddresses(user.company, user.rememberToken);
+  //  AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
+  //  if(getAllAddressessResponse.statusCode == 200){
+  //    for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
+  //      if(AddresseS.data[cantAddress] != null){
+  //        _ListAddress.add(AddresseS.data[cantAddress]);
+  //      }
+  //    }
+  //  }
 
-    var AddressResponse = await getAllAddresses(UserActiv.company, UserActiv.token);
+    var AddressResponse = await getAllAddresses(user.company, user.rememberToken);
     AddressesModel Address = AddressesModel.fromJson(AddressResponse.body);
 
     if(AddressResponse.statusCode == 200){

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/services/CustomerService.dart';
@@ -32,7 +32,7 @@ class FormClient extends StatefulWidget {
 
 class _FormClientState extends State<FormClient> {
 
-  UserDataBase userAct;
+  UserModel user;
 
   Widget popUp;
 
@@ -128,12 +128,12 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData() async {
-    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     //Directions
     if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
-      directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
-      for(CustomerWithAddressModel direction in directionsOld){
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(), user.company, user.rememberToken);
+      directionsOld =  getCustomerAddressesResponse.body;
+      for(AddressModel direction in directionsOld){
         directionsAll.add(direction);
       }
     }
@@ -173,12 +173,13 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> deletedAddressUser(AddressModel direction)async{
-     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),user.company, user.rememberToken);
+     print(resp.body);
      return resp.statusCode;
   }
 
   Future<int> addAddressUser(AddressModel direction, int id)async{
-    var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),userAct.company,userAct.token);
+    var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),user.company, user.rememberToken);
     return resp.statusCode;
   }
 
@@ -232,7 +233,7 @@ class _FormClientState extends State<FormClient> {
               details: note.text,
             );
 
-            var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+            var response = await updateCustomer(client.id.toString(), client, user.company, user.rememberToken);
             if(response.statusCode == 200){
               bool saveDirections = await setDirections(client.id);
               if(!saveDirections){
@@ -265,8 +266,8 @@ class _FormClientState extends State<FormClient> {
               code: code.text,
               details: note.text,
             );
-            var response = await createCustomer(client, userAct.company, userAct.token);
-            var cli = CustomerModel.fromJson(response.body);
+            var response = await createCustomer(client, user.company, user.rememberToken);
+            var cli = response.body;
             print(cli.id);
             if(response.statusCode == 200){
               bool saveDirections = await setDirections(cli.id);
@@ -326,7 +327,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool oldToEliminated(CustomerWithAddressModel direction){
+  bool oldToEliminated(AddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
         return false;
@@ -433,7 +434,7 @@ class _FormClientState extends State<FormClient> {
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
-      var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
       if(responseDelete.statusCode == 200){
         exitDeletedClient();
       }else{
