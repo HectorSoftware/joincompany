@@ -111,11 +111,22 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            ListViewTareas(),
-          ],
-        ),
+
+        body:
+//        NotificationListener<ScrollNotification>(
+//              onNotification: (ScrollNotification scrollInfo) {
+//                if (scrollInfo.metrics.pixels ==
+//                    scrollInfo.metrics.maxScrollExtent) {
+//                  _loadMore();
+//                }
+//              },
+//            child:
+            Stack(
+              children: <Widget>[
+                ListViewTareas(),
+              ],
+            ),
+//        ),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: (){
@@ -186,7 +197,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         onRefresh: _refresh,
       ),
     )
-//    listando()
+    //listando()
       : Center(child: CircularProgressIndicator(),);
   }
 
@@ -194,7 +205,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
     PageTasks++;
-//    print("onLoadMore ${listTaskModellocal.length}");
+   //print("onLoadMore ${PageTasks}");
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
     //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
