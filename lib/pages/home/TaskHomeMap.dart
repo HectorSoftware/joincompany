@@ -165,7 +165,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       }
     }
     var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
     for(int y = 0; y < customersWithAddress.data.length; y++){
       Place marker;
       String valadde = 'N/A';

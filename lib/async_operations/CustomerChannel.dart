@@ -1,27 +1,14 @@
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 class CustomerChannel {
   
   CustomerChannel();
   
-  static void _createCustomersInBothLocalAndServer() async {
-    // CustomerModel customer = CustomerModel(
-    //   name : 'Test test test', 
-    //   code : '32154654', 
-    //   email : "test@test.com", 
-    //   phone : "798798", 
-    //   contactName : "name conact", 
-    //   details : "nota" 
-    // );
-
-    // var response = await DatabaseProvider.db.CreateCustomer(customer);
-
-
-    String customer = '';
-    String authorization = '';
+  static void _createCustomersInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.created);
@@ -49,17 +36,18 @@ class CustomerChannel {
 
     Set idsToCreate = idsCustomersServer.difference(idsCustomersLocal);
 
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
     customersServer.data.forEach((customerServer) async {
       if (idsToCreate.contains(customerServer.id)) {
         // Cambiar el SyncState Local
         await DatabaseProvider.db.CreateCustomer(customerServer, SyncState.synchronized);
+        await DatabaseProvider.db.CreateCustomerUser(null, null, null, null, customerServer.id, user.id, SyncState.synchronized);
       }
     });
   }
 
-  static void _deleteCustomersInBothLocalAndServer() async {
-    String customer = '';
-    String authorization = '';
+  static void _deleteCustomersInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.deleted);
@@ -89,9 +77,7 @@ class CustomerChannel {
     });
   }
 
-  static void _updateCustomersInBothLocalAndServer() async {
-    String customer = '';
-    String authorization = '';
+  static void _updateCustomersInBothLocalAndServer(String customer, String authorization) async {
     
     var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
@@ -99,28 +85,37 @@ class CustomerChannel {
     customersServer.data.forEach((customerServer) async {
 
       CustomerModel customerLocal = await DatabaseProvider.db.ReadCustomerById(customerServer.id);
-      DateTime updateDateLocal  = DateTime.parse(customerLocal.updatedAt); 
-      DateTime updateDateServer = DateTime.parse(customerServer.updatedAt);
-      int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
-      
-      if (diffInMilliseconds > 0) { // Actualizar Server
-        var updateCustomerServerResponse = await updateCustomerFromServer(customerLocal.id.toString(), customerLocal, customer, authorization);
-        if (updateCustomerServerResponse.statusCode == 200) {
-          CustomerModel customerServerUpdated = CustomerModel.fromJson(updateCustomerServerResponse.body);
-          //Cambiar el sycn state
-          // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-          await DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
+      if (customerLocal != null) {
+        
+        DateTime updateDateLocal  = DateTime.parse(customerLocal.updatedAt); 
+        DateTime updateDateServer = DateTime.parse(customerServer.updatedAt);
+        int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
+        
+        if (diffInMilliseconds > 0) { // Actualizar Server
+          var updateCustomerServerResponse = await updateCustomerFromServer(customerLocal.id.toString(), customerLocal, customer, authorization);
+          if (updateCustomerServerResponse.statusCode == 200) {
+            CustomerModel customerServerUpdated = CustomerModel.fromJson(updateCustomerServerResponse.body);
+            //Cambiar el sycn state
+            // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
+            await DatabaseProvider.db.UpdateCustomer(customerServerUpdated.id, customerServerUpdated, SyncState.synchronized);
+          }
+        } else if ( diffInMilliseconds < 0) { // Actualizar Local
+          await DatabaseProvider.db.UpdateCustomer(customerServer.id, customerServer, SyncState.synchronized);
         }
-      } else if ( diffInMilliseconds < 0) { // Actualizar Local
-        await DatabaseProvider.db.UpdateCustomer(customerServer.id, customerServer, SyncState.synchronized);
       }
     });
   } 
 
   static void syncEverything() async {
-    await CustomerChannel._deleteCustomersInBothLocalAndServer();
-    await CustomerChannel._updateCustomersInBothLocalAndServer();
-    await CustomerChannel._createCustomersInBothLocalAndServer();
+
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+    String customer = user.company;
+    String authorization = user.rememberToken;
+
+    var a = await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
+    var b = await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
+    var c = await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
   }
 
 }

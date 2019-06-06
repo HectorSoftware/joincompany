@@ -10,6 +10,8 @@ import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
@@ -334,18 +336,18 @@ class _LoginPageState extends State<LoginPage> {
     if (isOnline) {
       if (EvalValidations()) {
         // Query by email:
-        var query = UserModel(email: email);
-        var usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(
             query);
 
         // If there is any user with that email in the db request login from server.
         if (usersFromDatabaseByEmail.isNotEmpty) {
           // Set user so that you don't have to dereference it by the first getter.
           // (You will use it whether or not there is internet connection).
-          var user = usersFromDatabaseByEmail.first;
+          UserModel user = usersFromDatabaseByEmail.first;
 
           // Send login request to the server.
-          var loginResponse = await login(email, password, companyLocal);
+          Response loginResponse = await login(email, password, companyLocal);
           if (loginResponse != null) {
             // Validate the http response (Is or isn't 200 the status code?)
             if (loginResponse.statusCode != 200) {
@@ -353,7 +355,7 @@ class _LoginPageState extends State<LoginPage> {
             } else {
               // If it was successful, then it SHOULD have a valid token and the like
               // so that it can be just stored in a authModel in order for us to use it.
-              var authFromResponse = AuthModel.fromJson(loginResponse.body);
+              AuthModel authFromResponse = AuthModel.fromJson(loginResponse.body);
               // Update the local user's access token.
               user.rememberToken = authFromResponse.accessToken;
               user.loggedAt = DateTime.now().toString();
@@ -434,22 +436,47 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     } else {
-      // If you're not online notify it to the client.
-      ErrorTextFieldEmail = true;
-      ErrorTextFieldpsd = true;
-      ErrorTextFieldcompany = true;
-      ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
-      setState(() {
-        ErrorTextFieldEmail;
-        ErrorTextFieldpsd;
-        ErrorTextFieldcompany;
-        ErrorTextFieldTextemail;
-        ErrorTextFieldTextpwd;
-        ErrorTextFieldTextcompany;
-      });
-      Circuleprogress = false;
-      setState(() => Circuleprogress);
-    }
+      if ((await DatabaseProvider.db.RetrieveLastLoggedUser()) == null) {
+        ErrorTextFieldEmail = true;
+        ErrorTextFieldpsd = true;
+        ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;
+          ErrorTextFieldpsd;
+          ErrorTextFieldcompany;
+          ErrorTextFieldTextemail;
+          ErrorTextFieldTextpwd;
+          ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false;
+        setState(() => Circuleprogress);
+      } else {
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+        if (usersFromDatabaseByEmail.isEmpty) {
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldTextemail = "No se ha encontrado ningun usuario con este correo.";
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldTextemail;
+          });
+        } else {
+          UserModel user = usersFromDatabaseByEmail.first;
+          password = md5.convert(utf8.encode(password)).toString();
+          if (user.password == password) {
+            Navigator.pushReplacementNamed(context, '/vistap');
+          } else {
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldTextpwd = "Las contraseñas no coinciden.";
+            setState(() {
+              ErrorTextFieldpsd;
+              ErrorTextFieldTextpwd;
+            });
+          }
+        }
+      }
+    }      
   }
 
   testApi() async{
@@ -478,7 +505,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customer Get
       // var getCustomerResponse = await getCustomer('387', customer, authorization);
-      // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
+      // CustomerModel customerObj = getCustomerResponse.body;
       // print(customerObj.name);
       // print(getCustomerResponse.body);
 
@@ -515,7 +542,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customers With Address
       // var getAllCustomersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
-      // CustomersWithAddressModel customersWithAddres = CustomersWithAddressModel.fromJson(getAllCustomersWithAddressResponse.body);
+      // CustomersWithAddressModel customersWithAddres = getAllCustomersWithAddressResponse.body;
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
@@ -610,6 +637,17 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.name);
       // print(user.email);
       // print(user.profile);
+
+      // LocalityModel locality = new LocalityModel(id: 1, name: "Locality Manuel");
+      // AddressModel address = new AddressModel(id: 355, address: "Manuel Gonzalez Olachea", locality: locality);
+      // var res = await DatabaseProvider.db.CreateAddress(address, SyncState.synchronized);
+      // print(res);
+      // var data = await DatabaseProvider.db.QueryCustomerAddress(null, null, null, null, null, null, null, null);
+      // print(data.toString());
+
+
+      // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
+      // print(data.toString());
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){

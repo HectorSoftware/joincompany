@@ -18,7 +18,7 @@ class CustomerAddressesChannel {
     List<Map> customerAddressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.created);
 
     customerAddressesLocal.forEach((customerAddressLocal) async {
-      var relateCustomerAddressResponseServer = await relateCustomerAddress(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
+      var relateCustomerAddressResponseServer = await relateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
       if (relateCustomerAddressResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerAddressResponseServer.body);
         // Cambiar el SyncState Local
@@ -28,7 +28,7 @@ class CustomerAddressesChannel {
     });
 
     // Create Server To Local
-    var customersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
+    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     Map<String, int> customersAddressesServerIds = new Map<String, int>();
@@ -61,14 +61,14 @@ class CustomerAddressesChannel {
     List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.deleted);
 
     customerAdressesLocal.forEach((customerAddressLocal) async {
-      var unrelateCustomerAddressResponseServer = await unrelateCustomerAddress(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
+      var unrelateCustomerAddressResponseServer = await unrelateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
       if (unrelateCustomerAddressResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerAddressById(customerAddressLocal["customer_id"], customerAddressLocal["address_id"]);
       }
     });
 
     // Delete Server To Local
-    var customersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
+    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     Set customersAddressesServer = new Set();

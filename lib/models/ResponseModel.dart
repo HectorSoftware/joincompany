@@ -1,6 +1,6 @@
 class ResponseModel {
   int statusCode;
-  String body;
+  dynamic body;
 
   ResponseModel({
       this.statusCode,

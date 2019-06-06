@@ -308,7 +308,7 @@ class _SearchAddressState extends State<searchAddressWithClient> {
   //  }
 
     var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
 
     if(customersWithAddressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < customersWithAddress.data.length; cantAddress++){

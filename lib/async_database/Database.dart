@@ -366,7 +366,7 @@ class DatabaseProvider {
       updated = ?,
       deleted = ?,
       logged_at = ?,
-      company = ?,
+      company = ?
       WHERE id = ${userId}
       ''',
       [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
@@ -383,9 +383,9 @@ class DatabaseProvider {
       db.rawUpdate(
         '''
       UPDATE "users" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
         paramsBySyncState[syncState],
@@ -657,7 +657,7 @@ class DatabaseProvider {
       active = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${formId}
       ''',
       [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
@@ -681,9 +681,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "forms" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -922,7 +922,7 @@ class DatabaseProvider {
       value,
       in_server,
       updated,
-      deleted,
+      deleted
       WHERE id = ${localityId}
       ''',
       [...[locality.id, locality.createdAt, locality.updatedAt, locality.deletedAt,
@@ -946,9 +946,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "localities" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -1237,7 +1237,7 @@ class DatabaseProvider {
       profile = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${responsible.id}
       ''',
       [...[responsible.id, responsible.createdAt, responsible.updatedAt,
@@ -1263,9 +1263,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "responsibles" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -1850,7 +1850,7 @@ class DatabaseProvider {
       field_width = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${sectionId}
       ''',
         [...[section.id, section.createdAt,section.updatedAt, section.deletedAt,
@@ -1877,9 +1877,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "custom_fields" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -2068,7 +2068,7 @@ class DatabaseProvider {
       SELECT * FROM "addresses"
       '''
     );
-
+    
     if (data.isNotEmpty) {
       List<AddressModel> listOfAddresses = new List<AddressModel>();
       data.forEach((addressRetrieved) async {
@@ -2259,7 +2259,7 @@ class DatabaseProvider {
       contact_email = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${addressId}
       ''',
       [...[address.id, address.createdAt, address.updatedAt, address.deletedAt,
@@ -2288,9 +2288,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "addresses" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -2525,8 +2525,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<CustomerModel> listOfCustomers = new List<CustomerModel>();
     if (data.isNotEmpty) {
-      List<CustomerModel> listOfCustomers = new List<CustomerModel>();
       data.forEach((customerResponse) async {
         listOfCustomers.add(new CustomerModel(
           id: customerResponse["id"],
@@ -2545,10 +2545,8 @@ class DatabaseProvider {
           pivot: null,
         ));
       });
-      return listOfCustomers;
     }
-    else
-      return null;
+    return listOfCustomers;
   }
 
   Future<CustomerModel> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
@@ -2571,7 +2569,7 @@ class DatabaseProvider {
       details = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${customerId}
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt, customer.deletedAt,
@@ -2598,9 +2596,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "customers" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -2651,13 +2649,12 @@ class DatabaseProvider {
       '''
     );
 
+    List<int> ids = new List<int>();
     if (data.isNotEmpty) {
-      List<int> ids = new List<int>();
       data.forEach((customer) => ids.add(customer["id"]));
-      return ids;
     }
-    else
-      return null;
+    
+    return ids;
   }
 
   Future<List<CustomerModel>> RetrieveCustomersByUserToken(String userToken) async {
@@ -3099,7 +3096,7 @@ class DatabaseProvider {
       status = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = ${taskId}
       ''',
         [...[task.id, task.createdAt, task.updatedAt, task.deletedAt, task.createdById,
@@ -3126,9 +3123,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "tasks" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -3375,7 +3372,7 @@ class DatabaseProvider {
       remember_token = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = $customerUserId
       ''',
       [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
@@ -3397,9 +3394,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "customer_users" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -3806,9 +3803,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "custom_values" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = $id
       ''',
       paramsBySyncState[syncState],
@@ -3874,7 +3871,7 @@ class DatabaseProvider {
       return null;
   }
 
-  // Operations on customer_addresses
+  // Operations on customers_addresses
   Future<int> CreateCustomerAddress(int id, String createdAt,
       String updatedAt, String deletedAt,
       int customerId, int addressId,
@@ -3883,7 +3880,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-      SELECT * FROM "customer_addresses" WHERE id = $id
+      SELECT * FROM "customers_addresses" WHERE id = $id
       '''
     );
 
@@ -3905,7 +3902,7 @@ class DatabaseProvider {
         deleted
       )
       
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
     approved], ...paramsBySyncState[syncState]],
@@ -3917,7 +3914,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-      SELECT * FROM "customer_addresses" WHERE id = $id
+      SELECT * FROM "customers_addresses" WHERE id = $id
       '''
     );
 
@@ -3945,7 +3942,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-      SELECT * FROM "customer_addresses"
+      SELECT * FROM "customers_addresses"
       '''
     );
 
@@ -3995,7 +3992,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "customer_addresses" WHERE 
+      SELECT * FROM "customers_addresses" WHERE 
       in_server = ? AND
       updated = ? AND
       deleted = ?
@@ -4029,7 +4026,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawUpdate(
       '''
-      UPDATE "customer_addresses" SET
+      UPDATE "customers_addresses" SET
       id = ?,
       created_at = ?,
       updated_at = ?,
@@ -4050,7 +4047,7 @@ class DatabaseProvider {
       remember_token = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE customer_id = $customerId AND address_id = $addressId
       ''',
       [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
@@ -4062,7 +4059,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawDelete(
         '''
-      DELETE FROM "customer_addresses" WHERE customer_id = $customerId AND address_id = $addressId
+      DELETE FROM "customers_addresses" WHERE customer_id = $customerId AND address_id = $addressId
       '''
     );
   }
@@ -4071,7 +4068,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawUpdate(
       '''
-      UPDATE "customer_addresses" SET
+      UPDATE "customers_addresses" SET
       in_server = ? AND
       updated = ? AND
       deleted = ? AND
@@ -4086,7 +4083,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "customer_addresses"
+      SELECT * FROM "customers_addresses"
       '''
     );
 
@@ -4114,7 +4111,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT customer_id, address_id FROM "customer_addresses"
+      SELECT customer_id, address_id FROM "customers_addresses"
       '''
     );
 
@@ -4135,12 +4132,12 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      Select c.*, a.*
+      Select c.*, a.address, a.reference, a.longitude, a.latitude, a.locality_id, a.google_place_id, a.country, a.state, a.city, a.contact_phone, a.contact_mobile, a.contact_email, ca.address_id, ca.approved, ca.customer_id
       from customers as c
       inner join customers_users as cu on cu.customer_id = c.id
       inner join users as u on cu.user_id = u.id
-      inner join customers_addresses as ca on ca.customer_id = c.id
-      inner join addresses as a on a.id = ca.address_id
+      left join customers_addresses as ca on ca.customer_id = c.id
+      left join addresses as a on a.id = ca.address_id
       WHERE u.remember_token = '$userToken';
       '''
     );
@@ -4163,7 +4160,7 @@ class DatabaseProvider {
           contactName: customerWithAddressResponse["contact_name"],
           details: customerWithAddressResponse["details"],
           address: customerWithAddressResponse["address"],
-          locality: customerWithAddressResponse["locality"],
+          locality: customerWithAddressResponse["locality"], // TODO: I must check this in order to see if I need to make recursive queries and then fill this...
           reference: customerWithAddressResponse["reference"],
           longitude: customerWithAddressResponse["longitude"],
           latitude: customerWithAddressResponse["latitude"],
@@ -4193,13 +4190,13 @@ class DatabaseProvider {
       '''
       SELECT a.*
       from "addresses" as a
-      inner join "customers_addresses" as ca on ca.customer_id = c.id
-      WHERE c.id = $customerId;
+      inner join "customers_addresses" as ca on ca.address_id = a.id
+      WHERE ca.customer_id = $customerId;
       '''
     );
 
+    List<AddressModel> listOfAddressModels = new List<AddressModel>();
     if (data.isNotEmpty) {
-      List<AddressModel> listOfAddressModels = new List<AddressModel>();
       data.forEach((addressResponse) async {
         listOfAddressModels.add(new AddressModel(
           id: addressResponse["id"],
@@ -4226,10 +4223,8 @@ class DatabaseProvider {
           contactEmail: addressResponse["contact_email"],
         ));
       });
-      return listOfAddressModels;
     }
-    else
-      return null;
+    return listOfAddressModels;
   }
 
 }

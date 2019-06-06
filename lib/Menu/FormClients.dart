@@ -132,8 +132,8 @@ class _FormClientState extends State<FormClient> {
     //Directions
     if(widget.client != null){
       var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(), user.company, user.rememberToken);
-      directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
-      for(CustomerWithAddressModel direction in directionsOld){
+      directionsOld =  getCustomerAddressesResponse.body;
+      for(AddressModel direction in directionsOld){
         directionsAll.add(direction);
       }
     }
@@ -271,7 +271,7 @@ class _FormClientState extends State<FormClient> {
               details: note.text,
             );
             var response = await createCustomer(client, user.company, user.rememberToken);
-            var cli = CustomerModel.fromJson(response.body);
+            var cli = response.body;
             print(cli.id);
             if(response.statusCode == 200){
               bool saveDirections = await setDirections(cli.id);
@@ -331,7 +331,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool oldToEliminated(CustomerWithAddressModel direction){
+  bool oldToEliminated(AddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
         return false;
