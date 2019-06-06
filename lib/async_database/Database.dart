@@ -446,9 +446,11 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    form.sections.forEach((section) async {
-      CreateCustomField(section, syncState);
-    });
+    if (form != null)
+      if (form.sections != null)
+        form.sections.forEach((section) async {
+          CreateCustomField(section, syncState);
+        });
 
     return await db.rawInsert(
       '''
@@ -4049,12 +4051,10 @@ class DatabaseProvider {
     );
 
     List<String> relations = new List<String>();
-    if (data.isNotEmpty) {
+    if (data.isNotEmpty) 
       data.forEach((relation) => relations.add(
           relation["customer_id"] + "-" + relation["address_id"]
-      )
-      );
-    }
+      ));
     return relations;
   }
 
