@@ -317,7 +317,7 @@ class _ClienteState extends State<Cliente> {
                 }else{
                   return new Container(
                     child: Center(
-                      child: Text("No hay contactos"),
+                      child: Text("No hay Clientes Registrados"),
                     ),
                   );
                 }

@@ -14,7 +14,7 @@ import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
+import 'dart:ui' as ui;
 
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
@@ -229,39 +229,54 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
 
-    ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
+//    ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
     number = number +1;
 
     switch(mark.statusTask){
       case status.cliente:{
+//          var data = await getNetworkImageData(
+//              'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
+//                  number.toString() + '.png', useCache: true);
+//          //var path = await ImagePickerSaver.saveFile(fileData: data);
+//
+//          BitmapDescriptor bit;
+//          setState(() {
+//             bit = BitmapDescriptor.fromBytes(data);
+//          });
+//
+//          return bit;// fromAssetImage(imageConfig, path);
+          return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
+      }
+      case status.planificado:{
           var data = await getNetworkImageData(
               'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
                   number.toString() + '.png', useCache: true);
-          //var path = await ImagePickerSaver.saveFile(fileData: data);
-
           BitmapDescriptor bit;
           setState(() {
              bit = BitmapDescriptor.fromBytes(data);
           });
 
           return bit;// fromAssetImage(imageConfig, path);
-          //return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
-      }
-      case status.planificado:{
         //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red'+number.toString()+'.png', useCache: true);
         //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
 //        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
         break;
       }
 
-      case status.culminada:
-        {
-          //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
-          //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-          return BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen);
-//        createRoute(mark);
-//      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
+      case status.culminada:{
+        var data = await getNetworkImageData(
+            'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_green' +
+                number.toString() + '.png', useCache: true);
+        //var path = await ImagePickerSaver.saveFile(fileData: data);
+
+        BitmapDescriptor bit;
+        setState(() {
+          bit = BitmapDescriptor.fromBytes(data);
+        });
+
+        return bit;// fromAssetImage(imageConfig, path);
+//          return BitmapDescriptor.defaultMarkerWithHue(
+//              BitmapDescriptor.hueGreen);
         }
     }
     return BitmapDescriptor.defaultMarker;
