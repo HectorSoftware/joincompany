@@ -317,7 +317,6 @@ class _LoginPageState extends State<LoginPage> {
   testApi() async{
 
     try {
-      print("---------------- Inicia test. ----------------------------");
 
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';

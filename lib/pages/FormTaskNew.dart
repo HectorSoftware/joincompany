@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'dart:io';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -20,17 +21,8 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'package:joincompany/widgets/prueba.dart';
-
-class Combo{
-  var value;
-  var state;
-  Combo({this.value, this.state});
-
-}
 
 class FormTask extends StatefulWidget {
-
 
   FormTask({this.directioncliente});
    final CustomerWithAddressModel  directioncliente;
@@ -41,41 +33,42 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  Image image;
-  Image image2;
-
+  Image image,image2;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
-   Map<String,String> dataInfo = Map<String,String>();
-  List<Map<String, String>> dataSaveState =  List<Map<String, String>>();
+
+  Map data = new Map();
+  Map<String,String> dataInfo = Map<String,String>();
   BuildContext globalContext;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   FormModel formGlobal;
   UserDataBase userToken ;
-  String token;
-  String customer;
-  String user;
+  String token,customer, user;
   int responsibleId;
   FormsModel formType;
   bool taskCU = false;
-  bool pass = false;
+  bool pass= false;
   bool taskEnd = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
-  CustomerWithAddressModel  directioncliente;
+  CustomerWithAddressModel  directionClientIn;
 
-  Map data = new Map();
 
   @override
   void initState(){
-    directioncliente = widget.directioncliente;
+    directionClientIn = widget.directioncliente;
     initFormsTypes();
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
+    double aument = 0.7;
+    if (mediaQueryData.orientation == Orientation.portrait) {//VERTICAL
+      aument = 0.8;
+    }
     globalContext = context;
     return new Scaffold(
        appBar: AppBar(
@@ -89,56 +82,61 @@ class _FormTaskState extends State<FormTask> {
                context: context,
                builder: (BuildContext context) {
                  return
-                   AlertDialog(
-                     title: Text('Guardar'),
-                     content: const Text(
-                         'Desea Guardar Tarea'),
-                     actions: <Widget>[
-                       FlatButton(
-                         child: const Text('SALIR'),
-                         onPressed: () {
-                           Navigator.of(context).pop();
-                           Navigator.of(context).pop();
-                         },
-                       ),
-                       FlatButton(
-                         child: const Text('CANCELAR'),
-                         onPressed: () {
-                           Navigator.of(context).pop();
-                         },
-                       ),
-                       FlatButton(
-                         child: const Text('ACEPTAR'),
-                         onPressed: () async {
+                   Container(
+                     width: MediaQuery.of(context).size.width *0.9,
+                     child: AlertDialog(
+                       title: Text('Guardar'),
+                       content: const Text(
+                           'Desea Guardar Tarea'),
+                       actions: <Widget>[
+                         Container(
+                           width: MediaQuery.of(context).size.width,
+                           child: Column(
 
-                          /* dataSaveState.clear();
+                             children: <Widget>[
+                               Row(
+                                 children: <Widget>[
+                                   FlatButton(
+                                     child: const Text('SALIR'),
+                                     onPressed: () {
+                                       Navigator.of(context).pop();
+                                       Navigator.of(context).pop();
+                                     },
+                                   ),
+                                   FlatButton(
+                                     child: const Text('CANCELAR'),
+                                     onPressed: () {
+                                       Navigator.of(context).pop();
+                                     },
+                                   ),
+                                   FlatButton(
+                                     child: const Text('ACEPTAR'),
+                                     onPressed: () async {
+                                       if(dataInfo.isNotEmpty) {
+                                         saveTask.formId = formGlobal.id;
+                                         saveTask.responsibleId = responsibleId;
+                                         saveTask.name = formGlobal.name;
+                                         saveTask.customerId = directionClientIn.customerId;
+                                         saveTask.addressId = directionClientIn.addressId;
+                                         saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                         saveTask.customValuesMap = dataInfo;
+                                         saveTaskApi();
+                                         Navigator.pop(context);
+                                         Navigator.of(context).pop(saveTask);
+                                       }
 
-                           List<Map<String, String>> listOfMaps = new List<Map<String, String>>();
-                           dataInfo.forEach((key, value) {
-                             listOfMaps.add({key: value});
-                           }
-                           );*/
-
-                            if(dataInfo.isNotEmpty) {
-                              print(dataInfo);
-                              saveTask.formId = formGlobal.id;
-                              saveTask.responsibleId = responsibleId;
-                              saveTask.name = formGlobal.name;
-                              saveTask.customerId = directioncliente.customerId;
-                              saveTask.addressId = directioncliente.addressId;
-                              saveTask.planningDate = _dateTask.toString().substring(0,19);
-                              saveTask.customValuesMap = dataInfo;
-                              saveTaskApi(); //DESCOMETAR PARA GUARDAR TAREAS
-                              Navigator.pop(context);
-                              Navigator.of(context).pop(saveTask);
-                            }
-
-                         },
-                       )
-                     ],
+                                     },
+                                   )
+                                 ],
+                               ),
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
                    );
                }
-                )
+               )
          ) ,
         actions: <Widget>[
           IconButton(
@@ -179,8 +177,6 @@ class _FormTaskState extends State<FormTask> {
                     );
 
                 }
-
-
             )
           )
         ],
@@ -204,7 +200,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                  child: Padding(
                    padding: const EdgeInsets.all(8.0),
-                   child: directioncliente.address != null ? Text('Direccion:  ${directioncliente.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                   child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
                  ),
 
                 ),
@@ -504,10 +500,7 @@ class _FormTaskState extends State<FormTask> {
                List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
                     dropdownMenuItems.add(v.name);
-
                 }
-
-               String dropdownValue ;
                 return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
                   child: new DropdownButton<String>(
@@ -648,7 +641,6 @@ class _FormTaskState extends State<FormTask> {
                                   if (img != null) {
                                     setState(() {
                                       b64 = base64String(img);
-                                      print(b64);
                                       image2 = Image.memory(img);
 
                                       saveData(b64, listFieldsModels[index].id.toString());
@@ -668,7 +660,7 @@ class _FormTaskState extends State<FormTask> {
 
                       child: Center(
                         child: Container(
-                            child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Image(image: image2.image,) : Text(''),
+                            child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
 
                         ),
                       ),
@@ -727,9 +719,9 @@ class _FormTaskState extends State<FormTask> {
                                     if (img != null) {
                                       setState(() {
                                         b64 = base64String(bytes);
-                                        print(b64);
                                         dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
                                         image = img;
+                                        saveData(b64.toString(), listFieldsModels[index].id.toString());
                                       });
                                     }
                                   },
@@ -746,7 +738,7 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image == null ? new Text('')
+                          child:dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('')
                               : new Image(image: image.image,height: 200,width: 200,)
 
                       ),
@@ -777,16 +769,11 @@ class _FormTaskState extends State<FormTask> {
     );
   }
   bool switchOn = false;
-  void _onSwitchChanged(bool value) {
-
-    switchOn = false;
-
-  }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
       setState(() {
-        directioncliente = resp;
+        directionClientIn = resp;
       });
     }
   }
@@ -911,9 +898,7 @@ class _FormTaskState extends State<FormTask> {
     responsibleId = userToken.idUserCompany;
   }
   void _showModalDateTimeAndDirections() {
-    setState(() {
-      taskCU= true;
-    });
+
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -932,9 +917,13 @@ class _FormTaskState extends State<FormTask> {
                 leading: new Icon(Icons.access_time),
                 title: new Text('Hora' + '    '),
                 onTap: () {
+
                   Navigator.pop(context);
                   selectTimeTask(globalContext);
                   selectDateTask(globalContext);
+                  setState(() {
+                    taskCU= true;
+                  });
                 },
               ),
             ],
@@ -943,10 +932,9 @@ class _FormTaskState extends State<FormTask> {
   }
    saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
-    print(createTaskResponse.request);
-//
     print(createTaskResponse.statusCode);
-   print(createTaskResponse.body);
+    print(createTaskResponse.body);
+
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = true;
