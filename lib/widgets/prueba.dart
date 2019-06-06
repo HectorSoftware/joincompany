@@ -1,10 +1,7 @@
-
-
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:joincompany/main.dart';
 
 
 class TomarImage extends StatefulWidget {
@@ -61,7 +58,8 @@ class _TomarImageState extends State<TomarImage> {
         FlatButton(
           child: const Text('GUARDAR'),
           onPressed: () async {
-            Navigator.of(context).pop(img);
+            Uint8List imgval = Uint8List.fromList(img.readAsBytesSync());
+            Navigator.of(context).pop(imgval);
           },
         )
       ],
