@@ -9,7 +9,7 @@ class FormChannel {
   
   FormChannel();
 
-  static void _createFormsInBothLocalAndServer(String customer, String authorization) async {
+  static Future _createFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Server To Local
     var formsServerResponse = await getAllForms(customer, authorization);
@@ -32,7 +32,7 @@ class FormChannel {
     });
   }
 
-  static void _deleteFormsInBothLocalAndServer(String customer, String authorization) async {
+  static Future _deleteFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Delete Server To Local
     var formsServerResponse = await getAllForms(customer, authorization);
@@ -52,7 +52,7 @@ class FormChannel {
     });
   }
 
-  static void _updateFormsInBothLocalAndServer(String customer, String authorization) async {
+  static Future _updateFormsInBothLocalAndServer(String customer, String authorization) async {
     
     var formsServerResponse = await getAllForms(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);

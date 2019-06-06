@@ -9,7 +9,7 @@ class AddressChannel {
   
   AddressChannel();
   
-  static void _createAddressesInBothLocalAndServer(String customer, String authorization) async {
+  static Future _createAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
     List<AddressModel> addressesLocal = await DatabaseProvider.db.ReadAddressesBySyncState(SyncState.created);
@@ -48,7 +48,7 @@ class AddressChannel {
     });
   }
 
-  static void _deleteAddressesInBothLocalAndServer(String customer, String authorization) async {
+  static Future _deleteAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
     List<AddressModel> addressesLocal = await DatabaseProvider.db.ReadAddressesBySyncState(SyncState.deleted);
@@ -78,7 +78,7 @@ class AddressChannel {
     });
   }
 
-  static void _updateAddressesInBothLocalAndServer(String customer, String authorization) async {
+  static Future _updateAddressesInBothLocalAndServer(String customer, String authorization) async {
     
     var addressesServerResponse = await getAllAddressesFromServer(customer, authorization);
     AddressesModel addressesServer = AddressesModel.fromJson(addressesServerResponse.body);

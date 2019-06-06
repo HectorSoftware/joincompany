@@ -652,9 +652,18 @@ class _LoginPageState extends State<LoginPage> {
       // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
       // print(data.toString());
 
+      // var a1 = await DatabaseProvider.db.ListAddresses();
       // await AddressChannel.syncEverything();
+      // var a2 = await DatabaseProvider.db.ListAddresses();
+
+      // var c1 = await DatabaseProvider.db.ListCustomers();
       // await CustomerChannel.syncEverything();
+      // var c2 = await DatabaseProvider.db.ListCustomers();
+
+      // var ca1 = await DatabaseProvider.db.ListCustomerAddresses();
       // await CustomerAddressesChannel.syncEverything();
+      // var ca2 = await DatabaseProvider.db.ListCustomerAddresses();
+
       // await FormChannel.syncEverything();
 
       print("---------------- Fin test. ----------------------------");

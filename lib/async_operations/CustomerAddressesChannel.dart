@@ -10,7 +10,7 @@ class CustomerAddressesChannel {
   
   CustomerAddressesChannel();
   
-  static void _relateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
+  static Future _relateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
     List<Map> customerAddressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.created);
@@ -44,14 +44,14 @@ class CustomerAddressesChannel {
 
     customersAddressesToCreate.forEach((customerAddressToCreate) async {
       var customerAddressIds = customerAddressToCreate.split("-");
-    	int customerId = customerAddressIds[0];
-    	int addressId = customerAddressIds[1];
+    	int customerId = int.parse(customerAddressIds[0]);
+    	int addressId = int.parse(customerAddressIds[1]);
       // Cambiar el SyncState Local
       await DatabaseProvider.db.CreateCustomerAddress(customersAddressesServerIds[customerAddressToCreate], null, null, null, customerId, addressId, true, SyncState.synchronized);
     });
   }
 
-  static void _unrelateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
+  static Future _unrelateCustomerAddressesInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
     List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.deleted);
@@ -79,8 +79,8 @@ class CustomerAddressesChannel {
 
     customersAddressesToDelete.forEach((customerAddressToDelete) async {
       var customerAddressIds = customerAddressToDelete.split("-");
-    	int customerId = customerAddressIds[0];
-    	int addressId = customerAddressIds[1];
+    	int customerId = int.parse(customerAddressIds[0]);
+    	int addressId = int.parse(customerAddressIds[1]);
       // sobrecargar método para eliminar con los parámetros customerId, addressId
       await DatabaseProvider.db.DeleteCustomerAddressById(customerId, addressId);
     });

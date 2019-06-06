@@ -2268,7 +2268,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "addresses"
       '''
     );
@@ -2276,9 +2276,7 @@ class DatabaseProvider {
     List<AddressModel> listOfAddresses = new List<AddressModel>();
     if (data.isNotEmpty) {
       data.forEach((addressRetrieved) async {
-
         LocalityModel localityModel = await ReadLocalityById(addressRetrieved["locality_id"]);
-
         listOfAddresses.add(new AddressModel(
           id: addressRetrieved["id"],
           createdAt: addressRetrieved["created_at"],
