@@ -1,11 +1,46 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/models/ResponseModel.dart';
 import 'dart:async';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/services/BaseService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 
 String resourcePath = '/tasks';
+
+Future<ResponseModel> createTask(TaskModel task, String customer, String authorization) async {
+  SyncState syncState = SyncState.created;
+
+  if (isOnline) {
+    http.Response createTaskFromServerResponse = await createTaskFromServer(task, customer, authorization);
+    if (createTaskFromServerResponse.statusCode == 200 || createTaskFromServerResponse.statusCode == 201) {
+      task = TaskModel.fromJson(createTaskFromServerResponse.body);
+      syncState = SyncState.synchronized;
+    }
+  }
+
+  ResponseModel response = new ResponseModel();
+  response.body = await DatabaseProvider.db.CreateTask(task, syncState);
+  response.statusCode = 200;
+  return response;
+}
+
+Future<http.Response> createTaskFromServer(TaskModel taskObj, String customer, String authorization) async{
+  var taskMapAux = taskObj.toMap();
+  var taskMap = new Map<String, dynamic>();
+
+  taskMapAux.forEach((key, value) {
+    if (value != null) {
+      taskMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(taskMap);
+
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
+}
 
 Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
 
@@ -46,21 +81,6 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
 Future<http.Response> getTask(String id, String customer, String authorization) async{
 
   return await httpGet(customer, authorization, resourcePath, id: id);
-}
-
-Future<http.Response> createTask(TaskModel taskObj, String customer, String authorization) async{
-  var taskMapAux = taskObj.toMap();
-  var taskMap = new Map<String, dynamic>();
-
-  taskMapAux.forEach((key, value) {
-    if (value != null) {
-      taskMap[key] = value;
-    }
-  });
-
-  var bodyJson = json.encode(taskMap);
-
-  return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
 Future<http.Response> updateTask(String id, TaskModel taskObj, String customer, String authorization) async{

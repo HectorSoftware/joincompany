@@ -111,7 +111,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
+      [...[user.id, user.createdAt, DateTime.now().toString(), user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
@@ -203,8 +203,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<UserModel> listOfUsers = new List<UserModel>();
     if (data.isNotEmpty) {
-      List<UserModel> listOfUsers = new List<UserModel>();
       data.forEach((userRetrieved) {
         if (query.id != null)
           if (query.id != userRetrieved["id"])
@@ -289,10 +289,8 @@ class DatabaseProvider {
           company: userRetrieved["company"],
         ));
       });
-      return listOfUsers;
     }
-    else
-      return List<UserModel>();
+    return listOfUsers;
   }
 
   Future<List<UserModel>> ReadUsersBySyncState(SyncState syncState) async {
@@ -308,8 +306,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<UserModel> users = new List<UserModel>();
     if (data.isNotEmpty) {
-      List<UserModel> users = new List<UserModel>();
       data.forEach((userRetrieved) => users.add(UserModel(
         id: data.first["id"],
         createdAt: data.first["created_at"],
@@ -332,11 +330,8 @@ class DatabaseProvider {
         loggedAt: data.first["logged_at"],
         company: data.first["company"],
       )));
-
-      return users;
     }
-    else
-      return null;
+    return users;
   }
 
   Future<int> UpdateUser(int userId, UserModel user, SyncState syncState) async {
@@ -369,7 +364,7 @@ class DatabaseProvider {
       company = ?
       WHERE id = ${userId}
       ''',
-      [...[user.id, user.createdAt, user.updatedAt, user.deletedAt,
+      [...[user.id, user.createdAt, DateTime.now().toString(), user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
@@ -410,8 +405,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<UserModel> users = new List<UserModel>();
     if (data.isNotEmpty) {
-      List<UserModel> users = new List<UserModel>();
       data.forEach((userRetrieved) => users.add(UserModel(
         id: data.first["id"],
         createdAt: data.first["created_at"],
@@ -434,11 +429,8 @@ class DatabaseProvider {
         loggedAt: data.first["logged_at"],
         company: data.first["company"],
       )));
-
-      return users;
     }
-    else
-      return null;
+    return users;
   }
 
   // Operations on forms
@@ -478,7 +470,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
+      [...[form.id, form.createdAt, DateTime.now().toString(), form.deletedAt,
     form.createdById, form.updatedById, form.deletedById, form.name,
     form.withCheckinout, form.active],
     ...paramsBySyncState[syncState]],
@@ -513,7 +505,6 @@ class DatabaseProvider {
         sections: sections,
       );
     }
-
     else
       return null;
   }
@@ -527,8 +518,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<FormModel> listOfForms = new List<FormModel>();
     if (data.isNotEmpty) {
-      List<FormModel> listOfForms = new List<FormModel>();
       data.forEach((formRetrieved) async {
         if (query.id != null)
           if (query.id != formRetrieved["id"])
@@ -580,10 +571,8 @@ class DatabaseProvider {
           sections: sections,
         ));
       });
-      return listOfForms;
     }
-    else
-      return null;
+    return listOfForms;
   }
 
   Future<List<FormModel>> ReadFormsBySyncState(SyncState syncState) async {
@@ -599,8 +588,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<FormModel> forms = new List<FormModel>();
     if (data.isNotEmpty) {
-      List<FormModel> forms = new List<FormModel>();
       data.forEach((formRetrieved) async {
         List<SectionModel> sections = await QueryCustomField(
           SectionModel(entityId: data.first["id"]),
@@ -621,8 +610,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return forms;
   }
 
   Future<int> UpdateForm(int formId, FormModel form, SyncState syncState) async {
@@ -660,7 +648,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${formId}
       ''',
-      [...[form.id, form.createdAt, form.updatedAt, form.deletedAt,
+      [...[form.id, form.createdAt, DateTime.now().toString(), form.deletedAt,
     form.createdById, form.updatedById, form.deletedById, form.name,
     form.withCheckinout, form.active],
     ...paramsBySyncState[syncState]],
@@ -699,8 +687,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<FormModel> forms = new List<FormModel>();
     if (data.isNotEmpty) {
-      List<FormModel> forms = new List<FormModel>();
       data.forEach((formRetrieved) async {
         List<SectionModel> sections = await QueryCustomField(
           SectionModel(entityId: data.first["id"]),
@@ -721,8 +709,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return forms;
   }
 
   Future<List<int>> RetrieveAllFormIds() async {
@@ -734,13 +721,11 @@ class DatabaseProvider {
       '''
     );
 
+    List<int> ids = new List<int>();
     if (data.isNotEmpty) {
-      List<int> ids = new List<int>();
       data.forEach((form) => ids.add(form["id"]));
-      return ids;
     }
-    else
-      return null;
+    return ids;
   }
 
   // Operations on localities
@@ -776,7 +761,7 @@ class DatabaseProvider {
         
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
-      [...[locality.id, locality.createdAt, locality.updatedAt,
+      [...[locality.id, locality.createdAt, DateTime.now().toString(),
     locality.deletedAt, locality.createdById, locality.updatedById,
     locality.deletedById, locality.collection, locality.name,
     locality.value], ...paramsBySyncState[syncState]],
@@ -818,8 +803,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<LocalityModel> listOfLocalities = new List<LocalityModel>();
     if (data.isNotEmpty) {
-      List<LocalityModel> listOfLocalities = new List<LocalityModel>();
       data.forEach((localityRetrieved) {
         if (query.id != null)
           if (query.id != localityRetrieved["id"])
@@ -865,10 +850,8 @@ class DatabaseProvider {
           value: localityRetrieved["value"],
         ));
       });
-      return listOfLocalities;
     }
-    else
-      return null;
+    return listOfLocalities;
   }
 
   Future<List<LocalityModel>> ReadLocalitiesBySyncState(SyncState syncState) async {
@@ -884,8 +867,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<LocalityModel> listOfLocalities = new List<LocalityModel>();
     if (data.isNotEmpty) {
-      List<LocalityModel> listOfLocalities = new List<LocalityModel>();
       data.forEach((localityRetrieved) {
         listOfLocalities.add(LocalityModel(
           id: localityRetrieved["id"],
@@ -901,8 +884,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfLocalities;
   }
 
   Future<int> UpdateLocality(int localityId, LocalityModel locality, SyncState syncState) async {
@@ -925,7 +907,7 @@ class DatabaseProvider {
       deleted
       WHERE id = ${localityId}
       ''',
-      [...[locality.id, locality.createdAt, locality.updatedAt, locality.deletedAt,
+      [...[locality.id, locality.createdAt, DateTime.now().toString(), locality.deletedAt,
     locality.createdById, locality.updatedById, locality.deletedById,
     locality.collection, locality.name, locality.value],
     ...paramsBySyncState[syncState]],
@@ -964,8 +946,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<LocalityModel> listOfLocalities = new List<LocalityModel>();
     if (data.isNotEmpty) {
-      List<LocalityModel> listOfLocalities = new List<LocalityModel>();
       data.forEach((localityRetrieved) {
         listOfLocalities.add(LocalityModel(
           id: localityRetrieved["id"],
@@ -981,8 +963,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfLocalities;
   }
 
   // Operations on responsibles
@@ -1026,7 +1007,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[responsible.id, responsible.createdAt, responsible.updatedAt,
+      [...[responsible.id, responsible.createdAt, DateTime.now().toString(),
     responsible.deletedAt, responsible.createdById, responsible.updatedById,
     responsible.deletedById, responsible.supervisorId, responsible.name,
     responsible.code, responsible.email, responsible.phone,
@@ -1080,8 +1061,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
     if (data.isNotEmpty) {
-      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
       data.forEach((responsibleRetrieved) async {
         if (query.id != null)
           if (query.id != responsibleRetrieved["id"])
@@ -1153,10 +1134,8 @@ class DatabaseProvider {
           supervisor: supervisor,
         ));
       });
-      return listOfResponsibles;
     }
-    else
-      return null;
+    return listOfResponsibles;
   }
 
   Future<List<ResponsibleModel>> ReadResponsiblesBySyncState(SyncState syncState) async {
@@ -1172,8 +1151,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
     if (data.isNotEmpty) {
-      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
       data.forEach((responsibleRetrieved) async {
         ResponsibleModel supervisor = await ReadResponsibleById(responsibleRetrieved["supervisor_id"]);
         listOfResponsibles.add(new ResponsibleModel(
@@ -1197,8 +1176,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfResponsibles;
   }
 
   Future<int> UpdateResponsible(int responsibleId, ResponsibleModel responsible, SyncState syncState) async {
@@ -1240,7 +1218,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${responsible.id}
       ''',
-      [...[responsible.id, responsible.createdAt, responsible.updatedAt,
+      [...[responsible.id, responsible.createdAt, DateTime.now().toString(),
     responsible.deletedAt, responsible.createdById, responsible.updatedById,
     responsible.deletedById, responsible.supervisorId, responsible.name,
     responsible.code, responsible.email, responsible.phone,
@@ -1281,8 +1259,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
     if (data.isNotEmpty) {
-      List<ResponsibleModel> listOfResponsibles = new List<ResponsibleModel>();
       data.forEach((responsibleRetrieved) async {
         ResponsibleModel supervisor = await ReadResponsibleById(responsibleRetrieved["supervisor_id"]);
         listOfResponsibles.add(new ResponsibleModel(
@@ -1306,8 +1284,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfResponsibles;
   }
 
   // Operations on custom_fields
@@ -1416,7 +1393,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[section.id, section.createdAt, section.updatedAt,
+        [...[section.id, section.createdAt, DateTime.now().toString(),
     section.deletedAt, section.createdById,
     section.updatedById, section.deletedById,
     section.sectionId, section.entityType,
@@ -1509,8 +1486,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<SectionModel> listOfSections = new List<SectionModel>();
     if (data.isNotEmpty) {
-      List<SectionModel> listOfSections = new List<SectionModel>();
       data.forEach((sectionRetrieved) async {
         if (query.id != null)
           if (query.id != sectionRetrieved["id"])
@@ -1637,10 +1614,8 @@ class DatabaseProvider {
           fields: fields,
         ));
       });
-      return listOfSections;
     }
-    else
-      return null;
+    return listOfSections;
   }
 
   Future<List<SectionModel>> ReadCustomFieldsBySyncState(SyncState syncState) async {
@@ -1656,8 +1631,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<SectionModel> listOfSections = new List<SectionModel>();
     if (data.isNotEmpty) {
-      List<SectionModel> listOfSections = new List<SectionModel>();
       data.forEach((sectionRetrieved) async {
         List<FieldModel> fields = new List<FieldModel>();
 
@@ -1716,10 +1691,8 @@ class DatabaseProvider {
           fields: fields,
         ));
       });
-      return listOfSections;
     }
-    else
-      return null;
+    return listOfSections;
   }
 
   Future<int> UpdateCustomField(int sectionId, SectionModel section, SyncState syncState) async {
@@ -1853,7 +1826,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${sectionId}
       ''',
-        [...[section.id, section.createdAt,section.updatedAt, section.deletedAt,
+        [...[section.id, section.createdAt, DateTime.now().toString(), section.deletedAt,
     section.createdById, section.updatedById, section.deletedById,
     section.sectionId, section.entityType, section.entityId, section.type,
     section.name, section.code, section.subtitle, section.position,
@@ -1895,8 +1868,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<SectionModel> listOfSections = new List<SectionModel>();
     if (data.isNotEmpty) {
-      List<SectionModel> listOfSections = new List<SectionModel>();
       data.forEach((sectionRetrieved) async {
         List<FieldModel> fields = new List<FieldModel>();
 
@@ -1955,10 +1928,8 @@ class DatabaseProvider {
           fields: fields,
         ));
       });
-      return listOfSections;
     }
-    else
-      return null;
+    return listOfSections;
   }
 
   // Operations on addresses
@@ -2008,7 +1979,7 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
 
-      [...[address.id, address.createdAt, address.updatedAt,
+      [...[address.id, address.createdAt, DateTime.now().toString(),
     address.deletedAt, address.createdById, address.updatedById,
     address.deletedById, address.localityId, address.address,
     address.details, address.reference, address.latitude, address.longitude,
@@ -2068,9 +2039,9 @@ class DatabaseProvider {
       SELECT * FROM "addresses"
       '''
     );
-    
+
+    List<AddressModel> listOfAddresses = new List<AddressModel>();
     if (data.isNotEmpty) {
-      List<AddressModel> listOfAddresses = new List<AddressModel>();
       data.forEach((addressRetrieved) async {
         if (query.id != null)
           if (query.id != addressRetrieved["id"])
@@ -2163,10 +2134,8 @@ class DatabaseProvider {
           locality: localityModel,
         ));
       });
-      return listOfAddresses;
     }
-    else
-      return null;
+    return listOfAddresses;
   }
 
   Future<List<AddressModel>> ReadAddressesBySyncState(SyncState syncState) async {
@@ -2182,8 +2151,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<AddressModel> listOfAddresses = new List<AddressModel>();
     if (data.isNotEmpty) {
-      List<AddressModel> listOfAddresses = new List<AddressModel>();
       data.forEach((addressRetrieved) async {
 
         LocalityModel localityModel = await ReadLocalityById(addressRetrieved["locality_id"]);
@@ -2213,10 +2182,8 @@ class DatabaseProvider {
           locality: localityModel,
         ));
       });
-      return listOfAddresses;
     }
-    else
-      return null;
+    return listOfAddresses;
   }
 
   Future<AddressModel> UpdateAddress(int addressId, AddressModel address, SyncState syncState) async {
@@ -2262,7 +2229,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${addressId}
       ''',
-      [...[address.id, address.createdAt, address.updatedAt, address.deletedAt,
+      [...[address.id, address.createdAt, DateTime.now().toString(), address.deletedAt,
     address.createdById, address.updatedById, address.deletedById,
     address.localityId, address.address, address.details, address.reference,
     address.latitude, address.longitude, address.googlePlaceId,
@@ -2306,8 +2273,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<AddressModel> listOfAddresses = new List<AddressModel>();
     if (data.isNotEmpty) {
-      List<AddressModel> listOfAddresses = new List<AddressModel>();
       data.forEach((addressRetrieved) async {
 
         LocalityModel localityModel = await ReadLocalityById(addressRetrieved["locality_id"]);
@@ -2337,28 +2304,24 @@ class DatabaseProvider {
           locality: localityModel,
         ));
       });
-      return listOfAddresses;
     }
-    else
-      return null;
+    return listOfAddresses;
   }
 
   Future<List<int>> RetrieveAllAddressIds() async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT id FROM "addresses"
       '''
     );
 
+    List<int> ids = new List<int>();
     if (data.isNotEmpty) {
-      List<int> ids = new List<int>();
       data.forEach((address) => ids.add(address["id"]));
-      return ids;
     }
-    else
-      return null;
+    return ids;
   }
 
   // Operations on customers
@@ -2397,7 +2360,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customer.id, customer.createdAt, customer.updatedAt,
+      [...[customer.id, customer.createdAt, DateTime.now().toString(),
     customer.deletedAt, customer.createdById, customer.updatedById,
     customer.deletedById, customer.name, customer.code, customer.phone,
     customer.email, customer.contactName, customer.details],
@@ -2446,8 +2409,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomerModel> listOfCustomers = new List<CustomerModel>();
     if (data.isNotEmpty) {
-      List<CustomerModel> listOfCustomers = new List<CustomerModel>();
       data.forEach((customerResponse) async {
         if (query.id != null)
           if (query.id != customerResponse["id"])
@@ -2506,10 +2469,8 @@ class DatabaseProvider {
           pivot: null,
         ));
       });
-      return listOfCustomers;
     }
-    else
-      return null;
+    return listOfCustomers;
   }
 
   Future<List<CustomerModel>> ReadCustomersBySyncState(SyncState syncState) async {
@@ -2572,7 +2533,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${customerId}
       ''',
-      [...[customer.id, customer.createdAt, customer.updatedAt, customer.deletedAt,
+      [...[customer.id, customer.createdAt, DateTime.now().toString(), customer.deletedAt,
     customer.createdById, customer.updatedById, customer.deletedById,
     customer.name, customer.code, customer.phone, customer.email,
     customer.contactName, customer.details],
@@ -2614,8 +2575,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomerModel> listOfCustomers = new List<CustomerModel>();
     if (data.isNotEmpty) {
-      List<CustomerModel> listOfCustomers = new List<CustomerModel>();
       data.forEach((customerResponse) async {
         listOfCustomers.add(new CustomerModel(
           id: customerResponse["id"],
@@ -2634,10 +2595,8 @@ class DatabaseProvider {
           pivot: null,
         ));
       });
-      return listOfCustomers;
     }
-    else
-      return null;
+    return listOfCustomers;
   }
 
   Future<List<int>> RetrieveAllCustomerIds() async {
@@ -2670,8 +2629,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomerModel> listOfCustomers = new List<CustomerModel>();
     if (data.isNotEmpty) {
-      List<CustomerModel> listOfCustomers = new List<CustomerModel>();
       data.forEach((customerResponse) async {
         listOfCustomers.add(new CustomerModel(
           id: customerResponse["id"],
@@ -2690,14 +2649,12 @@ class DatabaseProvider {
           pivot: null,
         ));
       });
-      return listOfCustomers;
     }
-    else
-      return null;
+    return listOfCustomers;
   }
 
   // Operations on tasks
-  Future<int> CreateTask(TaskModel task, SyncState syncState) async {
+  Future<TaskModel> CreateTask(TaskModel task, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -2724,8 +2681,8 @@ class DatabaseProvider {
     CreateCustomer(task.customer, syncState);
     CreateResponsible(task.responsible, syncState);
 
-    return await db.rawInsert(
-        '''
+    task.id = await db.rawInsert(
+      '''
       INSERT INTO "tasks"(
         id,
         created_at,
@@ -2756,7 +2713,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[task.id, task.createdAt, task.updatedAt, task.deletedAt,
+        [...[task.id, task.createdAt, DateTime.now().toString(), task.deletedAt,
     task.createdById, task.updatedById, task.deletedById, task.formId,
     task.responsibleId, task.customerId, task.addressId, task.name,
     task.planningDate, task.checkinDate, task.checkinLatitude,
@@ -2764,6 +2721,8 @@ class DatabaseProvider {
     task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
     task.status], ...paramsBySyncState[syncState]],
     );
+
+    return task;
   }
 
   Future<TaskModel> ReadTaskById(int id) async {
@@ -2829,8 +2788,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
-      List<TaskModel> listOfTasks = new List<TaskModel>();
       data.forEach((taskRetrieved) async {
         if (query.id != null)
           if (query.id != taskRetrieved["id"])
@@ -2939,10 +2898,8 @@ class DatabaseProvider {
           customSections: null,
         ));
       });
-      return listOfTasks;
     }
-    else
-      return null;
+    return listOfTasks;
   }
 
   Future<List<TaskModel>> ReadTasksBySyncState(SyncState syncState) async {
@@ -2958,8 +2915,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
-      List<TaskModel> listOfTasks = new List<TaskModel>();
       data.forEach((taskRetrieved) async {
         AddressModel address = await ReadAddressById(taskRetrieved["address_id"]);
         CustomerModel customer = await ReadCustomerById(taskRetrieved["customer_id"]);
@@ -3002,8 +2959,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfTasks;
   }
 
   Future<int> UpdateTask(int taskId, TaskModel task, SyncState syncState) async {
@@ -3099,7 +3055,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${taskId}
       ''',
-        [...[task.id, task.createdAt, task.updatedAt, task.deletedAt, task.createdById,
+        [...[task.id, task.createdAt, DateTime.now().toString(), task.deletedAt, task.createdById,
     task.updatedById, task.deletedById, task.formId, task.responsibleId,
     task.customerId, task.addressId, task.name, task.planningDate,
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
@@ -3141,8 +3097,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
-      List<TaskModel> listOfTasks = new List<TaskModel>();
       data.forEach((taskRetrieved) async {
         AddressModel address = await ReadAddressById(taskRetrieved["address_id"]);
         CustomerModel customer = await ReadCustomerById(taskRetrieved["customer_id"]);
@@ -3185,8 +3141,7 @@ class DatabaseProvider {
         ));
       });
     }
-    else
-      return null;
+    return listOfTasks;
   }
 
   Future<List<int>> RetrieveAllTaskIds() async {
@@ -3198,13 +3153,11 @@ class DatabaseProvider {
       '''
     );
 
+    List<int> ids = new List<int>();
     if (data.isNotEmpty) {
-      List<int> ids = new List<int>();
       data.forEach((task) => ids.add(task["id"]));
-      return ids;
     }
-    else
-      return null;
+    return ids;
   }
 
   // Operations on custom_users
@@ -3238,7 +3191,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
+      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, userId],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -3277,8 +3230,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<Map> listOfCustomerUsers = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerUsers = new List<Map>();
       data.forEach((customerUser) {
         if (id != null)
           if (id != customerUser["id"])
@@ -3308,10 +3261,8 @@ class DatabaseProvider {
           "user_id": customerUser["user_id"],
         });
       });
-      return listOfCustomerUsers;
     }
-    else
-      return null;
+    return listOfCustomerUsers;
   }
 
   Future<List<Map>> ReadCustomerUsersBySyncState(SyncState syncState) async {
@@ -3327,8 +3278,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<Map> listOfCustomerUsers = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerUsers = new List<Map>();
       data.forEach((customerUser) {
         listOfCustomerUsers.add({
           "id": customerUser["id"],
@@ -3339,10 +3290,8 @@ class DatabaseProvider {
           "user_id": customerUser["user_id"],
         });
       });
-      return listOfCustomerUsers;
     }
-    else
-      return null;
+    return listOfCustomerUsers;
   }
 
   Future<int> UpdateCustomerUser(int customerUserId, int id, String createdAt, String updatedAt,
@@ -3375,7 +3324,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = $customerUserId
       ''',
-      [...[id, createdAt, updatedAt, deletedAt, customerId, userId],
+      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, userId],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -3412,8 +3361,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<Map> listOfCustomerUsers = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerUsers = new List<Map>();
       data.forEach((customerUser) {
         listOfCustomerUsers.add({
           "id": customerUser["id"],
@@ -3424,10 +3373,8 @@ class DatabaseProvider {
           "user_id": customerUser["user_id"],
         });
       });
-      return listOfCustomerUsers;
     }
-    else
-      return null;
+    return listOfCustomerUsers;
   }
 
   // Operations on custom_values
@@ -3488,7 +3435,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customValue.id, customValue.createdAt, customValue.updatedAt,
+      [...[customValue.id, customValue.createdAt, DateTime.now().toString(),
     customValue.formId, customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
     customValue.value], ...paramsBySyncState[syncState]],
@@ -3559,8 +3506,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
     if (data.isNotEmpty) {
-      List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
       data.forEach((responsibleRetrieved) async {
         if (query.id != null)
           if (query.id != responsibleRetrieved["id"])
@@ -3631,10 +3578,8 @@ class DatabaseProvider {
           field: field,
         ));
       });
-      return listOfCustomValues;
     }
-    else
-      return null;
+    return listOfCustomValues;
   }
 
   Future<List<CustomValueModel>> ReadCustomValuesBySyncState(SyncState syncState) async {
@@ -3650,8 +3595,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
     if (data.isNotEmpty) {
-      List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
       data.forEach((responsibleRetrieved) async {
         SectionModel customField = await ReadCustomFieldById(responsibleRetrieved["field_id"]);
 
@@ -3694,10 +3639,8 @@ class DatabaseProvider {
           field: field,
         ));
       });
-      return listOfCustomValues;
     }
-    else
-      return null;
+    return listOfCustomValues;
   }
 
   Future<int> UpdateCustomValue(int customValueId, CustomValueModel customValue, SyncState syncState) async {
@@ -3782,7 +3725,7 @@ class DatabaseProvider {
       deleted = ?,  
       WHERE id = ${customValueId}
       ''',
-      [...[customValue.id, customValue.createdAt, customValue.updatedAt, customValue.formId,
+      [...[customValue.id, customValue.createdAt, DateTime.now().toString(), customValue.formId,
     customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
     customValue.value], ...paramsBySyncState[syncState]],
@@ -3821,8 +3764,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
     if (data.isNotEmpty) {
-      List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
       data.forEach((responsibleRetrieved) async {
         SectionModel customField = await ReadCustomFieldById(responsibleRetrieved["field_id"]);
 
@@ -3865,10 +3808,8 @@ class DatabaseProvider {
           field: field,
         ));
       });
-      return listOfCustomValues;
     }
-    else
-      return null;
+    return listOfCustomValues;
   }
 
   // Operations on customers_addresses
@@ -3904,7 +3845,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
+      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, addressId,
     approved], ...paramsBySyncState[syncState]],
     );
   }
@@ -3946,8 +3887,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<Map> listOfCustomerAddresses = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerAddresses = new List<Map>();
       data.forEach((customerAddressRetrieved) {
         if (id != null)
           if (id != customerAddressRetrieved["id"])
@@ -3981,10 +3922,8 @@ class DatabaseProvider {
           "approved": customerAddressRetrieved["approved"],
         });
       });
-      return listOfCustomerAddresses;
     }
-    else
-      return null;
+    return listOfCustomerAddresses;
   }
 
   Future<List<Map>> ReadCustomerAddressesBySyncState(SyncState syncState) async {
@@ -4000,8 +3939,8 @@ class DatabaseProvider {
       paramsBySyncState[syncState],
     );
 
+    List<Map> listOfCustomerAddresses = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerAddresses = new List<Map>();
       data.forEach((customerAddressRetrieved) {
         listOfCustomerAddresses.add({
           "id": customerAddressRetrieved["id"],
@@ -4013,10 +3952,8 @@ class DatabaseProvider {
           "approved": customerAddressRetrieved["approved"],
         });
       });
-      return listOfCustomerAddresses;
     }
-    else
-      return null;
+    return listOfCustomerAddresses;
   }
 
   Future<int> UpdateCustomerAddress(int id, String createdAt,
@@ -4050,7 +3987,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE customer_id = $customerId AND address_id = $addressId
       ''',
-      [...[id, createdAt, updatedAt, deletedAt, customerId, addressId,
+      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, addressId,
     approved], ...paramsBySyncState[syncState]],
     );
   }
@@ -4087,8 +4024,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<Map> listOfCustomerAddresses = new List<Map>();
     if (data.isNotEmpty) {
-      List<Map> listOfCustomerAddresses = new List<Map>();
       data.forEach((customerAddressRetrieved) {
         listOfCustomerAddresses.add({
           "id": customerAddressRetrieved["id"],
@@ -4100,10 +4037,8 @@ class DatabaseProvider {
           "approved": customerAddressRetrieved["approved"],
         });
       });
-      return listOfCustomerAddresses;
     }
-    else
-      return null;
+    return listOfCustomerAddresses;
   }
 
   Future<List<String>> RetrieveAllCustomerAddressRelations() async {
@@ -4115,16 +4050,14 @@ class DatabaseProvider {
       '''
     );
 
+    List<String> relations = new List<String>();
     if (data.isNotEmpty) {
-      List<String> relations = new List<String>();
       data.forEach((relation) => relations.add(
           relation["customer_id"] + "-" + relation["address_id"]
       )
       );
-      return relations;
     }
-    else
-      return null;
+    return relations;
   }
 
   Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken) async {
@@ -4142,8 +4075,8 @@ class DatabaseProvider {
       '''
     );
 
+    List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
     if (data.isNotEmpty) {
-      List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
       data.forEach((customerWithAddressResponse) async {
         listOfCustomersWithAddresses.add(new CustomerWithAddressModel(
           id: customerWithAddressResponse["id"],
@@ -4177,10 +4110,8 @@ class DatabaseProvider {
           customerId: customerWithAddressResponse["customer_id"],
         ));
       });
-      return listOfCustomersWithAddresses;
     }
-    else
-      return List<CustomerWithAddressModel>();
+    return listOfCustomersWithAddresses;
   }
 
   Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
