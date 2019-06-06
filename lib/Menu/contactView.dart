@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/services/UserService.dart';
 
 // ignore: must_be_immutable
 class ContactView extends StatefulWidget {
@@ -23,6 +27,7 @@ class _ContactViewState extends State<ContactView> {
 
   @override
   void initState() {
+    extraerUser();
     super.initState();
   }
 
@@ -118,10 +123,8 @@ class _ContactViewState extends State<ContactView> {
           new UserAccountsDrawerHeader(
             decoration: new BoxDecoration(color: SecondaryColor),
             margin: EdgeInsets.only(bottom: 0),
-            accountName: new Text(
-              nameUser, style: TextStyle(color: Colors.white, fontSize: 16,),),
-            accountEmail: Text(
-              emailUser, style: TextStyle(color: Colors.white, fontSize: 15,),),
+            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
+            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
             currentAccountPicture: CircleAvatar(
               radius: 1,
               backgroundColor: Colors.white,
@@ -188,6 +191,17 @@ class _ContactViewState extends State<ContactView> {
         ],
       ),
     );
+  }
+
+  extraerUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
+    });
   }
 
 }

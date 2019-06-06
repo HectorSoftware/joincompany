@@ -133,35 +133,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
-          /*Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: PrimaryColor,
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 40),
-                    height: 50,
-                    child: CircleAvatar(
-                      minRadius: 25.0,
-                      maxRadius: 25.0,
-                      backgroundImage: new AssetImage('assets/images/user.jpg'),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
-                  )
-                ],
-              ),
-            )
-          ),*/
           Container(
               color: drawerTask ? Colors.grey[200] :  null,
               child: ListTile(
@@ -179,7 +150,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
-//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -188,7 +158,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/contactos');
               },
@@ -199,7 +168,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
               onTap: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/negocios');
               },
@@ -215,9 +183,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
                 Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
+                Navigator.push(context,new MaterialPageRoute(
                         builder: (BuildContext context) => new  ConfigCli()));
               },
             ),

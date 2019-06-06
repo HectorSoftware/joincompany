@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/services/UserService.dart';
 import 'formBusiness.dart';
 
 // ignore: must_be_immutable
@@ -21,6 +25,12 @@ class _BusinessListState extends State<BusinessList> {
   String nameUser = '';
   String emailUser = '';
 
+  @override
+  void initState() {
+    extraerUser();
+    super.initState();
+  }
+
   //drawer
   bool drawerCustomer = true;
   Drawer buildDrawer() {
@@ -35,7 +45,8 @@ class _BusinessListState extends State<BusinessList> {
             accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
             currentAccountPicture: CircleAvatar(
               radius: 1,
-              backgroundImage: new AssetImage('assets/images/user.jpg'),
+              backgroundColor: Colors.white,
+              backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
           Container(
@@ -56,6 +67,8 @@ class _BusinessListState extends State<BusinessList> {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
+//                Navigator.pushNamed(context, '/cliente');
+//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -77,8 +90,7 @@ class _BusinessListState extends State<BusinessList> {
               trailing: new Icon(Icons.account_balance),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/negocios');
+                //Navigator.pop(context);
               },
             ),
           ),
@@ -91,7 +103,7 @@ class _BusinessListState extends State<BusinessList> {
               trailing: new Icon(Icons.filter_vintage),
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.pop(context);
+                Navigator.of(context).pop();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/configuracion');
               },
@@ -228,5 +240,16 @@ class _BusinessListState extends State<BusinessList> {
         },
       ),
     );
+  }
+
+  extraerUser() async {
+    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    var getUserResponse = await getUser(userAct.company, userAct.token);
+    UserModel user = UserModel.fromJson(getUserResponse.body);
+
+    setState(() {
+      nameUser = user.name;
+      emailUser = user.email;
+    });
   }
 }
