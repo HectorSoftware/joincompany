@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -41,7 +42,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   Image image;
-  File image2;
+  Image image2;
 
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
@@ -119,7 +120,6 @@ class _FormTaskState extends State<FormTask> {
                            );*/
 
                             if(dataInfo.isNotEmpty) {
-                              print(dataInfo);
                               saveTask.formId = formGlobal.id;
                               saveTask.responsibleId = responsibleId;
                               saveTask.name = formGlobal.name;
@@ -372,14 +372,17 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
-  Future<Uint64List> photoAndImage() async{
-    return showDialog<Uint64List>(
+  Future<Uint8List> photoAndImage() async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return TomarImage();
       },
     );
+  }
+  String base64String(Uint8List data) {
+    return base64Encode(data);
   }
   Stack returnsStack(){
     return Stack(
@@ -551,7 +554,7 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_date.toString().substring(0,10)}'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
                         onPressed: (){selectDate(context);
                         saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
 
@@ -619,7 +622,6 @@ class _FormTaskState extends State<FormTask> {
                         onPressed: (){selectTime(context);
                         setState(() => dataInfo);
                         saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
-                        print(dataInfo[listFieldsModels[index].id.toString()]);
 
                         },
 
@@ -629,7 +631,8 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
-
+                Uint8List img;
+                String b64;
                 return  Row(
                   children: <Widget>[
                     Column(
@@ -640,11 +643,14 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async{
-                                  var img = await photoAndImage();
+                                   img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
-                                      saveData(img.buffer.asUint32List().toString(), listFieldsModels[index].id.toString());
-                                      dataInfo;
+                                      b64 = base64String(img);
+                                      print(b64);
+                                      image2 = Image.memory(img);
+
+                                      saveData(b64, listFieldsModels[index].id.toString());
                                     });
                                   }
                                 },
@@ -661,11 +667,8 @@ class _FormTaskState extends State<FormTask> {
 
                       child: Center(
                         child: Container(
-                            child: dataInfo[listFieldsModels[index].id] != null ? new Text('Imagen Guardada',
-                              style: TextStyle(
-                                     color: PrimaryColor,
-                              ),)
-                                : new Text('')
+                            child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Image(image: image2.image,) : Text(''),
+
                         ),
                       ),
                     ),
@@ -721,7 +724,7 @@ class _FormTaskState extends State<FormTask> {
                                     Image img = Image.memory(bytes);
                                     if (img != null) {
                                       setState(() {
-                                        print(bytes);
+                                        dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
                                         image = img;
                                       });
                                     }
@@ -776,7 +779,6 @@ class _FormTaskState extends State<FormTask> {
   }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
-    print(resp.address);
     if(resp != null) {
       setState(() {
         directioncliente = resp;
