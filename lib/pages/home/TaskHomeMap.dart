@@ -237,8 +237,14 @@ class _MytaskPageMapState extends State<taskHomeMap> {
           var data = await getNetworkImageData(
               'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
                   number.toString() + '.png', useCache: true);
-          var path = await ImagePickerSaver.saveFile(fileData: data);
-          return BitmapDescriptor.fromAssetImage(imageConfig, path);
+          //var path = await ImagePickerSaver.saveFile(fileData: data);
+
+          BitmapDescriptor bit;
+          setState(() {
+             bit = BitmapDescriptor.fromBytes(data);
+          });
+
+          return bit;// fromAssetImage(imageConfig, path);
           //return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
       }
       case status.planificado:{

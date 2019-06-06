@@ -38,7 +38,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   List<bool> listTaskModellocalbool;
   String filterText = '';
   List<DateTime> listCalendar = new List<DateTime>();
-  StreamSubscription streamSubscriptionList;
+
 
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
@@ -71,7 +71,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   @override
   void dispose(){
     bloctasksFilter.dispose();
-    streamSubscriptionList.cancel();
     super.dispose();
   }
 
@@ -103,7 +102,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       child: Scaffold(
         body: Stack(
           children: <Widget>[
-            listViewTareas(),
+            ListViewTareas(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -118,17 +117,26 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-  listViewTareas(){
+  ListViewTareas(){
 
-    blocList = new blocListTask(listCalendar[1],listCalendar[0],1);
+    blocList = new blocListTask(listCalendar[1],listCalendar[0],PageTasks);
     try{
       // ignore: cancel_subscriptions
-      streamSubscriptionList = blocList.outListTaks.listen((onDataList)
+      StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
       => setState((){
+        print(listTaskModellocal.length);
         listTaskModellocal = onDataList;
-        for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < listTaskModellocal.length; cantlistTaskModellocal++){
-          listTaskModellocalbool.add(listTaskModellocal[cantlistTaskModellocal].status.contains('done'));
+        for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
+          //listTaskModellocal.add(onDataList[cantlistTaskModellocal]);
+          listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
         }
+      }));
+    }catch(e){  }
+    try{
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal)
+      => setState((){
+        TareasTotales = onDataListTotal;
       }));
     }catch(e){  }
 
@@ -143,35 +151,33 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     return ((listTaskModellocal.length != 0)) ?
 
-//    Container(
-//      child: RefreshIndicator(
-//        child: LoadMore(
-//          isFinish: countTaskList >= TareasTotales,
-//          onLoadMore: _loadMore,
-//          child: listando(),
-//          whenEmptyLoad: false,
-//          delegate: DefaultLoadMoreDelegate(),
-//          textBuilder: DefaultLoadMoreTextBuilder.english,
-//        ),
-//        onRefresh: _refresh,
-//      ),
-//    )
-    listando()
-
+    Container(
+      child: RefreshIndicator(
+        child: LoadMore(
+          isFinish: countTaskList >= 100,
+          onLoadMore: _loadMore,
+          child: listando(),
+          whenEmptyLoad: false,
+          delegate: DefaultLoadMoreDelegate(),
+          textBuilder: DefaultLoadMoreTextBuilder.english,
+        ),
+        onRefresh: _refresh,
+      ),
+    )
+//    listando()
       : Center(
       child: CircularProgressIndicator(),
     );
   }
 
-
+  int TareasTotales = 0;
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
     PageTasks++;
-    print("onLoadMore ${listTaskModellocal.length}");
-
-    await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-
-    print("Page $PageTasks");
+    print(PageTasks);
+//    print("onLoadMore ${listTaskModellocal.length}");
+    await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
+//    print("Page $PageTasks");
     //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
   }
@@ -185,7 +191,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     //getdatalist(listCalendar[1],listCalendar[0],1);
   }
 
-  int PageTasks = 1; int TareasTotales = 0;
+  int PageTasks = 1;
 //  getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
 //    String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
 //    String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
