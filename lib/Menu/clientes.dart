@@ -226,8 +226,8 @@ class _ClienteState extends State<Cliente> {
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],
       builder: (context, snapshot) {
-        if(snapshot != null){
-          switch(snapshot.connectionState){
+        if (snapshot != null) {
+          switch (snapshot.connectionState) {
             case ConnectionState.none:
               return new Container(
                 child: Center(
@@ -259,50 +259,70 @@ class _ClienteState extends State<Cliente> {
                 ),
               );
             case ConnectionState.active:
-              if(snapshot != null){
+              if (snapshot != null) {
                 if (snapshot.data.isNotEmpty) {
                   return ListView.builder(
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-                        var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-                        if(textFilter == ''){
+                        var direction = snapshot.data[index].address != null
+                            ? snapshot.data[index].address
+                            : "";
+                        var name = snapshot.data[index].name != null ? snapshot
+                            .data[index].name : "";
+                        if (textFilter == '') {
                           return Card(
                             child: ListTile(
-                              title: Text(name , style: TextStyle(fontSize: 14),),
-                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                              trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
-                              },),
+                              title: Text(
+                                name, style: TextStyle(fontSize: 14),),
+                              subtitle: Text(
+                                direction, style: TextStyle(fontSize: 12),),
+                              trailing: IconButton(
+                                icon: Icon(Icons.border_color, size: 20,),
+                                onPressed: () async {
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              FormTask(
+                                                directioncliente: snapshot
+                                                    .data[index],)));
+                                },),
                               onTap:
-                              widget.vista ? (){
+                              widget.vista ? () {
                                 Navigator.of(context).pop(snapshot.data[index]);
-                              }: (){
+                              } : () {
                                 Navigator.push(
                                     context,
                                     new MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                        new  FormClient(snapshot.data[index])
+                                        new FormClient(snapshot.data[index])
                                     )
                                 );
                               },
                             ),
                           );
-                        }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
-                          var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
-                          var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
+                        } else if (ls.createState().checkSearchInText(
+                            name, textFilter) ||
+                            ls.createState().checkSearchInText(
+                                direction, textFilter)) {
+                          var direction = snapshot.data[index].address != null
+                              ? snapshot.data[index].address
+                              : "";
+                          var name = snapshot.data[index].name != null
+                              ? snapshot.data[index].name
+                              : "";
                           return Card(
                             child: ListTile(
-                              title: Text(name, style: TextStyle(fontSize: 14),),
-                              subtitle: Text(direction, style: TextStyle(fontSize: 12),),
-                              onTap: (){
+                              title: Text(
+                                name, style: TextStyle(fontSize: 14),),
+                              subtitle: Text(
+                                direction, style: TextStyle(fontSize: 12),),
+                              onTap: () {
                                 Navigator.push(
                                     context,
                                     new MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                        new  FormClient(snapshot.data[index])
+                                        new FormClient(snapshot.data[index])
                                     )
                                 );
                               },
@@ -311,34 +331,31 @@ class _ClienteState extends State<Cliente> {
                         }
                       }
                   );
-                }else{
+                } else {
                   return new Container(
                     child: Center(
                       child: Text("No hay Clientes Registrados"),
                     ),
                   );
                 }
-              } return new Container(
-                child: Center(
-                  child: Text("Ha ocurrido un error interno"),
-                ),
-              );
+              } else {
+                return new Container(
+                  child: Center(
+                    child: Text("Ha ocurrido un error interno"),
+                  ),
+                );
+              }
           }
-        }else{
-          return new Container(
-            child: Center(
-              child: Text("Ha ocurrido un error interno"),
-            ),
-          );
-        }
       }else{
-          return new Container(
-            child: Center(
-            child: Text("Ha ocurrido un error interno"),
-          ),
-        );
-      }
-    );
+        return new Container(
+        child: Center(
+        child:
+        Text("Ha ocurrido un error interno"),
+        ),
+        )
+        ;
+        }
+      });
   }
 
   @override
