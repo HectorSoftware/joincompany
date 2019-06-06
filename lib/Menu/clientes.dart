@@ -60,6 +60,10 @@ class _ClienteState extends State<Cliente> {
     setState(() {
       isOffline = !hasConnection;
     });
+
+    if (!isOffline && hasConnection){
+      print("llego el internet yiiiiiiiii");
+    }
   }
 
   @override
