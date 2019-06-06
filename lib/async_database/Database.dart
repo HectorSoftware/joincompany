@@ -111,7 +111,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[user.id, user.createdAt, DateTime.now().toString(), user.deletedAt,
+      [...[user.id, user.createdAt, user.updatedAt == null ? DateTime.now().toString() : user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
@@ -364,7 +364,7 @@ class DatabaseProvider {
       company = ?
       WHERE id = ${userId}
       ''',
-      [...[user.id, user.createdAt, DateTime.now().toString(), user.deletedAt,
+      [...[user.id, user.createdAt, user.updatedAt == null ? DateTime.now().toString() : user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
@@ -470,7 +470,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[form.id, form.createdAt, DateTime.now().toString(), form.deletedAt,
+      [...[form.id, form.createdAt, form.updatedAt == null ? DateTime.now().toString() : form.updatedAt, form.deletedAt,
     form.createdById, form.updatedById, form.deletedById, form.name,
     form.withCheckinout, form.active],
     ...paramsBySyncState[syncState]],
@@ -648,7 +648,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${formId}
       ''',
-      [...[form.id, form.createdAt, DateTime.now().toString(), form.deletedAt,
+      [...[form.id, form.createdAt, form.updatedAt == null ? DateTime.now().toString() : form.updatedAt, form.deletedAt,
     form.createdById, form.updatedById, form.deletedById, form.name,
     form.withCheckinout, form.active],
     ...paramsBySyncState[syncState]],
@@ -761,7 +761,7 @@ class DatabaseProvider {
         
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
-      [...[locality.id, locality.createdAt, DateTime.now().toString(),
+      [...[locality.id, locality.createdAt, locality.updatedAt == null ? DateTime.now().toString() : locality.updatedAt,
     locality.deletedAt, locality.createdById, locality.updatedById,
     locality.deletedById, locality.collection, locality.name,
     locality.value], ...paramsBySyncState[syncState]],
@@ -907,7 +907,7 @@ class DatabaseProvider {
       deleted
       WHERE id = ${localityId}
       ''',
-      [...[locality.id, locality.createdAt, DateTime.now().toString(), locality.deletedAt,
+      [...[locality.id, locality.createdAt, locality.updatedAt == null ? DateTime.now().toString() : locality.updatedAt, locality.deletedAt,
     locality.createdById, locality.updatedById, locality.deletedById,
     locality.collection, locality.name, locality.value],
     ...paramsBySyncState[syncState]],
@@ -1007,7 +1007,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[responsible.id, responsible.createdAt, DateTime.now().toString(),
+      [...[responsible.id, responsible.createdAt, responsible.updatedAt == null ? DateTime.now().toString() : responsible.updatedAt,
     responsible.deletedAt, responsible.createdById, responsible.updatedById,
     responsible.deletedById, responsible.supervisorId, responsible.name,
     responsible.code, responsible.email, responsible.phone,
@@ -1218,7 +1218,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${responsible.id}
       ''',
-      [...[responsible.id, responsible.createdAt, DateTime.now().toString(),
+      [...[responsible.id, responsible.createdAt, responsible.updatedAt == null ? DateTime.now().toString() : responsible.updatedAt,
     responsible.deletedAt, responsible.createdById, responsible.updatedById,
     responsible.deletedById, responsible.supervisorId, responsible.name,
     responsible.code, responsible.email, responsible.phone,
@@ -1393,7 +1393,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[section.id, section.createdAt, DateTime.now().toString(),
+        [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt,
     section.deletedAt, section.createdById,
     section.updatedById, section.deletedById,
     section.sectionId, section.entityType,
@@ -1826,7 +1826,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${sectionId}
       ''',
-        [...[section.id, section.createdAt, DateTime.now().toString(), section.deletedAt,
+        [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt, section.deletedAt,
     section.createdById, section.updatedById, section.deletedById,
     section.sectionId, section.entityType, section.entityId, section.type,
     section.name, section.code, section.subtitle, section.position,
@@ -1979,7 +1979,7 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
 
-      [...[address.id, address.createdAt, DateTime.now().toString(),
+      [...[address.id, address.createdAt, address.updatedAt == null ? DateTime.now().toString() : address.updatedAt,
     address.deletedAt, address.createdById, address.updatedById,
     address.deletedById, address.localityId, address.address,
     address.details, address.reference, address.latitude, address.longitude,
@@ -2229,7 +2229,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${addressId}
       ''',
-      [...[address.id, address.createdAt, DateTime.now().toString(), address.deletedAt,
+      [...[address.id, address.createdAt, address.updatedAt == null ? DateTime.now().toString() : address.updatedAt, address.deletedAt,
     address.createdById, address.updatedById, address.deletedById,
     address.localityId, address.address, address.details, address.reference,
     address.latitude, address.longitude, address.googlePlaceId,
@@ -2360,7 +2360,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customer.id, customer.createdAt, DateTime.now().toString(),
+      [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt,
     customer.deletedAt, customer.createdById, customer.updatedById,
     customer.deletedById, customer.name, customer.code, customer.phone,
     customer.email, customer.contactName, customer.details],
@@ -2533,7 +2533,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${customerId}
       ''',
-      [...[customer.id, customer.createdAt, DateTime.now().toString(), customer.deletedAt,
+      [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt, customer.deletedAt,
     customer.createdById, customer.updatedById, customer.deletedById,
     customer.name, customer.code, customer.phone, customer.email,
     customer.contactName, customer.details],
@@ -2713,7 +2713,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[task.id, task.createdAt, DateTime.now().toString(), task.deletedAt,
+        [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt,
     task.createdById, task.updatedById, task.deletedById, task.formId,
     task.responsibleId, task.customerId, task.addressId, task.name,
     task.planningDate, task.checkinDate, task.checkinLatitude,
@@ -3055,7 +3055,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${taskId}
       ''',
-        [...[task.id, task.createdAt, DateTime.now().toString(), task.deletedAt, task.createdById,
+        [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt, task.createdById,
     task.updatedById, task.deletedById, task.formId, task.responsibleId,
     task.customerId, task.addressId, task.name, task.planningDate,
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
@@ -3191,7 +3191,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, userId],
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, deletedAt, customerId, userId],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -3324,7 +3324,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = $customerUserId
       ''',
-      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, userId],
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, deletedAt, customerId, userId],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -3435,7 +3435,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customValue.id, customValue.createdAt, DateTime.now().toString(),
+      [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
     customValue.formId, customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
     customValue.value], ...paramsBySyncState[syncState]],
@@ -3725,7 +3725,7 @@ class DatabaseProvider {
       deleted = ?,  
       WHERE id = ${customValueId}
       ''',
-      [...[customValue.id, customValue.createdAt, DateTime.now().toString(), customValue.formId,
+      [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt, customValue.formId,
     customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
     customValue.value], ...paramsBySyncState[syncState]],
@@ -3845,7 +3845,7 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, addressId,
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, deletedAt, customerId, addressId,
     approved], ...paramsBySyncState[syncState]],
     );
   }
@@ -3987,7 +3987,7 @@ class DatabaseProvider {
       deleted = ?
       WHERE customer_id = $customerId AND address_id = $addressId
       ''',
-      [...[id, createdAt, DateTime.now().toString(), deletedAt, customerId, addressId,
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, deletedAt, customerId, addressId,
     approved], ...paramsBySyncState[syncState]],
     );
   }
