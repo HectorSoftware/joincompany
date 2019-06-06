@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
   String ErrorTextFieldTextcompany = '';
   bool Circuleprogress = false;
 
+
   @override
   void initState() {
     TextViewVisible = widget.TextViewVisiblewidget;

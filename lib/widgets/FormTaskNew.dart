@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -41,7 +42,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   Image image;
-  File image2;
+  Image image2;
 
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
@@ -62,7 +63,6 @@ class _FormTaskState extends State<FormTask> {
   bool pass = false;
   bool taskEnd = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
-  List<FieldOptionModel> elementsOptions = List<FieldOptionModel>();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directioncliente;
 
@@ -120,6 +120,7 @@ class _FormTaskState extends State<FormTask> {
                            );*/
 
                             if(dataInfo.isNotEmpty) {
+                              print(dataInfo);
                               saveTask.formId = formGlobal.id;
                               saveTask.responsibleId = responsibleId;
                               saveTask.name = formGlobal.name;
@@ -165,7 +166,7 @@ class _FormTaskState extends State<FormTask> {
                             setState(() {
                               dataInfo = new Map();
                               pass= false;
-                             // dropdownValue = null;
+                            //  dropdownValue = null;
                               image = null;
                               taskCU = false;
                               image2= null;
@@ -256,7 +257,7 @@ class _FormTaskState extends State<FormTask> {
                                   lisC(form);
                                   setState(() {
                                     directionClient.address = null;
-                                    //dropdownValue = null;
+                                 //   dropdownValue = null;
                                     pass = true;
                                     image = null;
                                     dataInfo = new Map();
@@ -372,14 +373,17 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
-  Future<File> photoAndImage() async{
-    return showDialog<File>(
+  Future<Uint8List> photoAndImage() async{
+    return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return TomarImage();
       },
     );
+  }
+  String base64String(Uint8List data) {
+    return base64Encode(data);
   }
   Stack returnsStack(){
     return Stack(
@@ -503,31 +507,26 @@ class _FormTaskState extends State<FormTask> {
 
                 }
 
-                if(dataInfo[index].toString().isEmpty){
-                  saveData(listFieldsModels[index].name,index.toString());
-                  print('********************************');
-                }
-
-               //String dropdownValue ;
-                return  Padding(
+               String dropdownValue ;
+                return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: DropdownButton<String>(
+                  child: new DropdownButton<String>(
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dataInfo[index],
-                    hint: Text(listFieldsModels[index].name),
+                    value: dataInfo[listFieldsModels[index].id],
+                    hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
                     onChanged: (newValue) {
 
                       setState(() {
                         //dropdownValue = newValue;
+                        dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
                       });
-                      saveData(newValue,index.toString());
-                      print( dataInfo[index]);
+
                     },
                     items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
+                      return new DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
                       );
@@ -556,7 +555,7 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_date.toString().substring(0,10)}'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
                         onPressed: (){selectDate(context);
                         saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
 
@@ -603,7 +602,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
-                return Row(
+                return new Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -620,9 +619,11 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text(_time.format(context)),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id.toString()]}') : Text('Sin Asignar'),
                         onPressed: (){selectTime(context);
+                        setState(() => dataInfo);
                         saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
+
                         },
 
                       ),
@@ -631,6 +632,8 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
               if(listFieldsModels[index].fieldType == 'Photo'){
+                Uint8List img;
+                String b64;
                 return  Row(
                   children: <Widget>[
                     Column(
@@ -641,12 +644,14 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.only(top: 10,left: 5),
                               child: RaisedButton(
                                 onPressed: () async{
-                                  var img = await photoAndImage();
+                                   img = await photoAndImage();
                                   if (img != null) {
                                     setState(() {
+                                      b64 = base64String(img);
+                                      print(b64);
+                                      image2 = Image.memory(img);
 
-                                      image2 = img;
-                                      saveData(img.readAsBytesSync().toString(), listFieldsModels[index].id.toString());
+                                      saveData(b64, listFieldsModels[index].id.toString());
                                     });
                                   }
                                 },
@@ -663,10 +668,8 @@ class _FormTaskState extends State<FormTask> {
 
                       child: Center(
                         child: Container(
-                            child: image2 == null ? new Text('')
-                                : new Text('Imagen Guardada', style: TextStyle(
-                              color: PrimaryColor,
-                            ),)
+                            child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Image(image: image2.image,) : Text(''),
+
                         ),
                       ),
                     ),
@@ -678,33 +681,17 @@ class _FormTaskState extends State<FormTask> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5,left: 10),
-                              child: RaisedButton(
-                                onPressed: (){
-                                  pickerImage(Method.GALLERY);
-                                },
-                                child: Text(''),
-                                color: PrimaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-
+                        Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
                       ],
 
                     ),
               Container(
-              width: MediaQuery.of(context).size.width* 0.5,
+              width: MediaQuery.of(context).size.width* 0.4,
 
               child: Container(
-              child: image2 == null ? new Text('')
-                  : new Text('Imagen Guardada',style: TextStyle(
+              child: new Text(listFieldsModels[index].name,style: TextStyle(
                 color: PrimaryColor,
               ),),
-
               ),
               ),
                   ],
@@ -721,32 +708,37 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage')
+              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage'){
+                String b64;
               return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10,left: 5),
-                              child: RaisedButton(
-                                onPressed: () async{
-                                  //File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                                  var bytes = await getImg();
-                                  Image img = Image.memory(bytes);
-                                  if (img != null) {
-                                    setState(() {
-                                      print(bytes);
-                                      image = img;
-                                    });
-                                  }
-                                },
-                                child: Text(listFieldsModels[index].name),
-                                color: PrimaryColor,
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                child: RaisedButton(
+                                  onPressed: () async{
+                                    //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                    var bytes = await getImg();
+                                    Image img = Image.memory(bytes);
+                                    if (img != null) {
+                                      setState(() {
+                                        b64 = base64String(bytes);
+                                        print(b64);
+                                        dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
+                                        image = img;
+                                      });
+                                    }
+                                  },
+                                  child:listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,15) + '...') :  Text(listFieldsModels[index].name),
+                                  color: PrimaryColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -754,18 +746,27 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width* 0.5,
 
                       child: Container(
-                          child: image2 == null ? new Text('')
-                              : new Image.file(image2,height: 200,width: 200,)
+                          child: image == null ? new Text('')
+                              : new Image(image: image.image,height: 200,width: 200,)
 
                       ),
                     ),
                   ],
                 );
+              }
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                   return Container(
-                      width: 30,
-                      child: Switch(value: true, onChanged: null));
+                      width: MediaQuery.of(context).size.width*0.5,
+                      child:Row(
+                        children: <Widget>[
+                          Switch(value: switchOn, onChanged:(valuenew){ setState(() {
+                            switchOn = valuenew;
+                          });},activeColor: PrimaryColor,)
+                        ],
+                      )
+
+                  );
                 }
 
             }
@@ -775,9 +776,14 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
+  bool switchOn = false;
+  void _onSwitchChanged(bool value) {
+
+    switchOn = false;
+
+  }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
-    print(resp.address);
     if(resp != null) {
       setState(() {
         directioncliente = resp;

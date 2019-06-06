@@ -118,16 +118,15 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   ListViewTareas(){
-
     blocList = new blocListTask(listCalendar[1],listCalendar[0],PageTasks);
     try{
       // ignore: cancel_subscriptions
       StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
       => setState((){
-        print(listTaskModellocal.length);
-        listTaskModellocal = onDataList;
+        //if(PageTasks == 1){
+          listTaskModellocal = onDataList;
+        //}
         for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
-          //listTaskModellocal.add(onDataList[cantlistTaskModellocal]);
           listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
         }
       }));
@@ -151,20 +150,20 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
     return ((listTaskModellocal.length != 0)) ?
 
-    Container(
-      child: RefreshIndicator(
-        child: LoadMore(
-          isFinish: countTaskList >= 100,
-          onLoadMore: _loadMore,
-          child: listando(),
-          whenEmptyLoad: false,
-          delegate: DefaultLoadMoreDelegate(),
-          textBuilder: DefaultLoadMoreTextBuilder.english,
-        ),
-        onRefresh: _refresh,
-      ),
-    )
-//    listando()
+//    Container(
+//      child: RefreshIndicator(
+//        child: LoadMore(
+//          isFinish: countTaskList >= 100,
+//          onLoadMore: _loadMore,
+//          child: listando(),
+//          whenEmptyLoad: false,
+//          delegate: DefaultLoadMoreDelegate(),
+//          textBuilder: DefaultLoadMoreTextBuilder.english,
+//        ),
+//        onRefresh: _refresh,
+//      ),
+//    )
+    listando()
       : Center(
       child: CircularProgressIndicator(),
     );
@@ -174,7 +173,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
     PageTasks++;
-    print(PageTasks);
 //    print("onLoadMore ${listTaskModellocal.length}");
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
 //    print("Page $PageTasks");
