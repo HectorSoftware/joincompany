@@ -737,7 +737,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
+                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                     ),
                   ],
                 );
@@ -778,7 +778,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
+                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                     ),
 
                   ],
