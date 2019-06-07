@@ -18,11 +18,14 @@ import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
 
@@ -415,10 +418,10 @@ class _LoginPageState extends State<LoginPage> {
 
                 await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);                
 
-                await AddressChannel.syncEverything();
-                await CustomerChannel.syncEverything();
-                await CustomerAddressesChannel.syncEverything();
-                // await FormChannel.syncEverything();
+                // await AddressChannel.syncEverything();
+                // await CustomerChannel.syncEverything();
+                // await CustomerAddressesChannel.syncEverything();
+                await FormChannel.syncEverything();
                 
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
@@ -487,6 +490,24 @@ class _LoginPageState extends State<LoginPage> {
     }      
   }
 
+  getFormsRaw() {
+    return '{ "current_page": 1, "data": [ { "id": 3, "created_at": "2018-10-21 20:06:29", "updated_at": "2019-10-21 20:06:31", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Enrolamiento eHuapi", "with_checkinout": true, "active": true }, { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
+  }
+
+  getFormRaw(int id) {
+    if(id==1){
+      return ' { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-21 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true, "sections": [ { "id": 1, "created_at": "2018-07-18 17:48:57", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": null, "entity_type": "Form", "entity_id": 1, "type": "section", "name": "Datos de la Nota", "code": "SECTION_1", "subtitle": null, "position": 1, "field_default_value": null, "field_type": null, "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3, "fields": [ { "id": 2, "created_at": "2018-07-18 17:50:03", "updated_at": "2018-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 1, "entity_type": "Form", "entity_id": 1, "type": "field", "name": "Comentarios", "code": "FIELD_2", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "TextArea", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 } ] } ] } '; 
+    }
+
+    if(id==2){
+      return ' { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true, "sections": [ { "id": 3, "created_at": "2018-07-18 17:48:57", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": null, "entity_type": "Form", "entity_id": 2, "type": "section", "name": "Datos de Visita", "code": "SECTION_3", "subtitle": null, "position": 1, "field_default_value": null, "field_type": null, "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3, "fields": [ { "id": 4, "created_at": "2018-07-18 17:50:03", "updated_at": "2018-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Comentarios", "code": "FIELD_4", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "TextArea", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 37, "created_at": null, "updated_at": null, "deleted_at": null, "created_by_id": null, "updated_by_id": null, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Checkin", "code": "FIELD_35", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "Button", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 38, "created_at": null, "updated_at": null, "deleted_at": null, "created_by_id": null, "updated_by_id": null, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "ComboSearch", "code": "FIELD_36", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "ComboSearch", "field_placeholder": null, "field_options": [ { "value": 56, "name": "Item1" }, { "value": 57, "name": "Item2" } ], "field_collection": "ComboSearch", "field_required": false, "field_width": 3 }, { "id": 39, "created_at": null, "updated_at": null, "deleted_at": null, "created_by_id": null, "updated_by_id": null, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Table", "code": "FIELD_37", "subtitle": null, "position": 1, "field_default_value": "Columna 1*columna 2* columna 3;**;**", "field_type": "Table", "field_placeholder": null, "field_options": [ { "value": 58, "name": "Item1x1" }, { "value": 59, "name": "Item1x2" }, { "value": 60, "name": "Item2x1" }, { "value": 61, "name": "Item2x2" } ], "field_collection": "Table", "field_required": false, "field_width": 3 }, { "id": 40, "created_at": null, "updated_at": null, "deleted_at": null, "created_by_id": null, "updated_by_id": null, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Texto", "code": "FIELD_38", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "Text", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 5, "created_at": "2018-07-18 17:50:03", "updated_at": "2018-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Fotografía", "code": "FIELD_5", "subtitle": null, "position": 2, "field_default_value": null, "field_type": "Photo", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 6, "created_at": "2018-07-18 17:50:03", "updated_at": "2018-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Tipo de vista (Seleccionador)", "code": "FIELD_6", "subtitle": null, "position": 3, "field_default_value": null, "field_type": "Combo", "field_placeholder": null, "field_options": [ { "value": 1, "name": "Venta" }, { "value": 2, "name": "Fidelización" }, { "value": 3, "name": "Retención" } ], "field_collection": "TipoVisitas", "field_required": false, "field_width": 3 }, { "id": 7, "created_at": "2018-07-18 17:53:38", "updated_at": "2018-07-18 17:53:38", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Prioritario (Checklist)", "code": "FIELD_7", "subtitle": null, "position": 4, "field_default_value": null, "field_type": "Boolean", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 9, "created_at": "2018-09-11 16:47:46", "updated_at": "2018-09-11 16:47:49", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Firma cliente (Firma conformidad)", "code": "FIELD_8", "subtitle": null, "position": 5, "field_default_value": null, "field_type": "CanvanSignature", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 11, "created_at": "2018-09-11 16:49:57", "updated_at": "2018-09-11 16:50:00", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Indicador sobre imagen (Dibujo sobre imagen)", "code": "FIELD_9", "subtitle": null, "position": 6, "field_default_value": "https://previews.123rf.com/images/pandavector/pandavector1612/pandavector161200463/69448631-icono-de-ri%C3%B1ones-humanos-en-el-estilo-de-contorno-aislado-en-el-fondo-blanco-%C3%B3rganos-humanos-ilustraci%C3%B3n-s%C3%ADmbol.jpg", "field_type": "CanvanImage", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 12, "created_at": "2018-09-11 16:51:55", "updated_at": "2018-09-11 16:51:58", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Nota (Texto predefinido)", "code": "FIELD_10", "subtitle": null, "position": 7, "field_default_value": "Esto es un label", "field_type": "Label", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 13, "created_at": "2018-09-11 16:53:16", "updated_at": "2018-09-11 16:53:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Logo imagen (Imagen predefinida)", "code": "FIELD_11", "subtitle": null, "position": 8, "field_default_value": "http://www.brandemia.org/wp-content/uploads/2012/10/logo_principal.jpg", "field_type": "Image", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 14, "created_at": "2018-09-11 16:54:31", "updated_at": "2018-09-11 16:54:34", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Fecha", "code": "FIELD_12", "subtitle": null, "position": 9, "field_default_value": null, "field_type": "Date", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 15, "created_at": "2018-09-11 16:55:25", "updated_at": "2018-09-11 16:55:29", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Hora", "code": "FIELD_13", "subtitle": null, "position": 10, "field_default_value": null, "field_type": "Time", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 }, { "id": 16, "created_at": "2018-09-11 16:56:19", "updated_at": "2018-09-11 16:56:26", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 3, "entity_type": "Form", "entity_id": 2, "type": "field", "name": "Fecha y hora", "code": "FIELD_14", "subtitle": null, "position": 11, "field_default_value": null, "field_type": "DateTime", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 } ] } ] } ';
+    }
+
+    if(id==3){
+      return ' { "id": 3, "created_at": "2018-07-18 17:50:19", "updated_at": "2019-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 14, "name": "Enrolamiento eHuapi", "with_checkinout": true, "active": true, "sections": [ { "id": 17, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 1, "entity_type": "Form", "entity_id": 3, "type": "section", "name": "Datos persona que atiende", "code": "SECTION_15", "subtitle": "test", "position": 12, "field_default_value": "test", "field_type": "", "field_placeholder": "test", "field_options": [], "field_collection": "test", "field_required": false, "field_width": 3, "fields": [ { "id": 35, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 26, "entity_type": "Form", "entity_id": 3, "type": "field", "name": "Giro", "code": "FIELD_33", "subtitle": "test", "position": 30, "field_default_value": "test", "field_type": "Combo", "field_placeholder": "test", "field_options": [ { "value": 16, "name": "Botillería" }, { "value": 17, "name": "Roticería" }, { "value": 18, "name": "Minimarket" }, { "value": 19, "name": "Carnicería" }, { "value": 20, "name": "Otro" } ], "field_collection": "Giro", "field_required": false, "field_width": 3 } ] } ] }';
+    }
+  }
+
   testApi() async{
 
     try {
@@ -498,9 +519,9 @@ class _LoginPageState extends State<LoginPage> {
       String customer = 'getkem';
 
       // login
-      var loginResponse = await login(email, password, customer);
-      AuthModel auth = AuthModel.fromJson(loginResponse.body);
-      String authorization = auth.accessToken;
+      // var loginResponse = await login(email, password, customer);
+      // AuthModel auth = AuthModel.fromJson(loginResponse.body);
+      // String authorization = auth.accessToken;
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -673,9 +694,64 @@ class _LoginPageState extends State<LoginPage> {
       // await FormChannel.syncEverything();
       // var fce = await DatabaseProvider.db.ListForms();
 
+      // var response = await getAllForms(customer, authorization);
+      // print(response.body);
+
+
+      // var formsRaw = getFormsRaw();
+      // FormsModel formsServer = FormsModel.fromJson(formsRaw);
+
+      // for (var i = 0; i < formsServer.data.length; i++) {
+      //   var getFormResponse = await getFormRaw(formsServer.data[i].id);
+      //   FormModel formServer = FormModel.fromJson(getFormResponse);
+      //   FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
+      //   if (formLocal != null) {
+          
+      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
+      //     DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
+      //     int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
+      //     print(diffInMilliseconds);
+      //     if ( diffInMilliseconds < 0 ) { // Actualizar Local
+      //       await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+      //     }
+      //   } 
+      // }
+
+
+
+
+      // Create Server To Local
+    // var formsServerResponse = await getFormsRaw();
+    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
+
+    // Set idsFormsServer = new Set();
+    // formsServer.data.forEach((formServer) async {
+    //   idsFormsServer.add(formServer.id);
+    // });
+
+    // Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
+
+    // Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
+
+    // formsServer.data.forEach((formServer) async {
+    //   if (idsToCreate.contains(formServer.id)) {
+    //     // Cambiar el SyncState Local
+    //     var getFormResponse = await getFormRaw(formServer.id);
+    //     FormModel form = FormModel.fromJson(getFormResponse);
+
+    //     print("Se va a crear " + form.name);
+
+    //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
+    //   }
+    // });
+
+
+
+
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
-
+      print(error);
+      print(stackTrace);
     }
 
   }

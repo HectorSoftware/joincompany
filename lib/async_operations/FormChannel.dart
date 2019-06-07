@@ -60,8 +60,10 @@ class FormChannel {
     var formsServerResponse = await getAllFormsFromServer(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
 
-    formsServer.data.forEach((formServer) async {
-
+    for (var i = 0; i < formsServer.data.length; i++) {
+      print("It's me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      var getFormResponse = await getFormFromServer(formsServer.data[i].id.toString(), customer, authorization);
+      FormModel formServer = FormModel.fromJson(getFormResponse.body);
       FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
       if (formLocal != null) {
 
@@ -72,8 +74,10 @@ class FormChannel {
         if ( diffInMilliseconds < 0 ) { // Actualizar Local
           await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
         }
-      }
-    });
+      } 
+    }
+
+    print("Hello there!**********************************************\n****************");
   }
 
   static Future syncEverything() async {
@@ -83,9 +87,9 @@ class FormChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    await FormChannel._deleteFormsInBothLocalAndServer(customer, authorization);
+    // await FormChannel._deleteFormsInBothLocalAndServer(customer, authorization);
     await FormChannel._updateFormsInBothLocalAndServer(customer, authorization);
-    await FormChannel._createFormsInBothLocalAndServer(customer, authorization);
+    // await FormChannel._createFormsInBothLocalAndServer(customer, authorization);
   }
 
 
