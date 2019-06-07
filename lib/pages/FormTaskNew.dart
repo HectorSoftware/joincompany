@@ -16,6 +16,7 @@ import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
+import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
@@ -33,7 +34,8 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
-  Image image,image2;
+  Image image;
+  Image image2;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -64,10 +66,11 @@ class _FormTaskState extends State<FormTask> {
   }
   @override
   Widget build(BuildContext context) {
-    final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
-    double aument = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {//VERTICAL
-      aument = 0.8;
+    double por;
+    final mediaQueryData = MediaQuery.of(context);
+     por = 0.7;
+    if (mediaQueryData.orientation == Orientation.portrait) {
+      por = 0.807;
     }
     globalContext = context;
     return new Scaffold(
@@ -89,48 +92,40 @@ class _FormTaskState extends State<FormTask> {
                        content: const Text(
                            'Desea Guardar Tarea'),
                        actions: <Widget>[
-                         Container(
-                           width: MediaQuery.of(context).size.width,
-                           child: Column(
+                         Row(
+                           children: <Widget>[
+                             FlatButton(
+                               child: const Text('SALIR'),
+                               onPressed: () {
+                                 Navigator.of(context).pop();
+                                 Navigator.of(context).pop();
+                               },
+                             ),
+                             FlatButton(
+                               child: const Text('CANCELAR'),
+                               onPressed: () {
+                                 Navigator.of(context).pop();
+                               },
+                             ),
+                             FlatButton(
+                               child: const Text('ACEPTAR'),
+                               onPressed: () async {
+                                 if(dataInfo.isNotEmpty) {
+                                   saveTask.formId = formGlobal.id;
+                                   saveTask.responsibleId = responsibleId;
+                                   saveTask.name = formGlobal.name;
+                                   saveTask.customerId = directionClientIn.customerId;
+                                   saveTask.addressId = directionClientIn.addressId;
+                                   saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                   saveTask.customValuesMap = dataInfo;
+                                   saveTaskApi();
+                                   Navigator.pop(context);
+                                   Navigator.of(context).pop(saveTask);
+                                 }
 
-                             children: <Widget>[
-                               Row(
-                                 children: <Widget>[
-                                   FlatButton(
-                                     child: const Text('SALIR'),
-                                     onPressed: () {
-                                       Navigator.of(context).pop();
-                                       Navigator.of(context).pop();
-                                     },
-                                   ),
-                                   FlatButton(
-                                     child: const Text('CANCELAR'),
-                                     onPressed: () {
-                                       Navigator.of(context).pop();
-                                     },
-                                   ),
-                                   FlatButton(
-                                     child: const Text('ACEPTAR'),
-                                     onPressed: () async {
-                                       if(dataInfo.isNotEmpty) {
-                                         saveTask.formId = formGlobal.id;
-                                         saveTask.responsibleId = responsibleId;
-                                         saveTask.name = formGlobal.name;
-                                         saveTask.customerId = directionClientIn.customerId;
-                                         saveTask.addressId = directionClientIn.addressId;
-                                         saveTask.planningDate = _dateTask.toString().substring(0,19);
-                                         saveTask.customValuesMap = dataInfo;
-                                         saveTaskApi();
-                                         Navigator.pop(context);
-                                         Navigator.of(context).pop(saveTask);
-                                       }
-
-                                     },
-                                   )
-                                 ],
-                               ),
-                             ],
-                           ),
+                               },
+                             )
+                           ],
                          ),
                        ],
                      ),
@@ -366,6 +361,15 @@ class _FormTaskState extends State<FormTask> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return PickerImg();
+      },
+    );
+  }
+  Future<Uint8List> getImgNetWork(String netImage) async{
+    return showDialog<Uint8List>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PickerImgNetwork(netImage: netImage,);
       },
     );
   }
@@ -627,45 +631,42 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Photo'){
                 Uint8List img;
                 String b64;
-                return  Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10,left: 5),
-                              child: RaisedButton(
-                                onPressed: () async{
-                                   img = await photoAndImage();
-                                  if (img != null) {
-                                    setState(() {
-                                      b64 = base64String(img);
-                                      image2 = Image.memory(img);
+                return  Container(
 
-                                      saveData(b64, listFieldsModels[index].id.toString());
-                                    });
-                                  }
-                                },
-                                child: Text(listFieldsModels[index].name),
-                                color: PrimaryColor,
+                  child: Row(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                child: RaisedButton(
+                                  onPressed: () async{
+                                     img = await photoAndImage();
+                                    if (img != null) {
+                                      setState(() {
+                                        b64 = base64String(img);
+                                        image2 = Image.memory(img);
+
+                                        saveData(b64, listFieldsModels[index].id.toString());
+                                      });
+                                    }
+                                  },
+                                  child: Text(listFieldsModels[index].name),
+                                  color: PrimaryColor,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
-
-                      child: Center(
-                        child: Container(
-                            child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
-
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      Container(
+                        width: MediaQuery.of(context).size.width* 0.5,
+                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                      ),
+                    ],
+                  ),
                 );
               }
               if(listFieldsModels[index].fieldType == 'Image'){
@@ -700,7 +701,7 @@ class _FormTaskState extends State<FormTask> {
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'CanvanSignature' || listFieldsModels[index].fieldType == 'CanvanImage'){
+              if(listFieldsModels[index].fieldType == 'CanvanSignature'){
                 String b64;
               return  Row(
                   children: <Widget>[
@@ -736,15 +737,53 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-
-                      child: Container(
-                          child:dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('')
-                              : new Image(image: image.image,height: 200,width: 200,)
-
-                      ),
+                      child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
                     ),
                   ],
                 );
+              }
+              if(listFieldsModels[index].fieldType == 'CanvanImage'){
+                String b64;
+                return  Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                child: RaisedButton(
+                                  onPressed: () async{
+                                    //File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                                    var bytes = await getImgNetWork(listFieldsModels[index].fieldDefaultValue);
+                                    Image img = Image.memory(bytes);
+                                    if (img != null) {
+                                      setState(() {
+                                        b64 = base64String(bytes);
+                                        dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
+                                        image = img;
+                                        saveData(b64.toString(), listFieldsModels[index].id.toString());
+                                      });
+                                    }
+                                  },
+                                  child:listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,15) + '...') :  Text(listFieldsModels[index].name),
+                                  color: PrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width* 0.5,
+                      child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text(''),
+                    ),
+
+                  ],
+                );
+
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
