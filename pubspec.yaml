@@ -61,6 +61,7 @@ flutter:
   - assets/images/final-logo.png
   - assets/images/user.jpg
   - assets/images/user.png
+  - assets/images/pinmap/
   fonts:
     - family: Roboto
       fonts:

@@ -263,7 +263,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 //             bit = BitmapDescriptor.fromBytes(data);
 //          });
 //
-//          return bit;// fromAssetImage(imageConfig, path);
+//          return bit;// fromAssetImage(.0, path);
           return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
       }
       case status.planificado:{
@@ -277,12 +277,14 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         {
           //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
           //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-          return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+          return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
+          //return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
 //        createRoute(mark);
 //      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
         }
     }
-    return BitmapDescriptor.defaultMarker;
+//    return BitmapDescriptor.defaultMarker;
+    return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapRojo$number.png");
   }
 
   List<LatLng> convertToLatLng(List points){

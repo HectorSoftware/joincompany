@@ -253,17 +253,17 @@ class _ClienteState extends State<Cliente> {
                 children: <Widget>[
                   Center(
                     child: SizedBox(
-                      height: 100.0,
-                      width: 100.0,
+//                      height: 100.0,
+//                      width: 100.0,
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.blue),
-                        strokeWidth: 5.0,
+//                        valueColor: AlwaysStoppedAnimation(Colors.blue),
+//                        strokeWidth: 5.0,
                       ),
                     ),
                   ),
-                  Center(
-                    child: Text("cargando"),
-                  )
+//                  Center(
+//                    child: Text("cargando"),
+//                  )
                 ],
               );
             case ConnectionState.done:
