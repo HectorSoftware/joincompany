@@ -109,7 +109,7 @@ class _SearchAddressState extends State<searchAddressWithClient> {
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    // List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
 
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
