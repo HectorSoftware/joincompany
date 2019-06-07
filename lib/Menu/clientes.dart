@@ -80,7 +80,7 @@ class _ClientState extends State<Client> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Sincronizando ... "),
-          content:Container(
+          content:SizedBox.shrink(
             child: Center(
               child: CircularProgressIndicator(),
             ),
