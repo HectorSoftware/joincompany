@@ -53,6 +53,7 @@ class _FormTaskState extends State<FormTask> {
   bool taskCU = false;
   bool pass= false;
   bool taskEnd = false;
+  bool _value1 = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn;
@@ -245,7 +246,7 @@ class _FormTaskState extends State<FormTask> {
                                 onTap: () async {
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
-                                  lisC(form);
+                                  await lisC(form);
                                   setState(() {
                                     directionClient.address = null;
                                  //   dropdownValue = null;
@@ -294,24 +295,31 @@ class _FormTaskState extends State<FormTask> {
     }
 
     //COLUMNAS
-    Container columna(Map column){
+    Container columna(Map column, bool colorcolum){
       List<Widget> listCard = new List<Widget>();
       for(var key in column.keys){
         if(key != 'name'){
           listCard.add(card(column[key]));
         }
       }
+
       return Container(
         width: MediaQuery.of(context).size.width * 0.5,
         height: MediaQuery.of(context).size.height *(listCard.length*0.1),
+        color: colorcolum ? Colors.blue[50] : Colors.grey[200],
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Card(
-              child: Container(
-                child: Text(column["name"]),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height *(listCard.length*0.05),
+              child: Card(
+                child: Center(
+                    child: Text(column["name"])
+                ),
               ),
             ),
+
             Divider(
               height: 20,
               color: Colors.black,
@@ -334,9 +342,11 @@ class _FormTaskState extends State<FormTask> {
     //LISTA DE COLUMNAS
     List<Widget> listColuma = new List<Widget>();
     Map column = data["table"];
+    bool colorcolum = false;
     for(var key in column.keys)
     {
-      listColuma.add(columna(column[key]));
+      if(colorcolum){colorcolum = false;}else{colorcolum = true;}
+      listColuma.add(columna(column[key],colorcolum));
     }
 
     return SingleChildScrollView(
@@ -391,7 +401,13 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
-              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == 'textarea'){
+              print(listFieldsModels[index].fieldType);
+              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
+              {
+
+                return Container(child: new Checkbox(value: _value1, onChanged: _value1Changed));
+              }
+              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
                 return Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -617,10 +633,9 @@ class _FormTaskState extends State<FormTask> {
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id.toString()]}') : Text('Sin Asignar'),
-                        onPressed: (){selectTime(context);
-                        setState(() => dataInfo);
-                        saveData(_time.format(context).toString(),  listFieldsModels[index].id.toString()) ;
-
+                        onPressed: (){
+                          selectTime(context);
+                          saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                         },
 
                       ),
@@ -663,7 +678,7 @@ class _FormTaskState extends State<FormTask> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width* 0.5,
-                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.toString() + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                       ),
                     ],
                   ),
@@ -679,7 +694,7 @@ class _FormTaskState extends State<FormTask> {
 
                     ),
                Container(
-              child:listFieldsModels[index].name.length >10 ?  new Text(listFieldsModels[index].name.substring(0,20),style: TextStyle(
+              child:listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
                 color: PrimaryColor),
               ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
               ),
@@ -722,7 +737,7 @@ class _FormTaskState extends State<FormTask> {
                                       });
                                     }
                                   },
-                                  child:listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,15) + '...') :  Text(listFieldsModels[index].name),
+                                  child:Center(child: listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,14) + '...') :  Text(listFieldsModels[index].name)),
                                   color: PrimaryColor,
                                 ),
                               ),
@@ -733,7 +748,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.3,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.substring(0,14) + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                     ),
                   ],
                 );
@@ -774,7 +789,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.substring(0,15) + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                     ),
 
                   ],
@@ -784,15 +799,20 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
                  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
-                  return Container(
-                      width: MediaQuery.of(context).size.width*0.5,
-                      child:Row(
-                        children: <Widget>[
-                          Switch(value: switchOn, onChanged:(valuenew){ setState(() {
-                            switchOn = valuenew;
-                          });},activeColor: PrimaryColor,)
-                        ],
-                      )
+                  return Row(
+                    children: <Widget>[
+                      Container(
+                          width: MediaQuery.of(context).size.width*0.5,
+                          child:Row(
+                            children: <Widget>[
+                              Switch(value: switchOn, onChanged:(valuenew){ setState(() {
+                                switchOn = valuenew;
+                              });},activeColor: PrimaryColor,)
+                            ],
+                          )
+                      ),
+                      Center(child:switchOn?  Text(listFieldsModels[index].name):Text('')),
+                    ],
 
                   );
                 }
@@ -844,6 +864,7 @@ class _FormTaskState extends State<FormTask> {
                 );
               }
 
+
             }
         ),
 
@@ -851,6 +872,7 @@ class _FormTaskState extends State<FormTask> {
       ],
     );
   }
+  void _value1Changed(bool value) => setState(() => _value1 = value);
   bool switchOn = false;
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
@@ -921,8 +943,9 @@ class _FormTaskState extends State<FormTask> {
       },
     );
   }
-  Future<Null> lisC(FormModel form)async {
-    listFieldsModels.clear();
+  Future<bool> lisC(FormModel form)async {
+    //listFieldsModels.clear();
+    List<FieldModel> listFieldsModelsCopia = List<FieldModel>();
     setState(() {
       formGlobal = form;
       listFieldsModels.clear();
@@ -931,9 +954,11 @@ class _FormTaskState extends State<FormTask> {
       {
         for(FieldModel fields in section.fields)
         {
-          listFieldsModels.add(fields);
+          listFieldsModelsCopia.add(fields);
         }
       }
+    listFieldsModels = listFieldsModelsCopia;
+    return true;
 
   }
   pickerImage(Method m) async {

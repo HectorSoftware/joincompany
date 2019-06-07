@@ -93,8 +93,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             listTaskModellocal.clear();
             listTaskModellocalbool.clear();
             PageTasks = 1;
-            print(onData[0]);
-            print(onData[1]);
             listCalendar = onData;
             //getdatalist(onData[1],onData[0],1);
           }));

@@ -468,7 +468,6 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.email);
       // print(user.profile);
 
-      print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
 
     }
