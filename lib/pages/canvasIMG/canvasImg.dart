@@ -7,8 +7,8 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 // ignore: must_be_immutable
 class CanvasImg extends StatefulWidget {
-  File img;
-  CanvasImg(File img) {
+  Image img;
+  CanvasImg(Image img) {
     this.img = img;
   }
   @override
@@ -28,8 +28,9 @@ class _CanvasImgState extends State<CanvasImg> {
   PainterController newController() {
     PainterController controller = PainterController();
     controller.thickness = 5.0;
+    Image img = widget.img;
     if(widget.img != null){
-      controller.backgroundImage = Image.file(widget.img);
+      controller.backgroundImage = img;
     }
     controller.backgroundColor = Colors.white;
     return controller;

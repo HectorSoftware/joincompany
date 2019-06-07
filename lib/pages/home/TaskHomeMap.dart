@@ -10,12 +10,9 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'package:joincompany/widgets/FormTaskNew.dart';
-import 'package:extended_image/extended_image.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
-
 class taskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 

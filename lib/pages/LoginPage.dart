@@ -24,11 +24,11 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-     final companyController = TextEditingController(text : 'duperu');
+  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
+     final companyController = TextEditingController(/*text : 'duperu'*/);
 //    final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //     final companyController = TextEditingController(text : 'getkem');
-  final passwordController = TextEditingController(text : '123');
+  final passwordController = TextEditingController(/*text : '123'*/);
 
   bool TextViewVisible;
   bool AgregarUser;
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   String ErrorTextFieldTextpwd = '';
   String ErrorTextFieldTextcompany = '';
   bool Circuleprogress = false;
-
+  bool ori = false;
 
   @override
   void initState() {
@@ -58,6 +58,12 @@ class _LoginPageState extends State<LoginPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+
+
+    if (mediaQueryData.orientation == Orientation.portrait) {
+      ori = true;
+    }
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Stack(
@@ -77,17 +83,8 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.30,
-          child: Column(
-            children: <Widget>[
-              Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  child: Image.asset('assets/images/final-logo.png'),
-                )
-              ),
-            ],
-          ),
+          child: Image.asset('assets/images/final-logo.png',height: MediaQuery.of(context).size.height*0.30,),
+
         ),
         ContainerDentroColum(),
       ],
@@ -273,13 +270,12 @@ class _LoginPageState extends State<LoginPage> {
 
           var getUserResponseid = await getUser(companylocal,auth.accessToken);
           if(getUserResponseid != null){
-            UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
             if(AgregarUser){
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
               UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
               int res = await ClientDatabaseProvider.db.saveUser(newuser);
             }else{
-              //int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-              int res2 = await ClientDatabaseProvider.db.updateUser(userIdLogueado.id.toString(), Usr, pwd, auth.accessToken);
+              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
             }
             Navigator.pushReplacementNamed(context, '/vistap');
           }else{
@@ -318,7 +314,6 @@ class _LoginPageState extends State<LoginPage> {
   testApi() async{
 
     try {
-      print("---------------- Inicia test. ----------------------------");
 
       String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
