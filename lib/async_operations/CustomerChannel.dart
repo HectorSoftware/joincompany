@@ -4,11 +4,12 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
+
 class CustomerChannel {
   
   CustomerChannel();
   
-  static void _createCustomersInBothLocalAndServer(String customer, String authorization) async {
+  static Future _createCustomersInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.created);
@@ -47,7 +48,7 @@ class CustomerChannel {
     });
   }
 
-  static void _deleteCustomersInBothLocalAndServer(String customer, String authorization) async {
+  static Future _deleteCustomersInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.deleted);
@@ -77,7 +78,7 @@ class CustomerChannel {
     });
   }
 
-  static void _updateCustomersInBothLocalAndServer(String customer, String authorization) async {
+  static Future _updateCustomersInBothLocalAndServer(String customer, String authorization) async {
     
     var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
@@ -106,16 +107,16 @@ class CustomerChannel {
     });
   } 
 
-  static void syncEverything() async {
+  static Future syncEverything() async {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    var a = await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
-    var b = await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
-    var c = await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
   }
 
 }

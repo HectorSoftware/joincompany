@@ -93,7 +93,6 @@ Future<http.Response> getCustomerFromServer(String id, String customer, String a
 }
 
 Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer, String authorization) async{
-
   var syncState = SyncState.created;
 
   if (isOnline) {

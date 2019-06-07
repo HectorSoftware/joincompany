@@ -1,11 +1,25 @@
 import 'package:http/http.dart' as http;
+import 'package:joincompany/async_database/Database.dart';
 import 'dart:async';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
+import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/addresses';
 
-Future<http.Response> getAllAddresses(String customer, String authorization, {String perPage, String page} ) async{
+Future<ResponseModel> getAllAddresses(String customer, String authorization, {String perPage, String page} ) async{
+  
+  List<AddressModel> addresses = await DatabaseProvider.db.ListAddresses();
+
+  AddressesModel addressesObj = new AddressesModel(data: addresses, perPage: 0);
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: addressesObj);
+
+  return response;
+}
+
+Future<http.Response> getAllAddressesFromServer(String customer, String authorization, {String perPage, String page} ) async{
   
   var params = new Map<String, String>();
 
@@ -20,26 +34,26 @@ Future<http.Response> getAllAddresses(String customer, String authorization, {St
   return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<http.Response> getAddress(String id, String customer, String authorization) async{
+Future<http.Response> getAddressFromServer(String id, String customer, String authorization) async{
 
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-Future<http.Response> createAddress(AddressModel addressObj, String customer, String authorization) async{
+Future<http.Response> createAddressFromServer(AddressModel addressObj, String customer, String authorization) async{
   
   var bodyJson = addressObj.toJson();
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
-Future<http.Response> updateAddress(String id, AddressModel addressObj, String customer, String authorization) async{
+Future<http.Response> updateAddressFromServer(String id, AddressModel addressObj, String customer, String authorization) async{
   
   var bodyJson = addressObj.toJson();
 
   return await httpPut(id, bodyJson, customer, authorization, resourcePath);
 }
 
-Future<http.Response> deleteAddress(String id, String customer, String authorization) async{
+Future<http.Response> deleteAddressFromServer(String id, String customer, String authorization) async{
   
   return await httpDelete(id, customer, authorization, resourcePath, true);
 }

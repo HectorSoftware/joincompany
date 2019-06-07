@@ -298,7 +298,7 @@ class _SearchAddressState extends State<SearchAddress> {
   getListAnddress() async {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
   //  var getAllAddressessResponse = await getAllAddresses(user.company, user.rememberToken);
-  //  AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
+  //  AddressesModel AddresseS = getAllAddressessResponse.body;
   //  if(getAllAddressessResponse.statusCode == 200){
   //    for(int cantAddress = 0; cantAddress < AddresseS.data.length; cantAddress++){
   //      if(AddresseS.data[cantAddress] != null){
@@ -308,7 +308,7 @@ class _SearchAddressState extends State<SearchAddress> {
   //  }
 
     var AddressResponse = await getAllAddresses(user.company, user.rememberToken);
-    AddressesModel Address = AddressesModel.fromJson(AddressResponse.body);
+    AddressesModel Address = AddressResponse.body;
 
     if(AddressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < Address.data.length; cantAddress++){

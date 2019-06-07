@@ -11,6 +11,7 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserModel.dart';
@@ -252,8 +253,9 @@ class _FormTaskState extends State<FormTask> {
                                 title: Text('${formType.data[index].name}'),
                                 leading: Icon(Icons.poll),
                                 onTap: () async {
+                                  // WARNING: MODIFYING!
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  FormModel form = getFormResponse.body;
                                   lisC(form);
                                   setState(() {
                                     directionClient.address = null;
@@ -882,27 +884,20 @@ class _FormTaskState extends State<FormTask> {
         }
     ) ;
   }
-  getAll()async{
+
+  getAll() async{
     FormsModel forms;
     FormsModel formType;
     await getElements();
-    http.Response getAllFormsResponse = await getAllForms(customer , token);
-    try{
-      if(getAllFormsResponse.statusCode == 200)
-      {
-        //  print(getAllFormsResponse.headers['content-type']);
-        forms = FormsModel.fromJson(getAllFormsResponse.body);
-        formType = forms;
-
-      }
-    }catch(e){
-
-    }
-    return formType;
+    // WARNING: MODIFYING!
+    ResponseModel getAllFormsResponse = await getAllForms(customer ,token);
+    return getAllFormsResponse.body;
   }
+
   initFormsTypes()async{
     formType = await getAll();
   }
+
   getElements()async{
     userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
     token = userToken.rememberToken;
@@ -915,45 +910,40 @@ class _FormTaskState extends State<FormTask> {
       taskCU= true;
     });
     showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return new Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new ListTile(
-                leading: new Icon(Icons.location_on),
-                title: new Text('Lugar' + '  '),
-                onTap: () {
-                  Navigator.pop(context);
-                  addDirection();
-                },
-              ),
-              new ListTile(
-                leading: new Icon(Icons.access_time),
-                title: new Text('Hora' + '    '),
-                onTap: () {
-                  Navigator.pop(context);
-                  selectTimeTask(globalContext);
-                  selectDateTask(globalContext);
-                },
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            new ListTile(
+              leading: new Icon(Icons.location_on),
+              title: new Text('Lugar' + '  '),
+              onTap: () {
+                Navigator.pop(context);
+                addDirection();
+              },
+            ),
+            new ListTile(
+              leading: new Icon(Icons.access_time),
+              title: new Text('Hora' + '    '),
+              onTap: () {
+                Navigator.pop(context);
+                selectTimeTask(globalContext);
+                selectDateTask(globalContext);
+              },
+            ),
+          ],
+        );
+      });
   }
-   saveTaskApi() async{
-     var createTaskResponse = await createTask(saveTask, customer, token);
-    print(createTaskResponse.request);
-//
-    print(createTaskResponse.statusCode);
-   print(createTaskResponse.body);
-   if(createTaskResponse.statusCode == 201){
-     setState(() {
-       taskEnd = true;
-     });
-   }
 
+  saveTaskApi() async {
+    var createTaskResponse = await createTask(saveTask, customer, token);
+    setState(() {
+       taskEnd = true;
+    });
   }
+
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);

@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
@@ -407,11 +410,16 @@ class _LoginPageState extends State<LoginPage> {
 
                 userFromServer.rememberToken = authFromResponse.accessToken;
                 userFromServer.loggedAt = DateTime.now().toString();
-                userFromServer.password =
-                    md5.convert(utf8.encode(password)).toString();
+                userFromServer.password = md5.convert(utf8.encode(password)).toString();
                 userFromServer.company = companyLocal;
-                await DatabaseProvider.db.CreateUser(
-                    userFromServer, SyncState.synchronized);
+
+                await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
+
+                await AddressChannel.syncEverything();
+                await CustomerChannel.syncEverything();
+                await CustomerAddressesChannel.syncEverything();
+                await FormChannel.syncEverything();
+                
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
             }
@@ -648,6 +656,22 @@ class _LoginPageState extends State<LoginPage> {
 
       // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
       // print(data.toString());
+
+      // var a1 = await DatabaseProvider.db.ListAddresses();
+      // await AddressChannel.syncEverything();
+      // var a2 = await DatabaseProvider.db.ListAddresses();
+
+      // var c1 = await DatabaseProvider.db.ListCustomers();
+      // await CustomerChannel.syncEverything();
+      // var c2 = await DatabaseProvider.db.ListCustomers();
+
+      // var ca1 = await DatabaseProvider.db.ListCustomerAddresses();
+      // await CustomerAddressesChannel.syncEverything();
+      // var ca2 = await DatabaseProvider.db.ListCustomerAddresses();
+
+      // var fcs = await DatabaseProvider.db.ListForms();
+      // await FormChannel.syncEverything();
+      // var fce = await DatabaseProvider.db.ListForms();
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
