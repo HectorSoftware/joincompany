@@ -18,7 +18,6 @@ class _PickerImgNetworkState extends State<PickerImgNetwork> {
 
   File img;
   Image  imgSave;
-
   @override
   Widget build(BuildContext context) {
     imgSave =  Image.network(widget.netImage);
@@ -41,8 +40,7 @@ class _PickerImgNetworkState extends State<PickerImgNetwork> {
         FlatButton(
           child: const Text('Continuar'),
           onPressed: () async {
-
-            var customImg = await editImg(img);
+            var customImg = await editImg(imgSave);
             Navigator.of(context).pop(customImg);
           },
         )
@@ -50,7 +48,7 @@ class _PickerImgNetworkState extends State<PickerImgNetwork> {
     );
   }
 
-  Future<Uint8List> editImg(File img) async{
+  Future<Uint8List> editImg(Image img) async{
     return showDialog<Uint8List>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!

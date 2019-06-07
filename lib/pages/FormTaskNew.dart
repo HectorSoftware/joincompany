@@ -552,7 +552,7 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id]}') : Text('Sin Asignar'),
                         onPressed: (){selectDate(context);
                         saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
 

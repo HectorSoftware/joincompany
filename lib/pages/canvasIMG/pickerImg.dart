@@ -68,7 +68,12 @@ class _PickerImgState extends State<PickerImg> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return CanvasImg(img);
+        if(img != null){
+          return CanvasImg(Image.file(img));
+
+        }else{
+          return CanvasImg(null);
+        }
       },
     );
   }
