@@ -13,6 +13,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 
 // ignore: must_be_immutable
@@ -185,14 +186,23 @@ class _ClienteState extends State<Cliente> {
             child: new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
-              onTap: () {
-                exit(0);
+              onTap: () async {
+                UserDataBase UserActiv = await deletetUser();
+                if(UserActiv == null){
+                  exit(0);
+                }
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<UserDataBase> deletetUser() async {
+    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
+    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    return userActiv;
   }
 
   extraerUser() async {
