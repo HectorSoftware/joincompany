@@ -9,6 +9,7 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 // ignore: must_be_immutable
 class ContactView extends StatefulWidget {
@@ -205,14 +206,23 @@ class _ContactViewState extends State<ContactView> {
             child: new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
-              onTap: () {
-                exit(0);
+              onTap: () async {
+                UserDataBase UserActiv = await deletetUser();
+                if(UserActiv == null){
+                  exit(0);
+                }
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<UserDataBase> deletetUser() async {
+    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
+    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    return userActiv;
   }
 
   extraerUser() async {

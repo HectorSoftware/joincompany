@@ -37,8 +37,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   List<bool> listTaskModellocalbool;
   String filterText = '';
   List<DateTime> listCalendar = new List<DateTime>();
-
-
   blocListTaskFilter bloctasksFilter;
   blocListTaskCalendar blocListTaskCalendarRes;
   blocListTask blocList;
@@ -70,6 +68,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   @override
   void dispose(){
     bloctasksFilter.dispose();
+    blocListTaskCalendarRes.dispose();
+    blocList.dispose();
     super.dispose();
   }
 
@@ -82,23 +82,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
   @override
   Widget build(BuildContext context) {
-
-    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
-    try{
-      if (this.mounted){
-        setState((){
-          // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
-          => setState((){
-            listTaskModellocal.clear();
-            listTaskModellocalbool.clear();
-            PageTasks = 1;
-            listCalendar = onData;
-            //getdatalist(onData[1],onData[0],1);
-          }));
-        });
-      }
-    }catch(e){}
 
     final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
     double aument = 0.7;
@@ -139,6 +122,25 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   ListViewTareas(){
+
+
+    //BLOCK CALENDARIO
+    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    try{
+      setState((){
+        // ignore: cancel_subscriptions
+        StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
+        => setState((){
+          listTaskModellocal.clear();
+          listTaskModellocalbool.clear();
+          PageTasks = 1;
+          listCalendar = onData;
+          //getdatalist(onData[1],onData[0],1);
+        }));
+      });
+    }catch(e){}
+
+    //BLOCK LISTA
     blocList = new blocListTask(listCalendar[1],listCalendar[0],PageTasks);
     try{
       if (this.mounted){
@@ -168,6 +170,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       }
     }catch(e){  }
 
+    //BLOCK FILTRO
     bloctasksFilter = widget.blocListTaskFilterReswidget;
     try{
       if (this.mounted){
@@ -186,7 +189,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     Container(
       child: RefreshIndicator(
         child: LoadMore(
-          isFinish: countTaskList >= 60,
+          isFinish: countTaskList >= TareasTotales,
           onLoadMore: _loadMore,
           child: listando(),
           whenEmptyLoad: false,
