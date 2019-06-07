@@ -1295,7 +1295,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "custom_fields" WHERE id = ${section.id}
       '''
     );
@@ -1303,69 +1303,37 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    section.fields.forEach((field) async {
-      List<FieldModel> fields = new List<FieldModel>();
-      List<SectionModel> customFields = await QueryCustomField(
-        SectionModel(id: field.sectionId),
-      );
-
-      customFields.forEach((customField) => fields.add(FieldModel(
-        id: customField.id,
-        createdAt: customField.createdAt,
-        entityId: customField.entityId,
-        sectionId: customField.sectionId,
-        name: customField.name,
-        deletedById: customField.deletedById,
-        updatedById: customField.updatedById,
-        createdById: customField.createdById,
-        deletedAt: customField.deletedAt,
-        code: customField.code,
-        entityType: customField.entityType,
-        fieldCollection: customField.fieldCollection,
-        fieldDefaultValue: customField.fieldDefaultValue,
-        fieldOptions: customField.fieldOptions,
-        fieldPlaceholder: customField.fieldPlaceholder,
-        fieldRequired: customField.fieldRequired,
-        fieldType: customField.fieldType,
-        fieldWidth: customField.fieldWidth,
-        position: customField.position,
-        subtitle: customField.subtitle,
-        type: customField.type,
-        updatedAt: customField.updatedAt,
-      )));
-
-      CreateCustomField(
-          SectionModel(
-            id: field.id,
-            createdAt: field.createdAt,
-            updatedAt: field.updatedAt,
-            deletedAt: field.deletedAt,
-            createdById: field.createdById,
-            updatedById: field.updatedById,
-            deletedById: field.deletedById,
-            sectionId: field.sectionId,
-            entityType: field.entityType,
-            entityId: field.entityId,
-            type: field.type,
-            name: field.name,
-            code: field.code,
-            subtitle: field.subtitle,
-            position: field.position,
-            fieldDefaultValue: field.fieldDefaultValue,
-            fieldType: field.fieldType,
-            fieldPlaceholder: field.fieldPlaceholder,
-            fieldOptions: field.fieldOptions,
-            fieldCollection: field.fieldCollection,
-            fieldRequired: field.fieldRequired,
-            fieldWidth: field.fieldWidth,
-            fields: fields,
-          ),
-          syncState
-      );
-    });
+    section.fields.forEach((field) => CreateCustomField(
+      SectionModel(
+        id: field.id,
+        createdAt: field.createdAt,
+        updatedAt: field.updatedAt,
+        deletedAt: field.deletedAt,
+        createdById: field.createdById,
+        updatedById: field.updatedById,
+        deletedById: field.deletedById,
+        sectionId: field.sectionId,
+        entityType: field.entityType,
+        entityId: field.entityId,
+        type: field.type,
+        name: field.name,
+        code: field.code,
+        subtitle: field.subtitle,
+        position: field.position,
+        fieldDefaultValue: field.fieldDefaultValue,
+        fieldType: field.fieldType,
+        fieldPlaceholder: field.fieldPlaceholder,
+        fieldOptions: field.fieldOptions,
+        fieldCollection: field.fieldCollection,
+        fieldRequired: field.fieldRequired,
+        fieldWidth: field.fieldWidth,
+        fields: null, // Fields don't have children.
+      ),
+      syncState,
+    ));
 
     return await db.rawInsert(
-        '''
+      '''
       INSERT INTO "custom_fields"(
         id,
         created_at,
@@ -1396,16 +1364,16 @@ class DatabaseProvider {
       
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt,
-    section.deletedAt, section.createdById,
-    section.updatedById, section.deletedById,
-    section.sectionId, section.entityType,
-    section.entityId, section.type, section.name,
-    section.code, section.subtitle, section.position,
-    section.fieldDefaultValue, section.fieldType,
-    section.fieldPlaceholder, section.fieldOptions.toString(),
-    section.fieldCollection, section.fieldRequired,
-    section.fieldWidth], ...paramsBySyncState[syncState]],
+      [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt,
+      section.deletedAt, section.createdById,
+      section.updatedById, section.deletedById,
+      section.sectionId, section.entityType,
+      section.entityId, section.type, section.name,
+      section.code, section.subtitle, section.position,
+      section.fieldDefaultValue, section.fieldType,
+      section.fieldPlaceholder, section.fieldOptions.toString(),
+      section.fieldCollection == null ? "[]": section.fieldCollection, section.fieldRequired,
+      section.fieldWidth], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1413,19 +1381,42 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      ''' 
       SELECT * FROM "custom_fields" WHERE id = $id
       '''
     );
 
+    SectionModel response;
     if (data.isNotEmpty) {
-      List<FieldModel> fields = new List<FieldModel>();
-
-      List<SectionModel> customFields = await QueryCustomField(
-        SectionModel(id: data.first["id"]),
+      response = SectionModel(
+        id: data.first["id"],
+        createdAt: data.first["created_at"],
+        updatedAt: data.first["updated_at"],
+        deletedAt: data.first["deleted_at"],
+        createdById: data.first["created_by_id"],
+        updatedById: data.first["updated_by_id"],
+        deletedById: data.first["deleted_by_id"],
+        sectionId: data.first["section_id"],
+        entityType: data.first["entity_type"],
+        entityId: data.first["entity_id"],
+        type: data.first["type"],
+        name: data.first["name"],
+        code: data.first["code"],
+        subtitle: data.first["subtitle"],
+        position: data.first["position"],
+        fieldDefaultValue: data.first["field_default_value"],
+        fieldType: data.first["field_type"],
+        fieldPlaceholder: data.first["field_placeholder"],
+        fieldOptions: data.first["field_options"],
+        fieldCollection: data.first["field_collection"],
+        fieldRequired: data.first["field_required"],
+        fieldWidth: data.first["field_width"],
       );
 
-      customFields.forEach((customField) => fields.add(FieldModel(
+      SectionModel fieldsQuery = new SectionModel(sectionId: data.first["id"]);
+      List<SectionModel> customFields = await QueryCustomField(fieldsQuery);
+
+      customFields.forEach((customField) => response.fields.add(FieldModel(
         id: customField.id,
         createdAt: customField.createdAt,
         entityId: customField.entityId,
@@ -1449,42 +1440,15 @@ class DatabaseProvider {
         type: customField.type,
         updatedAt: customField.updatedAt,
       )));
-
-      return SectionModel(
-        id: data.first["id"],
-        createdAt: data.first["created_at"],
-        updatedAt: data.first["updated_at"],
-        deletedAt: data.first["deleted_at"],
-        createdById: data.first["created_by_id"],
-        updatedById: data.first["updated_by_id"],
-        deletedById: data.first["deleted_by_id"],
-        sectionId: data.first["section_id"],
-        entityType: data.first["entity_type"],
-        entityId: data.first["entity_id"],
-        type: data.first["type"],
-        name: data.first["name"],
-        code: data.first["code"],
-        subtitle: data.first["subtitle"],
-        position: data.first["position"],
-        fieldDefaultValue: data.first["field_default_value"],
-        fieldType: data.first["field_type"],
-        fieldPlaceholder: data.first["field_placeholder"],
-        fieldOptions: data.first["field_options"],
-        fieldCollection: data.first["field_collection"],
-        fieldRequired: data.first["field_required"],
-        fieldWidth: data.first["field_width"],
-        fields: fields,
-      );
     }
-    else
-      return null;
+    return response;
   }
 
   Future<List<SectionModel>> QueryCustomField(SectionModel query) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "custom_fields"
       '''
     );
@@ -1561,34 +1525,32 @@ class DatabaseProvider {
 
 
         List<FieldModel> fields = new List<FieldModel>();
+        SectionModel sectionQuery = SectionModel(id: sectionRetrieved["id"]);
+        List<SectionModel> retrievedFields = await QueryCustomField(sectionQuery);
 
-        List<SectionModel> customFields = await QueryCustomField(
-          SectionModel(id: sectionRetrieved["id"]),
-        );
-
-        customFields.forEach((customField) => fields.add(FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
+        retrievedFields.forEach((field) => fields.add(FieldModel(
+          id: field.id,
+          createdAt: field.createdAt,
+          entityId: field.entityId,
+          sectionId: field.sectionId,
+          name: field.name,
+          deletedById: field.deletedById,
+          updatedById: field.updatedById,
+          createdById: field.createdById,
+          deletedAt: field.deletedAt,
+          code: field.code,
+          entityType: field.entityType,
+          fieldCollection: field.fieldCollection,
+          fieldDefaultValue: field.fieldDefaultValue,
+          fieldOptions: field.fieldOptions,
+          fieldPlaceholder: field.fieldPlaceholder,
+          fieldRequired: field.fieldRequired,
+          fieldType: field.fieldType,
+          fieldWidth: field.fieldWidth,
+          position: field.position,
+          subtitle: field.subtitle,
+          type: field.type,
+          updatedAt: field.updatedAt,
         )));
 
         listOfSections.add(SectionModel(
@@ -1638,34 +1600,32 @@ class DatabaseProvider {
     if (data.isNotEmpty) {
       data.forEach((sectionRetrieved) async {
         List<FieldModel> fields = new List<FieldModel>();
+        SectionModel sectionQuery = SectionModel(id: sectionRetrieved["id"]);
+        List<SectionModel> retrievedFields = await QueryCustomField(sectionQuery);
 
-        List<SectionModel> customFields = await QueryCustomField(
-          SectionModel(id: sectionRetrieved["id"]),
-        );
-
-        customFields.forEach((customField) => fields.add(FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
+        retrievedFields.forEach((field) => fields.add(FieldModel(
+          id: field.id,
+          createdAt: field.createdAt,
+          entityId: field.entityId,
+          sectionId: field.sectionId,
+          name: field.name,
+          deletedById: field.deletedById,
+          updatedById: field.updatedById,
+          createdById: field.createdById,
+          deletedAt: field.deletedAt,
+          code: field.code,
+          entityType: field.entityType,
+          fieldCollection: field.fieldCollection,
+          fieldDefaultValue: field.fieldDefaultValue,
+          fieldOptions: field.fieldOptions,
+          fieldPlaceholder: field.fieldPlaceholder,
+          fieldRequired: field.fieldRequired,
+          fieldType: field.fieldType,
+          fieldWidth: field.fieldWidth,
+          position: field.position,
+          subtitle: field.subtitle,
+          type: field.type,
+          updatedAt: field.updatedAt,
         )));
 
         listOfSections.add(SectionModel(
@@ -1687,10 +1647,10 @@ class DatabaseProvider {
           fieldDefaultValue: sectionRetrieved["field_default_value"],
           fieldType: sectionRetrieved["field_type"],
           fieldPlaceholder: sectionRetrieved["field_placeholder"],
-          fieldOptions: sectionRetrieved["field_options"],
           fieldCollection: sectionRetrieved["field_collection"],
-          fieldRequired: sectionRetrieved["field_required"],
+          fieldRequired: sectionRetrieved["field_required"] == 1 ? true: false,
           fieldWidth: sectionRetrieved["field_width"],
+          fieldOptions: sectionRetrieved["field_options"],
           fields: fields,
         ));
       });
@@ -1700,102 +1660,82 @@ class DatabaseProvider {
 
   Future<int> UpdateCustomField(int sectionId, SectionModel section, SyncState syncState) async {
     final db = await database;
+
     section.fields.forEach((field) async {
       List<FieldModel> fields = new List<FieldModel>();
-      List<SectionModel> customFields = await QueryCustomField(
-        SectionModel(id: field.sectionId),
-      );
+      SectionModel queryField = SectionModel(id: field.sectionId);
+      List<SectionModel> fieldsData = await QueryCustomField(queryField);
 
-      customFields.forEach((customField) => fields.add(FieldModel(
-        id: customField.id,
-        createdAt: customField.createdAt,
-        entityId: customField.entityId,
-        sectionId: customField.sectionId,
-        name: customField.name,
-        deletedById: customField.deletedById,
-        updatedById: customField.updatedById,
-        createdById: customField.createdById,
-        deletedAt: customField.deletedAt,
-        code: customField.code,
-        entityType: customField.entityType,
-        fieldCollection: customField.fieldCollection,
-        fieldDefaultValue: customField.fieldDefaultValue,
-        fieldOptions: customField.fieldOptions,
-        fieldPlaceholder: customField.fieldPlaceholder,
-        fieldRequired: customField.fieldRequired,
-        fieldType: customField.fieldType,
-        fieldWidth: customField.fieldWidth,
-        position: customField.position,
-        subtitle: customField.subtitle,
-        type: customField.type,
-        updatedAt: customField.updatedAt,
+      fieldsData.forEach((field) => fields.add(FieldModel(
+        id: field.id,
+        sectionId: field.sectionId,
       )));
 
       List<Map<String, dynamic>> data;
       data = await db.rawQuery(
-          '''
-      SELECT * FROM "custom_fields" WHERE id = ${field.id}
-      '''
+        '''
+        SELECT * FROM "custom_fields" WHERE id = ${field.id}
+        '''
       );
 
       if (data.isNotEmpty)
         UpdateCustomField(
-            field.id,
-            SectionModel(
-              id: field.id,
-              createdAt: field.createdAt,
-              updatedAt: field.updatedAt,
-              deletedAt: field.deletedAt,
-              createdById: field.createdById,
-              updatedById: field.updatedById,
-              deletedById: field.deletedById,
-              sectionId: field.sectionId,
-              entityType: field.entityType,
-              entityId: field.entityId,
-              type: field.type,
-              name: field.name,
-              code: field.code,
-              subtitle: field.subtitle,
-              position: field.position,
-              fieldDefaultValue: field.fieldDefaultValue,
-              fieldType: field.fieldType,
-              fieldPlaceholder: field.fieldPlaceholder,
-              fieldOptions: field.fieldOptions,
-              fieldCollection: field.fieldCollection,
-              fieldRequired: field.fieldRequired,
-              fieldWidth: field.fieldWidth,
-              fields: fields,
-            ),
-            syncState
+          field.id,
+          SectionModel(
+            id: field.id,
+            createdAt: field.createdAt,
+            updatedAt: field.updatedAt,
+            deletedAt: field.deletedAt,
+            createdById: field.createdById,
+            updatedById: field.updatedById,
+            deletedById: field.deletedById,
+            sectionId: field.sectionId,
+            entityType: field.entityType,
+            entityId: field.entityId,
+            type: field.type,
+            name: field.name,
+            code: field.code,
+            subtitle: field.subtitle,
+            position: field.position,
+            fieldDefaultValue: field.fieldDefaultValue,
+            fieldType: field.fieldType,
+            fieldPlaceholder: field.fieldPlaceholder,
+            fieldOptions: field.fieldOptions,
+            fieldCollection: field.fieldCollection,
+            fieldRequired: field.fieldRequired,
+            fieldWidth: field.fieldWidth,
+            fields: null,
+          ),
+          syncState
         );
       else
         CreateCustomField(
-            SectionModel(
-              id: field.id,
-              createdAt: field.createdAt,
-              updatedAt: field.updatedAt,
-              deletedAt: field.deletedAt,
-              createdById: field.createdById,
-              updatedById: field.updatedById,
-              deletedById: field.deletedById,
-              sectionId: field.sectionId,
-              entityType: field.entityType,
-              entityId: field.entityId,
-              type: field.type,
-              name: field.name,
-              code: field.code,
-              subtitle: field.subtitle,
-              position: field.position,
-              fieldDefaultValue: field.fieldDefaultValue,
-              fieldType: field.fieldType,
-              fieldPlaceholder: field.fieldPlaceholder,
-              fieldOptions: field.fieldOptions,
-              fieldCollection: field.fieldCollection,
-              fieldRequired: field.fieldRequired,
-              fieldWidth: field.fieldWidth,
-              fields: fields,
-            ),
-            syncState
+          SectionModel(
+            id: field.id,
+            createdAt: field.createdAt,
+            updatedAt: field.updatedAt,
+            deletedAt: field.deletedAt,
+            createdById: field.createdById,
+            updatedById: field.updatedById,
+            deletedById: field.deletedById,
+            sectionId: field.sectionId,
+            entityType: field.entityType,
+            entityId: field.entityId,
+            type: field.type,
+            name: field.name,
+            code: field.code,
+            subtitle: field.subtitle,
+            position: field.position,
+            fieldDefaultValue: field.fieldDefaultValue,
+            fieldType: field.fieldType,
+            fieldPlaceholder: field.fieldPlaceholder,
+            fieldOptions: field.fieldOptions,
+            fieldCollection: field.fieldCollection,
+            fieldRequired: field.fieldRequired,
+            fieldWidth: field.fieldWidth,
+            fields: null,
+          ),
+          syncState
         );
     });
 
@@ -1829,13 +1769,13 @@ class DatabaseProvider {
       deleted = ?
       WHERE id = ${sectionId}
       ''',
-        [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt, section.deletedAt,
-    section.createdById, section.updatedById, section.deletedById,
-    section.sectionId, section.entityType, section.entityId, section.type,
-    section.name, section.code, section.subtitle, section.position,
-    section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
-    section.fieldOptions.toString(), section.fieldCollection, section.fieldRequired,
-    section.fieldWidth], ...paramsBySyncState[syncState]],
+      [...[section.id, section.createdAt, section.updatedAt == null ? DateTime.now().toString() : section.updatedAt, section.deletedAt,
+      section.createdById, section.updatedById, section.deletedById,
+      section.sectionId, section.entityType, section.entityId, section.type,
+      section.name, section.code, section.subtitle, section.position,
+      section.fieldDefaultValue, section.fieldType, section.fieldPlaceholder,
+      section.fieldOptions.toString(), section.fieldCollection, section.fieldRequired,
+      section.fieldWidth], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1875,34 +1815,32 @@ class DatabaseProvider {
     if (data.isNotEmpty) {
       data.forEach((sectionRetrieved) async {
         List<FieldModel> fields = new List<FieldModel>();
+        SectionModel fieldQuery = SectionModel(id: sectionRetrieved["id"]);
+        List<SectionModel> customFields = await QueryCustomField(fieldQuery);
 
-        List<SectionModel> customFields = await QueryCustomField(
-          SectionModel(id: sectionRetrieved["id"]),
-        );
-
-        customFields.forEach((customField) => fields.add(FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
+        customFields.forEach((field) => fields.add(FieldModel(
+          id: field.id,
+          createdAt: field.createdAt,
+          entityId: field.entityId,
+          sectionId: field.sectionId,
+          name: field.name,
+          deletedById: field.deletedById,
+          updatedById: field.updatedById,
+          createdById: field.createdById,
+          deletedAt: field.deletedAt,
+          code: field.code,
+          entityType: field.entityType,
+          fieldCollection: field.fieldCollection,
+          fieldDefaultValue: field.fieldDefaultValue,
+          fieldOptions: field.fieldOptions,
+          fieldPlaceholder: field.fieldPlaceholder,
+          fieldRequired: field.fieldRequired,
+          fieldType: field.fieldType,
+          fieldWidth: field.fieldWidth,
+          position: field.position,
+          subtitle: field.subtitle,
+          type: field.type,
+          updatedAt: field.updatedAt,
         )));
 
         listOfSections.add(SectionModel(
