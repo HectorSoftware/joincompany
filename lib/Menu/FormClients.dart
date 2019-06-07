@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
@@ -9,11 +7,9 @@ import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
-import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
-import 'clientes.dart';
 
 enum type{NAME,CODE,NOTE}
 
@@ -167,14 +163,11 @@ class _FormClientState extends State<FormClient> {
         code.text = widget.client.code;
         note.text = widget.client.details;
       }
-      directionsOld;      //Directions
-      directionsAll;
     });
   }
 
   Future<int> deletedAddressUser(AddressModel direction)async{
      var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),user.company, user.rememberToken);
-     print(resp.body);
      return resp.statusCode;
   }
 
@@ -268,7 +261,6 @@ class _FormClientState extends State<FormClient> {
             );
             var response = await createCustomer(client, user.company, user.rememberToken);
             var cli = response.body;
-            print(cli.id);
             if(response.statusCode == 200){
               bool saveDirections = await setDirections(cli.id);
               if(!saveDirections){
@@ -304,18 +296,22 @@ class _FormClientState extends State<FormClient> {
   Future<bool> setDirections(int id)async{
     for(var direction in directionsNews){
       int resp = await addAddressUser(direction,id);
-      responceStatus(resp);
+      if(responseStatus(resp)){
+        return false;
+      }
     }
     for(var direction in directionsOld){
       if(oldToEliminated(direction)){
         int resp = await deletedAddressUser(direction);
-        responceStatus(resp);
+        if(responseStatus(resp)){
+          return false;
+        }
       }
     }
     return true;
   }
 
-  bool responceStatus(int resp){
+  bool responseStatus(int resp){
     switch(resp){
       case 200:{
         return false;
@@ -336,7 +332,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool validateData(){//TODO
+  bool validateData(){
     if(name.text == ''){
       setState(() {
         errorTextFieldName = 'Campo requerido';

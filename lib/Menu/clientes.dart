@@ -5,28 +5,24 @@ import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
-import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
 
 // ignore: must_be_immutable
-class Cliente extends StatefulWidget {
-
+class Client extends StatefulWidget {
   bool vista;
-  Cliente(vista){
+  Client(vista){
     this.vista = vista;
   }
-
   @override
-  _ClienteState createState() => _ClienteState();
+  _ClientState createState() => _ClientState();
 }
 
-class _ClienteState extends State<Cliente> {
+class _ClientState extends State<Client> {
 
   ListWidgets ls = ListWidgets();
 
@@ -63,7 +59,35 @@ class _ClienteState extends State<Cliente> {
 
     if (!isOffline && hasConnection){
       print("llego el internet yiiiiiiiii");
+      sync();
     }
+  }
+
+  Future<void> sync(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Center(
+            child: SizedBox(
+                height: 80.0,
+                width: 145.0,
+                child:Column(
+                  children: <Widget>[
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    Center(
+                      child: Text("Sincronizando"),
+                    )
+                  ],
+                )
+            ),
+          )
+        );
+      },
+    );
   }
 
   @override
@@ -223,7 +247,6 @@ class _ClienteState extends State<Cliente> {
 
   listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
-
     return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],
