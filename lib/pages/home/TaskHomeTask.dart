@@ -210,8 +210,6 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     if (this.mounted){
       setState(() {
         PageTasks++;
-        print("onLoadMore ${PageTasks}");
-        print("total $countTaskList");
       });
     }
 
