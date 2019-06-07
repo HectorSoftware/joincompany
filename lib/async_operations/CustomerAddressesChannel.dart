@@ -86,7 +86,7 @@ class CustomerAddressesChannel {
     });
   }
 
-  static void syncEverything() async {
+  static Future syncEverything() async {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 

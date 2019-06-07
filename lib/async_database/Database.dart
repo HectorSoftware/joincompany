@@ -438,7 +438,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "forms" WHERE id = ${form.id}
       '''
     );
@@ -502,8 +502,8 @@ class DatabaseProvider {
         updatedById: data.first["updated_by_id"],
         deletedById: data.first["deleted_by_id"],
         name: data.first["name"],
-        withCheckinout: data.first["with_checkinout"],
-        active: data.first["active"],
+        withCheckinout: data.first["with_checkinout"] == 1 ? true: false,
+        active: data.first["active"] == 1 ? true: false,
         sections: sections,
       );
     }
@@ -606,8 +606,8 @@ class DatabaseProvider {
           updatedById: data.first["updated_by_id"],
           deletedById: data.first["deleted_by_id"],
           name: data.first["name"],
-          withCheckinout: data.first["with_checkinout"],
-          active: data.first["active"],
+          withCheckinout: data.first["with_checkinout"] == 1 ? true: false,
+          active: data.first["active"] == 1 ? true: false,
           sections: sections,
         ));
       });
@@ -684,7 +684,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "forms"
       '''
     );
@@ -705,8 +705,8 @@ class DatabaseProvider {
           updatedById: data.first["updated_by_id"],
           deletedById: data.first["deleted_by_id"],
           name: data.first["name"],
-          withCheckinout: data.first["with_checkinout"],
-          active: data.first["active"],
+          withCheckinout: data.first["with_checkinout"] == 1 ? true: false,
+          active: data.first["active"] == 1 ? true: false,
           sections: sections,
         ));
       });
@@ -1609,10 +1609,10 @@ class DatabaseProvider {
           fieldDefaultValue: sectionRetrieved["field_default_value"],
           fieldType: sectionRetrieved["field_type"],
           fieldPlaceholder: sectionRetrieved["field_placeholder"],
-          fieldOptions: sectionRetrieved["field_options"],
           fieldCollection: sectionRetrieved["field_collection"],
-          fieldRequired: sectionRetrieved["field_required"],
+          fieldRequired: sectionRetrieved["field_required"] == 1 ? true: false,
           fieldWidth: sectionRetrieved["field_width"],
+          fieldOptions: sectionRetrieved["field_options"],
           fields: fields,
         ));
       });

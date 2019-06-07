@@ -885,12 +885,12 @@ class _FormTaskState extends State<FormTask> {
     ) ;
   }
 
-  getAll()async{
+  getAll() async{
     FormsModel forms;
     FormsModel formType;
     await getElements();
     // WARNING: MODIFYING!
-    ResponseModel getAllFormsResponse = await getAllForms(customer , token);
+    ResponseModel getAllFormsResponse = await getAllForms(customer ,token);
     return getAllFormsResponse.body;
   }
 

@@ -11,16 +11,8 @@ import 'package:joincompany/services/CustomerService.dart';
 String resourcePath = '/forms';
 
 Future<ResponseModel> getAllForms(String customer, String authorization, {String perPage, String page}) async {
-  if (isOnline) {
-    var getAllFormsResponse = await getAllFormsFromServer(customer, authorization, perPage: perPage, page: page);
-    if (getAllFormsResponse.statusCode == 200 || getAllFormsResponse.statusCode == 201) {
-      var formsFromResponse = FormsModel.fromJson(getAllFormsResponse.body);
-      formsFromResponse.data.forEach((formModel) async => await DatabaseProvider.db.CreateForm(formModel, SyncState.synchronized));
-    }
-  }
-
   ResponseModel response = new ResponseModel();
-  response.body = FormsModel(data: await DatabaseProvider.db.ListForms());
+  response.body = FormsModel(data: await DatabaseProvider.db.ListForms(), perPage: 0);
   response.statusCode = 200;
   return response;
 }
@@ -41,12 +33,6 @@ Future<http.Response> getAllFormsFromServer(String customer, String authorizatio
 }
 
 Future<ResponseModel> getForm(String id, String customer, String authorization) async {
-  if (isOnline) {
-    var getFormFromServerResponse = await getForm(id, customer, authorization);
-    if (getFormFromServerResponse.statusCode == 200 || getFormFromServerResponse.statusCode == 201)
-      await DatabaseProvider.db.CreateForm(FormModel.fromJson(getFormFromServerResponse.body), SyncState.synchronized);
-  }
-
   ResponseModel response = new ResponseModel();
   response.body = await DatabaseProvider.db.ReadFormById(int.parse(id));
   response.statusCode = 200;

@@ -12,7 +12,7 @@ class FormChannel {
   static Future _createFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Server To Local
-    var formsServerResponse = await getAllForms(customer, authorization);
+    var formsServerResponse = await getAllFormsFromServer(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
 
     Set idsFormsServer = new Set();
@@ -27,7 +27,10 @@ class FormChannel {
     formsServer.data.forEach((formServer) async {
       if (idsToCreate.contains(formServer.id)) {
         // Cambiar el SyncState Local
-        await DatabaseProvider.db.CreateForm(formServer, SyncState.synchronized);
+        var getFormResponse = await getFormFromServer(formServer.id.toString(), customer, authorization);
+        FormModel form = FormModel.fromJson(getFormResponse.body);
+
+        await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
       }
     });
   }
@@ -35,7 +38,7 @@ class FormChannel {
   static Future _deleteFormsInBothLocalAndServer(String customer, String authorization) async {
 
     // Delete Server To Local
-    var formsServerResponse = await getAllForms(customer, authorization);
+    var formsServerResponse = await getAllFormsFromServer(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
 
     Set idsFormsServer = new Set();
@@ -54,7 +57,7 @@ class FormChannel {
 
   static Future _updateFormsInBothLocalAndServer(String customer, String authorization) async {
     
-    var formsServerResponse = await getAllForms(customer, authorization);
+    var formsServerResponse = await getAllFormsFromServer(customer, authorization);
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
 
     formsServer.data.forEach((formServer) async {
@@ -73,7 +76,7 @@ class FormChannel {
     });
   }
 
-  static void syncEverything() async {
+  static Future syncEverything() async {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 

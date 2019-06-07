@@ -410,11 +410,16 @@ class _LoginPageState extends State<LoginPage> {
 
                 userFromServer.rememberToken = authFromResponse.accessToken;
                 userFromServer.loggedAt = DateTime.now().toString();
-                userFromServer.password =
-                    md5.convert(utf8.encode(password)).toString();
+                userFromServer.password = md5.convert(utf8.encode(password)).toString();
                 userFromServer.company = companyLocal;
-                await DatabaseProvider.db.CreateUser(
-                    userFromServer, SyncState.synchronized);
+
+                await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
+
+                await AddressChannel.syncEverything();
+                await CustomerChannel.syncEverything();
+                await CustomerAddressesChannel.syncEverything();
+                await FormChannel.syncEverything();
+                
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
             }
@@ -664,7 +669,9 @@ class _LoginPageState extends State<LoginPage> {
       // await CustomerAddressesChannel.syncEverything();
       // var ca2 = await DatabaseProvider.db.ListCustomerAddresses();
 
+      // var fcs = await DatabaseProvider.db.ListForms();
       // await FormChannel.syncEverything();
+      // var fce = await DatabaseProvider.db.ListForms();
 
       print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
