@@ -361,7 +361,6 @@ class _LoginPageState extends State<LoginPage> {
               AuthModel authFromResponse = AuthModel.fromJson(loginResponse.body);
               // Update the local user's access token.
               user.rememberToken = authFromResponse.accessToken;
-              user.loggedAt = DateTime.now().toString();
               user.password = md5.convert(utf8.encode(password)).toString();
               user.company = companyLocal;
               DatabaseProvider.db.UpdateUser(
@@ -369,6 +368,8 @@ class _LoginPageState extends State<LoginPage> {
                   user,
                   SyncState.synchronized
               );
+
+              Navigator.pushReplacementNamed(context, '/vistap');
             }
           } else {
             ErrorTextFieldEmail = true;
@@ -409,16 +410,15 @@ class _LoginPageState extends State<LoginPage> {
                     userFromServerResponse.body);
 
                 userFromServer.rememberToken = authFromResponse.accessToken;
-                userFromServer.loggedAt = DateTime.now().toString();
                 userFromServer.password = md5.convert(utf8.encode(password)).toString();
                 userFromServer.company = companyLocal;
 
-                await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
+                await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);                
 
                 await AddressChannel.syncEverything();
                 await CustomerChannel.syncEverything();
                 await CustomerAddressesChannel.syncEverything();
-//                await FormChannel.syncEverything();
+                // await FormChannel.syncEverything();
                 
                 Navigator.pushReplacementNamed(context, '/vistap');
               }

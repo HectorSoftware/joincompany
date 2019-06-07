@@ -115,7 +115,7 @@ class DatabaseProvider {
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken, user.company, user.loggedAt],
+    user.profile, user.password, user.rememberToken, user.company, user.loggedAt == null ? DateTime.now().toString(): user.loggedAt],
     ...paramsBySyncState[syncState]],
     );
   }
@@ -265,6 +265,7 @@ class DatabaseProvider {
             return;
         if (query.company != null)
           if (query.company != userRetrieved["company"])
+            return;
 
         listOfUsers.add(UserModel(
           id: userRetrieved["id"],
@@ -357,18 +358,18 @@ class DatabaseProvider {
       profile = ?,
       password = ?,
       remember_token = ?,
+      logged_at = ?,
+      company = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
-      logged_at = ?,
-      company = ?
+      deleted = ?
       WHERE id = ${userId}
       ''',
       [...[user.id, user.createdAt, user.updatedAt == null ? DateTime.now().toString() : user.updatedAt, user.deletedAt,
     user.createdById, user.updatedById, user.deletedById,
     user.supervisorId, user.name, user.code, user.email,
     user.phone, user.mobile, user.title, user.details,
-    user.profile, user.password, user.rememberToken, user.loggedAt, user.company],
+    user.profile, user.password, user.rememberToken, user.loggedAt == null ? DateTime.now().toString(): user.loggedAt, user.company],
     ...paramsBySyncState[syncState]],
     );
   }
