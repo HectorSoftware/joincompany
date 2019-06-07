@@ -47,7 +47,7 @@ class CustomerAddressesChannel {
     	int customerId = int.parse(customerAddressIds[0]);
     	int addressId = int.parse(customerAddressIds[1]);
       // Cambiar el SyncState Local
-      await DatabaseProvider.db.CreateCustomerAddress(customersAddressesServerIds[customerAddressToCreate], null, null, null, customerId, addressId, true, SyncState.synchronized);
+      await DatabaseProvider.db.CreateCustomerAddress(null, null, null, null, customerId, addressId, true, SyncState.synchronized);
     });
   }
 
