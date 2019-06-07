@@ -207,8 +207,11 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
     _markers.clear();
+    int number = 0;
 
     for(Place mark in listPlaces){
+
+      number = number +1;
       _markers.add(
         Marker(
             markerId: MarkerId(mark.id.toString()),
@@ -226,7 +229,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                 }
             ),
             onTap: (){ },
-          icon: await colorMarker(mark,listPlaces.indexOf(mark))
+          icon: await colorMarker(mark,number)
         ),
       );
     }
@@ -244,9 +247,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         points: convertToLatLng(decodePoly(route)),
         color: Colors.red[200]));
   }
+
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
     ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
-    number = number +1;
+
 
     switch(mark.statusTask){
       case status.cliente:{
