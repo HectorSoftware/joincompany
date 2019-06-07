@@ -80,7 +80,11 @@ class _ClientState extends State<Client> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Sincronizando ... "),
-          content:CircularProgressIndicator()
+          content:Container(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
         );
       },
     );
@@ -98,13 +102,7 @@ class _ClientState extends State<Client> {
       ),
       body: Stack(
         children: <Widget>[
-          !isOffline ? listViewCustomers() : Stack(
-            children: <Widget>[
-              Center(
-                child: Text("No hay conexion a internet"),
-              )
-            ],
-          ),
+          listViewCustomers()
         ],
       ),
       floatingActionButton: FloatingActionButton(

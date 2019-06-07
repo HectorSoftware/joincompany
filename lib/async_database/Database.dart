@@ -4053,7 +4053,7 @@ class DatabaseProvider {
     List<String> relations = new List<String>();
     if (data.isNotEmpty) 
       data.forEach((relation) => relations.add(
-          relation["customer_id"] + "-" + relation["address_id"]
+          relation["customer_id"].toString() + "-" + relation["address_id"].toString()
       ));
     return relations;
   }
