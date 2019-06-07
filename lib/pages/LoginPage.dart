@@ -491,7 +491,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   getFormsRaw() {
-    return '{ "current_page": 1, "data": [ { "id": 3, "created_at": "2018-10-21 20:06:29", "updated_at": "2019-10-21 20:06:31", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Enrolamiento eHuapi", "with_checkinout": true, "active": true }, { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
+    return '{ "current_page": 1, "data": [ { "id": 3, "created_at": "2018-10-21 20:06:29", "updated_at": "2022-10-21 20:06:31", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Enrolamiento eHuapi 2", "with_checkinout": true, "active": true }, { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
   }
 
   getFormRaw(int id) {
@@ -504,7 +504,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if(id==3){
-      return ' { "id": 3, "created_at": "2018-07-18 17:50:19", "updated_at": "2019-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 14, "name": "Enrolamiento eHuapi", "with_checkinout": true, "active": true, "sections": [ { "id": 17, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 1, "entity_type": "Form", "entity_id": 3, "type": "section", "name": "Datos persona que atiende", "code": "SECTION_15", "subtitle": "test", "position": 12, "field_default_value": "test", "field_type": "", "field_placeholder": "test", "field_options": [], "field_collection": "test", "field_required": false, "field_width": 3, "fields": [ { "id": 35, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 26, "entity_type": "Form", "entity_id": 3, "type": "field", "name": "Giro", "code": "FIELD_33", "subtitle": "test", "position": 30, "field_default_value": "test", "field_type": "Combo", "field_placeholder": "test", "field_options": [ { "value": 16, "name": "Botillería" }, { "value": 17, "name": "Roticería" }, { "value": 18, "name": "Minimarket" }, { "value": 19, "name": "Carnicería" }, { "value": 20, "name": "Otro" } ], "field_collection": "Giro", "field_required": false, "field_width": 3 } ] } ] }';
+      return ' { "id": 3, "created_at": "2018-07-18 17:50:19", "updated_at": "2022-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 14, "name": "Enrolamiento eHuapi 2", "with_checkinout": true, "active": true, "sections": [ { "id": 17, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 1, "entity_type": "Form", "entity_id": 3, "type": "section", "name": "Datos persona que atiende", "code": "SECTION_15", "subtitle": "test", "position": 12, "field_default_value": "test", "field_type": "", "field_placeholder": "test", "field_options": [], "field_collection": "test", "field_required": false, "field_width": 3, "fields": [ { "id": 35, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 26, "entity_type": "Form", "entity_id": 3, "type": "field", "name": "Giro", "code": "FIELD_33", "subtitle": "test", "position": 30, "field_default_value": "test", "field_type": "Combo", "field_placeholder": "test", "field_options": [ { "value": 16, "name": "Botillería" }, { "value": 17, "name": "Roticería" }, { "value": 18, "name": "Minimarket" }, { "value": 19, "name": "Carnicería" }, { "value": 20, "name": "Otro" } ], "field_collection": "Giro", "field_required": false, "field_width": 3 } ] } ] }';
     }
   }
 
@@ -717,6 +717,8 @@ class _LoginPageState extends State<LoginPage> {
       //   } 
       // }
 
+      // var formsResponse = await getAllForms(customer, "");
+      // var forms = await formsResponse.body;
 
 
 
@@ -739,7 +741,7 @@ class _LoginPageState extends State<LoginPage> {
     //     var getFormResponse = await getFormRaw(formServer.id);
     //     FormModel form = FormModel.fromJson(getFormResponse);
 
-    //     print("Se va a crear " + form.name);
+    //     print("Se va a crear: " + form.name);
 
     //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
     //   }
