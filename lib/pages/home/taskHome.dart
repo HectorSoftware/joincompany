@@ -15,6 +15,7 @@ import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/services/UserService.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
@@ -217,14 +218,23 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             child: new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
-              onTap: () {
-                exit(0);
+              onTap: () async {
+                UserDataBase UserActiv = await deletetUser();
+                if(UserActiv == null){
+                  exit(0);
+                }
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<UserDataBase> deletetUser() async {
+    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
+    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    return userActiv;
   }
 
   Future<Null> selectDate( context )async{

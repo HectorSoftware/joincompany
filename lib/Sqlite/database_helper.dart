@@ -26,7 +26,12 @@ class ClientDatabaseProvider{
         onCreate: (Database db, int version) async {
           await db.execute(
               "CREATE TABLE User(idTable INT PRIMARY KEY,idUserCompany INT, name TEXT, password TEXT , company TEXT, token TEXT)");
-    });
+        });
+  }
+
+  Future<Database> deleteDatabaseInstanace() async {
+    final db = await database;
+    db.delete('User');
   }
 
   //muestra un solo cliente por el id la base de datos
