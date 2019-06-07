@@ -93,6 +93,8 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             listTaskModellocal.clear();
             listTaskModellocalbool.clear();
             PageTasks = 1;
+            print(onData[0]);
+            print(onData[1]);
             listCalendar = onData;
             //getdatalist(onData[1],onData[0],1);
           }));
@@ -201,10 +203,18 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   int TareasTotales = 0;
+//  int get countTaskList => listTaskModellocal.length;
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
-    PageTasks++;
-   //print("onLoadMore ${PageTasks}");
+
+    if (this.mounted){
+      setState(() {
+        PageTasks++;
+        print("onLoadMore ${PageTasks}");
+        print("total $countTaskList");
+      });
+    }
+
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
     //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
@@ -215,6 +225,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     if (this.mounted){
       setState((){
         PageTasks = 1;
+        listCalendar;
         listTaskModellocal.clear();
       });
     }

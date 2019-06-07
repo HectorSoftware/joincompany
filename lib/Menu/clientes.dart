@@ -155,6 +155,21 @@ class _ClienteState extends State<Cliente> {
               },
             ),
           ),
+          Divider(
+            height: 30.0,
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.filter_vintage),
+              onTap: () {
+                // Navigator.pushReplacementNamed(context, "/intro");
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/configuracion');
+              },
+            ),
+          ),
           Container(
             child: new ListTile(
               title: new Text("Cerrar Sesion"),
@@ -172,21 +187,6 @@ class _ClienteState extends State<Cliente> {
               trailing: new Icon(Icons.directions_run),
               onTap: () {
                 exit(0);
-              },
-            ),
-          ),
-          Divider(
-            height: 30.0,
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Configuración"),
-              trailing: new Icon(Icons.filter_vintage),
-              onTap: () {
-                // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.of(context).pop();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
               },
             ),
           ),
