@@ -418,7 +418,7 @@ class _LoginPageState extends State<LoginPage> {
                 await AddressChannel.syncEverything();
                 await CustomerChannel.syncEverything();
                 await CustomerAddressesChannel.syncEverything();
-                await FormChannel.syncEverything();
+//                await FormChannel.syncEverything();
                 
                 Navigator.pushReplacementNamed(context, '/vistap');
               }

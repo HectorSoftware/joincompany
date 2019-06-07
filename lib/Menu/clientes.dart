@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
@@ -58,33 +61,26 @@ class _ClientState extends State<Client> {
     });
 
     if (!isOffline && hasConnection){
-      print("llego el internet yiiiiiiiii");
       sync();
+      syncDialog();
     }
   }
 
-  Future<void> sync(){
+  void sync() async{
+    await AddressChannel.syncEverything();
+    await CustomerChannel.syncEverything();
+    await CustomerAddressesChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+  Future<void> syncDialog(){
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Center(
-            child: SizedBox(
-                height: 80.0,
-                width: 145.0,
-                child:Column(
-                  children: <Widget>[
-                    Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    Center(
-                      child: Text("Sincronizando"),
-                    )
-                  ],
-                )
-            ),
-          )
+          title: Text("Sincronizando ... "),
+          content:CircularProgressIndicator()
         );
       },
     );
@@ -102,7 +98,13 @@ class _ClientState extends State<Client> {
       ),
       body: Stack(
         children: <Widget>[
-          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
+          !isOffline ? listViewCustomers() : Stack(
+            children: <Widget>[
+              Center(
+                child: Text("No hay conexion a internet"),
+              )
+            ],
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
