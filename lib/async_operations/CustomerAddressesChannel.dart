@@ -33,13 +33,14 @@ class CustomerAddressesChannel {
 
     Set customersAddressesServer = new Set();
     customersWithAddress.data.forEach((customerWithAddress) async {
-      String customerAddressIds = "${customerWithAddress.customerId}-${customerWithAddress.addressId}";
-      customersAddressesServerIds[customerAddressIds] = customerWithAddress.id;
-      customersAddressesServer.add(customerAddressIds);
+      if (customerWithAddress.customerId != null && customerWithAddress.addressId != null){
+        String customerAddressIds = "${customerWithAddress.customerId}-${customerWithAddress.addressId}";
+        customersAddressesServerIds[customerAddressIds] = customerWithAddress.id;
+        customersAddressesServer.add(customerAddressIds);
+      }
     });
 
     Set customersAddressesLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerAddressRelations() ); //método de albert
-
     Set customersAddressesToCreate = customersAddressesServer.difference(customersAddressesLocal);
 
     customersAddressesToCreate.forEach((customerAddressToCreate) async {
