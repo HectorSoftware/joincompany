@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
@@ -42,7 +44,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
-          () {setState((){});
+          () {
+            if (this.mounted){
+              setState((){
+                //Your state change code goes here
+              });
+            }
       },
     );
     extraerUser();
@@ -58,6 +65,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     blocListTaskresFilter.dispose();
     super.dispose();
   }
+
+  @override
+  void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,35 +148,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               backgroundImage: new AssetImage('assets/images/user.png'),
             ),
           ),
-          /*Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: PrimaryColor,
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 40),
-                    height: 50,
-                    child: CircleAvatar(
-                      minRadius: 25.0,
-                      maxRadius: 25.0,
-                      backgroundImage: new AssetImage('assets/images/user.jpg'),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(nameUser,style: TextStyle(color: Colors.black,fontSize: 16,),textAlign: TextAlign.right,),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    child: Text(emailUser,style: TextStyle(color: Colors.black,fontSize: 15,),),
-                  )
-                ],
-              ),
-            )
-          ),*/
           Container(
               color: drawerTask ? Colors.grey[200] :  null,
               child: ListTile(
@@ -179,7 +165,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/cliente');
-//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
               },
             ),
           ),
@@ -188,7 +173,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Contactos"),
               trailing: new Icon(Icons.contacts),
               onTap: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/contactos');
               },
@@ -199,7 +183,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Negocios"),
               trailing: new Icon(Icons.account_balance),
               onTap: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/negocios');
               },
@@ -215,10 +198,27 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               onTap: () {
                 // Navigator.pushReplacementNamed(context, "/intro");
                 Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) => new  ConfigCli()));
+                Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new  ConfigCli()));
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Cerrar Sesion"),
+              trailing: new Icon(Icons.person_add),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context,'/App');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
+              onTap: () {
+                exit(0);
               },
             ),
           ),
@@ -264,32 +264,36 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   String textFilter = '';
   void _searchPressed() {
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = Container(
-          child: new TextField(
-            controller: _filter,
-            style: TextStyle(color: Colors.white),
-            decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search,color: Colors.white,),
-              hintText: 'Buscar',
-              fillColor: Colors.white,
+    if (this.mounted){
+      setState((){
+        if (this._searchIcon.icon == Icons.search) {
+          this._searchIcon = new Icon(Icons.close);
+          this._appBarTitle = Container(
+            child: new TextField(
+              controller: _filter,
+              style: TextStyle(color: Colors.white),
+              decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.search,color: Colors.white,),
+                hintText: 'Buscar',
+                fillColor: Colors.white,
+              ),
+              onChanged: (value){
+                if (this.mounted){
+                  setState((){
+                    textFilter = value.toString();
+                    blocListTaskresFilter;
+                  });
+                }
+              },
             ),
-            onChanged: (value){
-              setState(() {
-                textFilter = value.toString();
-                blocListTaskresFilter;
-              });
-            },
-          ),
-        );
-      } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Join');
-        _filter.clear();
-      }
-    });
+          );
+        } else {
+          this._searchIcon = new Icon(Icons.search);
+          this._appBarTitle = new Text('Join');
+          _filter.clear();
+        }
+      });
+    }
   }
 
   extraerUser() async {
@@ -297,10 +301,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     var getUserResponse = await getUser(userAct.company, userAct.token);
     UserModel user = UserModel.fromJson(getUserResponse.body);
 
-    setState(() {
-      nameUser = user.name;
-      emailUser = user.email;
-    });
+    if (this.mounted){
+      setState((){
+        nameUser = user.name;
+        emailUser = user.email;
+      });
+    }
   }
 
 }

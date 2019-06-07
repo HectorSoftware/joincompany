@@ -63,6 +63,13 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   @override
+  void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     double por = 0.7;
@@ -72,12 +79,16 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try{
-      // ignore: cancel_subscriptions
-      StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
-      => setState((){
-        listplace.clear();
-        _addMarker(onData[0]);
-      }));
+      if (this.mounted){
+        setState((){
+          // ignore: cancel_subscriptions
+          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
+          => setState((){
+            listplace.clear();
+            _addMarker(onData[1]);
+          }));
+        });
+      }
     }catch(e){}
 
     return _initialPosition == null ?
@@ -183,11 +194,12 @@ class _MytaskPageMapState extends State<taskHomeMap> {
       }
     }
 
-    setState(() {
-      listplace = _listMarker;
-      allmark(listplace);
-    });
-
+    if (this.mounted){
+      setState((){
+        listplace = _listMarker;
+        allmark(listplace);
+      });
+    }
   }
 
   allmark(List<Place> listPlaces) async {
@@ -325,7 +337,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         context: context,
         // ignore: deprecated_member_use
         child: SimpleDialog(
-            title: Text('Tareas no realizadas :'),
+            title: Text('Tareas planificadas :'),
             children: <Widget>[
               ListClientes(),
             ]
@@ -371,7 +383,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Text('No existen Tareas no realizadas'),
+          Text('No existen tareas planificadas'),
           Center(
             child: Icon(
               Icons.not_listed_location,

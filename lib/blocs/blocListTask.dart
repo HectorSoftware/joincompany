@@ -25,14 +25,13 @@ class blocListTask {
     var getAllTasksResponse;
     List<TaskModel> _listTask = new List<TaskModel>();
     try{
-
       DateTime FechaNueva = DateTime.parse('1990-05-05');
-
-      //for(int contar_pag = 1; contar_pag <= pageTasks;pageTasks++){
-        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: pageTasks.toString());
+      for(int contar_pag = 1; contar_pag <= pageTasks;contar_pag++){
+        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '20',page: contar_pag.toString());
         if(getAllTasksResponse.statusCode == 200){
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
+          //if(tasks)
           for(int i = 0; i < tasks.data.length; i++ ){
             DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
             int c = 0;
@@ -53,7 +52,7 @@ class blocListTask {
             }
           }
         }
-      //}
+      }
     }catch(e){}
 
     inListTaksTotal.add(tasks.total);

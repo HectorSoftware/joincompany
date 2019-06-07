@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   String ErrorTextFieldTextpwd = '';
   String ErrorTextFieldTextcompany = '';
   bool Circuleprogress = false;
-
+  bool ori = false;
 
   @override
   void initState() {
@@ -58,6 +58,12 @@ class _LoginPageState extends State<LoginPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+
+
+    if (mediaQueryData.orientation == Orientation.portrait) {
+      ori = true;
+    }
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Stack(
@@ -77,17 +83,8 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.30,
-          child: Column(
-            children: <Widget>[
-              Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  child: Image.asset('assets/images/final-logo.png'),
-                )
-              ),
-            ],
-          ),
+          child: Image.asset('assets/images/final-logo.png',height: MediaQuery.of(context).size.height*0.30,),
+
         ),
         ContainerDentroColum(),
       ],

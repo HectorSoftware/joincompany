@@ -52,5 +52,9 @@ class ClientDatabaseProvider{
     return await dbClient.rawUpdate(
         'UPDATE User SET token = \'${token}\' WHERE idTable = 1');
   }
+  Future<int> updateUser(String idUser, String emil, String pwd, String token) async {
+    var dbClient = await  database;
+    return await dbClient.rawUpdate('UPDATE User SET idUserCompany = $idUser, name = \'${emil}\', password = \'${pwd}\', token = \'${token}\' WHERE idTable = 1');
+  }
 
 }
