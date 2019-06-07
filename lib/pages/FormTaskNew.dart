@@ -552,7 +552,7 @@ class _FormTaskState extends State<FormTask> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id]}') : Text('Sin Asignar'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
                         onPressed: (){selectDate(context);
                         saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
 
@@ -678,14 +678,10 @@ class _FormTaskState extends State<FormTask> {
                       ],
 
                     ),
-              Container(
-              width: MediaQuery.of(context).size.width* 0.4,
-
-              child: Container(
-              child: new Text(listFieldsModels[index].name,style: TextStyle(
-                color: PrimaryColor,
-              ),),
-              ),
+               Container(
+              child:listFieldsModels[index].name.length >10 ?  new Text(listFieldsModels[index].name.substring(0,20),style: TextStyle(
+                color: PrimaryColor),
+              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
               ),
                   ],
                 );
@@ -736,7 +732,7 @@ class _FormTaskState extends State<FormTask> {
                       ],
                     ),
                     Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
+                      width: MediaQuery.of(context).size.width* 0.3,
                       child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text('Imagen Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
                     ),
                   ],
@@ -787,6 +783,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
                 {
+                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
                   return Container(
                       width: MediaQuery.of(context).size.width*0.5,
                       child:Row(
