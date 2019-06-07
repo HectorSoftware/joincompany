@@ -391,7 +391,7 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
-              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'){
+              if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == 'textarea'){
                 //TEXTAREA
                 return Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -796,6 +796,53 @@ class _FormTaskState extends State<FormTask> {
 
                   );
                 }
+              if(listFieldsModels[index].fieldType == 'ComboSearch')
+              {
+
+                return Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        height: 40,
+                        padding: EdgeInsets.only(
+                            top: 4,left: 16, right: 16, bottom: 4
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10)
+                            ),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5
+                              )
+                            ]
+                        ),
+                        child: TextField(
+                          maxLines: 1,
+                          //  controller: nameController,
+                          decoration: InputDecoration(
+
+                            border: InputBorder.none,
+
+                            hintText: listFieldsModels[index].name,
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      tooltip: 'Busqueda',
+                      iconSize: 20,
+                      onPressed: (){},
+                    ),
+
+                  ],
+                );
+              }
 
             }
         ),
