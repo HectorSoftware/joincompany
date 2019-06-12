@@ -56,8 +56,8 @@ class _ConfigCliState extends State<ConfigCli> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: buildDrawer(),
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
         title: Text("Configuracion"),
         automaticallyImplyLeading: true,
       ),

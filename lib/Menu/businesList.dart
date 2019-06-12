@@ -234,8 +234,8 @@ class _BusinessListState extends State<BusinessList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: widget.vista? null:buildDrawer(),
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
