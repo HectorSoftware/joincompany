@@ -172,24 +172,12 @@ class _ClientState extends State<Client> {
           ),
           Container(
             child: new ListTile(
-              title: new Text("Cerrar Sesion"),
-              trailing: new Icon(Icons.person_add),
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context,'/App');
-              },
-            ),
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
-              onTap: () async {
-                UserDataBase userActivity = await deletetUser();
-                if(userActivity == null){
-                  exit(0);
-                }
               },
             ),
           ),

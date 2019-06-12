@@ -52,7 +52,7 @@ class _FormTaskState extends State<FormTask> {
   FormsModel formType;
   bool taskCU = false;
   bool pass= false;
-  bool taskEnd = false;
+  int taskEnd;
   bool _value1 = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
@@ -120,8 +120,21 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
                                     saveTaskApi();
-                                    Navigator.pop(context);
-                                    Navigator.of(context).pop(saveTask);
+                                    Navigator.of(context).pop();
+                                    if(taskEnd == 201){
+                                      AlertDialog(
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: const Text('Aceptar'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    }
                                   }
 
                                 },
@@ -408,7 +421,6 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
-              print(listFieldsModels[index].fieldType);
               if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
               {
 
@@ -1047,17 +1059,18 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-  saveTaskApi() async{
-    var createTaskResponse = await createTask(saveTask, customer, token);
+   Future<bool>saveTaskApi() async{
+     var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
     print(createTaskResponse.body);
 
-    if(createTaskResponse.statusCode == 201){
-      setState(() {
-        taskEnd = true;
-      });
-    }
-
+   if(createTaskResponse.statusCode == 201){
+     setState(() {
+       taskEnd = 201;
+       return true;
+     });
+   }
+  return false;
   }
   void saveData(String dataController, String id) {
     var value = dataController;
