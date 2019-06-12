@@ -27,15 +27,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalHome = true;
   BlocListTaskFilter blocListTaskResFilter;
   BlocListTaskCalendar blocListTaskCalendarRes;
+  BlocListTaskCalendarMap blocListTaskCalendarResMap;
   var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var datePickedEnd = new DateTime.now();
   String nameUser = '';
   String emailUser = '';
-
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Join');
   final TextEditingController _filter = new TextEditingController();
   List<DateTime> _listCalendar = List<DateTime>();
+  bool showSearch = true;
 
   @override
   void initState() {
@@ -59,6 +60,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   void dispose(){
     _controller.dispose();
     blocListTaskCalendarRes.dispose();
+    blocListTaskCalendarResMap.dispose();
     blocListTaskResFilter.dispose();
     super.dispose();
   }
@@ -79,7 +81,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         backgroundColor: PrimaryColor,
         title: _appBarTitle,
         actions: <Widget>[
-          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Cliente', 25),
+          showSearch ? ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Cliente', 25) : Container(),
           IconButton(
             icon: Icon(Icons.calendar_today),
             //ICONO DE ALMANAQUE NO LO ENCUENTRO
@@ -87,7 +89,13 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             iconSize: 25,
             onPressed: (){
               //FUNCION DE FILTRO POR FECHA
-              selectDate(context);
+              if(_controller.index == 0){
+                selectDate(context);
+              }
+              if(_controller.index == 1){
+                selectDateMap(context);
+              }
+
             },
           ),
         ],
@@ -114,12 +122,21 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   TabBarView getTabBarView() {
 
     blocListTaskResFilter = new BlocListTaskFilter(_filter);
+    blocListTaskCalendarResMap = new BlocListTaskCalendarMap();
     blocListTaskCalendarRes = new BlocListTaskCalendar();
+
+    if(_controller.index == 0){
+      showSearch = true;
+    }
+    if(_controller.index == 1){
+      showSearch = false;
+    }
+
 
     return TabBarView(
       children: <Widget>[
         new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
-        new TaskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar),
+        new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap),
       ],
       controller: _controller,
       physics: _controller.index == 0
@@ -247,13 +264,31 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         _listCalendar.add(picked[0]);
         if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
-        blocListTaskCalendarRes.inTaksCalendarMap.add(_listCalendar);
         setState(() {
           datePickedInit; datePickedEnd;
         });
       }
     }
   }
+
+  DateTime _date = DateTime.now();
+  Future<Null> selectDateMap(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: new DateTime(1990),
+        lastDate: new DateTime(2030)
+    );
+    if (picked != null && picked != _date){
+      blocListTaskCalendarResMap.inTaksCalendarMap.add(picked);
+      setState(() {
+        _date = picked;
+      });
+
+    }
+
+  }
+
 
   String textFilter = '';
   void _searchPressed() {
