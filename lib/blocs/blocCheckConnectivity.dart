@@ -1,4 +1,3 @@
-import 'dart:io'; //InternetAddress utility
 import 'dart:async'; //For StreamController/Stream
 
 import 'package:connectivity/connectivity.dart';

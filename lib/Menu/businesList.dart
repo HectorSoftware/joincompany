@@ -9,7 +9,6 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
-import 'package:sqflite/sqflite.dart';
 import 'formBusiness.dart';
 
 // ignore: must_be_immutable
@@ -129,7 +128,6 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   Future<UserDataBase> deletetUser() async {
-    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }

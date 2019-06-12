@@ -30,7 +30,7 @@ class _AddContactState extends State<AddContact> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Cliente(true);
+        return Client(true);
       },
     );
   }//TODO

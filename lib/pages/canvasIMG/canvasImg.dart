@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:painter2/painter2.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';

@@ -50,7 +50,7 @@ Future<http.Response> httpPut(String id, String bodyJson, String customer, Strin
 
 Future<http.Response> httpDelete(String id, String customer, String authorization, String resourcePath, bool standardCall) async{
 
-  var response = null;
+  var response;
   var uri = Uri.https(hostApi, versionApi + resourcePath + '/$id');
   var headers = {
     'customer': customer,

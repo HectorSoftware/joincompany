@@ -9,11 +9,9 @@ import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
-import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
-import 'clientes.dart';
 
 enum type{NAME,CODE,NOTE}
 

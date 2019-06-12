@@ -13,22 +13,21 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 
 // ignore: must_be_immutable
-class Cliente extends StatefulWidget {
+class Client extends StatefulWidget {
 
   bool vista;
-  Cliente(vista){
+  Client(vista){
     this.vista = vista;
   }
 
   @override
-  _ClienteState createState() => _ClienteState();
+  _ClientState createState() => _ClientState();
 }
 
-class _ClienteState extends State<Cliente> {
+class _ClientState extends State<Client> {
 
   ListWidgets ls = ListWidgets();
 
@@ -188,7 +187,6 @@ class _ClienteState extends State<Cliente> {
   }
 
   Future<UserDataBase> deletetUser() async {
-    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }
@@ -285,7 +283,7 @@ class _ClienteState extends State<Cliente> {
                               trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
                                 Navigator.push(
                                     context,
-                                    new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: snapshot.data[index],)));
+                                    new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],)));
                               },),
                               onTap:
                               widget.vista ? (){

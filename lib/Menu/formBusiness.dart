@@ -21,8 +21,8 @@ class FormBusiness extends StatefulWidget {
 
 class _FormBusinessState extends State<FormBusiness> {
 
-  var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
-  var DatepickedEnd = new DateTime.now();
+  var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
+  var datePickedEnd = new DateTime.now();
   String value;
 
   List<TaskModel> task = List<TaskModel>();
@@ -35,10 +35,10 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Cliente(true);
+        return Client(true);
       },
     );
-  }//TODO
+  }//
 
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 //    List<String> dropdownMenuItems = List<String>();
@@ -57,7 +57,7 @@ class _FormBusinessState extends State<FormBusiness> {
               )
             ]
         ),
-        child: Text(""),//TODO
+        child: Text(""),
 //        DropdownButton<String>(
 //          isDense: false,
 //          icon: Icon(Icons.arrow_drop_down),
@@ -108,7 +108,7 @@ class _FormBusinessState extends State<FormBusiness> {
     );
   }
 
-  Widget customForm(type t){
+   customForm(type t){
     switch(t){
       case type.POSS:
         return customTextField('Posicionamiento cliente',t,1);
@@ -132,19 +132,19 @@ class _FormBusinessState extends State<FormBusiness> {
   String getErrorText(type t){
     switch(t){
       case type.POSS:
-        // TODO: Handle this case.
+
         break;
       case type.CLIENT:
-        // TODO: Handle this case.
+
         break;
       case type.CONTACT:
-        // TODO: Handle this case.
+
         break;
       case type.DATE:
-        // TODO: Handle this case.
+
         break;
       case type.MOUNT:
-        // TODO: Handle this case.
+
         break;
     }
     return "";
@@ -153,19 +153,18 @@ class _FormBusinessState extends State<FormBusiness> {
   _onChanges(type t){
     switch(t){
       case type.POSS:
-        // TODO: Handle this case.
+
         break;
       case type.CLIENT:
-        // TODO: Handle this case.
+
         break;
       case type.CONTACT:
-        // TODO: Handle this case.
+
         break;
       case type.DATE:
-        // TODO: Handle this case.
+
         break;
       case type.MOUNT:
-        // TODO: Handle this case.
         break;
     }
   }
@@ -192,22 +191,22 @@ class _FormBusinessState extends State<FormBusiness> {
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
         context: context,
-        initialFirstDate: DatepickedInit,
-        initialLastDate: DatepickedEnd,
+        initialFirstDate: datePickedInit,
+        initialLastDate: datePickedEnd,
         firstDate: new DateTime(1990),
         lastDate: new DateTime(2030)
     );
     if(picked != null){
       bool updateVarDataTime = false;
       if(picked.length == 1){
-        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[0])){
-          updateVarDataTime = true; DatepickedInit = DatepickedEnd = picked[0];
+        if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
+          updateVarDataTime = true; datePickedInit = datePickedEnd = picked[0];
         }
       }else{
-        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[1])){
+        if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
           updateVarDataTime = true;
-          DatepickedInit = picked[0];
-          DatepickedEnd = picked[1];
+          datePickedInit = picked[0];
+          datePickedEnd = picked[1];
         }
       }
 
@@ -216,7 +215,7 @@ class _FormBusinessState extends State<FormBusiness> {
         valueselectDate = picked,
         );
         setState(() {
-          DatepickedInit; DatepickedEnd;
+          datePickedInit; datePickedEnd;
           //blocListTaskRes;
         });
       }
@@ -226,19 +225,19 @@ class _FormBusinessState extends State<FormBusiness> {
   TextEditingController getController(type t){
     switch (t){
       case type.POSS:
-        // TODO: Handle this case.
+
         break;
       case type.CLIENT:
-        // TODO: Handle this case.
+
         break;
       case type.CONTACT:
-        // TODO: Handle this case.
+
         break;
       case type.DATE:
-        // TODO: Handle this case.
+
         break;
       case type.MOUNT:
-        // TODO: Handle this case.
+
         break;
     }
     return null;

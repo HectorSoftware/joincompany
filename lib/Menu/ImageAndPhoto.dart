@@ -58,8 +58,8 @@ class _TomarImageState extends State<TomarImage> {
         FlatButton(
           child: const Text('GUARDAR'),
           onPressed: () async {
-            Uint8List imgval = Uint8List.fromList(img.readAsBytesSync());
-            Navigator.of(context).pop(imgval);
+            Uint8List imgValue = Uint8List.fromList(img.readAsBytesSync());
+            Navigator.of(context).pop(imgValue);
           },
         )
       ],
