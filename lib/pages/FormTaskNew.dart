@@ -25,8 +25,8 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directioncliente});
-   final CustomerWithAddressModel  directioncliente;
+  FormTask({this.directionClient});
+  final CustomerWithAddressModel  directionClient;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -61,7 +61,7 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
-    directionClientIn = widget.directioncliente;
+    directionClientIn = widget.directionClient;
     initFormsTypes();
     super.initState();
   }
@@ -69,111 +69,111 @@ class _FormTaskState extends State<FormTask> {
   Widget build(BuildContext context) {
     double por;
     final mediaQueryData = MediaQuery.of(context);
-     por = 0.7;
+    por = 0.7;
     if (mediaQueryData.orientation == Orientation.portrait) {
       por = 0.807;
     }
     globalContext = context;
     return new Scaffold(
-       appBar: AppBar(
-         elevation: 12,
-         backgroundColor: PrimaryColor,
-         leading:  IconButton(
-           icon: Icon(Icons.arrow_back,size: 25,),
-           tooltip: 'Guardar Tarea',
-           iconSize: 35,
-           onPressed: ()=> showDialog(
-               context: context,
-               builder: (BuildContext context) {
-                 return
-                   Container(
-                     width: MediaQuery.of(context).size.width *0.9,
-                     child: AlertDialog(
-                       title: Text('Guardar'),
-                       content: const Text(
-                           'Desea Guardar Tarea'),
-                       actions: <Widget>[
-                         Row(
-                           children: <Widget>[
-                             FlatButton(
-                               child: const Text('SALIR'),
-                               onPressed: () {
-                                 Navigator.of(context).pop();
-                                 Navigator.of(context).pop();
-                               },
-                             ),
-                             FlatButton(
-                               child: const Text('CANCELAR'),
-                               onPressed: () {
-                                 Navigator.of(context).pop();
-                               },
-                             ),
-                             FlatButton(
-                               child: const Text('ACEPTAR'),
-                               onPressed: () async {
-                                 if(dataInfo.isNotEmpty) {
-                                   saveTask.formId = formGlobal.id;
-                                   saveTask.responsibleId = responsibleId;
-                                   saveTask.name = formGlobal.name;
-                                   saveTask.customerId = directionClientIn.customerId;
-                                   saveTask.addressId = directionClientIn.addressId;
-                                   saveTask.planningDate = _dateTask.toString().substring(0,19);
-                                   saveTask.customValuesMap = dataInfo;
-                                   saveTaskApi();
-                                   Navigator.pop(context);
-                                   Navigator.of(context).pop(saveTask);
-                                 }
-
-                               },
-                             )
-                           ],
-                         ),
-                       ],
-                     ),
-                   );
-               }
-               )
-         ) ,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.delete,size: 25,),
-            tooltip: 'Descartar Formulario',
+      appBar: AppBar(
+        elevation: 12,
+        backgroundColor: PrimaryColor,
+        leading:  IconButton(
+            icon: Icon(Icons.arrow_back,size: 25,),
+            tooltip: 'Guardar Tarea',
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return
-                    AlertDialog(
-                      title: Text('Descartar'),
-                      content: const Text(
-                          'Desea descartar Formulario'),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: const Text('CANCELAR'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        FlatButton(
-                          child: const Text('ACEPTAR'),
-                          onPressed: (){
-                            setState(() {
-                              dataInfo = new Map();
-                              pass= false;
-                            //  dropdownValue = null;
-                              image = null;
-                              taskCU = false;
-                              image2= null;
-                              listFieldsModels.clear();
-                            });
-                            Navigator.pop(context);
-                          },
-                        )
-                      ],
-                    );
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.9,
+                      child: AlertDialog(
+                        title: Text('Guardar'),
+                        content: const Text(
+                            'Desea Guardar Tarea'),
+                        actions: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              FlatButton(
+                                child: const Text('SALIR'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: const Text('CANCELAR'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: const Text('ACEPTAR'),
+                                onPressed: () async {
+                                  if(dataInfo.isNotEmpty) {
+                                    saveTask.formId = formGlobal.id;
+                                    saveTask.responsibleId = responsibleId;
+                                    saveTask.name = formGlobal.name;
+                                    saveTask.customerId = directionClientIn.customerId;
+                                    saveTask.addressId = directionClientIn.addressId;
+                                    saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                    saveTask.customValuesMap = dataInfo;
+                                    saveTaskApi();
+                                    Navigator.pop(context);
+                                    Navigator.of(context).pop(saveTask);
+                                  }
 
+                                },
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
                 }
             )
+        ) ,
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.delete,size: 25,),
+              tooltip: 'Descartar Formulario',
+              iconSize: 35,
+              onPressed: ()=> showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return
+                      AlertDialog(
+                        title: Text('Descartar'),
+                        content: const Text(
+                            'Desea descartar Formulario'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: const Text('CANCELAR'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: const Text('ACEPTAR'),
+                            onPressed: (){
+                              setState(() {
+                                dataInfo = new Map();
+                                pass= false;
+                                //  dropdownValue = null;
+                                image = null;
+                                taskCU = false;
+                                image2= null;
+                                listFieldsModels.clear();
+                              });
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      );
+
+                  }
+              )
           )
         ],
         title: Text('Agregar Tareas'),
@@ -194,19 +194,19 @@ class _FormTaskState extends State<FormTask> {
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
-                 child: Padding(
-                   padding: const EdgeInsets.all(8.0),
-                   child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
-                 ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                  ),
 
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
-                   child: Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
-                   ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                  ),
 
                 ),
               ],
@@ -225,8 +225,8 @@ class _FormTaskState extends State<FormTask> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.menu,color: pass? Colors.white: Colors.grey),
-              onPressed: () => pass ?  _showModalDateTimeAndDirections(): null
+                icon: Icon(Icons.menu,color: pass? Colors.white: Colors.grey),
+                onPressed: () => pass ?  _showModalDateTimeAndDirections(): null
             ),
             IconButton(
                 icon: Icon(Icons.business,color: Colors.white,),
@@ -249,7 +249,7 @@ class _FormTaskState extends State<FormTask> {
                                   await lisC(form);
                                   setState(() {
                                     directionClient.address = null;
-                                 //   dropdownValue = null;
+                                    //   dropdownValue = null;
                                     pass = true;
                                     image = null;
                                     dataInfo = new Map();
@@ -395,6 +395,13 @@ class _FormTaskState extends State<FormTask> {
   String base64String(Uint8List data) {
     return base64Encode(data);
   }
+  Image imageFromBase64String(String base64String) {
+    return Image.memory(base64Decode(base64String));
+  }
+
+  Uint8List dataFromBase64String(String base64String) {
+    return base64Decode(base64String);
+  }
   Stack returnsStack(){
     return Stack(
       children: <Widget>[
@@ -517,9 +524,9 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Combo'){
 
-               List<String> dropdownMenuItems = List<String>();
+                List<String> dropdownMenuItems = List<String>();
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-                    dropdownMenuItems.add(v.name);
+                  dropdownMenuItems.add(v.name);
                 }
                 return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
@@ -604,7 +611,7 @@ class _FormTaskState extends State<FormTask> {
                           selectDate(context);
                           var dateCo = _date.toString().substring(0,10) + _time.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
-                          },
+                        },
                       ),
                     ),
                   ],
@@ -658,7 +665,7 @@ class _FormTaskState extends State<FormTask> {
                                 padding: const EdgeInsets.only(top: 10,left: 5),
                                 child: RaisedButton(
                                   onPressed: () async{
-                                     img = await photoAndImage();
+                                    img = await photoAndImage();
                                     if (img != null) {
                                       setState(() {
                                         b64 = base64String(img);
@@ -678,7 +685,7 @@ class _FormTaskState extends State<FormTask> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width* 0.5,
-                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.toString() + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
                       ),
                     ],
                   ),
@@ -693,11 +700,11 @@ class _FormTaskState extends State<FormTask> {
                       ],
 
                     ),
-               Container(
-              child:listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
-                color: PrimaryColor),
-              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
-              ),
+                    Container(
+                      child:listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                          color: PrimaryColor),
+                      ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+                    ),
                   ],
                 );
 
@@ -714,7 +721,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature'){
                 String b64;
-              return  Row(
+                return  Row(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
@@ -746,9 +753,11 @@ class _FormTaskState extends State<FormTask> {
                         ),
                       ],
                     ),
+
                     Container(
                       width: MediaQuery.of(context).size.width* 0.3,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.substring(0,14) + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                      child: Center(
+                          child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,) :  Card(color: Colors.black,child: SizedBox(height: 200,width: 600,),)),
                     ),
                   ],
                 );
@@ -789,7 +798,7 @@ class _FormTaskState extends State<FormTask> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? new Text(listFieldsModels[index].name.substring(0,15) + ' Guardada',style: TextStyle(color: PrimaryColor),) : Text('')),
+                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
                     ),
 
                   ],
@@ -797,25 +806,25 @@ class _FormTaskState extends State<FormTask> {
 
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
-                {
-                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
-                  return Row(
-                    children: <Widget>[
-                      Container(
-                          width: MediaQuery.of(context).size.width*0.5,
-                          child:Row(
-                            children: <Widget>[
-                              Switch(value: switchOn, onChanged:(valuenew){ setState(() {
-                                switchOn = valuenew;
-                              });},activeColor: PrimaryColor,)
-                            ],
-                          )
-                      ),
-                      Center(child:switchOn?  Text(listFieldsModels[index].name):Text('')),
-                    ],
+              {
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
+                return Row(
+                  children: <Widget>[
+                    Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        child:Row(
+                          children: <Widget>[
+                            Switch(value: switchOn, onChanged:(valuenew){ setState(() {
+                              switchOn = valuenew;
+                            });},activeColor: PrimaryColor,)
+                          ],
+                        )
+                    ),
+                    Center(child:switchOn?  Text(listFieldsModels[index].name):Text('')),
+                  ],
 
-                  );
-                }
+                );
+              }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
 
@@ -939,7 +948,7 @@ class _FormTaskState extends State<FormTask> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return searchAddressWithClient();
+        return SearchAddressWithClient();
       },
     );
   }
@@ -951,12 +960,12 @@ class _FormTaskState extends State<FormTask> {
       listFieldsModels.clear();
     });
     for(SectionModel section in form.sections)
+    {
+      for(FieldModel fields in section.fields)
       {
-        for(FieldModel fields in section.fields)
-        {
-          listFieldsModelsCopia.add(fields);
-        }
+        listFieldsModelsCopia.add(fields);
       }
+    }
     listFieldsModels = listFieldsModelsCopia;
     return true;
 
@@ -1038,16 +1047,16 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-   saveTaskApi() async{
-     var createTaskResponse = await createTask(saveTask, customer, token);
+  saveTaskApi() async{
+    var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
     print(createTaskResponse.body);
 
-   if(createTaskResponse.statusCode == 201){
-     setState(() {
-       taskEnd = true;
-     });
-   }
+    if(createTaskResponse.statusCode == 201){
+      setState(() {
+        taskEnd = true;
+      });
+    }
 
   }
   void saveData(String dataController, String id) {
@@ -1056,5 +1065,3 @@ class _FormTaskState extends State<FormTask> {
     dataInfo[id] = value;
   }
 }
-
-

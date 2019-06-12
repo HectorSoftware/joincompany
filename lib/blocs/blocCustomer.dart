@@ -10,7 +10,7 @@ class CustomersBloc{
   List<CustomerWithAddressModel> _listCustomersWithAddress = new List<CustomerWithAddressModel>();
 
   final _customerscontroller = StreamController<List<CustomerWithAddressModel>>();
-  Sink<List<CustomerWithAddressModel>> get _inCustomers => _customerscontroller.sink;
+  //Sink<List<CustomerWithAddressModel>> get _inCustomers => _customerscontroller.sink;
   Stream<List<CustomerWithAddressModel>> get outCustomers => _customerscontroller.stream;
 
   CustomersBloc(){
@@ -18,11 +18,11 @@ class CustomersBloc{
   }
 
   Future getCustomers() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
     /*var customersResponse = await getAllCustomers(UserActiv.company,UserActiv.token);
     CustomersModel customers = CustomersModel.fromJson(customersResponse.body);*/
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company,userActivity.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     _listCustomersWithAddress = customersWithAddress.data;
     if(_listCustomersWithAddress != null){
@@ -31,7 +31,7 @@ class CustomersBloc{
 
   }
 
-  @override
+
   void dispose() {
     _customerscontroller.close();
   }

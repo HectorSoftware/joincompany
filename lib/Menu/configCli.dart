@@ -8,9 +8,6 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
-import 'package:sqflite/sqlite_api.dart';
-
-import 'contactView.dart';
 
 enum type{
   NAME,
@@ -43,7 +40,6 @@ class _ConfigCliState extends State<ConfigCli> {
 
   @override
   void initState() {
-    //TODO
     initController();
     getConfig();
     setUser();
@@ -52,7 +48,7 @@ class _ConfigCliState extends State<ConfigCli> {
 
   @override
   void dispose() {
-    //TODO
+
     disposeController();
     super.dispose();
   }
@@ -85,7 +81,7 @@ class _ConfigCliState extends State<ConfigCli> {
   }
 
   void setDataForm(String data, type t){
-    //TODO
+
   }
 
   void initController(){
@@ -121,7 +117,7 @@ class _ConfigCliState extends State<ConfigCli> {
 
     name.text = user.name;
     code.text =  user.code;
-    defaults.text =  user.profile;//TODO
+    defaults.text =  user.profile;
     title.text =  user.title;
     tlfF.text =  user.phone;
     tlfM.text =  user.phone;
@@ -149,7 +145,7 @@ class _ConfigCliState extends State<ConfigCli> {
         maxLines: maxLines,
         textInputAction: TextInputAction.next,
         validator: (value){
-          //TODO
+
         },
         onSaved: (value){
           setDataForm(value, t);
@@ -290,8 +286,8 @@ class _ConfigCliState extends State<ConfigCli> {
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
               onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
+                UserDataBase userActivity = await deleteUser();
+                if(userActivity == null){
                   exit(0);
                 }
               },
@@ -302,8 +298,7 @@ class _ConfigCliState extends State<ConfigCli> {
     );
   }
 
-  Future<UserDataBase> deletetUser() async {
-    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
+  Future<UserDataBase> deleteUser() async {
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }

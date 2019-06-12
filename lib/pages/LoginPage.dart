@@ -10,10 +10,10 @@ import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/UserService.dart';
 class LoginPage extends StatefulWidget {
 
-  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
-  final bool TextViewVisiblewidget;
-  final bool AgregarUserwidget;
-  final String companyEstablewidget;
+  LoginPage({this.addUserWidget,this.companyEstableWidget,this.textViewVisibleWidget});
+  final bool textViewVisibleWidget;
+  final bool addUserWidget;
+  final String companyEstableWidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -30,23 +30,23 @@ class _LoginPageState extends State<LoginPage> {
 //     final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(/*text : '123'*/);
 
-  bool TextViewVisible;
-  bool AgregarUser;
+  bool textViewVisible;
+  bool addUser;
   String companyEstable;
-  bool ErrorTextFieldEmail = false;
-  bool ErrorTextFieldpsd = false;
-  bool ErrorTextFieldcompany = false;
-  String ErrorTextFieldTextemail = '';
-  String ErrorTextFieldTextpwd = '';
-  String ErrorTextFieldTextcompany = '';
-  bool Circuleprogress = false;
+  bool errorTextFieldEmail = false;
+  bool errorTextFieldPsd = false;
+  bool errorTextFieldCompany = false;
+  String errorTextFieldTextEmail = '';
+  String errorTextFieldTextPassword = '';
+  String errorTextFieldTextCompany = '';
+  bool circularProgress = false;
   bool ori = false;
 
   @override
   void initState() {
-    TextViewVisible = widget.TextViewVisiblewidget;
-    AgregarUser = widget.AgregarUserwidget;
-    companyEstable = widget.companyEstablewidget;
+    textViewVisible = widget.textViewVisibleWidget;
+    addUser = widget.addUserWidget;
+    companyEstable = widget.companyEstableWidget;
     super.initState();
   }
 @override
@@ -68,16 +68,16 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
-          ListViewPrincipal(),
+          listViewMain(),
           Center(
-            child: Circuleprogress ? CircularProgressIndicator() : null,
+            child: circularProgress ? CircularProgressIndicator() : null,
           ),
         ],
       )
     );
   }
 
-  ListViewPrincipal(){
+  listViewMain(){
     return ListView(
       children: <Widget>[
         Container(
@@ -86,12 +86,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Image.asset('assets/images/final-logo.png',height: MediaQuery.of(context).size.height*0.30,),
 
         ),
-        ContainerDentroColum(),
+        containerInColumn(),
       ],
     );
   }
 
-  ContainerDentroColum(){
+  containerInColumn(){
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
       width: MediaQuery.of(context).size.width,
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(Icons.email,
                         color: Colors.black,
                       ),
-                      errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
+                      errorText: errorTextFieldEmail ? errorTextFieldTextEmail : null,
                       hintText: 'Usuario',
                     ),
                   );
@@ -148,13 +148,13 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.black,
                     ),
                     hintText: 'Password',
-                    errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
+                    errorText: errorTextFieldPsd ? errorTextFieldTextPassword : null,
                   ),
                 );
               },
             ),
           ),
-          TextViewVisible ?
+          textViewVisible ?
           Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.business,
                   color: Colors.black,
                 ),
-                errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
+                errorText: errorTextFieldCompany ? errorTextFieldTextCompany : null,
                 hintText: 'Empresa',
               ),
             ) ,
@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos(nameController.text,passwordController.text,companyController.text);
+                validateData(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -213,90 +213,88 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  ValidarDatos(String Usr, String pwd, String compy) async {
+  validateData(String user, String pwd, String company) async {
 
-    Circuleprogress = true;
+
     setState(() {
-      Circuleprogress;
+      circularProgress = true;
     });
 
-    String companylocal = companyEstable;
-    if(AgregarUser){
-      companylocal = compy;
+    String companyLocal = companyEstable;
+    if(addUser){
+      companyLocal = company;
     }
 
-    if(Usr == ''){ErrorTextFieldEmail = true; ErrorTextFieldTextemail = 'Campo requerido';
-    setState(() {ErrorTextFieldEmail;ErrorTextFieldTextemail;
+    if(user == ''){
+    setState(() {
+      errorTextFieldEmail = true; errorTextFieldTextEmail = 'Campo requerido';
     });
-    }else{ErrorTextFieldEmail = false;}
-    if(pwd == ''){ErrorTextFieldpsd = true; ErrorTextFieldTextpwd = 'Campo requerido';
-    setState(() {ErrorTextFieldpsd;ErrorTextFieldTextpwd;
-    });
-    }else{ErrorTextFieldpsd = false;}
-    if(companylocal == ''){ErrorTextFieldcompany = true; ErrorTextFieldTextcompany = 'Campo requerido';
-    setState(() {ErrorTextFieldcompany;ErrorTextFieldTextcompany;
-    });
-    }else{ErrorTextFieldcompany = false;}
 
-    if((!ErrorTextFieldpsd)&&(!ErrorTextFieldcompany)&&(!ErrorTextFieldcompany)){
+    }else{
+      errorTextFieldEmail = false;
+    }
+    if(pwd == ''){
+    setState(() {
+      errorTextFieldPsd = true; errorTextFieldTextPassword = 'Campo requerido';
+    });
+    }else{
+      errorTextFieldPsd = false;
+    }
+    if(companyLocal == ''){
+    setState(() {
+      errorTextFieldCompany = true; errorTextFieldTextCompany = 'Campo requerido';
+    });
+    }else{errorTextFieldCompany = false;}
+
+    if((!errorTextFieldPsd)&&(!errorTextFieldCompany)&&(!errorTextFieldCompany)){
       var loginResponse;
       try{
-        loginResponse = await login(Usr, pwd, companylocal);
+        loginResponse = await login(user, pwd, companyLocal);
       }catch(e){ }
 
       if(loginResponse != null){
         if(loginResponse.statusCode == 401){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany = 'Datos incorrectos';
           setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
+            errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
+            errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany = 'Datos incorrectos';
+            circularProgress = false;
           });
         }
         if(loginResponse.statusCode == 500){
-          ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-          ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
           setState(() {
-            ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-          });
-          Circuleprogress = false; setState(() {
-            Circuleprogress;
+            errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
+            errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
+            circularProgress = false;
           });
         }
         if(loginResponse.statusCode == 200){
           AuthModel auth = AuthModel.fromJson(loginResponse.body);
 
-          var getUserResponseid = await getUser(companylocal,auth.accessToken);
+          var getUserResponseid = await getUser(companyLocal,auth.accessToken);
           if(getUserResponseid != null){
-            if(AgregarUser){
+            if(addUser){
               UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
-              UserDataBase newuser = UserDataBase(name: Usr,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companylocal, token: auth.accessToken);
-              int res = await ClientDatabaseProvider.db.saveUser(newuser);
+              UserDataBase newuser = UserDataBase(name: user,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companyLocal, token: auth.accessToken);
+              await ClientDatabaseProvider.db.saveUser(newuser);
             }else{
-              int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+             // int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
             }
             Navigator.pushReplacementNamed(context, '/vistap');
           }else{
-            ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-            ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+
             setState(() {
-              ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
+              errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
+              errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
+              circularProgress = false;
             });
-            Circuleprogress = false; setState(() {
-              Circuleprogress;
-            });
+
           }
         }
       }else{
-        ErrorTextFieldEmail = true;ErrorTextFieldpsd = true;ErrorTextFieldcompany = true;
-        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
         setState(() {
-          ErrorTextFieldEmail;ErrorTextFieldpsd;ErrorTextFieldcompany;ErrorTextFieldTextemail;ErrorTextFieldTextpwd;ErrorTextFieldTextcompany;
-        });
-        Circuleprogress = false; setState(() {
-          Circuleprogress;
+          errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
+          errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
+          circularProgress = false;
         });
       }
     }
@@ -311,19 +309,19 @@ class _LoginPageState extends State<LoginPage> {
     }*/
   }
 
-  testApi() async{
-
-    try {
-
-      String email = 'jgarcia@getkem.com';
-      // String email = 'jgarcia@getkem.com';
-      String password = '123';
-      String customer = 'getkem';
+//  testApi() async{
+//
+//    try {
+//
+//      String email = 'jgarcia@getkem.com';
+//      // String email = 'jgarcia@getkem.com';
+//      String password = '123';
+//      String customer = 'getkem';
 
       // login
-      var loginResponse = await login(email, password, customer);
-      AuthModel auth = AuthModel.fromJson(loginResponse.body);
-      String authorization = auth.accessToken;
+   //   var loginResponse = await login(email, password, customer);
+     // AuthModel auth = AuthModel.fromJson(loginResponse.body);
+      //String authorization = auth.accessToken;
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -468,9 +466,9 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.email);
       // print(user.profile);
 
-    }catch(error, stackTrace){
-
-    }
-
-  }
+//    }catch(error){
+//
+//    }
+//
+//  }
 }

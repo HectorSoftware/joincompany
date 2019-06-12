@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:joincompany/main.dart';
 import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
-import 'dart:convert';
 
 class PickerImgNetwork extends StatefulWidget {
   PickerImgNetwork({this.netImage});

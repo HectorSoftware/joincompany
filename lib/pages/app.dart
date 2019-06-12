@@ -16,30 +16,30 @@ class _AppState extends State<App> {
     return userActiv;
   }
 
-  bool TextViewVisible = true;
-  bool AgregarUser = true;
+  bool textViewVisible = true;
+  bool addUser = true;
   String companyEstable = '';
   bool salirMail = false;
 
-  ValidarUsrPrimeraVez() async {
-    UserDataBase UserActiv = await getUser();
-    if(UserActiv != null){
+  validateUserForFirstV() async {
+    UserDataBase userActivity = await getUser();
+    if(userActivity != null){
       setState(() {
-        TextViewVisible = false;
-        AgregarUser = false;
-        companyEstable = UserActiv.company;
+        textViewVisible = false;
+        addUser = false;
+        companyEstable = userActivity.company;
       });
     }
-    salirMail = true;
+
     setState(() {
-      salirMail;
+      salirMail = true;
     });
 
   }
 
   @override
   void initState() {
-    ValidarUsrPrimeraVez();
+    validateUserForFirstV();
     super.initState();
   }
 
@@ -49,7 +49,7 @@ class _AppState extends State<App> {
         body: Stack(
             children: <Widget>[
               salirMail ?
-              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
+              LoginPage(textViewVisibleWidget: textViewVisible,addUserWidget: addUser,companyEstableWidget: companyEstable)
               : Center(
                 child: CircularProgressIndicator(),
               ),

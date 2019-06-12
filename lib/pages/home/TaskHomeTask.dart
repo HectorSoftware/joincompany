@@ -17,30 +17,30 @@ import 'package:loadmore/loadmore.dart';
 
 import '../../main.dart';
 
-class taskHomeTask extends StatefulWidget {
+class TaskHomeTask extends StatefulWidget {
 
-  taskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
+  TaskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
 
-  final blocListTaskFilter blocListTaskFilterReswidget;
-  final blocListTaskCalendar blocListTaskCalendarReswidget;
+  final BlocListTaskFilter blocListTaskFilterReswidget;
+  final BlocListTaskCalendar blocListTaskCalendarReswidget;
   final List<DateTime> listCalendarRes;
 
   _MytaskPageTaskState createState() => _MytaskPageTaskState();
 }
 
-class _MytaskPageTaskState extends State<taskHomeTask> {
+class _MytaskPageTaskState extends State<TaskHomeTask> {
   ListWidgets ls = ListWidgets();
-  bool MostrarLista = false;
-  UserDataBase UserActiv;
+  bool viewList = false;
+  UserDataBase userActivity;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
   List<bool> listTaskModellocalbool;
   String filterText = '';
   List<DateTime> listCalendar = new List<DateTime>();
-  blocListTaskFilter bloctasksFilter;
-  blocListTaskCalendar blocListTaskCalendarRes;
-  blocListTask blocList;
-  List<DateTime> ListCalender = new List<DateTime>();
+  BlocListTaskFilter bloctasksFilter;
+  BlocListTaskCalendar blocListTaskCalendarRes;
+  BlocListTask blocList;
+  List<DateTime> listCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
 
   @override
@@ -54,13 +54,13 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
   }
 
   actualizarusuario() async{
-    UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    ListCalender = widget.listCalendarRes;
-    PageTasks = 1;
+    userActivity = await ClientDatabaseProvider.db.getCodeId('1');
+
+    pageTasks = 1;
     //getdatalist(listCalendar[1],listCalendar[0],1);
     if (this.mounted){
       setState((){
-        UserActiv;ListCalender;
+        userActivity;listCalender = widget.listCalendarRes;;
       });
     }
   }
@@ -105,7 +105,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 //            child:
             Stack(
               children: <Widget>[
-                ListViewTareas(),
+                listViewTasks(),
               ],
             ),
 //        ),
@@ -114,14 +114,14 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
             onPressed: (){
               Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (BuildContext context) => FormTask(directioncliente: directionClient,)));
+                  new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
     );
   }
 
-  ListViewTareas(){
+  listViewTasks(){
 
 
     //BLOCK CALENDARIO
@@ -133,7 +133,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
         => setState((){
           listTaskModellocal.clear();
           listTaskModellocalbool.clear();
-          PageTasks = 1;
+          pageTasks = 1;
           listCalendar = onData;
           //getdatalist(onData[1],onData[0],1);
         }));
@@ -141,7 +141,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     }catch(e){}
 
     //BLOCK LISTA
-    blocList = new blocListTask(listCalendar[1],listCalendar[0],PageTasks);
+    blocList = new BlocListTask(listCalendar[1],listCalendar[0],pageTasks);
     try{
       if (this.mounted){
         setState((){
@@ -164,7 +164,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           // ignore: cancel_subscriptions
           StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal)
           => setState((){
-            TareasTotales = onDataListTotal;
+            taskTotals = onDataListTotal;
           }));
         });
       }
@@ -189,7 +189,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     Container(
       child: RefreshIndicator(
         child: LoadMore(
-          isFinish: countTaskList >= TareasTotales,
+          isFinish: countTaskList >= taskTotals,
           onLoadMore: _loadMore,
           child: listando(),
           whenEmptyLoad: false,
@@ -203,14 +203,14 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
       : Center(child: CircularProgressIndicator(),);
   }
 
-  int TareasTotales = 0;
+  int taskTotals = 0;
 //  int get countTaskList => listTaskModellocal.length;
   int get countTaskList => listTaskModellocal.length;
   Future<bool> _loadMore() async {
 
     if (this.mounted){
       setState(() {
-        PageTasks++;
+        pageTasks++;
       });
     }
 
@@ -223,7 +223,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     if (this.mounted){
       setState((){
-        PageTasks = 1;
+        pageTasks = 1;
         listCalendar;
         listTaskModellocal.clear();
       });
@@ -231,14 +231,14 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     //getdatalist(listCalendar[1],listCalendar[0],1);
   }
 
-  int PageTasks = 1;
+  int pageTasks = 1;
 
   listando(){
-    String DateTask = "1990-05-05 20:00:04Z";
+    String dateTask = "1990-05-05 20:00:04Z";
     return ListView.builder(
         itemCount: listTaskModellocal.length,
         itemBuilder: (BuildContext context, int index) {
-          int PosicionActual = index;
+          int positionActual = index;
           String voidFieldMessage = "";
 
           var date;
@@ -246,49 +246,49 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
           var address;
           var customerName;
 
-          if(listTaskModellocal[PosicionActual].customer == null){
+          if(listTaskModellocal[positionActual].customer == null){
             customerName = voidFieldMessage;
           }else{
-            customerName = listTaskModellocal[PosicionActual].customer.name;
+            customerName = listTaskModellocal[positionActual].customer.name;
           }
 
-          if (listTaskModellocal[PosicionActual].createdAt == null) {
+          if (listTaskModellocal[positionActual].createdAt == null) {
             date = voidFieldMessage;
           } else {
-            date = listTaskModellocal[PosicionActual].createdAt.substring(10, 16);
+            date = listTaskModellocal[positionActual].createdAt.substring(10, 16);
           }
 
-          if (listTaskModellocal[PosicionActual].name == null) {
+          if (listTaskModellocal[positionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[PosicionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
+            title = listTaskModellocal[positionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
           }
 
-          if (listTaskModellocal[PosicionActual].address == null) {
+          if (listTaskModellocal[positionActual].address == null) {
             address = voidFieldMessage;
           } else {
-            if (listTaskModellocal[PosicionActual].address.address == null) {
+            if (listTaskModellocal[positionActual].address.address == null) {
               address = voidFieldMessage;
             } else {
-              address = customerName + ',  ' + listTaskModellocal[PosicionActual].address.address;
+              address = customerName + ',  ' + listTaskModellocal[positionActual].address.address;
             }
           }
 
           if(filterText == ''){
             bool res = false;
 
-            if((PosicionActual != listTaskModellocal.length - 1)){
-              if(listTaskModellocal[PosicionActual].id == listTaskModellocal[PosicionActual + 1].id){
+            if((positionActual != listTaskModellocal.length - 1)){
+              if(listTaskModellocal[positionActual].id == listTaskModellocal[positionActual + 1].id){
                 res = true;
               }
             }
 
-              String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
+              String dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day
                   .toString() + ' de ' + intsToMonths[DateTime
-                  .parse(listTaskModellocal[PosicionActual].createdAt)
+                  .parse(listTaskModellocal[positionActual].createdAt)
                   .month
                   .toString()] + ' ' + DateTime
-                  .parse(listTaskModellocal[PosicionActual].createdAt)
+                  .parse(listTaskModellocal[positionActual].createdAt)
                   .year
                   .toString();
 
@@ -298,9 +298,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                 por = 0.07;
               }
 
-              if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                  (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                  (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+              if((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].createdAt).day)&&
+                  (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].createdAt).month)&&
+                  (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].createdAt).year)){
                 dateTitulo = 'Hoy, ' + dateTitulo;
               }
               return res ?
@@ -312,21 +312,21 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                 child: Text(dateTitulo, style: TextStyle(
                     fontSize: 16, color: Colors.white)),
               ) :
-              ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual);
+              listCard(title, address, date, listTaskModellocal[positionActual],positionActual);
           }else{
             if(ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
                 ls.createState().checkSearchInText(customerName, filterText)){
-              if ((DateTime.parse(DateTask).day != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day) ||
-                  (DateTime.parse(DateTask).month != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month) ||
-                  (DateTime.parse(DateTask).year != DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)) {
-                DateTask = listTaskModellocal[PosicionActual].createdAt;
-                String dateTitulo = DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day
+              if ((DateTime.parse(dateTask).day != DateTime.parse(listTaskModellocal[positionActual].createdAt).day) ||
+                  (DateTime.parse(dateTask).month != DateTime.parse(listTaskModellocal[positionActual].createdAt).month) ||
+                  (DateTime.parse(dateTask).year != DateTime.parse(listTaskModellocal[positionActual].createdAt).year)) {
+                dateTask = listTaskModellocal[positionActual].createdAt;
+                String dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day
                     .toString() + ' de ' + intsToMonths[DateTime
-                    .parse(listTaskModellocal[PosicionActual].createdAt)
+                    .parse(listTaskModellocal[positionActual].createdAt)
                     .month
                     .toString()] + ' ' + DateTime
-                    .parse(listTaskModellocal[PosicionActual].createdAt)
+                    .parse(listTaskModellocal[positionActual].createdAt)
                     .year
                     .toString();
 
@@ -337,9 +337,9 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                   por = 0.07;
                 }
 
-                if((DateTime.now().day == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).day)&&
-                    (DateTime.now().month == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).month)&&
-                    (DateTime.now().year == DateTime.parse(listTaskModellocal[PosicionActual].createdAt).year)){
+                if((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].createdAt).day)&&
+                    (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].createdAt).month)&&
+                    (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].createdAt).year)){
                   dateTitulo = 'Hoy, ' + dateTitulo;
 
                 }
@@ -354,12 +354,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                         child: Text(dateTitulo, style: TextStyle(
                             fontSize: 16, color: Colors.white)),
                       ),
-                      ListCard(title, address, date, listTaskModellocal[PosicionActual],PosicionActual),
+                      listCard(title, address, date, listTaskModellocal[positionActual],positionActual),
                     ],
                   ),
                 );
               } else {
-                return ListCard(title,address,date,listTaskModellocal[PosicionActual], PosicionActual);
+                return listCard(title,address,date,listTaskModellocal[positionActual], positionActual);
               }
             }else{
               return Container();
@@ -369,7 +369,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
     );
   }
 
-  Container ListCard(String title, String address, String date,TaskModel listTask, int index){
+  Container listCard(String title, String address, String date,TaskModel listTask, int index){
     return Container(
         child: Card(
           child: Column(
@@ -391,7 +391,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                             listTaskModellocal[index].status = 'working';
                           });
                         }
-                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),userActivity.company,userActivity.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           if (this.mounted){
                             setState((){
@@ -405,7 +405,7 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
                             listTaskModellocal[index].status = 'done';
                           });
                         }
-                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),UserActiv.company,UserActiv.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),userActivity.company,userActivity.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
                         if(checkInTaskResponse.statusCode != 200){
                           if (this.mounted){
                             setState((){
@@ -452,12 +452,12 @@ class _MytaskPageTaskState extends State<taskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    var deleteTaskResponse = await deleteTask(taskID,UserActiv.company,UserActiv.token);
+    await deleteTask(taskID,userActivity.company,userActivity.token);
   }
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+   // List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     if (this.mounted){
       setState((){
         _initialPosition = LatLng(position.latitude, position.longitude);

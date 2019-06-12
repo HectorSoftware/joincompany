@@ -10,7 +10,6 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as Date;
-import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 
 enum Method{
@@ -63,7 +62,6 @@ class _ListWidgetsState extends State<ListWidgets> {
   TimeOfDay _time = new TimeOfDay.now();
   File image;
   String pivot;
-  List<Offset> _points = <Offset>[];
 
 
   bool checkSearchInText(String text,String filterText){
@@ -117,9 +115,9 @@ Widget dateTime(){
     }
     //COLUMNAS
     Container columna(Color col,int intCard){
-      List<Widget> ListCard = new List<Widget>();
+      List<Widget> listCard = new List<Widget>();
       for(int i = 0; i < intCard; i++){
-        ListCard.add(card());
+        listCard.add(card());
       }
       return Container(
         width: MediaQuery.of(contex).size.width * 0.5,
@@ -135,9 +133,9 @@ Widget dateTime(){
               width: MediaQuery.of(contex).size.width * 0.5,
               height: MediaQuery.of(contex).size.height * 0.25,
               child: ListView.builder(
-                itemCount: ListCard.length,
+                itemCount: listCard.length,
                 itemBuilder: (contex,index){
-                  return ListCard[index];
+                  return listCard[index];
                 },
               ),
             )
@@ -146,11 +144,11 @@ Widget dateTime(){
       );
     }
     //LISTA DE COLUMNAS
-    List<Widget> ListColuma = new List<Widget>();
-    ListColuma.add(columna(Colors.red[50],2));
-    ListColuma.add(columna(Colors.blue[50],5));
-    ListColuma.add(columna(Colors.grey[200],3));
-    ListColuma.add(columna(Colors.green[100],1));
+    List<Widget> listColumn = new List<Widget>();
+    listColumn.add(columna(Colors.red[50],2));
+    listColumn.add(columna(Colors.blue[50],5));
+    listColumn.add(columna(Colors.grey[200],3));
+    listColumn.add(columna(Colors.green[100],1));
     return SingleChildScrollView(
       child: Container(
         margin: EdgeInsets.all(10),
@@ -158,9 +156,9 @@ Widget dateTime(){
         height: MediaQuery.of(contex).size.height * 0.4,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: ListColuma.length,
+          itemCount: listColumn.length,
           itemBuilder: (contex,index){
-            return ListColuma[index];
+            return listColumn[index];
           },
           // This next line does the trick.
         )        ,
@@ -505,7 +503,7 @@ Widget timeWidget(BuildContext context, String string){
   }
 
   List<String> dropdownMenuItems = List<String>();
-  String dropdownValue = null ;
+  String dropdownValue ;
   Widget combo(List<FieldOptionModel> elements, String string)
   {
     for(FieldOptionModel v in elements) dropdownMenuItems.add(v.name);
@@ -587,7 +585,7 @@ Widget timeWidget(BuildContext context, String string){
         width: 30,
         child: Switch(value: true, onChanged: null));
   }
-  Widget ComboSearch(BuildContext context,String placeholder ){
+  Widget comboSearch(BuildContext context,String placeholder ){
     return Row(
       children: <Widget>[
         Padding(

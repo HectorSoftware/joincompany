@@ -9,7 +9,6 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/UserService.dart';
-import 'package:sqflite/sqflite.dart';
 import 'formBusiness.dart';
 
 // ignore: must_be_immutable
@@ -128,8 +127,8 @@ class _BusinessListState extends State<BusinessList> {
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
               onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
+                UserDataBase userActivity = await deletetUser();
+                if(userActivity == null){
                   exit(0);
                 }
               },
@@ -141,7 +140,6 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   Future<UserDataBase> deletetUser() async {
-    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }

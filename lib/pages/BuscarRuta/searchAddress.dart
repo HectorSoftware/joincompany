@@ -6,12 +6,9 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
-import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart';
 
 import '../../main.dart';
@@ -37,13 +34,12 @@ class _SearchAddressState extends State<SearchAddress> {
   SentryClient sentry;
   bool llenadoListaEncontrador = false;
   static const kGoogleApiKeyy = kGoogleApiKey;
-  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKeyy);
-  List<AddressModel> _ListAddress;
+  List<AddressModel> _listAddress;
   ListWidgets ls = ListWidgets();
 
   @override
   void initState() {
-    _ListAddress = new List<AddressModel>();
+    _listAddress = new List<AddressModel>();
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -59,11 +55,6 @@ class _SearchAddressState extends State<SearchAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQueryData = MediaQuery.of(context);
-    double por = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {
-      por = 0.807;
-    }
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -77,8 +68,8 @@ class _SearchAddressState extends State<SearchAddress> {
         },
         child: ListView(
           children: <Widget>[
-            Botonbuscar(),
-            Mapa(),
+            botonSearch(),
+            mapView(),
             Container(
               child: llenadoListaEncontrador ?
               Container(
@@ -109,14 +100,14 @@ class _SearchAddressState extends State<SearchAddress> {
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+     await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
 
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
 
-  Container Botonbuscar(){
+  Container botonSearch(){
     return Container(
       height: 50.0,
       width: double.infinity,
@@ -144,18 +135,25 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest(value);
         },
         onChanged: (text){
-          if(_ListAddress.length != 0){
+          if(_listAddress.length != 0){
             listPlacemark = new List<AddressModel>();
-            for(int cost= 0; cost < _ListAddress.length; cost++){
-              if(ls.createState().checkSearchInText(_ListAddress[cost].address, text) && (text.length != 0)) {
-                listPlacemark.add(_ListAddress[cost]);
+            for(int cost= 0; cost < _listAddress.length; cost++){
+              if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
+                listPlacemark.add(_listAddress[cost]);
               }
             }
-            if(listPlacemark.length != 0){llenadoListaEncontrador = true;}else{llenadoListaEncontrador=false;}
+            if(listPlacemark.length != 0){
+              setState(() {
+                llenadoListaEncontrador = true;
+              });
 
-            setState(() {
-              listPlacemark;llenadoListaEncontrador;
-            });
+            }else{
+              setState(() {
+                llenadoListaEncontrador=false;
+              });
+
+            }
+
           }
         },
       ),
@@ -212,10 +210,10 @@ class _SearchAddressState extends State<SearchAddress> {
 //    }
 //  }
 
-  Future<List<Placemark>> ObtenerDireccion(String Locatio)async{
+  Future<List<Placemark>> getDirection(String location)async{
     List<Placemark> placemark ;
     try{
-      placemark = await Geolocator().placemarkFromAddress(Locatio);
+      placemark = await Geolocator().placemarkFromAddress(location);
     }catch(e) {
     }
     return placemark;
@@ -232,7 +230,7 @@ class _SearchAddressState extends State<SearchAddress> {
     ));
   }
 
-  Mapa(){
+  mapView(){
     return _initialPosition == null ?
     Container(
       alignment: Alignment.center,
@@ -296,7 +294,7 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   getListAnddress() async {
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
 //    var getAllAddressessResponse = await getAllAddresses(UserActiv.company,UserActiv.token);
 //    AddressesModel AddresseS = AddressesModel.fromJson(getAllAddressessResponse.body);
 //    if(getAllAddressessResponse.statusCode == 200){
@@ -307,18 +305,18 @@ class _SearchAddressState extends State<SearchAddress> {
 //      }
 //    }
 
-    var AddressResponse = await getAllAddresses(UserActiv.company, UserActiv.token);
-    AddressesModel Address = AddressesModel.fromJson(AddressResponse.body);
+    var addressResponse = await getAllAddresses(userActivity.company, userActivity.token);
+    AddressesModel address = AddressesModel.fromJson(addressResponse.body);
 
-    if(AddressResponse.statusCode == 200){
-      for(int cantAddress = 0; cantAddress < Address.data.length; cantAddress++){
-        if(Address.data[cantAddress].address != null){
-          _ListAddress.add(Address.data[cantAddress]);
+    if(addressResponse.statusCode == 200){
+      for(int cantAddress = 0; cantAddress < address.data.length; cantAddress++){
+        if(address.data[cantAddress].address != null){
+          setState(() {
+            _listAddress.add(address.data[cantAddress]);
+          });
         }
       }
     }
-    setState(() {
-      _ListAddress;
-    });
+
   }
 }

@@ -1,9 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:joincompany/Menu/businesList.dart';
 import 'package:joincompany/Menu/configCli.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
@@ -15,7 +12,6 @@ import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/services/UserService.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
@@ -29,10 +25,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool conditionalTask = false;
   bool conditionalMap = true;
   bool conditionalHome = true;
-  blocListTaskFilter blocListTaskresFilter;
-  blocListTaskCalendar blocListTaskCalendarRes;
-  var DatepickedInit = (new DateTime.now()).add(new Duration(days: -14));
-  var DatepickedEnd = new DateTime.now();
+  BlocListTaskFilter blocListTaskResFilter;
+  BlocListTaskCalendar blocListTaskCalendarRes;
+  var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
+  var datePickedEnd = new DateTime.now();
   String nameUser = '';
   String emailUser = '';
 
@@ -54,8 +50,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       },
     );
     extraerUser();
-    _listCalendar.add(DatepickedInit);
-    _listCalendar.add(DatepickedEnd);
+    _listCalendar.add(datePickedInit);
+    _listCalendar.add(datePickedEnd);
     super.initState();
   }
 
@@ -63,7 +59,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   void dispose(){
     _controller.dispose();
     blocListTaskCalendarRes.dispose();
-    blocListTaskresFilter.dispose();
+    blocListTaskResFilter.dispose();
     super.dispose();
   }
 
@@ -117,13 +113,13 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   TabBarView getTabBarView() {
 
-    blocListTaskresFilter = new blocListTaskFilter(_filter);
-    blocListTaskCalendarRes = new blocListTaskCalendar();
+    blocListTaskResFilter = new BlocListTaskFilter(_filter);
+    blocListTaskCalendarRes = new BlocListTaskCalendar();
 
     return TabBarView(
       children: <Widget>[
-        new taskHomeTask(blocListTaskFilterReswidget: blocListTaskresFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
-        new taskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar),
+        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
+        new TaskHomeMap(blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar),
       ],
       controller: _controller,
       physics: _controller.index == 0
@@ -219,8 +215,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
               onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
+                UserDataBase userActivity = await deletetUser();
+                if(userActivity == null){
                   exit(0);
                 }
               },
@@ -232,7 +228,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   Future<UserDataBase> deletetUser() async {
-    Database _database = await ClientDatabaseProvider.db.deleteDatabaseInstanace();
     UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
     return userActiv;
   }
@@ -240,22 +235,22 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
     context: context,
-    initialFirstDate: DatepickedInit,
-    initialLastDate: DatepickedEnd,
+    initialFirstDate: datePickedInit,
+    initialLastDate: datePickedEnd,
     firstDate: new DateTime(1990),
     lastDate: new DateTime(2030)
     );
     if(picked != null){
       bool updateVarDataTime = false;
       if(picked.length == 1){
-        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[0])){
-          updateVarDataTime = true; DatepickedInit = DatepickedEnd = picked[0];
+        if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
+          updateVarDataTime = true; datePickedInit = datePickedEnd = picked[0];
         }
       }else{
-        if((DatepickedInit != picked[0])||(DatepickedEnd != picked[1])){
+        if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
           updateVarDataTime = true;
-          DatepickedInit = picked[0];
-          DatepickedEnd = picked[1];
+          datePickedInit = picked[0];
+          datePickedEnd = picked[1];
         }
       }
 
@@ -266,7 +261,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
         blocListTaskCalendarRes.inTaksCalendarMap.add(_listCalendar);
         setState(() {
-          DatepickedInit; DatepickedEnd;
+          datePickedInit; datePickedEnd;
         });
       }
     }
@@ -291,7 +286,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 if (this.mounted){
                   setState((){
                     textFilter = value.toString();
-                    blocListTaskresFilter;
+                    blocListTaskResFilter;
                   });
                 }
               },

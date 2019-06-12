@@ -3,7 +3,6 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class ClientDatabaseProvider{
@@ -12,7 +11,7 @@ class ClientDatabaseProvider{
   static final  ClientDatabaseProvider db = ClientDatabaseProvider._();
   Database _database;
 
-  //para evitar que abra varias conexciones una y otra vez podemos usar algo como esto..
+
   Future<Database> get database async {
     if(_database != null) return _database;
     _database = await getDatabaseInstanace();
@@ -29,12 +28,11 @@ class ClientDatabaseProvider{
         });
   }
 
-  Future<Database> deleteDatabaseInstanace() async {
+  Future deleteDatabaseInstance() async {
     final db = await database;
     db.delete('User');
   }
 
-  //muestra un solo cliente por el id la base de datos
   Future<UserDataBase> getCodeId(String codigo) async {
     try{
       final db = await database;
@@ -55,11 +53,11 @@ class ClientDatabaseProvider{
   Future<int> updatetoken(String token) async {
     var dbClient = await  database;
     return await dbClient.rawUpdate(
-        'UPDATE User SET token = \'${token}\' WHERE idTable = 1');
+        'UPDATE User SET token = \'$token\' WHERE idTable = 1');
   }
   Future<int> updateUser(String idUser, String emil, String pwd, String token) async {
     var dbClient = await  database;
-    return await dbClient.rawUpdate('UPDATE User SET idUserCompany = $idUser, name = \'${emil}\', password = \'${pwd}\', token = \'${token}\' WHERE idTable = 1');
+    return await dbClient.rawUpdate('UPDATE User SET idUserCompany = $idUser, name = \'$emil\', password = \'$pwd\', token = \'$token\' WHERE idTable = 1');
   }
 
 }

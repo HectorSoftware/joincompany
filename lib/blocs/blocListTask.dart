@@ -6,7 +6,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 
-class blocListTask {
+class BlocListTask {
 
   List<TaskModel> _listTaskModellocal = List<TaskModel>();
 
@@ -19,21 +19,20 @@ class blocListTask {
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
 
     TasksModel tasks = new TasksModel();
     var getAllTasksResponse;
-    List<TaskModel> _listTask = new List<TaskModel>();
     try{
-      DateTime FechaNueva = DateTime.parse('1990-05-05');
-      for(int contar_pag = 1; contar_pag <= pageTasks;contar_pag++){
-        getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: UserActiv.idUserCompany.toString(), perPage: '5',page: contar_pag.toString());
+      DateTime dateNew = DateTime.parse('1990-05-05');
+      for(int countPage = 1; countPage <= pageTasks;countPage++){
+        getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: userActivity.idUserCompany.toString(), perPage: '5',page: countPage.toString());
         if(getAllTasksResponse.statusCode == 200){
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
           //if(tasks)
           for(int i = 0; i < tasks.data.length; i++ ){
-            DateTime Fechatask = DateTime.parse(tasks.data[i].createdAt);
+            DateTime dateTask = DateTime.parse(tasks.data[i].createdAt);
             int c = 0;
             for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
               if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
@@ -42,11 +41,11 @@ class blocListTask {
             }
             if(c < 2){
               if((tasks.data.length == 1)||
-                  ((FechaNueva.day != Fechatask.day) ||
-                      (FechaNueva.month != Fechatask.month) ||
-                      (FechaNueva.year != Fechatask.year))){
+                  ((dateNew.day != dateTask.day) ||
+                      (dateNew.month != dateTask.month) ||
+                      (dateNew.year != dateTask.year))){
                 _listTaskModellocal.add(tasks.data[i]);
-                FechaNueva = Fechatask;
+                dateNew = dateTask;
               }
               _listTaskModellocal.add(tasks.data[i]);
             }
@@ -64,13 +63,13 @@ class blocListTask {
   Sink<int> get inListTaksTotal => _tasksTotalController.sink;
 
 
-  @override
+
   void dispose() {
     _tasksController.close();
     _tasksTotalController.close();
   }
 
-  blocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
+  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
     getdatalist(hastaf,desdef,pageTasks);
   }
 }

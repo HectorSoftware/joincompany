@@ -13,12 +13,12 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
-class taskHomeMap extends StatefulWidget {
+class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
-  taskHomeMap({this.blocListTaskCalendarReswidget,this.listCalendarRes});
+  TaskHomeMap({this.blocListTaskCalendarReswidget,this.listCalendarRes});
 
-  final blocListTaskCalendar blocListTaskCalendarReswidget;
+  final BlocListTaskCalendar blocListTaskCalendarReswidget;
   final List<DateTime> listCalendarRes;
 }
 
@@ -34,7 +34,7 @@ enum markersId {
   markerRed,
 }
 
-class _MytaskPageMapState extends State<taskHomeMap> {
+class _MytaskPageMapState extends State<TaskHomeMap> {
 
   GoogleMapController mapController;
   static LatLng _initialPosition;
@@ -43,16 +43,17 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   static const kGoogleApiKeyy = kGoogleApiKey;
+  // ignore: cancel_subscriptions
   StreamSubscription streamSubscription;
-  blocListTaskCalendar blocListTaskCalendarRes;
-  DateTime FechaActual = DateTime.now();
+  BlocListTaskCalendar blocListTaskCalendarRes;
+  DateTime dateActual = DateTime.now();
   List<DateTime> listCalendar = new List<DateTime>();
 
   @override
-  Future initState() {
+  void initState() {
     _getUserLocation();
     listCalendar = widget.listCalendarRes;
-    FechaActual = listCalendar[1];
+    dateActual = listCalendar[1];
     super.initState();
   }
 
@@ -119,7 +120,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
           Positioned(
             right: 15.0,
             bottom: 10.0,
-            child: ButtonListCLient(),
+            child: buttonListClient(),
           ),
         ],
       )
@@ -138,7 +139,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //setState(() {
       mapController = controller;
     //});
-    _addMarker(FechaActual);
+    _addMarker(dateActual);
   }
 
   void _getUserLocation() async{
@@ -157,8 +158,8 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
     String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: UserActiv.idUserCompany.toString());
+    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
+    var getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: userActivity.idUserCompany.toString());
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
     status sendStatus = status.cliente;
     for(int i=0; i < tasks.data.length;i++){
@@ -172,7 +173,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
         _listMarker.add(marker);
       }
     }
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company,userActivity.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     for(int y = 0; y < customersWithAddress.data.length; y++){
       Place marker;
@@ -207,11 +208,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
     _markers.clear();
-    int number = 0;
+    int number = listPlaces.length + 1;
 
     for(Place mark in listPlaces){
-
-      number = number +1;
+      number--;
       _markers.add(
         Marker(
             markerId: MarkerId(mark.id.toString()),
@@ -224,7 +224,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                        builder: (context) => FormTask(directioncliente:mark.customerAddress )));
+                        builder: (context) => FormTask(directionClient:mark.customerAddress )));
                   }
                 }
             ),
@@ -249,7 +249,6 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
-    ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
 
 
     switch(mark.statusTask){
@@ -328,9 +327,9 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     return lList;
   }
 
-  FloatingActionButton ButtonListCLient(){
+  FloatingActionButton buttonListClient(){
     return FloatingActionButton.extended(
-      onPressed: ListarListClientes,
+      onPressed: listViewListClients,
       icon: Icon(Icons.place),
       label: Text("Tareas"),
       backgroundColor: PrimaryColor,
@@ -338,7 +337,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     );
   }
 
-  Future ListarListClientes() async {
+  Future listViewListClients() async {
     await showDialog(
         context: context,
         // ignore: deprecated_member_use
@@ -353,28 +352,28 @@ class _MytaskPageMapState extends State<taskHomeMap> {
 
   // ignore: non_constant_identifier_names
   ListClientes(){
-    List<Place> listas_porhacer = new List<Place>();
+    List<Place> listToDo = new List<Place>();
     for(Place p in listplace){
       if(p.statusTask == status.planificado){
-        listas_porhacer.add(p);
+        listToDo.add(p);
       }else{
       }
     }
 
-    if(listas_porhacer.length != 0){
+    if(listToDo.length != 0){
       return new Container(
         width: MediaQuery.of(context).size.width ,
         height: MediaQuery.of(context).size.height *0.7,
         child: Container(
           child: ListView.builder(
-            itemCount: listas_porhacer.length,
+            itemCount: listToDo.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(listas_porhacer[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
-                subtitle: Text(listas_porhacer[index].address),
+                title: Text(listToDo[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
+                subtitle: Text(listToDo[index].address),
                 leading: Icon(Icons.location_on,color: Colors.red,),
                 onTap: (){
-                  var center = LatLng(listas_porhacer[index].latitude, listas_porhacer[index].longitude);
+                  var center = LatLng(listToDo[index].latitude, listToDo[index].longitude);
                   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
                       target: center == null ? LatLng(0, 0) : center, zoom: 15.0)));
                   Navigator.pop(context);

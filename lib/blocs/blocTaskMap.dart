@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
@@ -12,7 +11,7 @@ class TaskBloc{
   List<Place> _listMarker = new List<Place>();
 
   final _taskcontroller = StreamController<List<Place>>.broadcast();
-  Sink<List<Place>> get _inTask => _taskcontroller.sink;
+//  Sink<List<Place>> get _inTask => _taskcontroller.sink;
   Stream<List<Place>> get outTask => _taskcontroller.stream;
 
   TaskBloc(){
@@ -24,9 +23,9 @@ class TaskBloc{
     String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
     String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
 
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, );
+    var getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate : diadesde ,endDate : hastadesde, );
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
     status sendStatus = status.cliente;
 
@@ -42,7 +41,7 @@ class TaskBloc{
       }
     }
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company,userActivity.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     for(int y = 0; y < customersWithAddress.data.length; y++){
@@ -58,7 +57,7 @@ class TaskBloc{
     _taskcontroller.add(_listMarker);
   }
 
-  @override
+
   void dispose() {
     _taskcontroller.close();
   }
