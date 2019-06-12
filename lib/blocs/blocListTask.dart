@@ -26,7 +26,7 @@ class BlocListTask {
     try{
       DateTime dateNew = DateTime.parse('1990-05-05');
       for(int countPage = 1; countPage <= pageTasks;countPage++){
-        getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: userActivity.idUserCompany.toString(), perPage: '5',page: countPage.toString());
+        getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: userActivity.idUserCompany.toString(), perPage: '20',page: countPage.toString());
         if(getAllTasksResponse.statusCode == 200){
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
 
