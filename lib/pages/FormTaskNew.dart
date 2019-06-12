@@ -112,7 +112,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.addressId = directionClientIn.addressId;
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
-                                   await  saveTaskApi();
+                                  await  saveTaskApi();
                                     if(taskEnd == 201){
                                       showDialog(
                                         context: context,
@@ -957,7 +957,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
+              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
                 return Row(
                   children: <Widget>[
                     Container(
