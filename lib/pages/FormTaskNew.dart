@@ -67,12 +67,6 @@ class _FormTaskState extends State<FormTask> {
   }
   @override
   Widget build(BuildContext context) {
-    double por;
-    final mediaQueryData = MediaQuery.of(context);
-    por = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {
-      por = 0.807;
-    }
     globalContext = context;
     return new Scaffold(
       appBar: AppBar(
@@ -963,7 +957,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
                 return Row(
                   children: <Widget>[
                     Container(

@@ -265,7 +265,6 @@ class _FormClientState extends State<FormClient> {
             );
             var response = await createCustomer(client, userAct.company, userAct.token);
             var cli = CustomerModel.fromJson(response.body);
-            print(cli.id);
             if(response.statusCode == 200){
               bool saveDirections = await setDirections(cli.id);
               if(!saveDirections){

@@ -13,8 +13,6 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-import 'package:sqflite/sqlite_api.dart';
-
 
 // ignore: must_be_immutable
 class Client extends StatefulWidget {
@@ -187,8 +185,8 @@ class _ClientState extends State<Client> {
               title: new Text("Salir"),
               trailing: new Icon(Icons.directions_run),
               onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
+                UserDataBase userActivity = await deletetUser();
+                if(userActivity == null){
                   exit(0);
                 }
               },
