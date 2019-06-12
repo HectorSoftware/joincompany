@@ -98,8 +98,7 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('SALIR'),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  Navigator.pushReplacementNamed(context, '/vistap');
                                 },
                               ),
                               FlatButton(
@@ -119,20 +118,49 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.addressId = directionClientIn.addressId;
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
-                                    saveTaskApi();
-                                    Navigator.of(context).pop();
+                                   await  saveTaskApi();
                                     if(taskEnd == 201){
-                                      AlertDialog(
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            child: const Text('Aceptar'),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                        ],
+                                      showDialog(
+                                        context: context,
+                                      builder: (BuildContext context) {
+                                          return   AlertDialog(
+                                            title: Text('Tarea Guardada con Exito'),
+                                            actions: <Widget>[
+                                              FlatButton(
+
+                                                child: const Text('Aceptar'),
+                                                onPressed: () {
+                                                  Navigator.pushReplacementNamed(context, '/vistap');
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                      }
+                                      );
+                                    }else{
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return   AlertDialog(
+                                              title: Text('A ocurido un Error al crear la tarea'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: const Text('Intentar de Nuevo'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+                                                FlatButton(
+                                                  child: const Text('Volver a Tareas'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          }
                                       );
                                     }
                                   }
@@ -674,7 +702,7 @@ class _FormTaskState extends State<FormTask> {
                           Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     img = await photoAndImage();
@@ -693,11 +721,49 @@ class _FormTaskState extends State<FormTask> {
                               ),
                             ],
                           ),
+                          Container(
+                            width: MediaQuery.of(globalContext).size.width*0.50,
+                            height: 40,
+                            padding: EdgeInsets.only(
+                                top: 20,left: 20, right: 16, bottom: 4
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(10)
+                                ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5
+                                  )
+                                ]
+                            ),
+                            child: TextField(
+                              onChanged: (value){
+                              },
+                              maxLines: 1,
+                              //controller: nameController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Comentario ',
+                              ),
+                            ),
+                          ),
                         ],
+                      ),
+                      Spacer(
+
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width* 0.5,
-                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
+                        child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                            )),
                       ),
                     ],
                   ),
@@ -706,16 +772,20 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Image'){
                 return Row(
                   children: <Widget>[
+
+                    Container(
+                      child:Center(
+                        child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                            color: PrimaryColor),
+                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+                      ),
+                    ),
+                    Spacer(),
                     Column(
                       children: <Widget>[
                         Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
                       ],
 
-                    ),
-                    Container(
-                      child:listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
-                          color: PrimaryColor),
-                      ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
                     ),
                   ],
                 );
@@ -741,7 +811,7 @@ class _FormTaskState extends State<FormTask> {
                           child: Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -763,13 +833,48 @@ class _FormTaskState extends State<FormTask> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
 
+                        Container(
+                          width: MediaQuery.of(globalContext).size.width*0.50,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 20,left: 20, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Comentario ',
+                            ),
+                          ),
+                        ),
+                      ],
+
+                    ),
+                    Spacer(
+
+                    ),
                     Container(
-                      width: MediaQuery.of(context).size.width* 0.3,
+                      width: MediaQuery.of(context).size.width* 0.5,
                       child: Center(
-                          child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,) :  Card(color: Colors.black,child: SizedBox(height: 200,width: 600,),)),
+                          child: Container(
+                              child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
                     ),
                   ],
                 );
@@ -784,7 +889,7 @@ class _FormTaskState extends State<FormTask> {
                           child: Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 1,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -806,11 +911,50 @@ class _FormTaskState extends State<FormTask> {
                             ],
                           ),
                         ),
+                        Container(
+                          width: MediaQuery.of(globalContext).size.width*0.50,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 20,left: 20, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Comentario ',
+                            ),
+                          ),
+                        ),
+
                       ],
+                    ),
+                    Spacer(
+
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
+                      child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                          )),
                     ),
 
                   ],
@@ -1059,7 +1203,7 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-   Future<bool>saveTaskApi() async{
+   Future<bool> saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
     print(createTaskResponse.body);
@@ -1067,10 +1211,15 @@ class _FormTaskState extends State<FormTask> {
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = 201;
-       return true;
      });
    }
-  return false;
+     if(createTaskResponse.statusCode == 500){
+       setState(() {
+         taskEnd = 500;
+
+       });
+     }
+  return true;
   }
   void saveData(String dataController, String id) {
     var value = dataController;
