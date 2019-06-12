@@ -114,24 +114,12 @@ class _BusinessListState extends State<BusinessList> {
           ),
           Container(
             child: new ListTile(
-              title: new Text("Cerrar Sesion"),
-              trailing: new Icon(Icons.person_add),
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context,'/App');
-              },
-            ),
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
-              onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
-                  exit(0);
-                }
               },
             ),
           ),

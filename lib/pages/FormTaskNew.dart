@@ -118,9 +118,12 @@ class _FormTaskState extends State<FormTask> {
                                    saveTask.addressId = directionClientIn.addressId;
                                    saveTask.planningDate = _dateTask.toString().substring(0,19);
                                    saveTask.customValuesMap = dataInfo;
-                                   saveTaskApi();
-                                   Navigator.pop(context);
-                                   Navigator.of(context).pop(saveTask);
+                                   if(await saveTaskApi()){
+                                     Navigator.pop(context);
+                                     Navigator.pop(context);
+                                   }else{
+                                     //MONSTRAR MENSAJE QUE NO SE GUARDO LA TAREA POR ERROR DE CONEXION
+                                   }
                                  }
 
                                },
@@ -969,7 +972,7 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-   saveTaskApi() async{
+   Future<bool>saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
     print(createTaskResponse.body);
@@ -977,9 +980,10 @@ class _FormTaskState extends State<FormTask> {
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = true;
+       return true;
      });
    }
-
+  return false;
   }
   void saveData(String dataController, String id) {
     var value = dataController;

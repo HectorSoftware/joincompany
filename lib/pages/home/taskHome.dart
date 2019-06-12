@@ -205,24 +205,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           ),
           Container(
             child: new ListTile(
-              title: new Text("Cerrar Sesion"),
-              trailing: new Icon(Icons.person_add),
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context,'/App');
-              },
-            ),
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
-              onTap: () async {
-                UserDataBase UserActiv = await deletetUser();
-                if(UserActiv == null){
-                  exit(0);
-                }
               },
             ),
           ),
@@ -238,7 +226,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   Future<Null> selectDate( context )async{
-    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    final List<DateTime> picked =  await DateRagePicker.showDatePicker(
     context: context,
     initialFirstDate: DatepickedInit,
     initialLastDate: DatepickedEnd,
