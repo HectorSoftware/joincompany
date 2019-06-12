@@ -16,10 +16,9 @@ import 'package:joincompany/services/TaskService.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
-  TaskHomeMap({this.blocListTaskCalendarReswidget,this.listCalendarRes});
+  TaskHomeMap({this.blocListTaskCalendarResMapwidget});
 
-  final BlocListTaskCalendar blocListTaskCalendarReswidget;
-  final List<DateTime> listCalendarRes;
+  final BlocListTaskCalendarMap blocListTaskCalendarResMapwidget;
 }
 
 /*
@@ -45,21 +44,19 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   static const kGoogleApiKeyy = kGoogleApiKey;
   // ignore: cancel_subscriptions
   StreamSubscription streamSubscription;
-  BlocListTaskCalendar blocListTaskCalendarRes;
+  BlocListTaskCalendarMap blocListTaskCalendarResMap;
   DateTime dateActual = DateTime.now();
   List<DateTime> listCalendar = new List<DateTime>();
 
   @override
   void initState() {
     _getUserLocation();
-    listCalendar = widget.listCalendarRes;
-    dateActual = listCalendar[1];
     super.initState();
   }
 
   @override
   void dispose(){
-    blocListTaskCalendarRes.dispose();
+    blocListTaskCalendarResMap.dispose();
     super.dispose();
   }
 
@@ -78,15 +75,15 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       por = 0.807;
     }
 
-    blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
+    blocListTaskCalendarResMap = widget.blocListTaskCalendarResMapwidget;
     try{
       if (this.mounted){
         setState((){
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendarMap.listen((onData)
+          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarResMap.outTaksCalendarMap.listen((onData)
           => setState((){
             listplace.clear();
-            _addMarker(onData[1]);
+            _addMarker(onData);
           }));
         });
       }
@@ -128,26 +125,19 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   }
 
   void _onCameraMove(CameraPosition position) {
-    //setState(() {
-      _lastPosition = position.target;
-    //});
+    _lastPosition = position.target;
   }
 
   static CameraPosition _kGooglePlex = CameraPosition(target: _initialPosition, zoom: 12);
 
   void onMapCreated(controller) {
-    //setState(() {
-      mapController = controller;
-    //});
+    mapController = controller;
     _addMarker(dateActual);
   }
 
   void _getUserLocation() async{
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-    //setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    //});
+    _initialPosition = LatLng(position.latitude, position.longitude);
   }
 
   List<Place> listplace = new List<Place>();
@@ -204,7 +194,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   }
 
   allmark(List<Place> listPlaces) async {
-    
+
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
     _markers.clear();
