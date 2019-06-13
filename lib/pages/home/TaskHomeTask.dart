@@ -215,7 +215,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   bool chanceCircule = true;
   LastCircule() async{
-    await Future.delayed(Duration(seconds: 10, milliseconds: 0 ));
+    await Future.delayed(Duration(seconds: 6, milliseconds: 0 ));
     setState(() {
       chanceCircule = false;
     });
