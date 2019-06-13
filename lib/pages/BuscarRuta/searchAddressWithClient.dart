@@ -135,8 +135,10 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
           //sendRequest(value);
         },
         onChanged: (text){
+
+          listPlacemark = new List<CustomerWithAddressModel>();
+
           if(_listAddress.length != 0){
-            listPlacemark = new List<CustomerWithAddressModel>();
             for(int cost= 0; cost < _listAddress.length; cost++){
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
                 listPlacemark.add(_listAddress[cost]);
@@ -152,15 +154,40 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
                  llenadoListaEncontrador=false;
               });
              }
-
-
           }
+          sendRequest(text);
         },
       ),
     );
   }
 
   List<PlacesSearchResult> places = [];
+  List<int> listAndressGoogle = new List<int>();
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
+
+  Future sendRequest(String intendedLocation) async {
+    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
+    final result = await _places.searchNearbyWithRadius(location, 5000);
+    listAndressGoogle = new List<int>();
+    if (result.status == "OK") {
+      this.places = result.results;
+      String direccion = '';
+
+      result.results.forEach((f) {
+        direccion = f.name;
+        if(direccion.contains(intendedLocation)){
+
+          CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
+              address: f.name ,
+              latitude: f.geometry.location.lat,
+              longitude: f.geometry.location.lng
+          );
+          listAndressGoogle.add(listPlacemark.length);
+          listPlacemark.add(AuxAddressModel);
+        }
+      });
+    }
+  }
 
 
 //  sendRequest2(String value) async {
@@ -262,10 +289,20 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
     return ListView.builder(
       itemCount: listPlacemark.length,
       itemBuilder: (context, index) {
+
+
+        bool isGoogle = false;
+        for(int value in listAndressGoogle){
+          if(index == value){
+            isGoogle = true;
+          }
+        }
+
         return Card(
           margin: EdgeInsets.only(bottom: 0,top: 2,left: 5,right: 5),
           child: Row(
             children: <Widget>[
+              Container(child: isGoogle ? Icon(Icons.map) : Icon(Icons.dns)),
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(5),
@@ -283,9 +320,9 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
                     )
                 ),
               ),
-              Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
+              isGoogle ? Container() : Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
                 Navigator.of(context).pop(listPlacemark[index]);
-              })),
+              })) ,
             ],
           ),
         );

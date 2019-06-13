@@ -151,8 +151,12 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             //if(PageTasks == 1){
             listTaskModellocal = onDataList;
             //}
-            for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
-              listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
+            if(onDataList.length != 0){
+              for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
+                listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
+              }
+            }else{
+              LastCircule();
             }
           }));
         });
@@ -200,7 +204,20 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       ),
     )
     //listando()
-      : Center(child: CircularProgressIndicator(),);
+      : chanceCircule ? Center(child: CircularProgressIndicator(),) : Container(
+      child: Center(
+        child: Text("No existen tareas."),
+      ),
+    );
+  }
+
+
+  bool chanceCircule = true;
+  LastCircule() async{
+    await Future.delayed(Duration(seconds: 10, milliseconds: 0 ));
+    setState(() {
+      chanceCircule = false;
+    });
   }
 
   int taskTotals = 0;

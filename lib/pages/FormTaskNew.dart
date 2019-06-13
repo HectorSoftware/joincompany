@@ -1074,6 +1074,14 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
+
+  VerificarAddress(CustomerWithAddressModel resp){
+
+    //var responseCustomerWithAddressModel = await get
+
+
+  }
+
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1085,9 +1093,7 @@ class _FormTaskState extends State<FormTask> {
       setState(() {
         _date = picked;
       });
-
     }
-
   }
   Future<Null> selectDateTask(BuildContext context )async{
     final DateTime picked = await showDatePicker(
