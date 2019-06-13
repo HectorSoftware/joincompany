@@ -446,19 +446,23 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
+              if(listFieldsModels[index].fieldType == null)
+              {
+                return Center(child: Text('Sin datos'),);
+              }
               if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
               {
                 return Row(
                   children: <Widget>[
-                 Padding(
-                   padding: const EdgeInsets.only(left: 70),
-                   child: Container(
-                       child: new Checkbox(
-                        value: _value1,
-                        onChanged: _value1Changed
-                       )
-                   ),
-                 ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 70),
+                      child: Container(
+                          child: new Checkbox(
+                              value: _value1,
+                              onChanged: _value1Changed
+                          )
+                      ),
+                    ),
                     Spacer(),
                     Container(
                       width: MediaQuery.of(context).size.width *0.5,
