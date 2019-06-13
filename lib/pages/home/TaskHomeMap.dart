@@ -198,10 +198,12 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
     _markers.clear();
-    int number = listPlaces.length + 1;
+    int number = 0;
+    for(int contPlacesTask = 0; contPlacesTask < listPlaces.length ; contPlacesTask++){
+      if(listPlaces[contPlacesTask].customerAddress != null){ number++;}
+    }
 
     for(Place mark in listPlaces){
-      number--;
       _markers.add(
         Marker(
             markerId: MarkerId(mark.id.toString()),
@@ -222,6 +224,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           icon: await colorMarker(mark,number)
         ),
       );
+      if(mark.customerAddress != null){ number--;}
     }
 //    //setState((){
 //    _markers;
