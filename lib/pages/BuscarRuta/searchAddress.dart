@@ -43,7 +43,6 @@ class _SearchAddressState extends State<SearchAddress> {
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
-
     getListAnddress();
     super.initState();
   }

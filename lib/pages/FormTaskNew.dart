@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'dart:io';
+import 'package:sentry/sentry.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -34,6 +35,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
+  SentryClient sentry;
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
@@ -61,18 +63,13 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
+    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    double por;
-    final mediaQueryData = MediaQuery.of(context);
-    por = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {
-      por = 0.807;
-    }
     globalContext = context;
     return new Scaffold(
       appBar: AppBar(
@@ -98,8 +95,7 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('SALIR'),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
+                                  Navigator.pushReplacementNamed(context, '/vistap');
                                 },
                               ),
                               FlatButton(
@@ -119,20 +115,49 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.addressId = directionClientIn.addressId;
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
-                                    saveTaskApi();
-                                    Navigator.of(context).pop();
+                                  await  saveTaskApi();
                                     if(taskEnd == 201){
-                                      AlertDialog(
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            child: const Text('Aceptar'),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                        ],
+                                      showDialog(
+                                        context: context,
+                                      builder: (BuildContext context) {
+                                          return   AlertDialog(
+                                            title: Text('Tarea Guardada con Exito'),
+                                            actions: <Widget>[
+                                              FlatButton(
+
+                                                child: const Text('Aceptar'),
+                                                onPressed: () {
+                                                  Navigator.pushReplacementNamed(context, '/vistap');
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                      }
+                                      );
+                                    }else{
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return   AlertDialog(
+                                              title: Text('A ocurido un Error al crear la tarea'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: const Text('Intentar de Nuevo'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+                                                FlatButton(
+                                                  child: const Text('Volver a Tareas'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          }
                                       );
                                     }
                                   }
@@ -421,10 +446,36 @@ class _FormTaskState extends State<FormTask> {
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
+              if(listFieldsModels[index].fieldType == null)
+              {
+                return Center(child: Text('Sin datos'),);
+              }
               if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
               {
+                return Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 70),
+                      child: Container(
+                          child: new Checkbox(
+                              value: _value1,
+                              onChanged: _value1Changed
+                          )
+                      ),
+                    ),
+                    Spacer(),
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      height: MediaQuery.of(context).size.height *0.1,
+                      child: Card(
 
-                return Container(child: new Checkbox(value: _value1, onChanged: _value1Changed));
+                      ),
+
+                    ),
+
+
+                  ],
+                );
               }
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
@@ -542,27 +593,30 @@ class _FormTaskState extends State<FormTask> {
                 }
                 return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: new DropdownButton<String>(
-                    isDense: false,
-                    icon: Icon(Icons.arrow_drop_down),
-                    elevation: 10,
-                    value: dataInfo[listFieldsModels[index].id],
-                    hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *0.5,
+                    child: new DropdownButton<String>(
+                      isDense: false,
+                      icon: Icon(Icons.arrow_drop_down),
+                      elevation: 10,
+                      value: dataInfo[listFieldsModels[index].id],
+                      hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
-                    onChanged: (newValue) {
+                      onChanged: (newValue) {
 
-                      setState(() {
-                        //dropdownValue = newValue;
-                        dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
-                      });
+                        setState(() {
+                          //dropdownValue = newValue;
+                          dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                        });
 
-                    },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return new DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                      },
+                      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                        return new DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 );
               }
@@ -621,7 +675,7 @@ class _FormTaskState extends State<FormTask> {
                         onPressed: (){
                           selectTime(context);
                           selectDate(context);
-                          var dateCo = _date.toString().substring(0,10) + _time.format(context).toString();
+                          var dateCo = _date.toString().substring(0,10) + ' ' +_time.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                         },
                       ),
@@ -674,7 +728,7 @@ class _FormTaskState extends State<FormTask> {
                           Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     img = await photoAndImage();
@@ -693,11 +747,49 @@ class _FormTaskState extends State<FormTask> {
                               ),
                             ],
                           ),
+                       /*   Container(
+                            width: MediaQuery.of(globalContext).size.width*0.50,
+                            height: 40,
+                            padding: EdgeInsets.only(
+                                top: 20,left: 20, right: 16, bottom: 4
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(10)
+                                ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5
+                                  )
+                                ]
+                            ),
+                            child: TextField(
+                              onChanged: (value){
+                              },
+                              maxLines: 1,
+                              //controller: nameController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Comentario ',
+                              ),
+                            ),
+                          ),*/
                         ],
+                      ),
+                      Spacer(
+
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width* 0.5,
-                        child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
+                        child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                            )),
                       ),
                     ],
                   ),
@@ -706,16 +798,20 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Image'){
                 return Row(
                   children: <Widget>[
+
+                    Container(
+                      child:Center(
+                        child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                            color: PrimaryColor),
+                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+                      ),
+                    ),
+                    Spacer(),
                     Column(
                       children: <Widget>[
                         Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
                       ],
 
-                    ),
-                    Container(
-                      child:listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
-                          color: PrimaryColor),
-                      ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
                     ),
                   ],
                 );
@@ -741,7 +837,7 @@ class _FormTaskState extends State<FormTask> {
                           child: Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -763,13 +859,48 @@ class _FormTaskState extends State<FormTask> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
 
+                    /*    Container(
+                          width: MediaQuery.of(globalContext).size.width*0.50,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 20,left: 20, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Comentario ',
+                            ),
+                          ),
+                        ),*/
+                      ],
+
+                    ),
+                    Spacer(
+
+                    ),
                     Container(
-                      width: MediaQuery.of(context).size.width* 0.3,
+                      width: MediaQuery.of(context).size.width* 0.5,
                       child: Center(
-                          child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,) :  Card(color: Colors.black,child: SizedBox(height: 200,width: 600,),)),
+                          child: Container(
+                              child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
                     ),
                   ],
                 );
@@ -784,7 +915,7 @@ class _FormTaskState extends State<FormTask> {
                           child: Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -806,11 +937,50 @@ class _FormTaskState extends State<FormTask> {
                             ],
                           ),
                         ),
+                    /*    Container(
+                          width: MediaQuery.of(globalContext).size.width*0.50,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 20,left: 20, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Comentario ',
+                            ),
+                          ),
+                        ),*/
+
                       ],
+                    ),
+                    Spacer(
+
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width* 0.5,
-                      child: Center(child: dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)  : Text('')),
+                      child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                          )),
                     ),
 
                   ],
@@ -819,7 +989,7 @@ class _FormTaskState extends State<FormTask> {
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){print(v.name);}
+              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
                 return Row(
                   children: <Widget>[
                     Container(
@@ -1065,7 +1235,7 @@ class _FormTaskState extends State<FormTask> {
           );
         });
   }
-   Future<bool>saveTaskApi() async{
+   Future<bool> saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
     print(createTaskResponse.body);
@@ -1073,10 +1243,15 @@ class _FormTaskState extends State<FormTask> {
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = 201;
-       return true;
      });
    }
-  return false;
+     if(createTaskResponse.statusCode == 500){
+       setState(() {
+         taskEnd = 500;
+
+       });
+     }
+  return true;
   }
   void saveData(String dataController, String id) {
     var value = dataController;

@@ -14,7 +14,6 @@ import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
-
 // ignore: must_be_immutable
 class Client extends StatefulWidget {
 
@@ -66,8 +65,8 @@ class _ClientState extends State<Client> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: widget.vista ? null:buildDrawer(),
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
@@ -172,12 +171,24 @@ class _ClientState extends State<Client> {
           ),
           Container(
             child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
+              title: new Text("Cerrar Sesion"),
+              trailing: new Icon(Icons.person_add),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context,'/App');
+              },
+            ),
+          ),
+          Container(
+            child: new ListTile(
+              title: new Text("Salir"),
+              trailing: new Icon(Icons.directions_run),
+              onTap: () async {
+                UserDataBase userActivity = await deletetUser();
+                if(userActivity == null){
+                  exit(0);
+                }
               },
             ),
           ),

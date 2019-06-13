@@ -17,6 +17,7 @@ class TaskModel {
  int responsibleId;
  int customerId;
  int addressId;
+ int businessId;
  String name;
  String planningDate;
  String checkinDate;
@@ -48,6 +49,7 @@ class TaskModel {
    this.responsibleId,
    this.customerId,
    this.addressId,
+   this.businessId,
    this.name,
    this.planningDate,
    this.checkinDate,
@@ -84,6 +86,7 @@ class TaskModel {
    responsibleId: json["responsible_id"],
    customerId: json["customer_id"],
    addressId: json["address_id"],
+   businessId: json["business_id"],
    name: json["name"],
    planningDate: json["planning_date"],
    checkinDate: json["checkin_date"],
@@ -115,6 +118,7 @@ class TaskModel {
    "responsible_id": responsibleId,
    "customer_id": customerId,
    "address_id": addressId,
+   "business_id": businessId,
    "name": name,
    "planning_date": planningDate,
    "checkin_date": checkinDate,

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -43,11 +42,11 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
           () {
-            if (this.mounted){
-              setState((){
-                //Your state change code goes here
-              });
-            }
+        if (this.mounted){
+          setState((){
+            //Your state change code goes here
+          });
+        }
       },
     );
     extraerUser();
@@ -168,7 +167,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 trailing: new Icon(Icons.assignment),
                 title: new Text('Tareas'),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pushReplacementNamed(context, '/vistap');
                 },
               )
           ),
@@ -178,7 +177,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/cliente');
+                Navigator.pushReplacementNamed(context, '/cliente');
               },
             ),
           ),
@@ -188,7 +187,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.contacts),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/contactos');
+                Navigator.pushReplacementNamed(context, '/contactos');
               },
             ),
           ),
@@ -198,7 +197,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               trailing: new Icon(Icons.account_balance),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/negocios');
+                Navigator.pushReplacementNamed(context, '/negocios');
               },
             ),
           ),
@@ -239,11 +238,11 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   Future<Null> selectDate( context )async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
-    context: context,
-    initialFirstDate: datePickedInit,
-    initialLastDate: datePickedEnd,
-    firstDate: new DateTime(1990),
-    lastDate: new DateTime(2030)
+        context: context,
+        initialFirstDate: datePickedInit,
+        initialLastDate: datePickedEnd,
+        firstDate: new DateTime(1990),
+        lastDate: new DateTime(2030)
     );
     if(picked != null){
       bool updateVarDataTime = false;

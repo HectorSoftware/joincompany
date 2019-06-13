@@ -60,7 +60,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     //getdatalist(listCalendar[1],listCalendar[0],1);
     if (this.mounted){
       setState((){
-        userActivity;listCalender = widget.listCalendarRes;;
+        userActivity;listCalender = widget.listCalendarRes;
       });
     }
   }
