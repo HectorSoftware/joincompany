@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   UserDataBase saveUser;
   UserDataBase userVe;
 
-  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
-     final companyController = TextEditingController(/*text : 'duperu'*/);
+  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+     final companyController = TextEditingController(text : 'duperu');
 //    final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //     final companyController = TextEditingController(text : 'getkem');
   final passwordController = TextEditingController(/*text : '123'*/);
@@ -242,7 +242,12 @@ class _LoginPageState extends State<LoginPage> {
       var loginResponse;
       try{
         loginResponse = await login(Usr, pwd, companylocal);
-      }catch(e){ }
+      }catch(error, stackTrace) {
+        await sentry.captureException(
+          exception: error,
+          stackTrace: stackTrace,
+        );
+      }
 
       if(loginResponse != null){
         if(loginResponse.statusCode == 401){
@@ -469,8 +474,11 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.profile);
 
       print("---------------- Fin test. ----------------------------");
-    }catch(error, stackTrace){
-
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
 
   }

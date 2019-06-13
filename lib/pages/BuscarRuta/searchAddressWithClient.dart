@@ -216,7 +216,11 @@ class _SearchAddressState extends State<searchAddressWithClient> {
     List<Placemark> placemark ;
     try{
       placemark = await Geolocator().placemarkFromAddress(Locatio);
-    }catch(e) {
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
     return placemark;
   }

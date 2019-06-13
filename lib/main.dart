@@ -6,7 +6,7 @@ import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-
+import 'package:sentry/sentry.dart';
 import 'Menu/businesList.dart';
 import 'Menu/configCli.dart';
 import 'Menu/contactView.dart';
@@ -22,7 +22,7 @@ const SecondaryColor = const Color(0xff29a0c7);
 const hostApi = 'webapp.getkem.com';
 const versionApi = '/api/v1';
 const kGoogleApiKey = "AIzaSyDCs8ksRMNY73LlWa_VEyLzzDS24qKaaMw";
-
+final SentryClient sentry = new SentryClient(dsn: "https://1fa3adeff82e47f69a05ac688ba36718@sentry.io/1468988");
 
 class MyApp extends StatelessWidget{
   @override

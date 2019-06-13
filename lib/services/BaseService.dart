@@ -3,33 +3,44 @@ import 'dart:async';
 import 'package:joincompany/main.dart';
 
 Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String extraPath }) async{
+  try{
+    var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : '') + (extraPath!=null && extraPath!='' ? '$extraPath' : ''), params);
 
-  var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : '') + (extraPath!=null && extraPath!='' ? '$extraPath' : ''), params);
+    final response = await http.get(uri,
+        headers: {
+          'customer': customer,
+          'Authorization': 'Bearer $authorization',
+        }
+    );
 
-  final response = await http.get(uri,
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-    }
-  );
+    return response;
+  }on Exception{
+    print("error get");
+    return null;
+  }
 
-  return response;
 }
 
 Future<http.Response> httpPost(String bodyJson, String customer, String authorization, String resourcePath) async{
-  var uri = Uri.https(hostApi, versionApi + resourcePath);
-  
-  final response = await http.post(uri,
-    headers: {
-      'customer': customer,
-      'Authorization': 'Bearer $authorization',
-      'Content-Type' : 'application/json',
-      'Accept': 'application/json',
-    },
-    body: bodyJson
-  );
+  try{
+    var uri = Uri.https(hostApi, versionApi + resourcePath);
 
-  return response;
+    final response = await http.post(uri,
+        headers: {
+          'customer': customer,
+          'Authorization': 'Bearer $authorization',
+          'Content-Type' : 'application/json',
+          'Accept': 'application/json',
+        },
+        body: bodyJson
+    );
+
+    return response;
+  }on Exception{
+    print("error post");
+    return null;
+  }
+
 }
 
 Future<http.Response> httpPut(String id, String bodyJson, String customer, String authorization, String resourcePath) async{

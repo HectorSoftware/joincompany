@@ -49,7 +49,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   List<DateTime> listCalendar = new List<DateTime>();
 
   @override
-  Future initState() {
+  void initState() {
     _getUserLocation();
     listCalendar = widget.listCalendarRes;
     FechaActual = listCalendar[1];
@@ -114,6 +114,7 @@ class _MytaskPageMapState extends State<taskHomeMap> {
               onCameraMove: _onCameraMove,
               markers: _markers,
               polylines: _polyLines,
+
             ),
           ),
           Positioned(
@@ -141,111 +142,141 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     _addMarker(FechaActual);
   }
 
-  void _getUserLocation() async{
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-    //setState(() {
+  Future _getUserLocation() async{
+    try{
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+      //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
-    //});
+      //});
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   List<Place> listplace = new List<Place>();
   Future _addMarker(DateTime hasta) async {
+    try{
+      List<Place> _listMarker = new List<Place>();
 
-    List<Place> _listMarker = new List<Place>();
+      String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
+      String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
-    String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
-    String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
-
-    UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: UserActiv.idUserCompany.toString());
-    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
-    status sendStatus = status.cliente;
-    for(int i=0; i < tasks.data.length;i++){
-      Place marker;
-      String valadde = 'N/A';
-      if(tasks.data[i].address != null){
-        valadde = tasks.data[i].address.address;
-        if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
-        if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
-        marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
-        _listMarker.add(marker);
-      }
-    }
-    var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
-    for(int y = 0; y < customersWithAddress.data.length; y++){
-      Place marker;
-      String valadde = 'N/A';
-      if(customersWithAddress.data[y].address != null){
-        valadde = customersWithAddress.data[y].address;
-        bool noExiste = true;
-        for(Place value in _listMarker) {
-          if((value.latitude == customersWithAddress.data[y].latitude) &&
-             (value.longitude == customersWithAddress.data[y].longitude)){
-            noExiste = false;
-          }
-        }
-        if(_listMarker.length == 0 || noExiste) {
-          marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,customerAddress: customersWithAddress.data[y]);
+      UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
+      var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: UserActiv.idUserCompany.toString());
+      TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+      status sendStatus = status.cliente;
+      for(int i=0; i < tasks.data.length;i++){
+        Place marker;
+        String valadde = 'N/A';
+        if(tasks.data[i].address != null){
+          valadde = tasks.data[i].address.address;
+          if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
+          if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
+          marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
           _listMarker.add(marker);
         }
-
       }
-    }
+      var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+      CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+      for(int y = 0; y < customersWithAddress.data.length; y++){
+        Place marker;
+        String valadde = 'N/A';
+        if(customersWithAddress.data[y].address != null){
+          valadde = customersWithAddress.data[y].address;
+          bool noExiste = true;
+          for(Place value in _listMarker) {
+            if((value.latitude == customersWithAddress.data[y].latitude) &&
+                (value.longitude == customersWithAddress.data[y].longitude)){
+              noExiste = false;
+            }
+          }
+          if(_listMarker.length == 0 || noExiste) {
+            marker = Place(id: customersWithAddress.data[y].id, customer: customersWithAddress.data[y].name, address: valadde,latitude: customersWithAddress.data[y].latitude,longitude: customersWithAddress.data[y].longitude, statusTask: status.cliente,customerAddress: customersWithAddress.data[y]);
+            _listMarker.add(marker);
+          }
 
-    if (this.mounted){
-      setState((){
-        listplace = _listMarker;
-        allmark(listplace);
-      });
+        }
+      }
+
+      if (this.mounted){
+        setState((){
+          listplace = _listMarker;
+          allmark(listplace);
+        });
+      }
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
   allmark(List<Place> listPlaces) async {
-    
-    //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
+    try{
+      //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
 
-    _markers.clear();
-    int number = 0;
+      _markers.clear();
+      int number = 0;
 
-    for(Place mark in listPlaces){
+      for(Place mark in listPlaces){
 
-      number = number +1;
-      _markers.add(
-        Marker(
-            markerId: MarkerId(mark.id.toString()),
-            position: LatLng(mark.latitude, mark.longitude),
-            infoWindow: InfoWindow(
-                title: (mark.customer + '             ') ,
-                snippet: mark.address,
-                onTap: (){
-                  if(mark.statusTask == status.cliente){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => FormTask(directioncliente:mark.customerAddress )));
+        number = number +1;
+        _markers.add(
+          Marker(
+              markerId: MarkerId(mark.id.toString()),
+              position: LatLng(mark.latitude, mark.longitude),
+              infoWindow: InfoWindow(
+                  title: (mark.customer + '             ') ,
+                  snippet: mark.address,
+                  onTap: (){
+                    if(mark.statusTask == status.cliente){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FormTask(directioncliente:mark.customerAddress )));
+                    }
                   }
-                }
-            ),
-            onTap: (){ },
-          icon: await colorMarker(mark,number)
-        ),
-      );
-    }
+              ),
+              onTap: (){ },
+              icon: await colorMarker(mark,number)
+          ),
+        );
+      }
 //    //setState((){
 //    _markers;
 //    _polyLines;
 //    //});
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
-  Future createRoute(Place mark) async {
-    LatLng destination = LatLng(mark.latitude, mark.longitude);
-    String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination,kGoogleApiKeyy);
 
-    _polyLines.add(Polyline(polylineId: PolylineId(_lastPosition.toString()),
-        width: 10,
-        points: convertToLatLng(decodePoly(route)),
-        color: Colors.red[200]));
+  Future createRoute(Place mark) async {
+    try{
+      LatLng destination = LatLng(mark.latitude, mark.longitude);
+      String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination,kGoogleApiKeyy);
+
+      _polyLines.add(
+          Polyline(
+              polylineId: PolylineId(_lastPosition.toString()
+              ),
+          width: 10,
+          points: convertToLatLng(decodePoly(route)),
+          color: Colors.red[200]));
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {

@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/services/BaseService.dart';
 
+import '../main.dart';
+
 Future<http.Response> login(String email, String password, String customer) async{
   String resourcePath = '/auth/login';
 
@@ -12,7 +14,14 @@ Future<http.Response> login(String email, String password, String customer) asyn
     'password': password,
   });
 
-  return await httpPost(body, customer, '', resourcePath);
+  try{
+    return await httpPost(body, customer, '', resourcePath);
+  }catch(error, stackTrace) {
+    await sentry.captureException(
+      exception: error,
+      stackTrace: stackTrace,
+    );
+  }
 }
 
 Future<http.Response> logout(String customer, String authorization) async{
