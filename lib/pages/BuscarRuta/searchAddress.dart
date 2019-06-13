@@ -135,8 +135,10 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest(value);
         },
         onChanged: (text){
+
+          listPlacemark = new List<AddressModel>();
+
           if(_listAddress.length != 0){
-            listPlacemark = new List<AddressModel>();
             for(int cost= 0; cost < _listAddress.length; cost++){
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
                 listPlacemark.add(_listAddress[cost]);
@@ -146,69 +148,45 @@ class _SearchAddressState extends State<SearchAddress> {
               setState(() {
                 llenadoListaEncontrador = true;
               });
-
             }else{
               setState(() {
                 llenadoListaEncontrador=false;
               });
-
             }
-
           }
+          sendRequest(text);
         },
       ),
     );
   }
 
   List<PlacesSearchResult> places = [];
+  List<int> listAndressGoogle = new List<int>();
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
+  Future sendRequest(String intendedLocation) async {
+    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
+    final result = await _places.searchNearbyWithRadius(location, 5000);
+    listAndressGoogle = new List<int>();
+    if (result.status == "OK") {
+      this.places = result.results;
+      String direccion = '';
 
-//  sendRequest2(String value) async {
-//    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
-//    final result = await _places.searchNearbyWithRadius(location, 5000);
-//
-//    if (result.status == "OK") {
-//      this.places = result.results;
-//      String direccion = '';
-//      result.results.forEach((f) {
-//        direccion = f.name;
-//        if(direccion.contains(value)){
-//
-//        }
-//      });
-//    } else {
-//
-//    }
-//  }
+      result.results.forEach((f) {
+        direccion = f.name;
+        if(direccion.contains(intendedLocation)){
 
-//  sendRequest(String intendedLocation) async {
-//    List<Placemark> placemark = await ObtenerDireccion(intendedLocation);
-//    listPlacemark.clear();
-//    _markers.clear();
-//
-//    var center = LatLng(_initialPosition.latitude, _initialPosition.longitude);
-//    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-//        target: center == null ? LatLng(0, 0) : center, zoom: 14.0)));
-//
-//    if(placemark !=null){
-//      for(int i=0; i < placemark.length;i++){
-//        double latitude = placemark[i].position.latitude;
-//        double longitude = placemark[i].position.longitude;
-//        LatLng destination = LatLng(latitude, longitude);
-//        _addMarker(destination, intendedLocation);
-//        llenadoListaEncontrador = true;
-//        //listPlacemark.add(placemark[i]);
-//      }
-//      setState(() {
-//        llenadoListaEncontrador;
-//        listPlacemark;
-//      });
-//    }else{
-//      setState(() {
-//        llenadoListaEncontrador = false;
-//      });
-//    }
-//  }
+          AddressModel AuxAddressModel = new AddressModel(
+            address: f.name ,
+            latitude: f.geometry.location.lat,
+            longitude: f.geometry.location.lng
+          );
+          listAndressGoogle.add(listPlacemark.length);
+          listPlacemark.add(AuxAddressModel);
+        }
+      });
+    }
+  }
 
   Future<List<Placemark>> getDirection(String location)async{
     List<Placemark> placemark ;
@@ -262,10 +240,18 @@ class _SearchAddressState extends State<SearchAddress> {
     return ListView.builder(
       itemCount: listPlacemark.length,
       itemBuilder: (context, index) {
+
+        bool isGoogle = false;
+        for(int value in listAndressGoogle){
+          if(index == value){
+            isGoogle = true;
+          }
+        }
         return Card(
           margin: EdgeInsets.only(bottom: 0,top: 2,left: 5,right: 5),
           child: Row(
             children: <Widget>[
+              Container(child: isGoogle ? Icon(Icons.map) : Icon(Icons.dns)),
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(5),
@@ -283,7 +269,7 @@ class _SearchAddressState extends State<SearchAddress> {
                     )
                 ),
               ),
-              Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
+              isGoogle ?  Container() : Container(child: IconButton(icon: Icon(Icons.add), onPressed: (){
                 Navigator.of(context).pop(listPlacemark[index]);
               })),
             ],

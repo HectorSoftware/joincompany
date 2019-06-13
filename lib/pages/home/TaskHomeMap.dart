@@ -268,12 +268,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       case status.culminada:
       {
-        //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
-        //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+        //createRoute(mark);
         return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
-        //return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-//      createRoute(mark);
-//    return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
       }
     }
 //    return BitmapDescriptor.defaultMarker;
