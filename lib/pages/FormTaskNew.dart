@@ -589,27 +589,30 @@ class _FormTaskState extends State<FormTask> {
                 }
                 return new  Padding(
                   padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: new DropdownButton<String>(
-                    isDense: false,
-                    icon: Icon(Icons.arrow_drop_down),
-                    elevation: 10,
-                    value: dataInfo[listFieldsModels[index].id],
-                    hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *0.5,
+                    child: new DropdownButton<String>(
+                      isDense: false,
+                      icon: Icon(Icons.arrow_drop_down),
+                      elevation: 10,
+                      value: dataInfo[listFieldsModels[index].id],
+                      hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
-                    onChanged: (newValue) {
+                      onChanged: (newValue) {
 
-                      setState(() {
-                        //dropdownValue = newValue;
-                        dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
-                      });
+                        setState(() {
+                          //dropdownValue = newValue;
+                          dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                        });
 
-                    },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return new DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                      },
+                      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                        return new DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 );
               }
@@ -668,7 +671,7 @@ class _FormTaskState extends State<FormTask> {
                         onPressed: (){
                           selectTime(context);
                           selectDate(context);
-                          var dateCo = _date.toString().substring(0,10) + _time.format(context).toString();
+                          var dateCo = _date.toString().substring(0,10) + ' ' +_time.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                         },
                       ),
@@ -740,7 +743,7 @@ class _FormTaskState extends State<FormTask> {
                               ),
                             ],
                           ),
-                          Container(
+                       /*   Container(
                             width: MediaQuery.of(globalContext).size.width*0.50,
                             height: 40,
                             padding: EdgeInsets.only(
@@ -768,7 +771,7 @@ class _FormTaskState extends State<FormTask> {
                                 hintText: 'Comentario ',
                               ),
                             ),
-                          ),
+                          ),*/
                         ],
                       ),
                       Spacer(
@@ -853,7 +856,7 @@ class _FormTaskState extends State<FormTask> {
                           ),
                         ),
 
-                        Container(
+                    /*    Container(
                           width: MediaQuery.of(globalContext).size.width*0.50,
                           height: 40,
                           padding: EdgeInsets.only(
@@ -881,7 +884,7 @@ class _FormTaskState extends State<FormTask> {
                               hintText: 'Comentario ',
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
 
                     ),
@@ -908,7 +911,7 @@ class _FormTaskState extends State<FormTask> {
                           child: Row(
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 1,bottom: 30),
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -930,7 +933,7 @@ class _FormTaskState extends State<FormTask> {
                             ],
                           ),
                         ),
-                        Container(
+                    /*    Container(
                           width: MediaQuery.of(globalContext).size.width*0.50,
                           height: 40,
                           padding: EdgeInsets.only(
@@ -958,7 +961,7 @@ class _FormTaskState extends State<FormTask> {
                               hintText: 'Comentario ',
                             ),
                           ),
-                        ),
+                        ),*/
 
                       ],
                     ),
