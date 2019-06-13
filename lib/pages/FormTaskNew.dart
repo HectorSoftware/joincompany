@@ -108,6 +108,7 @@ class _FormTaskState extends State<FormTask> {
                                 child: const Text('ACEPTAR'),
                                 onPressed: () async {
                                   if(dataInfo.isNotEmpty) {
+                                    saveTask.businessId = 1;
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
