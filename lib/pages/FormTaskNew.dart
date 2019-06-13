@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'dart:io';
+import 'package:sentry/sentry.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -34,6 +35,7 @@ class FormTask extends StatefulWidget {
 }
 class _FormTaskState extends State<FormTask> {
 
+  SentryClient sentry;
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
@@ -61,6 +63,7 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
+    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
     super.initState();
@@ -445,8 +448,30 @@ class _FormTaskState extends State<FormTask> {
             itemBuilder: (BuildContext context, index){
               if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
               {
+                return Row(
+                  children: <Widget>[
+                 Padding(
+                   padding: const EdgeInsets.only(left: 70),
+                   child: Container(
+                       child: new Checkbox(
+                        value: _value1,
+                        onChanged: _value1Changed
+                       )
+                   ),
+                 ),
+                    Spacer(),
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      height: MediaQuery.of(context).size.height *0.1,
+                      child: Card(
 
-                return Container(child: new Checkbox(value: _value1, onChanged: _value1Changed));
+                      ),
+
+                    ),
+
+
+                  ],
+                );
               }
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
