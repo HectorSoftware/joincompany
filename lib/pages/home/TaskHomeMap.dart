@@ -200,7 +200,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     _markers.clear();
     int number = 0;
     for(int contPlacesTask = 0; contPlacesTask < listPlaces.length ; contPlacesTask++){
-      if(listPlaces[contPlacesTask].customerAddress != null){ number++;}
+      if(listPlaces[contPlacesTask].customerAddress == null){ number++;}
     }
 
     for(Place mark in listPlaces){
@@ -224,7 +224,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           icon: await colorMarker(mark,number)
         ),
       );
-      if(mark.customerAddress != null){ number--;}
+      if(mark.customerAddress == null){ number--;}
     }
 //    //setState((){
 //    _markers;
@@ -267,14 +267,14 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       }
 
       case status.culminada:
-        {
-          //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
-          //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-          return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
-          //return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-//        createRoute(mark);
-//      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
-        }
+      {
+        //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
+        //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+        return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
+        //return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+//      createRoute(mark);
+//    return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
+      }
     }
 //    return BitmapDescriptor.defaultMarker;
     return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapRojo$number.png");
