@@ -201,18 +201,6 @@ class _ContactViewState extends State<ContactView> {
               },
             ),
           ),
-          Container(
-            child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
-              onTap: () async {
-                UserDataBase userActivity = await deletetUser();
-                if(userActivity == null){
-                  exit(0);
-                }
-              },
-            ),
-          ),
         ],
       ),
     );
