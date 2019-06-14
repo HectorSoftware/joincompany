@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
 import 'package:sentry/sentry.dart';
 import 'package:joincompany/main.dart';
@@ -112,7 +114,27 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
                                     saveTask.customerId = directionClientIn.customerId;
+
+                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
+
+                                      AddressModel AuxAddressModel = new AddressModel(
+                                          address: directionClientIn.name ,
+                                          latitude: directionClientIn.latitude,
+                                          longitude: directionClientIn.longitude,
+                                          googlePlaceId: directionClientIn.googlePlaceId
+                                      );
+                                      var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
+                                      if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+                                        var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+                                        saveTask.addressId = directionAdd.id;
+                                      }
+                                    }
+
+
                                     saveTask.addressId = directionClientIn.addressId;
+
+
+
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
                                   await  saveTaskApi();
@@ -430,7 +452,6 @@ class _FormTaskState extends State<FormTask> {
   Image imageFromBase64String(String base64String) {
     return Image.memory(base64Decode(base64String));
   }
-
   Uint8List dataFromBase64String(String base64String) {
     return base64Decode(base64String);
   }
@@ -1067,14 +1088,12 @@ class _FormTaskState extends State<FormTask> {
       });
     }
   }
-
   VerificarAddress(CustomerWithAddressModel resp){
 
     //var responseCustomerWithAddressModel = await get
 
 
   }
-
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
