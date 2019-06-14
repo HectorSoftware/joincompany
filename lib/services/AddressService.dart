@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/AddressModel.dart';
@@ -26,8 +28,17 @@ Future<http.Response> getAddress(String id, String customer, String authorizatio
 }
 
 Future<http.Response> createAddress(AddressModel addressObj, String customer, String authorization) async{
-  
-  var bodyJson = addressObj.toJson();
+
+  var addressMapAux = addressObj.toMap();
+  var addressMap = new Map<String, dynamic>();
+
+  addressMapAux.forEach((key, value) {
+    if (value != null) {
+      addressMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(addressMap);
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }

@@ -42,7 +42,11 @@ class _ContactViewState extends State<ContactView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
+        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){ if(widget.vista){
+          Navigator.of(context).pop(null);
+        }else{
+          Navigator.pushReplacementNamed(context, '/vistap');}
+        }),
         title: Text("Contactos"),
       ),
       body: SingleChildScrollView(

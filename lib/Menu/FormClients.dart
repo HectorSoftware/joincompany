@@ -9,6 +9,7 @@ import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
@@ -231,21 +232,20 @@ class _FormClientState extends State<FormClient> {
             );
 
             var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+            bool saveDirections = await setDirections(client.id);
+            if(!saveDirections){
+              return showDialog(
+                  context: context,
+                  barrierDismissible: true, // user must tap button for close dialog!
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text('Ha ocurrido un error con las direcciones')
+                    );
+                  }
+              );
+            }
             if(response.statusCode == 200){
-              bool saveDirections = await setDirections(client.id);
-              if(!saveDirections){
-                return showDialog(
-                    context: context,
-                    barrierDismissible: true, // user must tap button for close dialog!
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                          title: Text('Ha ocurrido un error con las direcciones')
-                      );
-                    }
-                );
-              }else{
                 return true;
-              }
             }else{
               return showDialog(
                   context: context,
@@ -297,30 +297,53 @@ class _FormClientState extends State<FormClient> {
     }
   }
 
+  bool searchOldDirections(AddressModel direction){
+    for(var directionOld in directionsOld){
+      if(directionOld.googlePlaceId == direction.googlePlaceId){
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<bool> setDirections(int id)async{
-    for(var direction in directionsNews){
-      int resp = await addAddressUser(direction,id);
-      responceStatus(resp);
+    bool statusCreate = false;
+    for(var directionAct in directionsNews){
+      if(!searchOldDirections(directionAct)){
+        if(directionAct.id != null){
+          int resp = await addAddressUser(directionAct,id);
+          statusCreate = responceStatus(resp);
+        }else{
+          var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
+          print(responseCreateAddress.statusCode);
+          print(responseCreateAddress.body);
+          if(responceStatus(responseCreateAddress.statusCode)){
+            var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+            int resp = await addAddressUser(directionAdd,id);
+            statusCreate = responceStatus(resp);
+          }
+        }
+      }
     }
     for(var direction in directionsOld){
       if(oldToEliminated(direction)){
         int resp = await deletedAddressUser(direction);
-        responceStatus(resp);
+        statusCreate = responceStatus(resp);
       }
     }
-    return true;
+    return statusCreate;
   }
 
   bool responceStatus(int resp){
     switch(resp){
       case 200:{
-        return false;
+        return true;
       }
       case 201:{
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   bool oldToEliminated(CustomerWithAddressModel direction){
@@ -571,8 +594,10 @@ class _FormClientState extends State<FormClient> {
                                     var resp = await getDirections();
                                     if(resp != null){
                                       setState(() {
-                                        directionsNews.add(resp);
-                                        directionsAll.add(resp);
+                                        if(!searchOldDirections(resp)){
+                                          directionsNews.add(resp);
+                                          directionsAll.add(resp);
+                                        }
                                       });
                                     }
                                   }
