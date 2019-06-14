@@ -336,7 +336,8 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
         CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
             address: f.name ,
             latitude: f.geometry.location.lat,
-            longitude: f.geometry.location.lng
+            longitude: f.geometry.location.lng,
+          googlePlaceId: f.id
         );
         _listAddressGoogle.add(AuxAddressModel);
       });

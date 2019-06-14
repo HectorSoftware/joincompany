@@ -315,8 +315,6 @@ class _FormClientState extends State<FormClient> {
           statusCreate = responceStatus(resp);
         }else{
           var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
-          print(responseCreateAddress.statusCode);
-          print(responseCreateAddress.body);
           if(responceStatus(responseCreateAddress.statusCode)){
             var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
             int resp = await addAddressUser(directionAdd,id);
