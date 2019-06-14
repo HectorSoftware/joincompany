@@ -113,25 +113,48 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-                                    saveTask.customerId = directionClientIn.customerId;
 
-                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 
-                                      AddressModel AuxAddressModel = new AddressModel(
-                                          address: directionClientIn.name ,
-                                          latitude: directionClientIn.latitude,
-                                          longitude: directionClientIn.longitude,
-                                          googlePlaceId: directionClientIn.googlePlaceId
-                                      );
-                                      var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
-                                      if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                        var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
-                                        saveTask.addressId = directionAdd.id;
+//                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
+//
+//                                      AddressModel AuxAddressModel = new AddressModel(
+//                                          address: directionClientIn.name ,
+//                                          latitude: directionClientIn.latitude,
+//                                          longitude: directionClientIn.longitude,
+//                                          googlePlaceId: directionClientIn.googlePlaceId
+//                                      );
+//                                      var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
+//                                      if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+//                                        var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+//                                        saveTask.addressId = directionAdd.id;
+//                                      }
+//                                    }else{
+//
+//                                    }
+
+
+                                    if( directionClientIn.googlePlaceId != null) {
+
+                                      if(directionClientIn.id == null) {
+                                        AddressModel AuxAddressModel = new AddressModel(
+                                            address: directionClientIn.name ,
+                                            latitude: directionClientIn.latitude,
+                                            longitude: directionClientIn.longitude,
+                                            googlePlaceId: directionClientIn.googlePlaceId
+                                        );
+                                        var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
+                                        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+                                          var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+                                          saveTask.addressId = directionAdd.id;
+                                        }
+                                      } else {
+                                        saveTask.customerId = directionClientIn.customerId;
+                                        saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
 
 
-                                    saveTask.addressId = directionClientIn.addressId;
+
 
 
 
