@@ -29,10 +29,16 @@ class BlocListTask {
         getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: userActivity.idUserCompany.toString(), perPage: '20',page: countPage.toString());
         if(getAllTasksResponse.statusCode == 200){
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
-
           //if(tasks)
           for(int i = 0; i < tasks.data.length; i++ ){
-            DateTime dateTask = DateTime.parse(tasks.data[i].createdAt);
+
+            DateTime dateTask;
+            if(tasks.data[i].planningDate != null){
+              dateTask = DateTime.parse(tasks.data[i].planningDate);
+            }else{
+              dateTask = DateTime.parse(tasks.data[i].createdAt);
+            }
+
             int c = 0;
             for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
               if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
