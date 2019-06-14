@@ -21,7 +21,7 @@ const PrimaryColor = const Color(0xff29a0c7);
 const SecondaryColor = const Color(0xff29a0c7);
 const hostApi = 'webapp.getkem.com';
 const versionApi = '/api/v1';
-const kGoogleApiKey = "AIzaSyDCs8ksRMNY73LlWa_VEyLzzDS24qKaaMw";
+const kGoogleApiKey = "AIzaSyAiN5XM-jcaGfIeqXRweANSdhvaZluolbI";
 final SentryClient sentry = new SentryClient(dsn: "https://1fa3adeff82e47f69a05ac688ba36718@sentry.io/1468988");
 
 class MyApp extends StatelessWidget{

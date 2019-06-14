@@ -219,13 +219,26 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   allmark(List<Place> listPlaces) async {
     try{
       //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
-
+      bool inicio= false;
       _markers.clear();
+      _polyLines.clear();
       int number = 0;
 
       for(Place mark in listPlaces){
-
         number = number +1;
+        Place oldMark;
+        if(mark.statusTask == status.planificado){
+          if(!inicio){
+            inicio = !inicio;
+            oldMark = mark;
+            createRoute(mark,_initialPosition);
+          }else{
+            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
+            createRoute(mark,oldPoint);
+            oldMark = mark;
+          }
+        }
+
         _markers.add(
           Marker(
               markerId: MarkerId(mark.id.toString()),
@@ -259,10 +272,10 @@ class _MytaskPageMapState extends State<taskHomeMap> {
     }
   }
 
-  Future createRoute(Place mark) async {
+  Future createRoute(Place mark,LatLng oldPosition) async {
     try{
       LatLng destination = LatLng(mark.latitude, mark.longitude);
-      String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination,kGoogleApiKeyy);
+      String route = await _googleMapsServices.getRouteCoordinates(oldPosition, destination,kGoogleApiKeyy);
 
       _polyLines.add(
           Polyline(
@@ -280,43 +293,18 @@ class _MytaskPageMapState extends State<taskHomeMap> {
   }
 
   Future<BitmapDescriptor> colorMarker(Place mark, int number) async {
-    ImageConfiguration imageConfig = ImageConfiguration(size: Size(32, 32));//Alto y Ancho del Icono
-
-
     switch(mark.statusTask){
       case status.cliente:{
-//          var data = await getNetworkImageData(
-//              'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_blue' +
-//                  number.toString() + '.png', useCache: true);
-//          //var path = await ImagePickerSaver.saveFile(fileData: data);
-//
-//          BitmapDescriptor bit;
-//          setState(() {
-//             bit = BitmapDescriptor.fromBytes(data);
-//          });
-//
-//          return bit;// fromAssetImage(.0, path);
           return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/cliente.png");
       }
       case status.planificado:{
-        //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red'+number.toString()+'.png', useCache: true);
-        //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-//        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-        break;
+            return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapRojo$number.png");
       }
-
-      case status.culminada:
-        {
-          //var data = await getNetworkImageData('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_greem'+number.toString()+'.png', useCache: true);
-          //return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
-          return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
-          //return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-//        createRoute(mark);
-//      return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
-        }
+      case status.culminada:{
+        return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapVerde$number.png");
+      }
     }
-//    return BitmapDescriptor.defaultMarker;
-    return await BitmapDescriptor.fromAssetImage(createLocalImageConfiguration(context), "assets/images/pinmap/pinmapRojo$number.png");
+    return BitmapDescriptor.defaultMarker;
   }
 
   List<LatLng> convertToLatLng(List points){
