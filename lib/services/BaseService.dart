@@ -15,7 +15,7 @@ Future<http.Response> httpGet(String customer, String authorization, String reso
 
     return response;
   }on Exception{
-    print("error get");
+
     return null;
   }
 
