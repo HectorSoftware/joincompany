@@ -142,19 +142,13 @@ class _FormTaskState extends State<FormTask> {
                                               title: Text('A ocurido un Error al crear la tarea'),
                                               actions: <Widget>[
                                                 FlatButton(
-                                                  child: const Text('Intentar de Nuevo'),
+                                                  child: const Text('Aceptar'),
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
 
                                                   },
                                                 ),
-                                                FlatButton(
-                                                  child: const Text('Volver a Tareas'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
 
-                                                  },
-                                                ),
                                               ],
                                             );
                                           }

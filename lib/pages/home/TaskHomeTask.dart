@@ -13,6 +13,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:sentry/sentry.dart';
 
 
 import '../../main.dart';
@@ -42,6 +43,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   BlocListTask blocList;
   List<DateTime> listCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
+  SentryClient sentry;
+
 
   @override
   void initState() {
@@ -53,20 +56,21 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     super.initState();
   }
 
-  actualizarusuario() async{
+  actualizarusuario() async {
     userActivity = await ClientDatabaseProvider.db.getCodeId('1');
 
     pageTasks = 1;
     //getdatalist(listCalendar[1],listCalendar[0],1);
-    if (this.mounted){
-      setState((){
-        userActivity;listCalender = widget.listCalendarRes;
+    if (this.mounted) {
+      setState(() {
+        userActivity;
+        listCalender = widget.listCalendarRes;
       });
     }
   }
 
   @override
-  void dispose(){
+  void dispose() {
     bloctasksFilter.dispose();
     blocListTaskCalendarRes.dispose();
     blocList.dispose();
@@ -75,23 +79,29 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   @override
   void setState(fn) {
-    if(mounted){
+    if (mounted) {
       super.setState(fn);
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-
-    final mediaQueryData = MediaQuery.of(context);//HORIZONTAL
+    final mediaQueryData = MediaQuery.of(context); //HORIZONTAL
     double aument = 0.7;
-    if (mediaQueryData.orientation == Orientation.portrait) {//VERTICAL
+    if (mediaQueryData.orientation == Orientation.portrait) { //VERTICAL
       aument = 0.8;
     }
 
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * aument,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * aument,
       child: Scaffold(
 
         body:
@@ -103,91 +113,97 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 //                }
 //              },
 //            child:
-            Stack(
-              children: <Widget>[
-                listViewTasks(),
-              ],
-            ),
+        Stack(
+          children: <Widget>[
+            listViewTasks(),
+          ],
+        ),
 //        ),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
-            onPressed: (){
+            onPressed: () {
               Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,)));
+                  new MaterialPageRoute(builder: (BuildContext context) =>
+                      FormTask(directionClient: directionClient,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
     );
   }
 
-  listViewTasks(){
-
-
+  listViewTasks() {
     //BLOCK CALENDARIO
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
-    try{
-      setState((){
+    try {
+      setState(() {
         // ignore: cancel_subscriptions
-        StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes.outTaksCalendar.listen((onData)
-        => setState((){
-          listTaskModellocal.clear();
-          listTaskModellocalbool.clear();
-          pageTasks = 1;
-          listCalendar = onData;
-          //getdatalist(onData[1],onData[0],1);
-        }));
+        StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes
+            .outTaksCalendar.listen((onData) =>
+            setState(() {
+              listTaskModellocal.clear();
+              listTaskModellocalbool.clear();
+              pageTasks = 1;
+              listCalendar = onData;
+              //getdatalist(onData[1],onData[0],1);
+            }));
       });
-    }catch(e){}
+    } catch (e) {}
 
     //BLOCK LISTA
-    blocList = new BlocListTask(listCalendar[1],listCalendar[0],pageTasks);
-    try{
-      if (this.mounted){
-        setState((){
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+    try {
+      if (this.mounted) {
+        setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList)
-          => setState((){
-            //if(PageTasks == 1){
-            listTaskModellocal = onDataList;
-            //}
-            if(onDataList.length != 0){
-              chanceCircule = true;
-              for(int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++){
-                listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
-              }
-            }else{
-              LastCircule();
-            }
-          }));
+          StreamSubscription streamSubscriptionList = blocList.outListTaks
+              .listen((onDataList) =>
+              setState(() {
+                //if(PageTasks == 1){
+                listTaskModellocal = onDataList;
+                //}
+                if (onDataList.length != 0) {
+                  chanceCircule = true;
+                  for (int cantlistTaskModellocal = 0; cantlistTaskModellocal <
+                      onDataList.length; cantlistTaskModellocal++) {
+                    listTaskModellocalbool.add(
+                        onDataList[cantlistTaskModellocal].status.contains(
+                            'done'));
+                  }
+                } else {
+                  LastCircule();
+                }
+              }));
         });
       }
-    }catch(e){  }
-    try{
-      if (this.mounted){
-        setState((){
+    } catch (e) {}
+    try {
+      if (this.mounted) {
+        setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal)
-          => setState((){
-            taskTotals = onDataListTotal;
-          }));
+          StreamSubscription streamSubscriptionListToal = blocList
+              .outListTaksTotal.listen((onDataListTotal) =>
+              setState(() {
+                taskTotals = onDataListTotal;
+              }));
         });
       }
-    }catch(e){  }
+    } catch (e) {}
 
     //BLOCK FILTRO
     bloctasksFilter = widget.blocListTaskFilterReswidget;
-    try{
-      if (this.mounted){
-        setState((){
+    try {
+      if (this.mounted) {
+        setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal)
-          => setState((){
-            filterText = newVal;
-          }));
+          StreamSubscription streamSubscriptionFilter = bloctasksFilter
+              .outTaksFilter.listen((newVal) =>
+              setState(() {
+                filterText = newVal;
+              }));
         });
       }
-    }catch(e){  }
+    } catch (e) {}
 
     return ((listTaskModellocal.length != 0)) ?
 
@@ -205,7 +221,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       ),
     )
     //listando()
-      : chanceCircule ? Center(child: CircularProgressIndicator(),) : Container(
+        : chanceCircule
+        ? Center(child: CircularProgressIndicator(),)
+        : Container(
       child: Center(
         child: Text("No existen tareas."),
       ),
@@ -214,19 +232,21 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   bool chanceCircule = true;
-  LastCircule() async{
-    await Future.delayed(Duration(seconds: 6, milliseconds: 0 ));
+
+  LastCircule() async {
+    await Future.delayed(Duration(seconds: 6, milliseconds: 0));
     setState(() {
       chanceCircule = false;
     });
   }
 
   int taskTotals = 0;
+
 //  int get countTaskList => listTaskModellocal.length;
   int get countTaskList => listTaskModellocal.length;
-  Future<bool> _loadMore() async {
 
-    if (this.mounted){
+  Future<bool> _loadMore() async {
+    if (this.mounted) {
       setState(() {
         pageTasks++;
       });
@@ -239,8 +259,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    if (this.mounted){
-      setState((){
+    if (this.mounted) {
+      setState(() {
         pageTasks = 1;
         listCalendar;
         listTaskModellocal.clear();
@@ -251,7 +271,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   int pageTasks = 1;
 
-  listando(){
+  listando() {
     String dateTask = "1990-05-05 20:00:04Z";
     return ListView.builder(
         itemCount: listTaskModellocal.length,
@@ -264,22 +284,24 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           var address;
           var customerName;
 
-          if(listTaskModellocal[positionActual].customer == null){
+          if (listTaskModellocal[positionActual].customer == null) {
             customerName = voidFieldMessage;
-          }else{
+          } else {
             customerName = listTaskModellocal[positionActual].customer.name;
           }
 
           if (listTaskModellocal[positionActual].createdAt == null) {
             date = voidFieldMessage;
           } else {
-            date = listTaskModellocal[positionActual].createdAt.substring(10, 16);
+            date =
+                listTaskModellocal[positionActual].createdAt.substring(10, 16);
           }
 
           if (listTaskModellocal[positionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[positionActual].name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
+            title = listTaskModellocal[positionActual]
+                .name /*+ ' - ' + listTaskModellocal[PosicionActual].id.toString()*/;
           }
 
           if (listTaskModellocal[positionActual].address == null) {
@@ -288,58 +310,98 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             if (listTaskModellocal[positionActual].address.address == null) {
               address = voidFieldMessage;
             } else {
-              address = customerName + ',  ' + listTaskModellocal[positionActual].address.address;
+              address = customerName + ',  ' +
+                  listTaskModellocal[positionActual].address.address;
             }
           }
 
-          if(filterText == ''){
+          if (filterText == '') {
             bool res = false;
 
-            if((positionActual != listTaskModellocal.length - 1)){
-              if(listTaskModellocal[positionActual].id == listTaskModellocal[positionActual + 1].id){
+            if ((positionActual != listTaskModellocal.length - 1)) {
+              if (listTaskModellocal[positionActual].id ==
+                  listTaskModellocal[positionActual + 1].id) {
                 res = true;
               }
             }
 
-              String dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day
-                  .toString() + ' de ' + intsToMonths[DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .month
-                  .toString()] + ' ' + DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .year
-                  .toString();
+            String dateTitulo = DateTime
+                .parse(listTaskModellocal[positionActual].createdAt)
+                .day
+                .toString() + ' de ' + intsToMonths[DateTime
+                .parse(listTaskModellocal[positionActual].createdAt)
+                .month
+                .toString()] + ' ' + DateTime
+                .parse(listTaskModellocal[positionActual].createdAt)
+                .year
+                .toString();
 
-              var padding = 16.0;
-              double por = 0.1;
-              if (MediaQuery.of(context).orientation == Orientation.portrait) {
-                por = 0.07;
-              }
+            var padding = 16.0;
+            double por = 0.1;
+            if (MediaQuery
+                .of(context)
+                .orientation == Orientation.portrait) {
+              por = 0.07;
+            }
 
-              if((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].createdAt).day)&&
-                  (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].createdAt).month)&&
-                  (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].createdAt).year)){
-                dateTitulo = 'Hoy, ' + dateTitulo;
-              }
-              return res ?
-              Container(
-                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * por,
-                color: PrimaryColor,
-                child: Text(dateTitulo, style: TextStyle(
-                    fontSize: 16, color: Colors.white)),
-              ) :
-              listCard(title, address, date, listTaskModellocal[positionActual],positionActual);
-          }else{
-            if(ls.createState().checkSearchInText(title, filterText) ||
+            if ((DateTime
+                .now()
+                .day == DateTime
+                .parse(listTaskModellocal[positionActual].createdAt)
+                .day) &&
+                (DateTime
+                    .now()
+                    .month == DateTime
+                    .parse(listTaskModellocal[positionActual].createdAt)
+                    .month) &&
+                (DateTime
+                    .now()
+                    .year == DateTime
+                    .parse(listTaskModellocal[positionActual].createdAt)
+                    .year)) {
+              dateTitulo = 'Hoy, ' + dateTitulo;
+            }
+            return res ?
+            Container(
+              padding: EdgeInsets.only(
+                  left: padding, right: 0, top: padding, bottom: 0),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * por,
+              color: PrimaryColor,
+              child: Text(dateTitulo, style: TextStyle(
+                  fontSize: 16, color: Colors.white)),
+            ) :
+            listCard(title, address, date, listTaskModellocal[positionActual],
+                positionActual);
+          } else {
+            if (ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
-                ls.createState().checkSearchInText(customerName, filterText)){
-              if ((DateTime.parse(dateTask).day != DateTime.parse(listTaskModellocal[positionActual].createdAt).day) ||
-                  (DateTime.parse(dateTask).month != DateTime.parse(listTaskModellocal[positionActual].createdAt).month) ||
-                  (DateTime.parse(dateTask).year != DateTime.parse(listTaskModellocal[positionActual].createdAt).year)) {
+                ls.createState().checkSearchInText(customerName, filterText)) {
+              if ((DateTime
+                  .parse(dateTask)
+                  .day != DateTime
+                  .parse(listTaskModellocal[positionActual].createdAt)
+                  .day) ||
+                  (DateTime
+                      .parse(dateTask)
+                      .month != DateTime
+                      .parse(listTaskModellocal[positionActual].createdAt)
+                      .month) ||
+                  (DateTime
+                      .parse(dateTask)
+                      .year != DateTime
+                      .parse(listTaskModellocal[positionActual].createdAt)
+                      .year)) {
                 dateTask = listTaskModellocal[positionActual].createdAt;
-                String dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day
+                String dateTitulo = DateTime
+                    .parse(listTaskModellocal[positionActual].createdAt)
+                    .day
                     .toString() + ' de ' + intsToMonths[DateTime
                     .parse(listTaskModellocal[positionActual].createdAt)
                     .month
@@ -350,36 +412,58 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
                 var padding = 16.0;
                 double por = 0.1;
-                if (MediaQuery.of(context)
+                if (MediaQuery
+                    .of(context)
                     .orientation == Orientation.portrait) {
                   por = 0.07;
                 }
 
-                if((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].createdAt).day)&&
-                    (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].createdAt).month)&&
-                    (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].createdAt).year)){
+                if ((DateTime
+                    .now()
+                    .day == DateTime
+                    .parse(listTaskModellocal[positionActual].createdAt)
+                    .day) &&
+                    (DateTime
+                        .now()
+                        .month == DateTime
+                        .parse(listTaskModellocal[positionActual].createdAt)
+                        .month) &&
+                    (DateTime
+                        .now()
+                        .year == DateTime
+                        .parse(listTaskModellocal[positionActual].createdAt)
+                        .year)) {
                   dateTitulo = 'Hoy, ' + dateTitulo;
-
                 }
                 return Container(
                   child: Column(
                     children: <Widget>[
                       Container(
-                        padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * por,
+                        padding: EdgeInsets.only(
+                            left: padding, right: 0, top: padding, bottom: 0),
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height * por,
                         color: PrimaryColor,
                         child: Text(dateTitulo, style: TextStyle(
                             fontSize: 16, color: Colors.white)),
                       ),
-                      listCard(title, address, date, listTaskModellocal[positionActual],positionActual),
+                      listCard(title, address, date,
+                          listTaskModellocal[positionActual], positionActual),
                     ],
                   ),
                 );
               } else {
-                return listCard(title,address,date,listTaskModellocal[positionActual], positionActual);
+                return listCard(
+                    title, address, date, listTaskModellocal[positionActual],
+                    positionActual);
               }
-            }else{
+            } else {
               return Container();
             }
           }
@@ -387,7 +471,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     );
   }
 
-  Container listCard(String title, String address, String date,TaskModel listTask, int index){
+  Container listCard(String title, String address, String date,
+      TaskModel listTask, int index) {
     return Container(
         child: Card(
           child: Column(
@@ -396,37 +481,46 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 children: <Widget>[
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 16,right: 16),
-                      child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Text(title, style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   Checkbox(
                     value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
-                      if(value){
-                        if (this.mounted){
-                          setState((){
+                      if (value) {
+                        if (this.mounted) {
+                          setState(() {
                             listTaskModellocal[index].status = 'working';
                           });
                         }
-                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(),userActivity.company,userActivity.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        if(checkInTaskResponse.statusCode != 200){
-                          if (this.mounted){
-                            setState((){
+                        var checkInTaskResponse = await checkOutTask(
+                            listTask.id.toString(), userActivity.company,
+                            userActivity.token,
+                            _initialPosition.latitude.toString(),
+                            _initialPosition.longitude.toString(), '0');
+                        if (checkInTaskResponse.statusCode != 200) {
+                          if (this.mounted) {
+                            setState(() {
                               listTaskModellocal[index].status = 'done';
                             });
                           }
                         }
-                      }else{
-                        if (this.mounted){
-                          setState((){
+                      } else {
+                        if (this.mounted) {
+                          setState(() {
                             listTaskModellocal[index].status = 'done';
                           });
                         }
-                        var checkInTaskResponse = await checkInTask(listTask.id.toString(),userActivity.company,userActivity.token,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(),'0');
-                        if(checkInTaskResponse.statusCode != 200){
-                          if (this.mounted){
-                            setState((){
+                        var checkInTaskResponse = await checkInTask(
+                            listTask.id.toString(), userActivity.company,
+                            userActivity.token,
+                            _initialPosition.latitude.toString(),
+                            _initialPosition.longitude.toString(), '0');
+                        if (checkInTaskResponse.statusCode != 200) {
+                          if (this.mounted) {
+                            setState(() {
                               listTaskModellocal[index].status = 'working';
                             });
                           }
@@ -440,7 +534,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 children: <Widget>[
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 16,right: 16),
+                      padding: const EdgeInsets.only(left: 16, right: 16),
                       child: Text(address, style: TextStyle(fontSize: 10)),
                     ),
                   ),
@@ -456,7 +550,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          deleteCustomer(listTask.id.toString(),index);
+                          deleteCustomer(listTask.id.toString(), index);
                         }
                     ),
                   ),
@@ -470,31 +564,49 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    await deleteTask(taskID,userActivity.company,userActivity.token);
+    await deleteTask(taskID, userActivity.company, userActivity.token);
   }
 
-  void _getUserLocation() async{
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-   // List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-    if (this.mounted){
-      setState((){
+  void _getUserLocation() async {
+    Position position = await Geolocator().getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    // List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    if (this.mounted) {
+      setState(() {
         _initialPosition = LatLng(position.latitude, position.longitude);
       });
+      try {
+        Position position = await Geolocator().getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
+            position.latitude, position.longitude);
+        if (this.mounted) {
+          setState(() {
+            _initialPosition = LatLng(position.latitude, position.longitude);
+          });
+        }
+      } catch (error, stackTrace) {
+        await sentry.captureException(
+          exception: error,
+          stackTrace: stackTrace,
+        );
+      }
     }
   }
 
-  Map<String, String> intsToMonths = {
-    '1':  'Enero',
-    '2':  'Febrero',
-    '3':  'Marzo',
-    '4':  'Abril',
-    '5':  'Mayo',
-    '6':  'Junio',
-    '7':  'Julio',
-    '8':  'Agosto',
-    '9':  'Septiembre',
-    '10': 'Octubre',
-    '11': 'Noviembre',
-    '12': 'Diciembre',
-  };
-}
+    Map<String, String> intsToMonths = {
+      '1': 'Enero',
+      '2': 'Febrero',
+      '3': 'Marzo',
+      '4': 'Abril',
+      '5': 'Mayo',
+      '6': 'Junio',
+      '7': 'Julio',
+      '8': 'Agosto',
+      '9': 'Septiembre',
+      '10': 'Octubre',
+      '11': 'Noviembre',
+      '12': 'Diciembre',
+    };
+  }
+

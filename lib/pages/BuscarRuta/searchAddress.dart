@@ -98,12 +98,19 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   void _getUserLocation() async{
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-     await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    try{
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
 
-    setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    });
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
+    }on Exception{
+      setState(() {
+        _initialPosition = LatLng(0, 0);
+      });
+    }
+
   }
 
   Container botonSearch(){
@@ -191,7 +198,11 @@ class _SearchAddressState extends State<SearchAddress> {
     List<Placemark> placemark ;
     try{
       placemark = await Geolocator().placemarkFromAddress(location);
-    }catch(e) {
+    }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
     return placemark;
   }
