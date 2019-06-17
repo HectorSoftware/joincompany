@@ -118,7 +118,7 @@ class _FormTaskState extends State<FormTask> {
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
-//                                          address: directionClientIn.name ,
+//                  name                        address: directionClientIn.name ,
 //                                          latitude: directionClientIn.latitude,
 //                                          longitude: directionClientIn.longitude,
 //                                          googlePlaceId: directionClientIn.googlePlaceId
@@ -136,13 +136,13 @@ class _FormTaskState extends State<FormTask> {
                                     if( directionClientIn.googlePlaceId != null) {
 
                                       if(directionClientIn.id == null) {
-                                        AddressModel AuxAddressModel = new AddressModel(
-                                            address: directionClientIn.name ,
+                                        AddressModel auxAddressModel = new AddressModel(
+                                            address: directionClientIn.address ,
                                             latitude: directionClientIn.latitude,
                                             longitude: directionClientIn.longitude,
                                             googlePlaceId: directionClientIn.googlePlaceId
                                         );
-                                        var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
+                                        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
                                         if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
                                           var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
                                           saveTask.addressId = directionAdd.id;
@@ -1111,12 +1111,6 @@ class _FormTaskState extends State<FormTask> {
         directionClientIn = resp;
       });
     }
-  }
-  VerificarAddress(CustomerWithAddressModel resp){
-
-    //var responseCustomerWithAddressModel = await get
-
-
   }
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(

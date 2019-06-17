@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
@@ -285,6 +284,9 @@ class _LoginPageState extends State<LoginPage> {
               UserDataBase newuser = UserDataBase(name: user,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companyLocal, token: auth.accessToken);
               await ClientDatabaseProvider.db.saveUser(newuser);
             }else{
+              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);//Desde aca Modificaciones
+              UserDataBase newuser = UserDataBase(name: user,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companyLocal, token: auth.accessToken);
+              await ClientDatabaseProvider.db.updateUser(newuser.idUserCompany.toString(), newuser.name,newuser.password,auth.accessToken);
              // int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
 
             }
