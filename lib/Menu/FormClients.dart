@@ -265,15 +265,16 @@ class _FormClientState extends State<FormClient> {
             );
             var response = await createCustomer(client, userAct.company, userAct.token);
             var cli = CustomerModel.fromJson(response.body);
-            if(response.statusCode == 200){
+            if(response.statusCode == 200 || response.statusCode ==  201){
               bool saveDirections = await setDirections(cli.id);
+
               if(!saveDirections){
                 return showDialog(
                     context: context,
                     barrierDismissible: true, // user must tap button for close dialog!
                     builder: (BuildContext context) {
                       return AlertDialog(
-                          title: Text('Ha ocurrido un error con las direcciones')
+                          title: Text('Ha ocurrido un error con las direcciones.')
                       );
                     }
                 );
@@ -308,16 +309,17 @@ class _FormClientState extends State<FormClient> {
 
   Future<bool> setDirections(int id)async{
     bool statusCreate = false;
+    int resp = 200;
     for(var directionAct in directionsNews){
       if(!searchOldDirections(directionAct)){
         if(directionAct.id != null){
-          int resp = await addAddressUser(directionAct,id);
+          resp = await addAddressUser(directionAct,id);
           statusCreate = responceStatus(resp);
         }else{
           var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
           if(responceStatus(responseCreateAddress.statusCode)){
             var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
-            int resp = await addAddressUser(directionAdd,id);
+            resp = await addAddressUser(directionAdd,id);
             statusCreate = responceStatus(resp);
           }
         }
@@ -325,10 +327,13 @@ class _FormClientState extends State<FormClient> {
     }
     for(var direction in directionsOld){
       if(oldToEliminated(direction)){
-        int resp = await deletedAddressUser(direction);
+        resp = await deletedAddressUser(direction);
         statusCreate = responceStatus(resp);
       }
     }
+
+    statusCreate = responceStatus(resp);
+
     return statusCreate;
   }
 
