@@ -39,7 +39,6 @@ Future<http.Response> createAddress(AddressModel addressObj, String customer, St
   });
 
   var bodyJson = json.encode(addressMap);
-
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 

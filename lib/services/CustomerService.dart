@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
+
 import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/customers';
@@ -45,7 +46,9 @@ Future<http.Response> getCustomer(String id, String customer, String authorizati
 }
 
 Future<http.Response> createCustomer(CustomerModel customerObj, String customer, String authorization) async{
-  
+
+
+
   var bodyJson = customerObj.toJson();
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
