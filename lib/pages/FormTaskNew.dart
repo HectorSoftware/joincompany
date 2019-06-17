@@ -118,7 +118,7 @@ class _FormTaskState extends State<FormTask> {
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
-//                                          address: directionClientIn.name ,
+//                  name                        address: directionClientIn.name ,
 //                                          latitude: directionClientIn.latitude,
 //                                          longitude: directionClientIn.longitude,
 //                                          googlePlaceId: directionClientIn.googlePlaceId
@@ -137,7 +137,7 @@ class _FormTaskState extends State<FormTask> {
 
                                       if(directionClientIn.id == null) {
                                         AddressModel AuxAddressModel = new AddressModel(
-                                            address: directionClientIn.name ,
+                                            address: directionClientIn.address ,
                                             latitude: directionClientIn.latitude,
                                             longitude: directionClientIn.longitude,
                                             googlePlaceId: directionClientIn.googlePlaceId

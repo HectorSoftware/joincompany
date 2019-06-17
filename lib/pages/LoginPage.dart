@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
