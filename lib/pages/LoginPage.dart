@@ -8,6 +8,12 @@ import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/UserService.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:async';
+//import 'package:joincompany/models/ValidatorSms.dart';
+
+
 class LoginPage extends StatefulWidget {
 
   LoginPage({this.addUserWidget,this.companyEstableWidget,this.textViewVisibleWidget});
@@ -28,9 +34,9 @@ class _LoginPageState extends State<LoginPage> {
 //     final companyController = TextEditingController(/*text : 'duperu'*/);
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController();
-  final companyController = TextEditingController();
-  final passwordController = TextEditingController();
+  final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
+  final companyController = TextEditingController(text : 'factochile');
+  final passwordController = TextEditingController(text: '123');
 
   bool textViewVisible;
   bool addUser;
@@ -282,6 +288,7 @@ class _LoginPageState extends State<LoginPage> {
              // int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
             }
             Navigator.pushReplacementNamed(context, '/vistap');
+            //sendSmsLogin();
           }else{
 
             setState(() {
@@ -300,17 +307,55 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }
-
-    /*
-
-    var loginResponse = await login(Usr, pwd, companylocal);
-    if(loginResponse.statusCode == 200){
-      Navigator.pushReplacementNamed(context, '/vistap');
-    }else{
-
-    }*/
   }
 
+
+//  Future sendSmsLogin() async {
+//    Contactos contac = new Contactos(
+//      contactos: '',
+//      listas: '',
+//      nuevos: '584249698437',
+//    );
+//
+//    ValidatorSms varSms = ValidatorSms(
+//        token: 'be80afce59ea9c828a37c324da40473a755d2139ef243b0e826e5d37924e97fb',
+//        mensaje: 'soy jesus',
+//        //(cuba- mexico - usa) es ruta: 40, envío internacional excepto los 3 países nombrados la ruta es 32.
+//        ruta: '32',
+//        pais: '231',
+//        contactos: contac,
+//        fechaEnvio: '');
+//    var bodyJsonSms = varSms.toJson();
+//    var response = await httpPost(bodyJsonSms);
+//    print(response.body);
+//
+//    ResponseExito Res = ResponseExito.fromJson(response.body);
+//    print(Res.status);
+//
+//  }
+//
+//  Future<http.Response> httpPost(String bodyJsonSms) async{
+//    try{
+//
+//      String hostApi2 = 'www.freesmscuba.com';
+//      String resourcePath2 = '/index.php/api/createpub';
+//      var uri = Uri.https(hostApi2,resourcePath2);
+//
+//      final response = await http.post(uri,
+//          headers: {
+//            'Content-Type' : 'application/json',
+//            'Accept': 'application/json',
+//          },
+//          body: bodyJsonSms
+//      );
+//
+//      return response;
+//    }on Exception{
+//      print("error post");
+//      return null;
+//    }
+//
+//  }
 //  testApi() async{
 //
 //    try {
