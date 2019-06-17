@@ -222,18 +222,18 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       for(Place mark in listPlaces){
         number = number +1;
-        Place oldMark;
-        if(mark.statusTask == status.planificado){
-          if(!inicio){
-            inicio = !inicio;
-            oldMark = mark;
-            createRoute(mark,_initialPosition);
-          }else{
-            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
-            createRoute(mark,oldPoint);
-            oldMark = mark;
-          }
-        }
+//        Place oldMark;
+//        if(mark.statusTask == status.planificado){
+//          if(!inicio){
+//            inicio = !inicio;
+//            oldMark = mark;
+//            createRoute(mark,_initialPosition);
+//          }else{
+//            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
+//            createRoute(mark,oldPoint);
+//            oldMark = mark;
+//          }
+//        }
 
         _markers.add(
           Marker(
@@ -261,10 +261,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 //    _polyLines;
 //    //});
     }catch(error, stackTrace) {
-      await sentry.captureException(
-        exception: error,
-        stackTrace: stackTrace,
-      );
+//      await sentry.captureException(
+//        exception: error,
+//        stackTrace: stackTrace,
+//      );
     }
   }
 
@@ -279,7 +279,9 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
               ),
           width: 10,
           points: convertToLatLng(decodePoly(route)),
-          color: Colors.red[200]));
+          color: Colors.red[200]
+          )
+      );
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
