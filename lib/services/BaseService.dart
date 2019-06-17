@@ -37,7 +37,6 @@ Future<http.Response> httpPost(String bodyJson, String customer, String authoriz
 
     return response;
   }on Exception{
-    print("error post");
     return null;
   }
 
