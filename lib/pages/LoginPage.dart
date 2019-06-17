@@ -286,6 +286,7 @@ class _LoginPageState extends State<LoginPage> {
               await ClientDatabaseProvider.db.saveUser(newuser);
             }else{
              // int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
+
             }
             Navigator.pushReplacementNamed(context, '/vistap');
             //sendSmsLogin();

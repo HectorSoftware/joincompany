@@ -10,7 +10,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart';
-
+import "package:google_maps_webservice/places.dart";
 import '../../main.dart';
 
 class SearchAddressWithClient extends StatefulWidget {
@@ -136,7 +136,7 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
           //sendRequest2(value);
           //sendRequest(value);
         },
-        onChanged: (text){
+        onChanged: (text) async {
           listPlacemark = new List<CustomerWithAddressModel>();
 
           if(_listAddress.length != 0){
@@ -156,11 +156,32 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
             }
           }
 
+          GoogleMapsPlaces places = new GoogleMapsPlaces(apiKey: kGoogleApiKey);
+          PlacesAutocompleteResponse queryResponse = await places.queryAutocomplete(text);
+          queryResponse.predictions.forEach((f) async {
+            PlacesDetailsResponse details = await places.getDetailsByPlaceId(f.placeId);
+            CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
+                address: f.description ,
+                latitude: details.result.geometry.location.lat,
+                longitude: details.result.geometry.location.lng,
+                googlePlaceId: f.id
+            );
+            _listAddressGoogle.add(AuxAddressModel);
+          });
+
           if(_listAddressGoogle.length != 0){
             for(int cost= 0; cost < _listAddressGoogle.length; cost++){
               if(ls.createState().checkSearchInText(_listAddressGoogle[cost].address, text) && (text.length != 0)) {
-                listAndressGoogleInt.add(listPlacemark.length - 1);
-                listPlacemark.add(_listAddressGoogle[cost]);
+                for(var valu in listPlacemark){
+                  if(valu.id != _listAddressGoogle[cost].id){
+                    listAndressGoogleInt.add(listPlacemark.length - 1);
+                    listPlacemark.add(_listAddressGoogle[cost]);
+                  }
+                }
+                if(listPlacemark.length == 0){
+                  listAndressGoogleInt.add(listPlacemark.length - 1);
+                  listPlacemark.add(_listAddressGoogle[cost]);
+                }
               }
             }
             if(listPlacemark.length != 0){
@@ -170,6 +191,13 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
             }else{
               setState(() {
                 llenadoListaEncontrador=false;
+              });
+            }
+            if(text.length == 0){
+              setState(() {
+                llenadoListaEncontrador=false;
+                listPlacemark.clear();
+                listAndressGoogleInt.clear();
               });
             }
           }
@@ -331,20 +359,36 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
       }
     }
 
-    //DIRECCIONES GOOGLE
-    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
-    final result = await _places.searchNearbyWithRadius(location, 20000);
-    if (result.status == "OK") {
-      this.places = result.results;
-      result.results.forEach((f) {
-        CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
-            address: f.name ,
-            latitude: f.geometry.location.lat,
-            longitude: f.geometry.location.lng,
-          googlePlaceId: f.id
-        );
-        _listAddressGoogle.add(AuxAddressModel);
-      });
-    }
+//    //DIRECCIONES GOOGLE
+//    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
+//    final result = await _places.searchNearbyWithRadius(location, 20000);
+//    if (result.status == "OK") {
+//      this.places = result.results;
+//      result.results.forEach((f) {
+//        CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
+//            address: f.name ,
+//            latitude: f.geometry.location.lat,
+//            longitude: f.geometry.location.lng,
+//            googlePlaceId: f.id
+//        );
+//        _listAddressGoogle.add(AuxAddressModel);
+//      });
+//    }
+
+
+//    GoogleMapsPlaces places = new GoogleMapsPlaces(apiKey: kGoogleApiKey);
+//    PlacesAutocompleteResponse queryResponse = await places.queryAutocomplete(" ");
+//    queryResponse.predictions.forEach((f) async {
+//      PlacesDetailsResponse details = await places.getDetailsByPlaceId(f.placeId);
+//      CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
+//            address: f.description ,
+//            latitude: details.result.geometry.location.lat,
+//            longitude: details.result.geometry.location.lng,
+//            googlePlaceId: f.id
+//        );
+//        _listAddressGoogle.add(AuxAddressModel);
+//    });
+
+
   }
 }
