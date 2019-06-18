@@ -62,6 +62,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     super.dispose();
   }
 
+
+
   @override
   void setState(fn) {
     if(mounted){
@@ -168,7 +170,16 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       for(int i=0; i < tasks.data.length;i++){
         Place marker;
         String valadde = 'N/A';
-        if(tasks.data[i].address != null){
+        DateTime dateTask;
+        if(tasks.data[i].planningDate != null){
+          dateTask = DateTime.parse(tasks.data[i].planningDate);
+        }else{
+          dateTask = DateTime.parse(tasks.data[i].createdAt);
+        }
+
+        if(tasks.data[i].address != null && (
+            (dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
+        )){
           valadde = tasks.data[i].address.address;
           if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
           if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
@@ -199,9 +210,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       }
 
       if (this.mounted){
-        setState((){
+        setState(() async {
           listplace = _listMarker;
-          allmark(listplace);
+          await allmark(listplace);
+          await allruta(listplace);
         });
       }
     }catch(error, stackTrace) {
@@ -210,6 +222,24 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
         stackTrace: stackTrace,
       );
     }
+  }
+
+  Future allruta(List<Place> listPlaces) async {
+    List<Place> newPl = new List<Place>();
+    for(Place mark in listPlaces){
+      if(mark.statusTask == status.planificado){
+        newPl.add(mark);
+      }
+    }
+
+    for(int x = newPl.length; x > 0; x--){
+      await createRoute(newPl[x-1],_initialPosition);
+      setState(() {
+        _polyLines;
+      });
+    }
+
+
   }
 
   allmark(List<Place> listPlaces) async {
@@ -230,15 +260,15 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
 //        Place oldMark;
 //        if(mark.statusTask == status.planificado){
-//          if(!inicio){
-//            inicio = !inicio;
-//            oldMark = mark;
-//            createRoute(mark,_initialPosition);
-//          }else{
-//            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
-//            createRoute(mark,oldPoint);
-//            oldMark = mark;
-//          }
+////          if(!inicio){
+////            inicio = !inicio;
+////            oldMark = mark;
+//            await createRoute(mark,_initialPosition);
+////          }else{
+////            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
+////            createRoute(mark,oldPoint);
+////            oldMark = mark;
+////          }
 //        }
 
 
@@ -284,9 +314,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       String route = await _googleMapsServices.getRouteCoordinates(oldPosition, destination,kGoogleApiKeyy);
 
       _polyLines.add(
-          Polyline(
-              polylineId: PolylineId(_lastPosition.toString()
-              ),
+          Polyline(polylineId: PolylineId(_initialPosition.toString()),
           width: 10,
           points: convertToLatLng(decodePoly(route)),
           color: Colors.red[200]
