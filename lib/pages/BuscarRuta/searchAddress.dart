@@ -161,53 +161,8 @@ class _SearchAddressState extends State<SearchAddress> {
             }
           }
 
-          GoogleMapsPlaces places = new GoogleMapsPlaces(apiKey: kGoogleApiKey);
-          PlacesAutocompleteResponse queryResponse = await places.queryAutocomplete(text);
-          queryResponse.predictions.forEach((f) async {
-            PlacesDetailsResponse details = await places.getDetailsByPlaceId(f.placeId);
-            AddressModel AuxAddressModel = new AddressModel(
-                address: f.description ,
-                latitude: details.result.geometry.location.lat,
-                longitude: details.result.geometry.location.lng,
-                googlePlaceId: f.id
-            );
-            _listAddressGoogle.add(AuxAddressModel);
-          });
+          await getDirection(text);
 
-          if(_listAddressGoogle.length != 0){
-            for(int cost= 0; cost < _listAddressGoogle.length; cost++){
-              if(ls.createState().checkSearchInText(_listAddressGoogle[cost].address, text) && (text.length != 0)) {
-                for(var valu in listPlacemark){
-                  if(valu.id != _listAddressGoogle[cost].id){
-                    listAndressGoogleInt.add(listPlacemark.length - 1);
-                    listPlacemark.add(_listAddressGoogle[cost]);
-                  }
-                }
-                if(listPlacemark.length == 0){
-                  listAndressGoogleInt.add(listPlacemark.length - 1);
-                  listPlacemark.add(_listAddressGoogle[cost]);
-                }
-              }
-            }
-            if(listPlacemark.length != 0){
-              setState(() {
-                listPlacemark;
-                llenadoListaEncontrador = true;
-              });
-            }else{
-              setState(() {
-                listPlacemark;
-                llenadoListaEncontrador=false;
-              });
-            }
-            if(text.length == 0){
-              setState(() {
-                llenadoListaEncontrador=false;
-                listPlacemark.clear();
-                listAndressGoogleInt.clear();
-              });
-            }
-          }
 
           if(text.length == 0){
             setState(() {
@@ -225,18 +180,57 @@ class _SearchAddressState extends State<SearchAddress> {
   List<int> listAndressGoogleInt = new List<int>();
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
-  Future<List<Placemark>> getDirection(String location)async{
-    List<Placemark> placemark ;
-    try{
-      placemark = await Geolocator().placemarkFromAddress(location);
+  Future getDirection(String direction)async {
+    try {
+      GoogleMapsPlaces places = new GoogleMapsPlaces(apiKey: kGoogleApiKey);
+      Location location = new Location( _initialPosition.latitude, _initialPosition.longitude);
+      //PlacesAutocompleteResponse queryResponse = await places.queryAutocomplete(direction, radius: 50000, location: location);
+
+      PlacesAutocompleteResponse query = await places.autocomplete(direction,location: location,radius: 50000,strictbounds: false);
+
+      query.predictions.forEach((f) async {
+        PlacesDetailsResponse details = await places.getDetailsByPlaceId(
+            f.placeId);
+        AddressModel AuxAddressModel = new AddressModel(
+            address: f.description,
+            latitude: details.result.geometry.location.lat,
+            longitude: details.result.geometry.location.lng,
+            googlePlaceId: f.id
+        );
+        _listAddressGoogle.add(AuxAddressModel);
+        bool existe = false;
+        for (int cost = 0; cost < listPlacemark.length; cost++) {
+          if (listPlacemark[cost].id == AuxAddressModel.id) {
+            existe = true;
+          }
+        }
+        if (existe == false) {
+          listAndressGoogleInt.add(listPlacemark.length);
+          listPlacemark.add(AuxAddressModel);
+        }
+        setState(() {
+          listPlacemark;
+        });
+        if (listPlacemark.length != 0) {
+          setState(() {
+            listPlacemark;
+            llenadoListaEncontrador = true;
+          });
+        } else {
+          setState(() {
+            listPlacemark;
+            llenadoListaEncontrador = false;
+          });
+        }
+      });
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
         stackTrace: stackTrace,
       );
     }
-    return placemark;
   }
+
 
   Future _addMarker(LatLng location, String address) async {
     _markers.clear();

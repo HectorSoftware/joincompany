@@ -261,10 +261,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 //    _polyLines;
 //    //});
     }catch(error, stackTrace) {
-//      await sentry.captureException(
-//        exception: error,
-//        stackTrace: stackTrace,
-//      );
     }
   }
 
