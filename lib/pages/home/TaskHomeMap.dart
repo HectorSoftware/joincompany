@@ -218,10 +218,16 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       bool inicio= false;
       _markers.clear();
       _polyLines.clear();
-      int number = 0;
+      int cantPl = 0;
+      for(Place mark in listPlaces){
+        if(mark.statusTask != status.cliente){
+          cantPl++;
+        }
+      }
 
       for(Place mark in listPlaces){
-        number = number +1;
+
+
 //        Place oldMark;
 //        if(mark.statusTask == status.planificado){
 //          if(!inicio){
@@ -252,9 +258,13 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
                   }
               ),
               onTap: (){ },
-              icon: await colorMarker(mark,number)
+              icon: await colorMarker(mark,cantPl)
           ),
         );
+
+        if(mark.statusTask != status.cliente){
+          cantPl--;
+        }
       }
 //    //setState((){
 //    _markers;
