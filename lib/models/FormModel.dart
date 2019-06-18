@@ -60,4 +60,14 @@ class FormModel {
     "active": active,
     "sections": sections != null ? new List<SectionModel>.from(sections.map((x) => x.toMap())) : null,
   };
+
+  SectionModel findSectionById(int id) {
+    SectionModel foundSection;
+    if (sections != null)
+      sections.forEach((section) {
+        if (section.id == id)
+          foundSection = section;
+      }); 
+    return foundSection;
+  }
 }

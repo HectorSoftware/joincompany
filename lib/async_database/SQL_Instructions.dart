@@ -395,6 +395,7 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "customizable_type" TEXT,
     "customizable_id" INTEGER,
     "value" TEXT,
+    "image_base64" TEXT,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,

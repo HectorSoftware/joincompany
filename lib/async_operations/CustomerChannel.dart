@@ -14,7 +14,7 @@ class CustomerChannel {
     // Create Local To Server    
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.created);
 
-    customersLocal.forEach((customerLocal) async {
+    await Future.forEach(customersLocal, (customerLocal) async {
       var createCustomerResponseServer = await createCustomerFromServer(customerLocal, customer, authorization);
       if (createCustomerResponseServer.statusCode==200) {
         CustomerModel customerServer = CustomerModel.fromJson(createCustomerResponseServer.body);
@@ -29,7 +29,7 @@ class CustomerChannel {
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
-    customersServer.data.forEach((customerServer) async {
+    await Future.forEach(customersServer.data, (customerServer) async {
       idsCustomersServer.add(customerServer.id);
     });
 
@@ -39,7 +39,7 @@ class CustomerChannel {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    customersServer.data.forEach((customerServer) async {
+    await Future.forEach(customersServer.data, (customerServer) async {
       if (idsToCreate.contains(customerServer.id)) {
         // Cambiar el SyncState Local
         await DatabaseProvider.db.CreateCustomer(customerServer, SyncState.synchronized);
@@ -53,7 +53,7 @@ class CustomerChannel {
     //Delete Local To Server
     List<CustomerModel> customersLocal = await DatabaseProvider.db.ReadCustomersBySyncState(SyncState.deleted);
 
-    customersLocal.forEach((customerLocal) async {
+    await Future.forEach(customersLocal, (customerLocal) async {
       var deleteCustomerResponseServer = await deleteCustomerFromServer(customerLocal.id.toString(), customer, authorization);
       if (deleteCustomerResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerById(customerLocal.id);
@@ -65,7 +65,7 @@ class CustomerChannel {
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
-    customersServer.data.forEach((customerServer) async {
+    await Future.forEach(customersServer.data, (customerServer) async {
       idsCustomersServer.add(customerServer.id);
     });
 
@@ -73,7 +73,7 @@ class CustomerChannel {
 
     Set idsToDelete = idsCustomersLocal.difference(idsCustomersServer);
 
-    idsToDelete.forEach((idToDelete) async{
+    await Future.forEach(idsToDelete, (idToDelete) async{
       await DatabaseProvider.db.DeleteCustomerById(idToDelete);
     });
   }
@@ -83,7 +83,7 @@ class CustomerChannel {
     var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
-    customersServer.data.forEach((customerServer) async {
+    await Future.forEach(customersServer.data, (customerServer) async {
 
       CustomerModel customerLocal = await DatabaseProvider.db.ReadCustomerById(customerServer.id);
       if (customerLocal != null) {

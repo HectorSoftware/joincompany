@@ -15,7 +15,7 @@ class CustomerAddressesChannel {
     // Create Local To Server    
     List<Map> customerAddressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.created);
 
-    customerAddressesLocal.forEach((customerAddressLocal) async {
+    await Future.forEach(customerAddressesLocal, (customerAddressLocal) async {
       var relateCustomerAddressResponseServer = await relateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
       if (relateCustomerAddressResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerAddressResponseServer.body);
@@ -32,7 +32,7 @@ class CustomerAddressesChannel {
     Map<String, int> customersAddressesServerIds = new Map<String, int>();
 
     Set customersAddressesServer = new Set();
-    customersWithAddress.data.forEach((customerWithAddress) async {
+    await Future.forEach(customersWithAddress.data, (customerWithAddress) async {
       if (customerWithAddress.customerId != null && customerWithAddress.addressId != null){
         String customerAddressIds = "${customerWithAddress.customerId}-${customerWithAddress.addressId}";
         customersAddressesServerIds[customerAddressIds] = customerWithAddress.id;
@@ -43,7 +43,7 @@ class CustomerAddressesChannel {
     Set customersAddressesLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerAddressRelations() ); //método de albert
     Set customersAddressesToCreate = customersAddressesServer.difference(customersAddressesLocal);
 
-    customersAddressesToCreate.forEach((customerAddressToCreate) async {
+    await Future.forEach(customersAddressesToCreate, (customerAddressToCreate) async {
       var customerAddressIds = customerAddressToCreate.split("-");
     	int customerId = int.parse(customerAddressIds[0]);
     	int addressId = int.parse(customerAddressIds[1]);
@@ -57,7 +57,7 @@ class CustomerAddressesChannel {
     //Delete Local To Server
     List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.deleted);
 
-    customerAdressesLocal.forEach((customerAddressLocal) async {
+    await Future.forEach(customerAdressesLocal, (customerAddressLocal) async {
       var unrelateCustomerAddressResponseServer = await unrelateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
       if (unrelateCustomerAddressResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerAddressById(customerAddressLocal["customer_id"], customerAddressLocal["address_id"]);
@@ -69,7 +69,7 @@ class CustomerAddressesChannel {
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     Set customersAddressesServer = new Set();
-    customersWithAddress.data.forEach((customerWithAddress) async {
+    await Future.forEach(customersWithAddress.data, (customerWithAddress) async {
   	  // Set server = new Set.from([ "419-345", "419-346" ]);
       customersAddressesServer.add("${customerWithAddress.customerId}-${customerWithAddress.addressId}");
     });
@@ -78,7 +78,7 @@ class CustomerAddressesChannel {
 
     Set customersAddressesToDelete = customersAddressesLocal.difference(customersAddressesServer);
 
-    customersAddressesToDelete.forEach((customerAddressToDelete) async {
+    await Future.forEach(customersAddressesToDelete, (customerAddressToDelete) async {
       var customerAddressIds = customerAddressToDelete.split("-");
     	int customerId = int.parse(customerAddressIds[0]);
     	int addressId = int.parse(customerAddressIds[1]);

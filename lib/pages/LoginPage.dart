@@ -236,7 +236,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+                // ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+                testApi();
               },
               child: Center(
                   child: Center(
@@ -366,7 +367,7 @@ class _LoginPageState extends State<LoginPage> {
               user.rememberToken = authFromResponse.accessToken;
               user.password = md5.convert(utf8.encode(password)).toString();
               user.company = companyLocal;
-              DatabaseProvider.db.UpdateUser(
+              await DatabaseProvider.db.UpdateUser(
                   user.id,
                   user,
                   SyncState.synchronized
@@ -418,9 +419,9 @@ class _LoginPageState extends State<LoginPage> {
 
                 await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);                
 
-                // await AddressChannel.syncEverything();
-                // await CustomerChannel.syncEverything();
-                // await CustomerAddressesChannel.syncEverything();
+                await AddressChannel.syncEverything();
+                await CustomerChannel.syncEverything();
+                await CustomerAddressesChannel.syncEverything();
                 await FormChannel.syncEverything();
                 
                 Navigator.pushReplacementNamed(context, '/vistap');
@@ -491,12 +492,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   getFormsRaw() {
-    return '{ "current_page": 1, "data": [ { "id": 3, "created_at": "2018-10-21 20:06:29", "updated_at": "2022-10-21 20:06:31", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Enrolamiento eHuapi 2", "with_checkinout": true, "active": true }, { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
+    return '{ "current_page": 1, "data": [ { "id": 3, "created_at": "2018-10-21 20:06:29", "updated_at": "2018-10-21 20:06:31", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Enrolamiento eHuapi 3", "with_checkinout": true, "active": true }, { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
+    // return '{ "current_page": 1, "data": [ { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-18 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true }, { "id": 2, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Visitas", "with_checkinout": true, "active": true } ], "first_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "from": 1, "last_page": 1, "last_page_url": "https://webapp.getkem.com/api/v1/forms?page=1", "next_page_url": null, "path": "https://webapp.getkem.com/api/v1/forms", "per_page": 20, "prev_page_url": null, "to": 3, "total": 3 } ';
   }
 
   getFormRaw(int id) {
     if(id==1){
       return ' { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-21 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true, "sections": [ { "id": 1, "created_at": "2018-07-18 17:48:57", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": null, "entity_type": "Form", "entity_id": 1, "type": "section", "name": "Datos de la Nota", "code": "SECTION_1", "subtitle": null, "position": 1, "field_default_value": null, "field_type": null, "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3, "fields": [ { "id": 2, "created_at": "2018-07-18 17:50:03", "updated_at": "2018-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 1, "entity_type": "Form", "entity_id": 1, "type": "field", "name": "Comentarios", "code": "FIELD_2", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "TextArea", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 } ] } ] } '; 
+      //actualizado
+      // return ' { "id": 1, "created_at": "2018-07-18 17:48:04", "updated_at": "2018-07-21 17:48:04", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "name": "Notas", "with_checkinout": false, "active": true, "sections": [ { "id": 1, "created_at": "2018-07-18 17:48:57", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": null, "entity_type": "Form", "entity_id": 1, "type": "section", "name": "Datos de la Nota", "code": "SECTION_1", "subtitle": null, "position": 1, "field_default_value": null, "field_type": null, "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3, "fields": [ { "id": 2, "created_at": "2018-07-18 17:50:03", "updated_at": "2019-07-18 17:50:03", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": null, "section_id": 1, "entity_type": "Form", "entity_id": 1, "type": "field", "name": "Comentarios test", "code": "FIELD_2", "subtitle": null, "position": 1, "field_default_value": null, "field_type": "TextArea", "field_placeholder": null, "field_options": [], "field_collection": null, "field_required": false, "field_width": 3 } ] } ] } '; 
     }
 
     if(id==2){
@@ -504,7 +508,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if(id==3){
-      return ' { "id": 3, "created_at": "2018-07-18 17:50:19", "updated_at": "2022-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 14, "name": "Enrolamiento eHuapi 2", "with_checkinout": true, "active": true, "sections": [ { "id": 17, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 1, "entity_type": "Form", "entity_id": 3, "type": "section", "name": "Datos persona que atiende", "code": "SECTION_15", "subtitle": "test", "position": 12, "field_default_value": "test", "field_type": "", "field_placeholder": "test", "field_options": [], "field_collection": "test", "field_required": false, "field_width": 3, "fields": [ { "id": 35, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 26, "entity_type": "Form", "entity_id": 3, "type": "field", "name": "Giro", "code": "FIELD_33", "subtitle": "test", "position": 30, "field_default_value": "test", "field_type": "Combo", "field_placeholder": "test", "field_options": [ { "value": 16, "name": "Botillería" }, { "value": 17, "name": "Roticería" }, { "value": 18, "name": "Minimarket" }, { "value": 19, "name": "Carnicería" }, { "value": 20, "name": "Otro" } ], "field_collection": "Giro", "field_required": false, "field_width": 3 } ] } ] }';
+      return ' { "id": 3, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:50:19", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 14, "name": "Enrolamiento eHuapi 3", "with_checkinout": true, "active": true, "sections": [ { "id": 17, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 1, "entity_type": "Form", "entity_id": 3, "type": "section", "name": "Datos persona que atiende", "code": "SECTION_15", "subtitle": "test", "position": 12, "field_default_value": "test", "field_type": "", "field_placeholder": "test", "field_options": [], "field_collection": "test", "field_required": false, "field_width": 3, "fields": [ { "id": 35, "created_at": "2018-07-18 17:50:19", "updated_at": "2018-07-18 17:48:57", "deleted_at": null, "created_by_id": 1, "updated_by_id": 1, "deleted_by_id": 1, "section_id": 26, "entity_type": "Form", "entity_id": 3, "type": "field", "name": "Giro", "code": "FIELD_33", "subtitle": "test", "position": 30, "field_default_value": "test", "field_type": "Combo", "field_placeholder": "test", "field_options": [ { "value": 16, "name": "Botillería" }, { "value": 17, "name": "Roticería" }, { "value": 18, "name": "Minimarket" }, { "value": 19, "name": "Carnicería" }, { "value": 20, "name": "Otro" } ], "field_collection": "Giro", "field_required": false, "field_width": 3 } ] } ] }';
     }
   }
 
@@ -694,12 +698,15 @@ class _LoginPageState extends State<LoginPage> {
       // await FormChannel.syncEverything();
       // var fce = await DatabaseProvider.db.ListForms();
 
-      // var response = await getAllForms(customer, authorization);
+      // var response = await getAllForms(customer, "");
       // print(response.body);
+
+      await FormChannel.syncEverything();
 
 
       // var formsRaw = getFormsRaw();
       // FormsModel formsServer = FormsModel.fromJson(formsRaw);
+      // print(formsServer);
 
       // for (var i = 0; i < formsServer.data.length; i++) {
       //   var getFormResponse = await getFormRaw(formsServer.data[i].id);
@@ -717,8 +724,9 @@ class _LoginPageState extends State<LoginPage> {
       //   } 
       // }
 
-      // var formsResponse = await getAllForms(customer, "");
-      // var forms = await formsResponse.body;
+      var formsResponse = await getAllForms(customer, "");
+      var forms = await formsResponse.body;
+      print(forms);
 
 
 
@@ -727,7 +735,7 @@ class _LoginPageState extends State<LoginPage> {
     // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
 
     // Set idsFormsServer = new Set();
-    // formsServer.data.forEach((formServer) async {
+    // await Future.forEach(formsServer.data, (formServer) async {
     //   idsFormsServer.add(formServer.id);
     // });
 
@@ -735,7 +743,7 @@ class _LoginPageState extends State<LoginPage> {
 
     // Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
 
-    // formsServer.data.forEach((formServer) async {
+    // await Future.forEach(formsServer.data, (formServer) async {
     //   if (idsToCreate.contains(formServer.id)) {
     //     // Cambiar el SyncState Local
     //     var getFormResponse = await getFormRaw(formServer.id);
@@ -745,6 +753,26 @@ class _LoginPageState extends State<LoginPage> {
 
     //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
     //   }
+    // });
+
+
+
+    // Delete
+    // var formsServerResponse = await getFormsRaw();
+    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
+
+    // Set idsFormsServer = new Set();
+    // await Future.forEach(formsServer.data, (formServer) async {
+    //   idsFormsServer.add(formServer.id);
+    // });
+
+    // Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
+
+    // Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
+
+    // await Future.forEach(idsToDelete, (idToDelete) async{
+    //   print("Delete... $idsToDelete" );
+    //   await DatabaseProvider.db.DeleteFormById(idToDelete);
     // });
 
 
