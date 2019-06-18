@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Contact {
+class ContactModel {
     int id;
     String createdAt;
     String updatedAt;
@@ -13,7 +13,7 @@ class Contact {
     String email;
     String details;
 
-    Contact({
+    ContactModel({
         this.id,
         this.createdAt,
         this.updatedAt,
@@ -27,11 +27,11 @@ class Contact {
         this.details,
     });
 
-    factory Contact.fromJson(String str) => Contact.fromMap(json.decode(str));
+    factory ContactModel.fromJson(String str) => ContactModel.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Contact.fromMap(Map<String, dynamic> json) => new Contact(
+    factory ContactModel.fromMap(Map<String, dynamic> json) => new ContactModel(
         id: json["id"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],

@@ -113,9 +113,6 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-                                    print(directionClientIn.customerId);
-                                    print('------------------------------');
-
 
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
@@ -1272,7 +1269,7 @@ class _FormTaskState extends State<FormTask> {
    Future<bool> saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
-    print(createTaskResponse.body);
+  //  print(createTaskResponse.body);
 
    if(createTaskResponse.statusCode == 201){
      setState(() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Business {
+class BusinessModel {
     int id;
     String createdAt;
     String updatedAt;
@@ -14,7 +14,7 @@ class Business {
     String date;
     String amount;
 
-    Business({
+    BusinessModel({
         this.id,
         this.createdAt,
         this.updatedAt,
@@ -29,11 +29,11 @@ class Business {
         this.amount,
     });
 
-    factory Business.fromJson(String str) => Business.fromMap(json.decode(str));
+    factory BusinessModel.fromJson(String str) => BusinessModel.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Business.fromMap(Map<String, dynamic> json) => new Business(
+    factory BusinessModel.fromMap(Map<String, dynamic> json) => new BusinessModel(
         id: json["id"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],

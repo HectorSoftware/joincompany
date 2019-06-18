@@ -222,7 +222,7 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
 
   Future sendRequest(String intendedLocation) async {
     final location = Location(_initialPosition.latitude, _initialPosition.longitude);
-    final result = await _places.searchNearbyWithRadius(location, 5000);
+    final result = await _places.searchNearbyWithRadius(location, 500);
     listAndressGoogleInt = new List<int>();
     if (result.status == "OK") {
       this.places = result.results;
