@@ -60,7 +60,7 @@ class _FormTaskState extends State<FormTask> {
   bool _value1 = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
-  CustomerWithAddressModel  directionClientIn;
+  CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
 
 
   @override
@@ -113,6 +113,8 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
+                                    print(directionClientIn.customerId);
+                                    print('------------------------------');
 
 
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
@@ -326,7 +328,6 @@ class _FormTaskState extends State<FormTask> {
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
                                   await lisC(form);
                                   setState(() {
-                                    directionClient.address = null;
                                     //   dropdownValue = null;
                                     pass = true;
                                     image = null;
@@ -1104,11 +1105,13 @@ class _FormTaskState extends State<FormTask> {
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
   bool switchOn = false;
+
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
       setState(() {
         directionClientIn = resp;
+
       });
     }
   }
