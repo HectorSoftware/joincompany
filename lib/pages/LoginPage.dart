@@ -209,8 +209,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                // validateData(nameController.text,passwordController.text,companyController.text);
-                testApi();
+                 validateData(nameController.text,passwordController.text,companyController.text);
+
               },
               child: Center(
                   child: Center(
