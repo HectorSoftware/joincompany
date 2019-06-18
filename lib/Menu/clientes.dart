@@ -308,7 +308,7 @@ class _ClientState extends State<Client> {
                               },
                             ),
                           );
-                        }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
+                        }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
                           var direction = snapshot.data[index].address != null ? snapshot.data[index].address : "";
                           var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
                           return Card(

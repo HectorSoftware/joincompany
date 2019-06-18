@@ -94,16 +94,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     }
 
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * aument,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
-
         body:
 //        NotificationListener<ScrollNotification>(
 //              onNotification: (ScrollNotification scrollInfo) {
@@ -122,10 +115,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (BuildContext context) =>
-                      FormTask(directionClient: directionClient,)));
+              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
@@ -331,16 +321,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
             String dateTitulo = "";
             if(listTaskModellocal[positionActual].planningDate == null){
-              dateTitulo = DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .day
-                  .toString() + ' de ' + intsToMonths[DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .month
-                  .toString()] + ' ' + DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .year
-                  .toString();
+              dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[positionActual].createdAt)
+                  .month.toString()] + ' ' + DateTime.parse(listTaskModellocal[positionActual].createdAt).year.toString();
             }else{
               dateTitulo = DateTime
                   .parse(listTaskModellocal[positionActual].planningDate)
@@ -349,47 +331,21 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
             var padding = 16.0;
             double por = 0.1;
-            if (MediaQuery
-                .of(context)
-                .orientation == Orientation.portrait) {
+            if (MediaQuery.of(context).orientation == Orientation.portrait) {
               por = 0.07;
             }
 
 
             if(listTaskModellocal[positionActual].planningDate == null){
-              if ((DateTime
-                  .now()
-                  .day == DateTime
-                  .parse(listTaskModellocal[positionActual].createdAt)
-                  .day) &&
-                  (DateTime
-                      .now()
-                      .month == DateTime
-                      .parse(listTaskModellocal[positionActual].createdAt)
-                      .month) &&
-                  (DateTime
-                      .now()
-                      .year == DateTime
-                      .parse(listTaskModellocal[positionActual].createdAt)
-                      .year)) {
+              if ((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].createdAt).day) &&
+                  (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].createdAt).month) &&
+                  (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].createdAt).year)) {
                 dateTitulo = 'Hoy, ' + dateTitulo;
               }
             }else{
-              if ((DateTime
-                  .now()
-                  .day == DateTime
-                  .parse(listTaskModellocal[positionActual].planningDate)
-                  .day) &&
-                  (DateTime
-                      .now()
-                      .month == DateTime
-                      .parse(listTaskModellocal[positionActual].planningDate)
-                      .month) &&
-                  (DateTime
-                      .now()
-                      .year == DateTime
-                      .parse(listTaskModellocal[positionActual].planningDate)
-                      .year)) {
+              if ((DateTime.now().day == DateTime.parse(listTaskModellocal[positionActual].planningDate).day) &&
+                  (DateTime.now().month == DateTime.parse(listTaskModellocal[positionActual].planningDate).month) &&
+                  (DateTime.now().year == DateTime.parse(listTaskModellocal[positionActual].planningDate).year)) {
                 dateTitulo = 'Hoy, ' + dateTitulo;
               }
             }
@@ -398,14 +354,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             Container(
               padding: EdgeInsets.only(
                   left: padding, right: 0, top: padding, bottom: 0),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * por,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * por,
               color: PrimaryColor,
               child: Text(dateTitulo, style: TextStyle(
                   fontSize: 16, color: Colors.white)),
