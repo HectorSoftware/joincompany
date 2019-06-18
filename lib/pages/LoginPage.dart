@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/UserService.dart';
 
 import 'package:http/http.dart' as http;
@@ -206,7 +209,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                validateData(nameController.text,passwordController.text,companyController.text);
+                // validateData(nameController.text,passwordController.text,companyController.text);
+                testApi();
               },
               child: Center(
                   child: Center(
@@ -313,65 +317,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-//  Future sendSmsLogin() async {
-//    Contactos contac = new Contactos(
-//      contactos: '',
-//      listas: '',
-//      nuevos: '584249698437',
-//    );
-//
-//    ValidatorSms varSms = ValidatorSms(
-//        token: 'be80afce59ea9c828a37c324da40473a755d2139ef243b0e826e5d37924e97fb',
-//        mensaje: 'soy jesus',
-//        //(cuba- mexico - usa) es ruta: 40, envío internacional excepto los 3 países nombrados la ruta es 32.
-//        ruta: '32',
-//        pais: '231',
-//        contactos: contac,
-//        fechaEnvio: '');
-//    var bodyJsonSms = varSms.toJson();
-//    var response = await httpPost(bodyJsonSms);
-//    print(response.body);
-//
-//    ResponseExito Res = ResponseExito.fromJson(response.body);
-//    print(Res.status);
-//
-//  }
-//
-//  Future<http.Response> httpPost(String bodyJsonSms) async{
-//    try{
-//
-//      String hostApi2 = 'www.freesmscuba.com';
-//      String resourcePath2 = '/index.php/api/createpub';
-//      var uri = Uri.https(hostApi2,resourcePath2);
-//
-//      final response = await http.post(uri,
-//          headers: {
-//            'Content-Type' : 'application/json',
-//            'Accept': 'application/json',
-//          },
-//          body: bodyJsonSms
-//      );
-//
-//      return response;
-//    }on Exception{
-//      print("error post");
-//      return null;
-//    }
-//
-//  }
-//  testApi() async{
-//
-//    try {
-//
-//      String email = 'jgarcia@getkem.com';
-//      // String email = 'jgarcia@getkem.com';
-//      String password = '123';
-//      String customer = 'getkem';
+  testApi() async{
+    try {
+
+      print("------------------------------- Inicia Test ----------------------------");
+
+      String email = 'jgarcia@getkem.com';
+      // String email = 'jgarcia@getkem.com';
+      String password = '123';
+      String customer = 'getkem';
 
       // login
-   //   var loginResponse = await login(email, password, customer);
-     // AuthModel auth = AuthModel.fromJson(loginResponse.body);
-      //String authorization = auth.accessToken;
+      var loginResponse = await login(email, password, customer);
+      AuthModel auth = AuthModel.fromJson(loginResponse.body);
+      String authorization = auth.accessToken;
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -516,9 +475,46 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.email);
       // print(user.profile);
 
-//    }catch(error){
-//
-//    }
-//
-//  }
+      // Contact All
+      // var getAllContactsResponse = await getAllContacts(customer, authorization);
+      // ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
+      // print(getAllContactsResponse.request);
+      // print(getAllContactsResponse.body);
+      // print(contacts.data.length);
+      // print(contacts.data[0].name);
+
+      // Contact Get
+      // var getContactResponse = await getContact("3", customer, authorization);
+      // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
+      // print(getContactResponse.body);
+      // print(contact.id);
+      // print(contact.name);
+
+      // Contact Create
+      // ContactModel contactObjNew = new ContactModel(
+      //   customerId: 467, 
+      //   name: "Nombre Contacto", 
+      //   phone: "0414-123456", 
+      //   email: "contacto@contacto.com", 
+      //   details: "Nota de Contacto"
+      // );
+      // var createContactResponse = await createContact(contactObjNew, customer, authorization);
+      // print(createContactResponse.statusCode);
+      // print(createContactResponse.body);
+      // ContactModel contactCreated = ContactModel.fromJson(createContactResponse.body);
+      // print(contactCreated.name);
+
+      // Contact Update
+      // contact.name = 'Nombre Actualizado';
+      // var updateContactResponse = await updateContact('3', contact, customer, authorization);
+      // print(updateContactResponse.body);
+
+
+      print("------------------------------- Fin Test ----------------------------");
+
+    }catch(error, stackTrace){
+      print(error);
+      print(stackTrace);
+    }
+  }
 }
