@@ -292,6 +292,8 @@ class _ClientState extends State<Client> {
                               title: Text(name , style: TextStyle(fontSize: 14),),
                               subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                               trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: ()async{
+                                print(snapshot.data[index].id);
+                                print(snapshot.data[index].customerId);
                                 Navigator.push(
                                     context,
                                     new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],)));

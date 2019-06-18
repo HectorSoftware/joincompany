@@ -147,19 +147,13 @@ class _FormTaskState extends State<FormTask> {
                                           saveTask.addressId = directionAdd.id;
                                         }
                                       } else {
-                                        saveTask.customerId = directionClientIn.customerId;
+                                        saveTask.customerId = directionClientIn.id;
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
-
                                     }
-
-
-
-
-
-
                                     saveTask.planningDate = _dateTask.toString().substring(0,19);
                                     saveTask.customValuesMap = dataInfo;
+                                    print(saveTask.planningDate );
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
                                       showDialog(
@@ -268,15 +262,29 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.70, //0.4
                   child: returnsStack(),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.05, //0.2
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
-                  ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      height: MediaQuery.of(context).size.height * 0.05, //0.2
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                      ),
 
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: MediaQuery.of(context).size.height * 0.05, //0.2
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: directionClientIn.name != null ? Text('Cliente : ${directionClientIn.name} ',style: TextStyle(fontSize: 15),):Text('Cliente: Sin Asignar'),
+                      ),
+
+                    ),
+                  ],
                 ),
+
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.05, //0.2

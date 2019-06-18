@@ -10,7 +10,6 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart';
-import "package:google_maps_webservice/places.dart";
 import '../../main.dart';
 
 class SearchAddressWithClient extends StatefulWidget {
