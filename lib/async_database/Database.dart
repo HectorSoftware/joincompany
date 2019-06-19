@@ -1536,6 +1536,34 @@ class DatabaseProvider {
     return listOfFields;
   }
 
+  Future<List<int>> ListSectionIdsByForm(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT id FROM "custom_fields" WHERE entity_id = $id AND type = "section"');
+
+    List<int> listOfSectionIds = new List<int>();
+    
+    if (data.isNotEmpty) {
+      data.forEach((section) => listOfSectionIds.add(section["id"])); 
+    }
+
+    return listOfSectionIds;
+  }
+
+  Future<List<int>> ListFieldIdsBySection(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT id FROM "custom_fields" WHERE section_id = $id AND type = "field"');
+
+    List<int> listOfFieldIds = new List<int>();
+
+    if (data.isNotEmpty) {
+      data.forEach((field) => listOfFieldIds.add(field["id"]));
+    }
+
+    return listOfFieldIds;
+  }
+
   Future<List<SectionModel>> ListSections() async {
     final db = await database;
     List<Map<String, dynamic>> data;

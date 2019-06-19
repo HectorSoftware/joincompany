@@ -67,4 +67,14 @@ class FormsModel {
     "to": to,
     "total": total,
   };
+
+  List<int> listFormIds() {
+    List<int> listOfFormIds = List<int>();
+
+    data.forEach((form) {
+      if (form.id != null)
+        listOfFormIds.add(form.id);
+    });
+    return listOfFormIds;
+  }
 }

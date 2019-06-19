@@ -38,25 +38,45 @@ class FormChannel {
     });
   }
 
-  static Future _deleteFormsInBothLocalAndServer(String customer, String authorization) async {
+  static Future _deleteFormsInLocal(String customer, String authorization) async {
     dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization);
     FormsModel formsFromServer = FormsModel.fromJson(jsonFormsFromServer.body);
 
-    // Delete Server To Local
-    var formsServerResponse = await getAllFormsFromServer(customer, authorization);
-    FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
+    List<int> formsIdsFromServer = formsFromServer.listFormIds();
+    List<int> formsIdsFromLocal = await DatabaseProvider.db.RetrieveAllFormIds();
 
-    Set idsFormsServer = new Set();
-    await Future.forEach(formsServer.data, (formServer) async {
-      idsFormsServer.add(formServer.id);
+    Set<int> setOfFormsIdsFromServer = Set<int>.from(formsIdsFromServer);
+    Set<int> setOfFormsIdsFromLocal = Set<int>.from(formsIdsFromLocal);
+    Set<int> formsToDelete = setOfFormsIdsFromLocal.difference(setOfFormsIdsFromServer);
+
+    await Future.forEach(formsToDelete, (formToDelete) async {
+      await DatabaseProvider.db.DeleteFormById(formToDelete);
     });
 
-    Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
+    await Future.forEach(formsFromServer.data, (formFromServer) async {
+      List<int> sectionsFromServer = await formFromServer.listSectionIds();
+      List<int> sectionsFromLocal = await DatabaseProvider.db.ListSectionIdsByForm(formFromServer.id);
 
-    Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
+      Set<int> setOfSectionsFromServer = Set<int>.from(sectionsFromServer);
+      Set<int> setOfSectionsFromLocal = Set<int>.from(sectionsFromLocal);
+      Set<int> sectionsToDelete = setOfSectionsFromLocal.difference(setOfSectionsFromServer);
+      
+      await Future.forEach(sectionsToDelete, (sectionToDelete) async {
+        await DatabaseProvider.db.DeleteSectionById(sectionToDelete);
+      });
 
-    await Future.forEach(idsToDelete, (idToDelete) async{
-      await DatabaseProvider.db.DeleteFormById(idToDelete);
+      await Future.forEach(formFromServer.sections, (sectionFromServer) async {
+        List<int> fieldsFromServer = await sectionFromServer.listFieldIds();
+        List<int> fieldsFromLocal = await DatabaseProvider.db.ListFieldIdsBySection(sectionFromServer.id);
+
+        Set<int> setOfFieldsFromServer = Set<int>.from(fieldsFromServer);
+        Set<int> setOfFieldsFromLocal = Set<int>.from(fieldsFromLocal);
+        Set<int> fieldsToDelete = setOfFieldsFromLocal.difference(setOfFieldsFromServer);
+
+        await Future.forEach(fieldsToDelete, (fieldToDelete) async {
+          await DatabaseProvider.db.DeleteFieldById(fieldToDelete);
+        });
+      });
     });
   }
 
