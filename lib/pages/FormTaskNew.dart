@@ -149,7 +149,15 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
-                                    saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' +_timeTask.hour.toString()+':'+ _timeTask.minute.toString()+':00';
+                                    String minute;
+                                    print(_timeTask.minute.toString().length);
+                                    if(_timeTask.minute.toString().length > 0){
+                                      minute = '0'+ _timeTask.minute.toString();
+                                    }else{
+                                      minute = _timeTask.minute.toString();
+                                    }
+                                    saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
+                                    print(saveTask.planningDate);
                                     saveTask.customValuesMap = dataInfo;
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
