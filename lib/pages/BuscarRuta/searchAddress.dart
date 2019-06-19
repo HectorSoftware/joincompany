@@ -4,12 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/api/rutahttp.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:sentry/sentry.dart';
+import 'package:joincompany/models/DirectionSModel.dart' as direct;
 
 import '../../main.dart';
 
@@ -143,7 +145,13 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest(value);
         },
         onChanged: (text) async {
-          listPlacemark = new List<AddressModel>();
+
+          setState(() {
+            listPlacemark.clear();
+            listAndressGoogleInt.clear();
+          });
+
+
           if(_listAddress.length != 0){
             for(int cost= 0; cost < _listAddress.length; cost++){
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
@@ -161,10 +169,42 @@ class _SearchAddressState extends State<SearchAddress> {
             }
           }
 
-          await getDirection(text);
+
+          //BUSCAR DIRECCIONES DE MAPA
+          GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
+          direct.DirectionsModel directions = new direct.DirectionsModel();
+          directions = await _googleMapsServices.getSearchPlace(_initialPosition,kGoogleApiKeyy,text);
+          _listAddressGoogle = new List<AddressModel>();
+          if(directions.status == 'OK'){
+            for(var value in directions.candidates){
+              AddressModel AuxAddressModel = new AddressModel(
+                  address: value.formattedAddress + ',' + value.name,
+                  latitude: value.geometry.location.lat,
+                  longitude: value.geometry.location.lng,
+                  googlePlaceId: value.id
+              );
+              bool existe = false;
+              for (int cost = 0; cost < _listAddress.length; cost++) {
+                if (_listAddress[cost].googlePlaceId == AuxAddressModel.googlePlaceId) {
+                  existe = true;
+                }
+              }
+              if (existe == false) {
+                listAndressGoogleInt.add(listPlacemark.length);
+                _listAddressGoogle.add(AuxAddressModel);
+                listPlacemark.add(AuxAddressModel);
+              }
+            }
+          }
+          if (_listAddressGoogle.length != 0) {
+            setState(() {
+              listPlacemark;
+              llenadoListaEncontrador = true;
+            });
+          }
 
 
-          if(text.length == 0){
+          if(_listAddressGoogle.length == 0){
             setState(() {
               llenadoListaEncontrador=false;
               listPlacemark.clear();
@@ -322,32 +362,14 @@ class _SearchAddressState extends State<SearchAddress> {
     if(addressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < address.data.length; cantAddress++){
         if(address.data[cantAddress].address != null){
-          setState(() {
-            _listAddress.add(address.data[cantAddress]);
-          });
+          _listAddress.add(address.data[cantAddress]);
         }
       }
+
+      setState(() {
+        _listAddress;
+      });
     }
-
-
-    //DIRECCION GOOGLE
-//    final location = Location(_initialPosition.latitude, _initialPosition.longitude);
-//    final result = await _places.searchNearbyWithRadius(location, 20000);
-//    listAndressGoogleInt = new List<int>();
-//    if (result.status == "OK") {
-//      this.places = result.results;
-//
-//      result.results.forEach((f) {
-//        AddressModel AuxAddressModel = new AddressModel(
-//            address: f.name ,
-//            latitude: f.geometry.location.lat,
-//            longitude: f.geometry.location.lng,
-//          googlePlaceId: f.id
-//        );
-//        listAndressGoogleInt.add(listPlacemark.length - 1);
-//        _listAddressGoogle.add(AuxAddressModel);
-//      });
-//    }
 
 
 
