@@ -139,37 +139,24 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
           //sendRequest(value);
         },
         onChanged: (text) async {
-          setState(() {
-            listPlacemark.clear();
-            listAndressGoogleInt.clear();
-          });
 
+          listPlacemark.clear();
+          listAndressGoogleInt.clear();
+          _listAddressGoogle.clear();
 
-
-          //BUSCAR DIRECCIONES EN BASE DE DATOS
+          //LISTAR TAREAS DE BASE DE DATOS
           if(_listAddress.length != 0){
             for(int cost= 0; cost < _listAddress.length; cost++){
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
-                listPlacemark.add(_listAddress[cost]);
+                _listAddressGoogle.add(_listAddress[cost]);
               }
             }
-            if(listPlacemark.length != 0){
-              setState(() {
-               llenadoListaEncontrador = true;
-              });
-            }else{
-              setState(() {
-                llenadoListaEncontrador=false;
-              });
-            }
           }
-
 
           //BUSCAR DIRECCIONES DE MAPA
           GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
           direct.DirectionsModel directions = new direct.DirectionsModel();
           directions = await _googleMapsServices.getSearchPlace(_initialPosition,kGoogleApiKeyy,text);
-          _listAddressGoogle = new List<CustomerWithAddressModel>();
           if(directions.status == 'OK'){
             for(var value in directions.candidates){
               CustomerWithAddressModel AuxAddressModel = new CustomerWithAddressModel(
@@ -180,32 +167,40 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
               );
               bool existe = false;
               for (int cost = 0; cost < _listAddress.length; cost++) {
-                if (_listAddress[cost].googlePlaceId == AuxAddressModel.googlePlaceId) {
+                if ((_listAddress[cost].latitude == AuxAddressModel.latitude)&&
+                    _listAddress[cost].longitude == AuxAddressModel.longitude) {
                   existe = true;
                 }
               }
               if (existe == false) {
-                listAndressGoogleInt.add(listPlacemark.length);
+                listAndressGoogleInt.add(_listAddressGoogle.length);
                 _listAddressGoogle.add(AuxAddressModel);
-                listPlacemark.add(AuxAddressModel);
               }
             }
           }
-          if (_listAddressGoogle.length != 0) {
+
+
+          List<CustomerWithAddressModel> _listAddressGoogleAux = _listAddressGoogle;
+          if (_listAddressGoogleAux.length != 0) {
+            for(var valu in _listAddressGoogleAux){
+              listPlacemark.add(valu);
+            }
             setState(() {
               listPlacemark;
               llenadoListaEncontrador = true;
             });
           }
 
-
           if(_listAddressGoogle.length == 0){
             setState(() {
               llenadoListaEncontrador=false;
-              listPlacemark.clear();
-              listAndressGoogleInt.clear();
             });
           }
+
+
+
+
+
 
         },
       ),

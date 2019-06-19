@@ -210,11 +210,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       }
 
       if (this.mounted){
-        setState(() async {
+
           listplace = _listMarker;
           await allmark(listplace);
           await allruta(listplace);
-        });
+
       }
     }catch(error, stackTrace) {
       await sentry.captureException(
