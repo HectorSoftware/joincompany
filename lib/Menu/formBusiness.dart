@@ -47,13 +47,14 @@ class _FormBusinessState extends State<FormBusiness> {
   List<ContactModel> listContacts = List<ContactModel>();
   FieldOptionModel aux =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
-  List<String> dropdownMenuItems = List<String>();
+  List<String> dropdownMenuItemsClients = List<String>();
   String dropdownValue ;
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
 
   bool _dateBool = false;
+  bool getData = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -64,7 +65,7 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
-convertToItToFieldOption(){
+convertToModelToFieldOption(){
     for(CustomerModel v in listCustomers)
       {
         aux.value = v.id;
@@ -80,16 +81,18 @@ convertToItToFieldOption(){
       aux.name = v.name;
       optionsContacts.add(aux);
     }
-
+    for(FieldOptionModel v in optionsClients){
+      dropdownMenuItemsClients.add(v.name);
+    }
 
 }
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
     for(FieldOptionModel v in elements){
-      dropdownMenuItems.add(v.name);
+     // dropdownMenuItems.add(v.name);
     }
 
-    return Container(
+   /* return Container(
       width: MediaQuery.of(context).size.width*0.95,
         height: MediaQuery.of(context).size.height * 0.10,
         child: DropdownButton<String>(
@@ -111,7 +114,7 @@ convertToItToFieldOption(){
           );
         }).toList(),
         ),
-    );
+    );*/
   }
 
   Widget customTextField(String title, type t, int maxLines){
@@ -291,6 +294,7 @@ convertToItToFieldOption(){
   void initState() {
     initController();
     getOther();
+    convertToModelToFieldOption();
     businessGet = widget.dataBusiness;
     super.initState();
   }
@@ -310,6 +314,9 @@ convertToItToFieldOption(){
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
     listContacts = contacts.data;
+    setState(() {
+      getData = true;
+    });
 
   }
   @override
@@ -361,15 +368,15 @@ convertToItToFieldOption(){
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
       ),
-      body:ListView.builder(
+      body:getData? ListView.builder(
         itemCount: 1,
         itemBuilder: (context, index) {
           return Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
                 child: Container(
-                  margin: EdgeInsets.all(12.0),
+                  margin: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: Colors.white,
                       boxShadow: [
@@ -409,7 +416,7 @@ convertToItToFieldOption(){
                         dropdownValue = newValue;
                       });
                     },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                    items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -433,7 +440,7 @@ convertToItToFieldOption(){
                         dropdownValue = newValue;
                       });
                     },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                    items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -507,15 +514,15 @@ convertToItToFieldOption(){
                             },
                           ),
                         ),
-//                        Align(
-//                          alignment: Alignment.centerRight,
-//                          child: IconButton(
-//                            icon: Icon(Icons.visibility),
-//                            onPressed: (){
-////                              getTask();
-//                            },
-//                          ),
-//                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.visibility),
+                            onPressed: (){
+//                              getTask();
+                            },
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -530,7 +537,7 @@ convertToItToFieldOption(){
             ],
           );
         }
-      )
+      ): Center(child: CircularProgressIndicator(),),
 
 //
 
