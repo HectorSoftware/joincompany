@@ -62,6 +62,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     super.dispose();
   }
 
+
+
   @override
   void setState(fn) {
     if(mounted){
@@ -168,7 +170,16 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       for(int i=0; i < tasks.data.length;i++){
         Place marker;
         String valadde = 'N/A';
-        if(tasks.data[i].address != null){
+        DateTime dateTask;
+        if(tasks.data[i].planningDate != null){
+          dateTask = DateTime.parse(tasks.data[i].planningDate);
+        }else{
+          dateTask = DateTime.parse(tasks.data[i].createdAt);
+        }
+
+        if(tasks.data[i].address != null && (
+            (dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
+        )){
           valadde = tasks.data[i].address.address;
           if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
           if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
@@ -199,9 +210,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       }
 
       if (this.mounted){
-        setState((){
+        setState(() async {
           listplace = _listMarker;
-          allmark(listplace);
+          await allmark(listplace);
+          await allruta(listplace);
         });
       }
     }catch(error, stackTrace) {
@@ -212,28 +224,56 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
   }
 
+  Future allruta(List<Place> listPlaces) async {
+    List<Place> newPl = new List<Place>();
+    for(Place mark in listPlaces){
+      if(mark.statusTask == status.planificado){
+        newPl.add(mark);
+      }
+    }
+
+    for(int x = newPl.length; x > 0; x--){
+      await createRoute(newPl[x-1],_initialPosition);
+      setState(() {
+        _polyLines;
+      });
+    }
+
+
+  }
+
   allmark(List<Place> listPlaces) async {
     try{
       //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
       bool inicio= false;
       _markers.clear();
       _polyLines.clear();
-      int number = 0;
+      int cantPl = 0;
+      for(Place mark in listPlaces){
+        if(mark.statusTask != status.cliente){
+          cantPl++;
+        }
+      }
 
       for(Place mark in listPlaces){
-        number = number +1;
+
+
 //        Place oldMark;
 //        if(mark.statusTask == status.planificado){
-//          if(!inicio){
-//            inicio = !inicio;
-//            oldMark = mark;
-//            createRoute(mark,_initialPosition);
-//          }else{
-//            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
-//            createRoute(mark,oldPoint);
-//            oldMark = mark;
-//          }
+////          if(!inicio){
+////            inicio = !inicio;
+////            oldMark = mark;
+//            await createRoute(mark,_initialPosition);
+////          }else{
+////            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
+////            createRoute(mark,oldPoint);
+////            oldMark = mark;
+////          }
 //        }
+
+
+
+
 
         _markers.add(
           Marker(
@@ -252,9 +292,13 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
                   }
               ),
               onTap: (){ },
-              icon: await colorMarker(mark,number)
+              icon: await colorMarker(mark,cantPl)
           ),
         );
+
+        if(mark.statusTask != status.cliente){
+          cantPl--;
+        }
       }
 //    //setState((){
 //    _markers;
@@ -270,9 +314,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       String route = await _googleMapsServices.getRouteCoordinates(oldPosition, destination,kGoogleApiKeyy);
 
       _polyLines.add(
-          Polyline(
-              polylineId: PolylineId(_lastPosition.toString()
-              ),
+          Polyline(polylineId: PolylineId(_initialPosition.toString()),
           width: 10,
           points: convertToLatLng(decodePoly(route)),
           color: Colors.red[200]
