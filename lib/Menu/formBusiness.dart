@@ -75,6 +75,7 @@ class _FormBusinessState extends State<FormBusiness> {
         auxClient.name = v.name;
 
         optionsClients.add(auxClient);
+        auxClient = FieldOptionModel();
       }
     for(FieldOptionModel v in optionsClients){
       dropdownMenuItemsClients.add(v.name);
@@ -85,6 +86,7 @@ class _FormBusinessState extends State<FormBusiness> {
       auxContact.value = v.id;
       auxContact.name = v.name;
       optionsContacts.add(auxContact);
+      auxContact = FieldOptionModel();
     }
     for(FieldOptionModel v in optionsContacts){
       dropdownMenuItemsContact.add(v.name);
@@ -121,7 +123,6 @@ class _FormBusinessState extends State<FormBusiness> {
         ),
     );*/
   }
-
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
@@ -148,7 +149,6 @@ class _FormBusinessState extends State<FormBusiness> {
       ),
     );
   }
-
    customForm(type t){
     switch(t){
       case type.POSS:
@@ -431,30 +431,30 @@ class _FormBusinessState extends State<FormBusiness> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: DropdownButton<String>(
-                    isDense: false,
-                    icon: Icon(Icons.arrow_drop_down),
-                    elevation: 10,
-                    value: dropdownValueContact,
-                    hint: Text('Contactos'),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        dropdownValueContact = newValue;
-                      });
-                    },
-                    items: dropdownMenuItemsContact.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.all(12.0),
+//                child: Container(
+//                  width: MediaQuery.of(context).size.width,
+//                  child: DropdownButton<String>(
+//                    isDense: false,
+//                    icon: Icon(Icons.arrow_drop_down),
+//                    elevation: 10,
+//                    value: dropdownValueContact,
+//                    hint: Text('Contactos'),
+//                    onChanged: (String newValue) {
+//                      setState(() {
+//                        dropdownValueContact = newValue;
+//                      });
+//                    },
+//                    items: dropdownMenuItemsContact.map<DropdownMenuItem<String>>((String value) {
+//                      return DropdownMenuItem<String>(
+//                        value: value,
+//                        child: Text(value),
+//                      );
+//                    }).toList(),
+//                  ),
+//                ),
+//              ),
               ListTile(
                 title: _dateBool ?Text("Fecha :    ${_date.toLocal().toString().substring(0,10)}"): Text("Fecha"),
                 trailing: Icon(Icons.calendar_today),
