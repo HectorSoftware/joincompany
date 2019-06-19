@@ -6,6 +6,7 @@ import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
@@ -41,7 +42,9 @@ class _FormClientState extends State<FormClient> {
   List<AddressModel> directionsOld = List<AddressModel>();
   List<AddressModel> directionsAll = List<AddressModel>();
 
-  List<String> contacts = List<String>();
+  List<ContactModel> contactsAll = List<ContactModel>();
+  List<ContactModel> contactsOld = List<ContactModel>();
+  List<ContactModel> contactsNew = List<ContactModel>();
 
   TextEditingController name,code,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
@@ -135,6 +138,10 @@ class _FormClientState extends State<FormClient> {
       for(CustomerWithAddressModel direction in directionsOld){
         directionsAll.add(direction);
       }
+
+      //todo
+//      List<ContactModel> contactsAll = List<ContactModel>();
+//      List<ContactModel> contactsOld = List<ContactModel>();
     }
     setState(() {
       popUp =  AlertDialog(
@@ -178,6 +185,16 @@ class _FormClientState extends State<FormClient> {
 
   Future<int> addAddressUser(AddressModel direction, int id)async{
     var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
+  Future<int> deletedContactUser(ContactModel contact)async{
+    var resp = await unrelateCustomerContact(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
+  Future<int> addContactUser(ContactModel contact, int id)async{
+    var resp = await relateCustomerContact(id.toString(),contact.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
@@ -232,6 +249,18 @@ class _FormClientState extends State<FormClient> {
             );
 
             var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+            bool saveContact = await setContacts(client.id);
+            if(!saveContact){
+              return showDialog(
+                  context: context,
+                  barrierDismissible: true, // user must tap button for close dialog!
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text('Ha ocurrido un error con las direcciones')
+                    );
+                  }
+              );
+            }
             bool saveDirections = await setDirections(client.id);
             if(!saveDirections){
               return showDialog(
@@ -266,8 +295,19 @@ class _FormClientState extends State<FormClient> {
             var response = await createCustomer(client, userAct.company, userAct.token);
             var cli = CustomerModel.fromJson(response.body);
             if(response.statusCode == 200 || response.statusCode ==  201){
+              bool saveContact = await setContacts(client.id);
+              if(!saveContact){
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error con las direcciones')
+                      );
+                    }
+                );
+              }
               bool saveDirections = await setDirections(cli.id);
-
               if(!saveDirections){
                 return showDialog(
                     context: context,
@@ -308,8 +348,8 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<bool> setDirections(int id)async{
-    bool statusCreate = false;
-    int resp = 200;
+    bool statusCreate = true;
+    int resp;
     for(var directionAct in directionsNews){
       if(!searchOldDirections(directionAct)){
         if(directionAct.id != null){
@@ -326,8 +366,29 @@ class _FormClientState extends State<FormClient> {
       }
     }
     for(var direction in directionsOld){
-      if(oldToEliminated(direction)){
+      if(oldToEliminatedDirection(direction)){
         resp = await deletedAddressUser(direction);
+        statusCreate = responceStatus(resp);
+      }
+    }
+
+    return statusCreate;
+  }
+
+  Future<bool> setContacts(int id)async{
+    bool statusCreate = false;
+    int resp;
+    for(var contact in contactsNew){
+        if(contact.id != null){
+          resp = await addContactUser(contact,id);
+          statusCreate = responceStatus(resp);
+        }else{
+          return false;
+        }
+    }
+    for(var contact in contactsOld){
+      if(oldToEliminatedContact(contact)){
+        resp = await deletedContactUser(contact);
         statusCreate = responceStatus(resp);
       }
     }
@@ -349,9 +410,18 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
-  bool oldToEliminated(CustomerWithAddressModel direction){
+  bool oldToEliminatedDirection(CustomerWithAddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool oldToEliminatedContact(ContactModel contact){
+    for(var c in contactsAll){
+      if(c == contact){
         return false;
       }
     }
@@ -428,8 +498,8 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
-  Future<String> getContact() async{
-    return showDialog<String>(
+  Future<ContactModel> getContact() async{
+    return showDialog<ContactModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -500,16 +570,17 @@ class _FormClientState extends State<FormClient> {
   ListView getContactBuilder() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: contacts.length,
+        itemCount: contactsAll.length,
         itemBuilder: (context, int index) {
           return Container(
             child: ListTile(
               leading: const Icon(Icons.account_box,
                   size: 25.0),
-              title: Text(contacts[index]),
+              title: Text(contactsAll[index].name),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
                 setState(() {
-                  contacts.remove(contacts[index]);
+                  contactsAll.remove(contactsAll[index]);
+                  contactsNew.remove(contactsAll[index]);
                 });
               }),
             ),
@@ -560,7 +631,8 @@ class _FormClientState extends State<FormClient> {
                                     var contact = await getContact();
                                     if (contact != null){
                                       setState(() {
-                                        contacts.add(contact);
+                                        contactsNew.add(contact);
+                                        contactsAll.add(contact);
                                       });
                                     }
                                   }
@@ -577,9 +649,9 @@ class _FormClientState extends State<FormClient> {
                       ),
                     ),
                     Container(
-                      child: contacts.isNotEmpty ? Container(
+                      child: contactsAll.isNotEmpty ? Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * (0.1 * contacts.length),
+                          height: MediaQuery.of(context).size.height * (0.1 * contactsAll.length),
                           child:getContactBuilder()): Container() ,
                     ),
                     Container(
@@ -635,8 +707,8 @@ class _FormClientState extends State<FormClient> {
                               IconButton(
                                   icon: Icon(Icons.add),
                                   onPressed: ()async{
-                                    var resp = await getNegocios();
-                                    contacts.add(resp);
+//                                    var resp = await getNegocios();
+//                                    contacts.add(resp);
                                   }
                               ),
                               IconButton(

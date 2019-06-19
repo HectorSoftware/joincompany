@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
@@ -12,12 +11,13 @@ enum type{
   NAME,
   CODE,
   CARGO,
-  TLF_F,
-  TLF_M,
+  PHONE_F,
+  PHONE_M,
   EMAIL,
   NOTE
 }
 
+// ignore: must_be_immutable
 class AddContact extends StatefulWidget {
   ContactModel contact;
 
@@ -35,9 +35,9 @@ class _AddContactState extends State<AddContact> {
 
   Widget popUp;
 
-  CustomerWithAddressModel clients = CustomerWithAddressModel();
+  CustomerWithAddressModel clients;
 
-  TextEditingController name, code, cargo, tlfF, tlfM, email, note;
+  TextEditingController name, code, cargo, phoneF, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
   Future<CustomerWithAddressModel> getClient() async {
@@ -92,11 +92,6 @@ class _AddContactState extends State<AddContact> {
         {
           return errorTextFieldNote;
         }
-      case type.NOTE:
-        {
-          //TODO
-          break;
-        }
       case type.CARGO:
         {
           //TODO
@@ -107,12 +102,12 @@ class _AddContactState extends State<AddContact> {
           //TODO
           break;
         }
-      case type.TLF_F:
+      case type.PHONE_F:
         {
           //TODO
           break;
         }
-      case type.TLF_M:
+      case type.PHONE_M:
         {
           //TODO
           break;
@@ -152,12 +147,12 @@ class _AddContactState extends State<AddContact> {
           //TODO
           break;
         }
-      case type.TLF_F:
+      case type.PHONE_F:
         {
           //TODO
           break;
         }
-      case type.TLF_M:
+      case type.PHONE_M:
         {
           //TODO
           break;
@@ -168,8 +163,8 @@ class _AddContactState extends State<AddContact> {
   void initController() {
     name = TextEditingController();
     code = TextEditingController();
-    tlfF = TextEditingController();
-    tlfM = TextEditingController();
+    phoneF = TextEditingController();
+    phoneM = TextEditingController();
     email = TextEditingController();
     note = TextEditingController();
   }
@@ -177,13 +172,24 @@ class _AddContactState extends State<AddContact> {
   void initData() async {
     userAct = await ClientDatabaseProvider.db.getCodeId('1');
     initController();
+
+    if(widget.contact != null){
+      name.text = widget.contact.name;
+      code.text = widget.contact.code;
+      phoneF.text = widget.contact.phone;
+      phoneM.text = widget.contact.phone;
+      email.text = widget.contact.email;
+      note.text = widget.contact.details;
+    }
+
+    setState((){});
   }
 
   void disposeController() {
     name.dispose();
     code.dispose();
-    tlfF.dispose();
-    tlfM.dispose();
+    phoneF.dispose();
+    phoneM.dispose();
     email.dispose();
     note.dispose();
   }
@@ -198,13 +204,13 @@ class _AddContactState extends State<AddContact> {
         {
           return code;
         }
-      case type.TLF_F:
+      case type.PHONE_F:
         {
-          return tlfF;
+          return phoneF;
         }
-      case type.TLF_M:
+      case type.PHONE_M:
         {
-          return tlfM;
+          return phoneM;
         }
       case type.EMAIL:
         {
@@ -255,79 +261,126 @@ class _AddContactState extends State<AddContact> {
     super.dispose();
   }
 
-  Future<bool> _asyncConfirmDialog() async {
-    if (name.text == '' && code.text == '') {
-      return true;
-    } else {
+  Future<bool> validateData()async{
+    if(name.text == ''){
+      setState(() {
+        errorTextFieldName = "Campo Requerido";
+      });
+      return false;
+    }
+    if(code.text == ''){
+      setState(() {
+        errorTextFieldCode = "Campo Requerido";
+      });
+      return false;
+    }
+    if(clients == null){
       return showDialog<bool>(
-        context: context,
-        barrierDismissible: true, // user must tap button for close dialog!
-        builder: (BuildContext context) {
-          return popUp;
-        },
+          context: context,
+          barrierDismissible: false, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: ListTile(
+                  leading: Icon(Icons.error),
+                  title: Text('Nesecita seleccionar un cliente'),
+                  onTap: () => Navigator.of(context).pop(false),
+                )
+            );
+          }
       );
+    }
+    return true;
+  }
+
+  Future<bool> _asyncConfirmDialog() async {
+    if(widget.contact != null){
+      if (name.text == widget.contact.name && code.text == widget.contact.code) {
+        return true;
+      } else {
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return popUp;
+          },
+        );
+      }
+    }else{
+      if (name.text == '' && code.text == '') {
+        return true;
+      } else {
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: true, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return popUp;
+          },
+        );
+      }
     }
   }
 
   Future<bool> savedData() async {
     bool resp = await _asyncConfirmDialog();
     if (resp) {
-      print("salir");
       return resp;
     } else {
-      if(widget.contact != null){
-        print("modificar");
-        ContactModel contact = ContactModel(
-          id: widget.contact.id,
-          name: name.text,
-          code: code.text,
-          phone: tlfF.text,
-          email: email.text,
-          details: note.text,
-          customerId: 467,//TODO:customerID
-        );
-
-        var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
-        if (resposeUpdateContact.statusCode == 200){
-          return true;
-        }else{
-          return showDialog(
-              context: context,
-              barrierDismissible: true, // user must tap button for close dialog!
-              builder: (BuildContext context) {
-                return AlertDialog(
-                    title: Text('Ha ocurrido un error')
-                );
-              }
+      if(await validateData()){
+        if(widget.contact != null){
+          ContactModel contact = ContactModel(
+            id: widget.contact.id,
+            name: name.text,
+            code: code.text,
+            phone: phoneF.text,
+            email: email.text,
+            details: note.text,
+            customerId: clients.id,//TODO:customerID
           );
+
+          var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
+          if (resposeUpdateContact.statusCode == 200){
+            return true;
+          }else{
+            return showDialog(
+                context: context,
+                barrierDismissible: true, // user must tap button for close dialog!
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      title: Text('Ha ocurrido un error')
+                  );
+                }
+            );
+          }
+        }else{
+          print("crear");
+          ContactModel contact = ContactModel(
+            name: name.text,
+            code: code.text,
+            phone: phoneF.text,
+            email: email.text,
+            details: note.text,
+            customerId: clients.id,//TODO:customerID
+          );
+
+          var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
+          print(resposeCreateContact.statusCode);
+          print(resposeCreateContact.body);
+          if (resposeCreateContact.statusCode == 200){
+            return true;
+          }else{
+            return showDialog(
+                context: context,
+                barrierDismissible: true, // user must tap button for close dialog!
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      title: Text('Ha ocurrido un error')
+                  );
+                }
+            );
+          }
         }
       }else{
-        print("crear");
-        ContactModel contact = ContactModel(
-          name: name.text,
-          code: code.text,
-          phone: tlfF.text,
-          email: email.text,
-          details: note.text,
-          customerId: 467,//TODO:customerID
-        );
-
-        var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
-        print(resposeCreateContact.statusCode);
-        print(resposeCreateContact.body);
-        if (resposeCreateContact.statusCode == 200){
-          return true;
-        }else{
-          return showDialog(
-              context: context,
-              barrierDismissible: true, // user must tap button for close dialog!
-              builder: (BuildContext context) {
-                return AlertDialog(
-                    title: Text('Ha ocurrido un error')
-                );
-              }
-          );
-        }
+        return false;
       }
     }
   }
@@ -413,8 +466,8 @@ class _AddContactState extends State<AddContact> {
                 customTextField("Nombre / apellido *",type.NAME,1),
                 customTextField("Codigo *",type.CODE,1),
                 customTextField("Cargo",type.CARGO,1),
-                customTextField("Telefono fijo",type.TLF_F,1),
-                customTextField("Telefono movil",type.TLF_M,1),
+                customTextField("Telefono fijo",type.PHONE_F,1),
+                customTextField("Telefono movil",type.PHONE_M,1),
                 customTextField("Emails",type.EMAIL,1),
                 customTextField("Notas",type.NOTE,4),
                 Container(
@@ -432,6 +485,7 @@ class _AddContactState extends State<AddContact> {
                                 onPressed: ()async{
                                   var client = await getClient();
                                   if (client != null){
+                                    print(client.toString());
                                     setState(() {
                                       clients = client;
                                     });
@@ -453,21 +507,16 @@ class _AddContactState extends State<AddContact> {
                       ],
                     )
                 ),
-//                Container(
-//                  child: clients != null ?
-//                       Container(
-//                        child: ListTile(
-//                          leading: const Icon(Icons.account_box, size: 25.0),
-//                          title: Text(clients.name),
-//                          subtitle: Text(clients.address),
-//                          trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
-//                            setState(() {
-//                              clients = null;
-//                            });
-//                          }),
-//                        ),
-//                      ): Container() ,
-//                ),
+                clients != null ? ListTile(
+                  leading: const Icon(Icons.account_box, size: 25.0),
+                  title: Text(clients.name!=null ?clients.name:" "),
+                  subtitle: Text(clients.address!=null ?clients.address:" "),
+                  trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
+                    setState(() {
+                      clients = null;
+                    });
+                  }),
+                ):Container(),
               ],
             ),
           ),

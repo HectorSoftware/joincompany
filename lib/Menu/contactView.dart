@@ -4,18 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/services/UserService.dart';
 
 // ignore: must_be_immutable
 class ContactView extends StatefulWidget {
-  bool vista;
+  bool modVista;
 
   ContactView(vista){
-    this.vista = vista;
+    this.modVista = vista;
   }
 
   @override
@@ -72,23 +69,22 @@ class _ContactViewState extends State<ContactView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){ if(!widget.vista){
-          print("caso 1");
-          Navigator.of(context).pop(null);
-        }else{
-          print("caso 2");
-          Navigator.pushReplacementNamed(context, '/vistap');}
+        leading: IconButton(icon: Icon(Icons.arrow_back),
+            onPressed:(){
+              if(widget.modVista){
+                Navigator.of(context).pop(null);
+              }else{
+                Navigator.pushReplacementNamed(context, '/vistap');}
         }),
         title:_appBarTitle,
         actions: <Widget>[
-          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
+          ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Busqueda', 30),
         ],
       ),
       body: listViewContacts(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).pop();
           Navigator.push(
               context,
               new MaterialPageRoute(
@@ -98,41 +94,45 @@ class _ContactViewState extends State<ContactView> {
     );
   }
 
-  Widget contactCard(ContactModel contacto) {
+  Widget contactCard(ContactModel contact) {
     //TODO: change String for Contacts
     return Card(
       child: ListTile(
-        title: Text(contacto.name),
-        subtitle: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Align(alignment: Alignment.centerLeft, child: Text("empresa"),),
-            Align(alignment: Alignment.centerLeft,
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.mail,
-                      size: 20,
-                    ),
-                    onPressed: () {},
-                  ),
-
-                  IconButton(
-                    icon: Icon(
-                      Icons.call,
-                      size: 20,
-                    ),
-                    onPressed: () {},
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-        onTap: widget.vista ? () {
-          Navigator.of(context).pop(contacto);
-        } : null,
+        title: Text(contact.name, style: TextStyle(fontSize: 14),),
+        subtitle: Text(contact.customer, style: TextStyle(fontSize: 12),),
+//        trailing: Column(
+//          mainAxisSize: MainAxisSize.min,
+//          children: <Widget>[
+//            Align(alignment: Alignment.centerLeft,
+//              child: Row(
+//                children: <Widget>[
+//                  IconButton(
+//                    icon: Icon(
+//                      Icons.mail,
+//                      size: 20,
+//                    ),
+//                    onPressed: () {},
+//                  ),
+//
+//                  IconButton(
+//                    icon: Icon(
+//                      Icons.call,
+//                      size: 20,
+//                    ),
+//                    onPressed: () {},
+//                  )
+//                ],
+//              ),
+//            ),
+//          ],
+//        ),
+        onTap: (){
+          if(widget.modVista){
+            Navigator.of(context).pop(contact);
+          }else{
+            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new AddContact(contact)));
+          }
+        }
       ),
     );
   }
@@ -143,9 +143,9 @@ class _ContactViewState extends State<ContactView> {
         stream: _bloc.outContact,
         initialData: <ContactModel>[],
         builder: (context, snapshot) {
-          if (snapshot != null) {
             if (snapshot != null) {
-              if (snapshot.data.isNotEmpty) {              return ListView.builder(
+              if (snapshot.data.isNotEmpty) {
+                return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     var name = snapshot.data[index].name != null ? snapshot
@@ -158,11 +158,17 @@ class _ContactViewState extends State<ContactView> {
                   }
               );
               } else {
-                return new Container(
-                  child: Center(
-                    child: Text("No hay Contactos Registrados"),
-                  ),
-                );
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return new Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }else{
+                  return new Container(
+                    child: Center(
+                      child: Text("No hay Contactos Registrados"),
+                    ),
+                  );
+                }
               }
             } else {
               return new Container(
@@ -171,17 +177,11 @@ class _ContactViewState extends State<ContactView> {
                 ),
               );
             }
-          }else{
-            return new Container(
-              child: Center(
-                child:
-                Text("Ha ocurrido un error interno"),
-              ),
-            )
-            ;
           }
-        });
+          );
   }
+
+
 
 
   Future<UserDataBase> deletetUser() async {
