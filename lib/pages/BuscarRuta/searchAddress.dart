@@ -169,7 +169,6 @@ class _SearchAddressState extends State<SearchAddress> {
             }
           }
 
-
           //BUSCAR DIRECCIONES DE MAPA
           GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
           direct.DirectionsModel directions = new direct.DirectionsModel();
@@ -185,7 +184,7 @@ class _SearchAddressState extends State<SearchAddress> {
               );
               bool existe = false;
               for (int cost = 0; cost < _listAddress.length; cost++) {
-                if (_listAddress[cost].googlePlaceId == AuxAddressModel.googlePlaceId) {
+                if (_listAddress[cost].googlePlaceId == AuxAddressModel.googlePlaceId){
                   existe = true;
                 }
               }
@@ -202,7 +201,6 @@ class _SearchAddressState extends State<SearchAddress> {
               llenadoListaEncontrador = true;
             });
           }
-
 
           if(_listAddressGoogle.length == 0){
             setState(() {
