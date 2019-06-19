@@ -220,7 +220,7 @@ class _FormClientState extends State<FormClient> {
   Future<bool> savedData() async {
     bool resp = await _asyncConfirmDialog();
     if(resp){
-      return true;
+      return resp;
     }else{
       if(validateData()){
           if(widget.client != null){

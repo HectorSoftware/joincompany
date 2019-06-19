@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/ContactService.dart';
 
 enum type{
   NAME,
@@ -15,6 +19,11 @@ enum type{
 }
 
 class AddContact extends StatefulWidget {
+  ContactModel contact;
+
+  AddContact(ContactModel contact){
+    this.contact = contact;
+  }
 
   @override
   _AddContactState createState() => _AddContactState();
@@ -22,9 +31,11 @@ class AddContact extends StatefulWidget {
 
 class _AddContactState extends State<AddContact> {
 
+  UserDataBase userAct;
+
   Widget popUp;
 
-  List<CustomerWithAddressModel> clients = List<CustomerWithAddressModel>();
+  CustomerWithAddressModel clients = CustomerWithAddressModel();
 
   TextEditingController name, code, cargo, tlfF, tlfM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
@@ -163,6 +174,11 @@ class _AddContactState extends State<AddContact> {
     note = TextEditingController();
   }
 
+  void initData() async {
+    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    initController();
+  }
+
   void disposeController() {
     name.dispose();
     code.dispose();
@@ -206,31 +222,9 @@ class _AddContactState extends State<AddContact> {
     return null;
   }
 
-  ListView getClientBuilder() {
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: clients.length,
-        itemBuilder: (context, int index) {
-          return Container(
-            child: ListTile(
-              leading: const Icon(Icons.account_box,
-                  size: 25.0),
-              title: Text(clients[index].name),
-              subtitle: Text(clients[index].address),
-              trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
-                setState(() {
-                  clients.remove(clients[index]);
-                });
-              }),
-            ),
-          );
-        }
-    );
-  }
-
   @override
   void initState() {
-    initController();
+    initData();
     setState(() {
       popUp = AlertDialog(
         title: Text('¿Guardar?'),
@@ -278,9 +272,63 @@ class _AddContactState extends State<AddContact> {
   Future<bool> savedData() async {
     bool resp = await _asyncConfirmDialog();
     if (resp) {
-      return true;
+      print("salir");
+      return resp;
     } else {
-      return true;
+      if(widget.contact != null){
+        print("modificar");
+        ContactModel contact = ContactModel(
+          id: widget.contact.id,
+          name: name.text,
+          code: code.text,
+          phone: tlfF.text,
+          email: email.text,
+          details: note.text,
+          customerId: 467,//TODO:customerID
+        );
+
+        var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
+        if (resposeUpdateContact.statusCode == 200){
+          return true;
+        }else{
+          return showDialog(
+              context: context,
+              barrierDismissible: true, // user must tap button for close dialog!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text('Ha ocurrido un error')
+                );
+              }
+          );
+        }
+      }else{
+        print("crear");
+        ContactModel contact = ContactModel(
+          name: name.text,
+          code: code.text,
+          phone: tlfF.text,
+          email: email.text,
+          details: note.text,
+          customerId: 467,//TODO:customerID
+        );
+
+        var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
+        print(resposeCreateContact.statusCode);
+        print(resposeCreateContact.body);
+        if (resposeCreateContact.statusCode == 200){
+          return true;
+        }else{
+          return showDialog(
+              context: context,
+              barrierDismissible: true, // user must tap button for close dialog!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text('Ha ocurrido un error')
+                );
+              }
+          );
+        }
+      }
     }
   }
 
@@ -293,7 +341,7 @@ class _AddContactState extends State<AddContact> {
           return AlertDialog(
             title: Text('ELIMINIAR'),
             content: const Text(
-                '¿estas seguro que desea eliminar este cliente?'),
+                '¿estas seguro que desea eliminar este Contacto?'),
             actions: <Widget>[
               FlatButton(
                 child: const Text('CANCELAR'),
@@ -320,24 +368,26 @@ class _AddContactState extends State<AddContact> {
     Navigator.of(context).pop();
   }
 
-  void deleteContact() async {
+  void deleteContactView() async {
     var resp = await _asyncConfirmDialogDeleteUser();
     if (resp) {
-//      var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
-//      if(responseDelete.statusCode == 200){
-      exitDeletedContact();
-    } else {
-      return showDialog(
-          context: context,
-          barrierDismissible: true, // user must tap button for close dialog!
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: Text('No se ha podido eliminar')
-            );
-          }
+      var responseDelete = await deleteContact(
+          widget.contact.id.toString(), userAct.company, userAct.token);
+      if (responseDelete.statusCode == 200) {
+        exitDeletedContact();
+      } else {
+        return showDialog(
+            context: context,
+            barrierDismissible: true, // user must tap button for close dialog!
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  title: Text('No se ha podido eliminar')
+              );
+            }
         );
       }
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -345,14 +395,17 @@ class _AddContactState extends State<AddContact> {
         onWillPop: savedData,
         child: Scaffold(
           appBar: AppBar(
-            leading:  IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (BuildContext context) =>
-                      ContactView(true)));
-            },),
             title: Text("Contacto"),
             automaticallyImplyLeading: true,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.delete),
+                tooltip: 'Eliminar Cliente',
+                color: Colors.white,
+                iconSize: 25,
+                onPressed: widget.contact != null ? deleteContactView:null,
+              )
+            ],
           ),
           body:SingleChildScrollView(
             child: Column(
@@ -380,7 +433,7 @@ class _AddContactState extends State<AddContact> {
                                   var client = await getClient();
                                   if (client != null){
                                     setState(() {
-                                      clients.add(client);
+                                      clients = client;
                                     });
                                   }
                                 },
@@ -400,16 +453,26 @@ class _AddContactState extends State<AddContact> {
                       ],
                     )
                 ),
-                Container(
-                  child: clients.isNotEmpty ? Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * (0.1 * clients.length),
-                      child:getClientBuilder()): Container() ,
-                ),
+//                Container(
+//                  child: clients != null ?
+//                       Container(
+//                        child: ListTile(
+//                          leading: const Icon(Icons.account_box, size: 25.0),
+//                          title: Text(clients.name),
+//                          subtitle: Text(clients.address),
+//                          trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
+//                            setState(() {
+//                              clients = null;
+//                            });
+//                          }),
+//                        ),
+//                      ): Container() ,
+//                ),
               ],
             ),
           ),
         ),
     );
   }
+
 }
