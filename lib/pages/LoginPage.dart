@@ -209,8 +209,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                 validateData(nameController.text,passwordController.text,companyController.text);
-
+                validateData(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -508,6 +507,13 @@ class _LoginPageState extends State<LoginPage> {
       // contact.name = 'Nombre Actualizado';
       // var updateContactResponse = await updateContact('3', contact, customer, authorization);
       // print(updateContactResponse.body);
+
+      // Contact Delete
+      // var deleteContactResponse = await deleteContact('6', customer, authorization);
+      // print(deleteContactResponse.request);
+      // print(deleteContactResponse.body);
+      // bool eliminado = deleteContactResponse.body == '1' ? true : false;
+      // print(eliminado);
 
 
       print("------------------------------- Fin Test ----------------------------");

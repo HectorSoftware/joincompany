@@ -49,7 +49,8 @@ Future<http.Response> updateBusiness(String id, BusinessModel businessObj, Strin
   return await httpPut(id, bodyJson, customer, authorization, resourcePath);
 }
 
-Future<http.Response> deleteBusiness(String id, String customer, String authorization) async{
+Future<http.Response> deleteBusiness(String id, String customer, String authorization) async {
+  String resourcePath = '/businesses/delete';
   
   return await httpDelete(id, customer, authorization, resourcePath, false);
 }
