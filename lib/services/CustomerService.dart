@@ -73,7 +73,7 @@ Future<http.Response> getCustomerAddresses(String id, String customer, String au
 
   return await httpGet(customer, authorization, resourcePath, id: id, extraPath: extraPath);
 }
-//Direciones
+
 Future<http.Response> relateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
   String resourcePath = '/addresses/customers/relate';
 
