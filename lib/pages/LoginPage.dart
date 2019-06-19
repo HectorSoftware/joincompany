@@ -236,8 +236,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                // ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
-                testApi();
+                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+                // testApi();
               },
               child: Center(
                   child: Center(
@@ -701,8 +701,7 @@ class _LoginPageState extends State<LoginPage> {
       // var response = await getAllForms(customer, "");
       // print(response.body);
 
-      await FormChannel.syncEverything();
-
+      // await FormChannel.syncEverything();
 
       // var formsRaw = getFormsRaw();
       // FormsModel formsServer = FormsModel.fromJson(formsRaw);
@@ -724,11 +723,12 @@ class _LoginPageState extends State<LoginPage> {
       //   } 
       // }
 
-      var formsResponse = await getAllForms(customer, "");
-      var forms = await formsResponse.body;
-      print(forms);
+      //var formsResponse = await getAllForms(customer, "");
+      //var forms = await formsResponse.body;
+      //print(forms);
 
-
+      var sections = await DatabaseProvider.db.ListSections();
+      print(sections);
 
       // Create Server To Local
     // var formsServerResponse = await getFormsRaw();

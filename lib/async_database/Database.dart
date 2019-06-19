@@ -451,6 +451,7 @@ class DatabaseProvider {
     if (form != null)
       if (form.sections != null)
         await Future.forEach(form.sections, (section) async {
+          print("forEach in CreateForm, creating section");
           await CreateSection(section, syncState);
         });
 
@@ -1306,18 +1307,19 @@ class DatabaseProvider {
   Future<int> CreateSection(SectionModel section, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-      '''
-      SELECT * FROM "custom_fields" WHERE id = ${section.id}
-      '''
-    );
-
-    if (data.isNotEmpty) 
-      return null;
 
     await Future.forEach(section.fields, (field) async {
       await CreateField(field, syncState);
     });
+
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "custom_fields" WHERE id = ${section.id}
+      '''
+    );
+
+    if (data.isNotEmpty)
+      return null;
 
     return await db.rawInsert(
       '''
@@ -1424,11 +1426,72 @@ class DatabaseProvider {
   }
 
   Future<FieldModel> ReadFieldById(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_fields" WHERE id = $id');
+    
+    if (data.isEmpty) return null;
 
+    Map<String, dynamic> field = data.first;
+    return new FieldModel(
+      id: field["id"],
+      createdAt: field["created_at"],
+      updatedAt: field["updated_at"],
+      deletedAt: field["deleted_at"],
+      createdById: field["created_by_id"],
+      updatedById: field["updated_by_id"],
+      deletedById: field["deleted_by_id"],
+      sectionId: field["section_id"],
+      entityType: field["entity_type"],
+      entityId: field["entity_id"],
+      type: field["type"],
+      name: field["name"],
+      code: field["code"],
+      subtitle: field["subtitle"],
+      position: field["position"],
+      fieldDefaultValue: field["field_default_value"],
+      fieldType: field["field_type"],
+      fieldPlaceholder: field["field_placeholder"],
+      fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
+      fieldCollection: field["field_collection"],
+      fieldRequired: field["field_required"] == 1 ? true: false,
+    );
   }
   
   Future<SectionModel> ReadSectionById(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_fields" WHERE id = $id');
+    
+    if (data.isEmpty) return null;
 
+    Map<String, dynamic> section = data.first;
+    List<FieldModel> listOfFields = await GetFieldsBySection(section["id"]);
+
+    return new SectionModel(
+      id: section["id"],
+      createdAt: section["created_at"],
+      updatedAt: section["updated_at"],
+      deletedAt: section["deleted_at"],
+      createdById: section["created_by_id"],
+      updatedById: section["updated_by_id"],
+      deletedById: section["deleted_by_id"],
+      sectionId: section["section_id"],
+      entityType: section["entity_type"],
+      entityId: section["entity_id"],
+      type: section["type"],
+      name: section["name"],
+      code: section["code"],
+      subtitle: section["subtitle"],
+      position: section["position"],
+      fieldDefaultValue: section["field_default_value"],
+      fieldType: section["field_type"],
+      fieldPlaceholder: section["field_placeholder"],
+      fieldOptions: section["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(section["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
+      fieldCollection: section["field_collection"],
+      fieldRequired: section["field_required"] == 1 ? true: false,
+      fields: listOfFields,
+    );
   }
 
   Future<List<FieldModel>> GetFieldsBySection(int id) async {
@@ -1471,6 +1534,51 @@ class DatabaseProvider {
     }
 
     return listOfFields;
+  }
+
+  Future<List<SectionModel>> ListSections() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+        '''
+      SELECT * FROM "custom_fields" 
+      '''
+    );
+
+    List<SectionModel> listOfSections = List<SectionModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (section) async {
+        List<FieldModel> listOfFields = await GetFieldsBySection(section["id"]);
+
+        listOfSections.add(new SectionModel(
+          id: section["id"],
+          createdAt: section["created_at"],
+          updatedAt: section["updated_at"],
+          deletedAt: section["deleted_at"],
+          createdById: section["created_by_id"],
+          updatedById: section["updated_by_id"],
+          deletedById: section["deleted_by_id"],
+          sectionId: section["section_id"],
+          entityType: section["entity_type"],
+          entityId: section["entity_id"],
+          type: section["type"],
+          name: section["name"],
+          code: section["code"],
+          subtitle: section["subtitle"],
+          position: section["position"],
+          fieldDefaultValue: section["field_default_value"],
+          fieldType: section["field_type"],
+          fieldPlaceholder: section["field_placeholder"],
+          fieldOptions: section["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(section["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
+          fieldCollection: section["field_collection"],
+          fieldRequired: section["field_required"] == 1 ? true: false,
+          fieldWidth: section["field_width"],
+          fields: listOfFields,
+        ));
+      });
+    }
+
+    return listOfSections;
   }
 
   Future<List<SectionModel>> GetSectionsByForm(int id) async {

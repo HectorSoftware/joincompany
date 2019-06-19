@@ -1,4 +1,3 @@
-
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
@@ -60,19 +59,71 @@ class FormChannel {
   }
 
   static Future _updateFormsInBothLocalAndServer(String customer, String authorization) async {
-    // look for each 
+    dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization);
+    FormsModel formsFromServer = FormsModel.fromJson(jsonFormsFromServer.body);
+
+    if(formsFromServer.data != null)
+    await Future.forEach(formsFromServer.data, (formFromServerInList) async {
+      var formFromServerResponse = await getFormFromServer(formFromServerInList.id.toString(), customer, authorization);
+      FormModel formFromServer = FormModel.fromJson(formFromServerResponse.body);
+
+      bool isFormUpdated = false;
+
+      FormModel formFromLocal = await DatabaseProvider.db.ReadFormById(formFromServer.id);
+      if (formFromLocal == null) {
+        await DatabaseProvider.db.CreateForm(formFromServer, SyncState.synchronized);
+        isFormUpdated = true;
+        print("Created form at 1st level, form.id: " + formFromServer.id.toString());
+      } else if (formFromLocal.updatedAt != formFromServer.updatedAt) {
+        await DatabaseProvider.db.UpdateForm(formFromServer.id, formFromServer, SyncState.synchronized);
+        isFormUpdated = true;
+        print("Updated form at 1st level, form.id: " + formFromServer.id.toString());
+      }
+
+      if (formFromServer.sections != null)
+      await Future.forEach(formFromServer.sections, (sectionFromServer) async {
+        if (!isFormUpdated) {
+          SectionModel sectionFromLocal = await DatabaseProvider.db.ReadSectionById(sectionFromServer.id);
+          if (sectionFromLocal == null) {
+            await DatabaseProvider.db.UpdateForm(formFromServer.id, formFromServer, SyncState.synchronized);
+            isFormUpdated = true;
+            print("object is null\nUpdated form at 2nd level in " + sectionFromServer.id.toString() + " at section " + sectionFromServer.id.toString());
+          } else if (sectionFromLocal.updatedAt != sectionFromServer.updatedAt) {
+            await DatabaseProvider.db.UpdateForm(formFromServer.id, formFromServer, SyncState.synchronized);
+            isFormUpdated = true;
+            print("difference between local and server\nUpdated form at 2nd level in " + sectionFromServer.id.toString() + " at section " + sectionFromServer.id.toString());
+          }
+
+          if (sectionFromServer.field != null)
+          await Future.forEach(sectionFromServer.field, (fieldFromServer) async {
+            if (!isFormUpdated) {
+              FieldModel fieldFromLocal = await DatabaseProvider.db.ReadFieldById(fieldFromServer.id);
+              if (fieldFromLocal == null) {
+                await DatabaseProvider.db.UpdateForm(formFromServer.id, formFromServer, SyncState.synchronized);
+                isFormUpdated = true;
+                print("object is null\nUpdated form at 3rd level in " + sectionFromServer.id.toString() + " at section " + sectionFromServer.id.toString() + " at field " + fieldFromServer.id.toString());
+              } else if (fieldFromLocal.updatedAt != fieldFromServer.updatedAt) {
+                await DatabaseProvider.db.UpdateForm(formFromServer.id, formFromServer, SyncState.synchronized);
+                isFormUpdated = true;
+                print("difference between local and server\nUpdated form at 3rd level in " + sectionFromServer.id.toString() + " at section " + sectionFromServer.id.toString() + " at field " + fieldFromServer.id.toString());
+              }
+            }
+          });
+        }
+      });
+    });
   }
 
   static Future syncEverything() async {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    String customer = ''; // user.company;
-    String authorization = ''; // user.rememberToken;
+    String customer = user.company;
+    String authorization = user.rememberToken;
 
-    // await FormChannel._deleteFormsInBothLocalAndServer(customer, authorization);
+    await FormChannel._deleteFormsInBothLocalAndServer(customer, authorization);
     await FormChannel._updateFormsInBothLocalAndServer(customer, authorization);
-    // await FormChannel._createFormsInBothLocalAndServer(customer, authorization);
+    await FormChannel._createFormsInBothLocalAndServer(customer, authorization);
   }
 
   static String getFormsRaw() {

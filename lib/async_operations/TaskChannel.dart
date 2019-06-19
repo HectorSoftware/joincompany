@@ -37,7 +37,7 @@ class TaskChannel {
     });
   }
 
-  static void deleteFormsInBothLocalAndServer() async {
+  static void deleteTaskInBothLocalAndServer() async {
     UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.deleted);
@@ -62,7 +62,7 @@ class TaskChannel {
     });
   }
 
-  static void updateFormsInBothLocalAndServer() async {
+  static void updateTaskInBothLocalAndServer() async {
     UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     var requestedTasksFromServer = await getAllTasks(null /*lastLoggedUser.company*/, lastLoggedUser.rememberToken, responsibleId: lastLoggedUser.id.toString());
