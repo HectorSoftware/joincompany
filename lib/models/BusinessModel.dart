@@ -56,6 +56,7 @@ class BusinessModel {
 
   Map<String, dynamic> toMap() => {
     "id": id,
+    "business_id": id,
     "created_at": createdAt,
     "updated_at": updatedAt,
     "deleted_at": deletedAt,
