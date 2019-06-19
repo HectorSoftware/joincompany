@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
+import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/UserService.dart';
 
@@ -513,6 +516,47 @@ class _LoginPageState extends State<LoginPage> {
       // print(deleteContactResponse.request);
       // print(deleteContactResponse.body);
       // bool eliminado = deleteContactResponse.body == '1' ? true : false;
+      // print(eliminado);
+
+      // Business All
+      // var getAllBusinessesResponse = await getAllBusinesses(customer, authorization);
+      // BusinessesModel businesses = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+      // print(getAllBusinessesResponse.request);
+      // print(getAllBusinessesResponse.body);
+      // print(businesses.data.length);
+      // print(businesses.data[0].name);
+
+      // Business Get
+      // var getBusinessResponse = await getBusiness("1", customer, authorization);
+      // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
+      // print(getBusinessResponse.body);
+      // print(business.id);
+      // print(business.name);
+
+      // Business Create
+      // BusinessModel businessObjNew = new BusinessModel(
+      //   customerId: 467, 
+      //   name: "Nombre Business", 
+      //   stage: "Nueva Etapa", 
+      //   date: "2019-06-19", 
+      //   amount: "0"
+      // );
+      // var createBusinessResponse = await createBusiness(businessObjNew, customer, authorization);
+      // print(createBusinessResponse.statusCode);
+      // print(createBusinessResponse.body);
+      // BusinessModel businessCreated = BusinessModel.fromJson(createBusinessResponse.body);
+      // print(businessCreated.name);
+
+      // Business Update
+      // business.name = 'Nombre Actualizado';
+      // var updateBusinessResponse = await updateBusiness('3', business, customer, authorization);
+      // print(updateBusinessResponse.body);
+
+      // Business Delete
+      // var deleteBusinessResponse = await deleteBusiness('3', customer, authorization);
+      // print(deleteBusinessResponse.request);
+      // print(deleteBusinessResponse.body);
+      // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
       // print(eliminado);
 
 
