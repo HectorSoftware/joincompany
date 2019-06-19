@@ -237,7 +237,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
-                // testApi();
               },
               child: Center(
                   child: Center(
@@ -723,12 +722,12 @@ class _LoginPageState extends State<LoginPage> {
       //   } 
       // }
 
-      //var formsResponse = await getAllForms(customer, "");
-      //var forms = await formsResponse.body;
-      //print(forms);
+      // var formsResponse = await getAllForms(customer, "");
+      // var forms = await formsResponse.body;
+      // print(forms);
 
-      var sections = await DatabaseProvider.db.ListSections();
-      print(sections);
+      // var sections = await DatabaseProvider.db.ListSections();
+      // print(sections);
 
       // Create Server To Local
     // var formsServerResponse = await getFormsRaw();
