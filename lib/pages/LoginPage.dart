@@ -486,7 +486,7 @@ class _LoginPageState extends State<LoginPage> {
       // print(contacts.data[0].name);
 
       // Contact Get
-      // var getContactResponse = await getContact("3", customer, authorization);
+      // var getContactResponse = await getContact("5", customer, authorization);
       // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
       // print(getContactResponse.body);
       // print(contact.id);
@@ -508,7 +508,9 @@ class _LoginPageState extends State<LoginPage> {
 
       // Contact Update
       // contact.name = 'Nombre Actualizado';
-      // var updateContactResponse = await updateContact('3', contact, customer, authorization);
+      // var updateContactResponse = await updateContact('5', contact, customer, authorization);
+      // print(updateContactResponse.request);
+      // print(updateContactResponse.statusCode);
       // print(updateContactResponse.body);
 
       // Contact Delete
@@ -527,7 +529,7 @@ class _LoginPageState extends State<LoginPage> {
       // print(businesses.data[0].name);
 
       // Business Get
-      // var getBusinessResponse = await getBusiness("1", customer, authorization);
+      // var getBusinessResponse = await getBusiness("4", customer, authorization);
       // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
       // print(getBusinessResponse.body);
       // print(business.id);
@@ -548,8 +550,10 @@ class _LoginPageState extends State<LoginPage> {
       // print(businessCreated.name);
 
       // Business Update
-      // business.name = 'Nombre Actualizado';
-      // var updateBusinessResponse = await updateBusiness('3', business, customer, authorization);
+      // business.name = 'Nombre Actualizado 33';
+      // var updateBusinessResponse = await updateBusiness('4', business, customer, authorization);
+      // print(updateBusinessResponse.request);
+      // print(updateBusinessResponse.statusCode);
       // print(updateBusinessResponse.body);
 
       // Business Delete
