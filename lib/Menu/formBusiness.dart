@@ -47,9 +47,13 @@ class _FormBusinessState extends State<FormBusiness> {
   List<ContactModel> listContacts = List<ContactModel>();
   FieldOptionModel aux =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
+  List<String> dropdownMenuItems = List<String>();
+  String dropdownValue ;
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
+
+  bool _dateBool = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -78,7 +82,7 @@ convertToItToFieldOption(){
     }
 
 
-} List<String> dropdownMenuItems = List<String>();
+}
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
     for(FieldOptionModel v in elements){
@@ -306,8 +310,6 @@ convertToItToFieldOption(){
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
     listContacts = contacts.data;
-    print(listCustomers[0].name);
-    print(listContacts[0].name);
 
   }
   @override
@@ -360,15 +362,131 @@ convertToItToFieldOption(){
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
       ),
-      body:SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            customForm(type.POSS),
-            customForm(type.CLIENT),
-            customForm(type.CONTACT),
-            customForm(type.DATE),
-            customForm(type.MOUNT),
-            Container(
+      body:ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) {
+          return Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  margin: EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5
+                        )
+                      ]
+                  ),
+                  //color: Colors.grey.shade300,
+                  child: TextField(
+                  //  controller: getController(t),
+                   // maxLines: maxLines,
+                    decoration: InputDecoration(
+                     // hintText: title,
+                      border: InputBorder.none,
+                     // errorText: getErrorText(t),
+                      contentPadding: EdgeInsets.all(12.0),
+                    ),
+                   // onChanged: _onChanges(t),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: DropdownButton<String>(
+                    isDense: false,
+                    icon: Icon(Icons.arrow_drop_down),
+                    elevation: 10,
+                    value: dropdownValue,
+                    hint: Text('Clientes'),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: DropdownButton<String>(
+                    isDense: false,
+                    icon: Icon(Icons.arrow_drop_down),
+                    elevation: 10,
+                    value: dropdownValue,
+                    hint: Text('Contactos'),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              ListTile(
+                title: _dateBool ?Text("Fecha :    ${_date.toLocal().toString().substring(0,10)}"): Text("Fecha"),
+                trailing: Icon(Icons.calendar_today),
+                onTap: ()async{
+                  final DateTime picked = await showDatePicker(
+                      context: context,
+                      initialDate: _date,
+                      firstDate: new DateTime(2000),
+                      lastDate: new DateTime(2020)
+                  );
+                  if (picked != null && picked != _date){
+                    setState(() {
+                      _date = picked;
+                      _dateBool = true;
+                    });
+                  }
+                },
+              ),
+              Container(
+                margin: EdgeInsets.all(12.0),
+                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5
+                      )
+                    ]
+                ),
+                //color: Colors.grey.shade300,
+                child: TextField(
+                  //controller: getController(t),
+                 // maxLines: maxLines,
+                  decoration: InputDecoration(
+                   // hintText: title,
+                    border: InputBorder.none,
+                   // errorText: getErrorText(t),
+                    contentPadding: EdgeInsets.all(12.0),
+                  ),
+                //  onChanged: _onChanges(t),
+                ),
+              ),
+
+          Container(
                 margin: EdgeInsets.all(12.0),
                 child:Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -390,15 +508,15 @@ convertToItToFieldOption(){
                             },
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: Icon(Icons.visibility),
-                            onPressed: (){
-//                              getTask();
-                            },
-                          ),
-                        ),
+//                        Align(
+//                          alignment: Alignment.centerRight,
+//                          child: IconButton(
+//                            icon: Icon(Icons.visibility),
+//                            onPressed: (){
+////                              getTask();
+//                            },
+//                          ),
+//                        ),
                       ],
                     )
                   ],
@@ -410,9 +528,14 @@ convertToItToFieldOption(){
                   height: MediaQuery.of(context).size.height * (0.1 * task.length),
                   child:getClientBuilder()): Container() ,
             ),
-          ],
-        ),
-      ),
+            ],
+          );
+        }
+      )
+
+//
+
+
     );
   }
 }
