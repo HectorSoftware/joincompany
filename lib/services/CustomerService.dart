@@ -92,22 +92,3 @@ Future<http.Response> unrelateCustomerAddress(String idCustomer, String idAddres
   
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
-
-Future<http.Response> relateCustomerContact(String idCustomer, String idAddress, String customer, String authorization) async{
-  String resourcePath = 'customer/add_business';
-
-  var body = json.encode({
-    'customer_id': idCustomer,
-    'address_id': idAddress,
-    'approved' : 1,
-  });
-
-  return await httpPost(body, customer, authorization, resourcePath);
-}
-
-Future<http.Response> unrelateCustomerContact(String idCustomer, String idAddress, String customer, String authorization) async{
-  String resourcePath = 'customer/add_business';
-  String id = '$idCustomer/$idAddress';
-
-  return await httpGet(customer, authorization, resourcePath, id: id);
-}
