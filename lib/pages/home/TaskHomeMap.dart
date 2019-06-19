@@ -226,6 +226,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   Future allruta(List<Place> listPlaces) async {
     List<Place> newPl = new List<Place>();
+    _polyLines.clear();
     for(Place mark in listPlaces){
       if(mark.statusTask == status.planificado){
         newPl.add(mark);
@@ -247,7 +248,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
       bool inicio= false;
       _markers.clear();
-      _polyLines.clear();
+      //_polyLines.clear();
       int cantPl = 0;
       for(Place mark in listPlaces){
         if(mark.statusTask != status.cliente){
@@ -320,6 +321,9 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           color: Colors.red[200]
           )
       );
+      setState(() {
+        _polyLines;
+      });
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
