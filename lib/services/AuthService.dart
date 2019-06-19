@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:joincompany/services/BaseService.dart';
 
-import '../main.dart';
 SentryClient sentry;
 
 Future<http.Response> login(String email, String password, String customer) async{

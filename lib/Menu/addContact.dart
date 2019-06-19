@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
+import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 
 enum type{
@@ -344,6 +345,12 @@ class _AddContactState extends State<AddContact> {
         onWillPop: savedData,
         child: Scaffold(
           appBar: AppBar(
+            leading:  IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (BuildContext context) =>
+                      ContactView(true)));
+            },),
             title: Text("Contacto"),
             automaticallyImplyLeading: true,
           ),

@@ -60,7 +60,7 @@ class _FormTaskState extends State<FormTask> {
   bool _value1 = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
-  CustomerWithAddressModel  directionClientIn;
+  CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
 
 
   @override
@@ -113,8 +113,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-
-
+                                    saveTask.customerId = widget.directionClient.id;
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
@@ -131,8 +130,6 @@ class _FormTaskState extends State<FormTask> {
 //                                    }else{
 //
 //                                    }
-
-
                                     if( directionClientIn.googlePlaceId != null) {
 
                                       if(directionClientIn.id == null) {
@@ -148,18 +145,11 @@ class _FormTaskState extends State<FormTask> {
                                           saveTask.addressId = directionAdd.id;
                                         }
                                       } else {
-                                        saveTask.customerId = directionClientIn.customerId;
+                                        saveTask.customerId = directionClientIn.id;
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
-
                                     }
-
-
-
-
-
-
-                                    saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                    saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' +_timeTask.hour.toString()+':'+ _timeTask.minute.toString()+':00';
                                     saveTask.customValuesMap = dataInfo;
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
@@ -266,15 +256,30 @@ class _FormTaskState extends State<FormTask> {
               children: <Widget>[
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.70, //0.4
+                  height: MediaQuery.of(context).size.height * 0.65, //0.4
                   child: returnsStack(),
                 ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width ,
+                      height: MediaQuery.of(context).size.height * 0.05, //0.2
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                      ),
+
+                    ),
+
+                  ],
+                ),
+
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                    child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
                   ),
 
                 ),
@@ -283,7 +288,7 @@ class _FormTaskState extends State<FormTask> {
                   height: MediaQuery.of(context).size.height * 0.05, //0.2
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                    child: directionClientIn.name != null ? Text('Cliente : ${directionClientIn.name} ',style: TextStyle(fontSize: 15),):Text('Cliente: Sin Asignar'),
                   ),
 
                 ),
@@ -326,7 +331,6 @@ class _FormTaskState extends State<FormTask> {
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
                                   await lisC(form);
                                   setState(() {
-                                    directionClient.address = null;
                                     //   dropdownValue = null;
                                     pass = true;
                                     image = null;
@@ -1104,11 +1108,13 @@ class _FormTaskState extends State<FormTask> {
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
   bool switchOn = false;
+
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
       setState(() {
         directionClientIn = resp;
+
       });
     }
   }
@@ -1269,7 +1275,7 @@ class _FormTaskState extends State<FormTask> {
    Future<bool> saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
     print(createTaskResponse.statusCode);
-    print(createTaskResponse.body);
+  //  print(createTaskResponse.body);
 
    if(createTaskResponse.statusCode == 201){
      setState(() {
