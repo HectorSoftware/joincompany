@@ -121,10 +121,11 @@ class SectionModel {
 
   List<int> listFieldIds() {
     List<int> listOfFieldIds = new List<int>();
-    fields.forEach((field) {
-      if (field.id != null) 
-        listOfFieldIds.add(field.id);
-    });
+    if (fields != null)
+      fields.forEach((field) {
+        if (field.id != null) 
+          listOfFieldIds.add(field.id);
+      });
 
     return listOfFieldIds;
   }

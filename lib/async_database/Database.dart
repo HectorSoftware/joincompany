@@ -451,7 +451,6 @@ class DatabaseProvider {
     if (form != null)
       if (form.sections != null)
         await Future.forEach(form.sections, (section) async {
-          print("forEach in CreateForm, creating section");
           await CreateSection(section, syncState);
         });
 
@@ -613,7 +612,6 @@ class DatabaseProvider {
   }
 
   Future<int> UpdateForm(int formId, FormModel form, SyncState syncState) async {
-    print("---- Update Form ----");
     final db = await database;
 
     await Future.forEach(form.sections, (section) async {

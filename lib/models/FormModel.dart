@@ -73,10 +73,12 @@ class FormModel {
 
   List<int> listSectionIds() {
     List<int> listOfSectionIds = new List<int>(); 
-    sections.forEach((section) {
-      if (section.id != null)
-        listOfSectionIds.add(section.id);
-    });
+    
+    if (sections != null)
+      sections.forEach((section) {
+        if (section.id != null)
+          listOfSectionIds.add(section.id);
+      });
 
     return listOfSectionIds;
   }
