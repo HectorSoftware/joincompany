@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:joincompany/models/BusinessModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
@@ -15,6 +20,12 @@ enum type{
 }
 
 class FormBusiness extends StatefulWidget {
+
+  FormBusiness({this.dataBusiness, this.listClients, this.listContact});
+  final BusinessModel dataBusiness;
+  final List<CustomerModel> listClients;
+  final List<ContactModel> listContact;
+
   @override
   _FormBusinessState createState() => _FormBusinessState();
 }
@@ -24,7 +35,12 @@ class _FormBusinessState extends State<FormBusiness> {
   var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
   var datePickedEnd = new DateTime.now();
   String value;
+  DateTime _date = new DateTime.now();
+  BusinessModel businessGet = BusinessModel();
 
+  List<FieldOptionModel> optionsContacts = List<FieldOptionModel>();
+  List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
+  FieldOptionModel aux =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
@@ -39,45 +55,54 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
+convertToItToFieldOption(){
+    for(CustomerModel v in widget.listClients)
+      {
+        aux.value = v.id;
+        aux.name = v.name;
+        optionsClients.add(aux);
+      }
+    setState(() {
+      aux = null;
+    });
+    for(ContactModel v in widget.listContact)
+    {
+      aux.value = v.id;
+      aux.name = v.name;
+      optionsContacts.add(aux);
+    }
 
+
+}
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
-//    List<String> dropdownMenuItems = List<String>();
-//    for(FieldOptionModel v in elements){
-//      dropdownMenuItems.add(v.name);
-//    }
+  List<String> dropdownMenuItems = List<String>();
+    for(FieldOptionModel v in elements){
+      dropdownMenuItems.add(v.name);
+    }
 
     return Container(
-        margin: EdgeInsets.all(12.0),
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5
-              )
-            ]
+      width: MediaQuery.of(context).size.width*0.95,
+        height: MediaQuery.of(context).size.height * 0.10,
+        child: DropdownButton<String>(
+          isDense: false,
+          icon: Icon(Icons.arrow_drop_down),
+          elevation: 10,
+          value: value,
+          hint: Text(title),
+          isExpanded: true,
+          onChanged: (String newValue) {
+            setState(() {
+              value = newValue;
+            });
+
+          },
+        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
         ),
-        child: Text(""),
-//        DropdownButton<String>(
-//          isDense: false,
-//          icon: Icon(Icons.arrow_drop_down),
-//          elevation: 10,
-//          value: value,
-//          hint: Text(title),
-//          isExpanded: true,
-//          onChanged: (String newValue) {
-//            setState(() {
-//              value = newValue;
-//            });
-//          // ignore: strong_mode_invalid_cast_literal_list
-//          }, //items: <DropdownMenuItem>[],
-////        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-////          return DropdownMenuItem<String>(
-////            value: value,
-////            child: Text(value),
-////          );
-////        }).toList(),
-//        ),
     );
   }
 
@@ -113,15 +138,25 @@ class _FormBusinessState extends State<FormBusiness> {
       case type.POSS:
         return customTextField('Posicionamiento cliente',t,1);
       case type.CLIENT:
-        return customDropdownMenu(null,' cliente B',value);
+        return customDropdownMenu(optionsClients,' cliente B',value);
       case type.CONTACT:
-        return customDropdownMenu(null,' Primer Contacto',value);
+        return customDropdownMenu(optionsContacts,' Primer Contacto',value);
       case type.DATE:
         return ListTile(
-          title: Text("fecha"),
+          title: _date.toString() != null ?Text("Fecha ${_date.toLocal()}"): Text("Fecha"),
           trailing: Icon(Icons.calendar_today),
-          onTap: (){
-            selectDate(context);
+          onTap: ()async{
+            final DateTime picked = await showDatePicker(
+                context: context,
+                initialDate: _date,
+                firstDate: new DateTime(2000),
+                lastDate: new DateTime(2020)
+            );
+            if (picked != null && picked != _date){
+              setState(() {
+                _date = picked;
+              });
+            }
           },
         );
       case type.MOUNT:
@@ -189,36 +224,16 @@ class _FormBusinessState extends State<FormBusiness> {
 
   List<DateTime> valueselectDate = new List<DateTime>();
   Future<Null> selectDate( context )async{
-    final List<DateTime> picked = await DateRagePicker.showDatePicker(
+    final DateTime picked = await showDatePicker(
         context: context,
-        initialFirstDate: datePickedInit,
-        initialLastDate: datePickedEnd,
-        firstDate: new DateTime(1990),
-        lastDate: new DateTime(2030)
+        initialDate: _date,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
     );
-    if(picked != null){
-      bool updateVarDataTime = false;
-      if(picked.length == 1){
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
-          updateVarDataTime = true; datePickedInit = datePickedEnd = picked[0];
-        }
-      }else{
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
-          updateVarDataTime = true;
-          datePickedInit = picked[0];
-          datePickedEnd = picked[1];
-        }
-      }
-
-      if(updateVarDataTime){
-        setState(() =>
-        valueselectDate = picked,
-        );
-        setState(() {
-          datePickedInit; datePickedEnd;
-          //blocListTaskRes;
-        });
-      }
+    if (picked != null && picked != _date){
+      setState(() {
+        _date = picked;
+      });
     }
   }
 
@@ -267,6 +282,7 @@ class _FormBusinessState extends State<FormBusiness> {
   @override
   void initState() {
     initController();
+    businessGet = widget.dataBusiness;
     super.initState();
   }
 
@@ -296,7 +312,7 @@ class _FormBusinessState extends State<FormBusiness> {
                 child:Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text("Tarea o Nota"),
+                    Text("Tarea o Nota",style: TextStyle(fontSize: 18),),
                     Row(
                       children: <Widget>[
                         Align(
