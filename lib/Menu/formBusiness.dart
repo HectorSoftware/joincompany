@@ -384,7 +384,7 @@ convertToItToFieldOption(){
                   //  controller: getController(t),
                    // maxLines: maxLines,
                     decoration: InputDecoration(
-                     // hintText: title,
+                      hintText: 'Posicionamiento',
                       border: InputBorder.none,
                      // errorText: getErrorText(t),
                       contentPadding: EdgeInsets.all(12.0),
@@ -476,7 +476,7 @@ convertToItToFieldOption(){
                   //controller: getController(t),
                  // maxLines: maxLines,
                   decoration: InputDecoration(
-                   // hintText: title,
+                    hintText: 'Monto',
                     border: InputBorder.none,
                    // errorText: getErrorText(t),
                     contentPadding: EdgeInsets.all(12.0),
