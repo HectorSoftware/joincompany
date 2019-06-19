@@ -92,3 +92,28 @@ Future<http.Response> unrelateCustomerAddress(String idCustomer, String idAddres
   
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
+
+Future<http.Response> getCustomerContacts(String id, String customer, String authorization ) async{
+  
+  String resourcePath = '/contacts_by_customer';
+
+  return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+
+Future<http.Response> relateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async{
+  
+  String resourcePath = '/customer/add_contact';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'contact_id': idContact,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
+
+}
+
+Future<http.Response> unrelateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async{
+  return null;
+}

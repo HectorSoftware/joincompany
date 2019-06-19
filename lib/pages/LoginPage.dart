@@ -12,6 +12,7 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/UserService.dart';
 
 import 'package:http/http.dart' as http;
@@ -562,6 +563,25 @@ class _LoginPageState extends State<LoginPage> {
       // print(deleteBusinessResponse.body);
       // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
       // print(eliminado);
+
+      // Customer Contacts All
+      // var getCustomerContactsResponse = await getCustomerContacts('467', customer, authorization);
+      // ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
+      // print(getCustomerContactsResponse.request);
+      // print(getCustomerContactsResponse.body);
+      // print(customerContacts.data.length);
+      // print(customerContacts.data[0].name);
+
+      // Customer Contact Relate
+      // var relateCustomerContactResponse = await relateCustomerContact('472', '5', customer, authorization);
+      // print(relateCustomerContactResponse.statusCode);
+      // print(relateCustomerContactResponse.body);
+
+      // Customer Contact Unrelate
+      // var unrelateCustomerContactResponse = await unrelateCustomerContact('417', '345', customer, authorization);
+      // print(unrelateCustomerContactResponse.request);
+      // print(unrelateCustomerContactResponse.statusCode);
+      // print(unrelateCustomerContactResponse.body);
 
 
       print("------------------------------- Fin Test ----------------------------");
