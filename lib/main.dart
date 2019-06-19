@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/Menu/formBusiness.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/pages/LoginPage.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget{
         "/configuracion": (context) =>ConfigCli(),
         "/App": (context) =>App(),
         "/addcontact": (context) =>AddContact(),
+        "/FormBusiness": (context) =>FormBusiness(),
       },
       theme: ThemeData(
         primaryColor: PrimaryColor,

@@ -6,15 +6,14 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'formBusiness.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+
 
 // ignore: must_be_immutable
 class BusinessList extends StatefulWidget {
@@ -32,12 +31,13 @@ class _BusinessListState extends State<BusinessList> {
   String nameUser = '';
   String emailUser = '';
   BusinessesModel businessGlobal = BusinessesModel();
-  List<ContactModel> listContacts = List<ContactModel>();
   List<BusinessModel> listBusiness = List<BusinessModel>();
+
   bool getData = false;
   @override
   void initState() {
     getAll();
+
     extraerUser();
     super.initState();
   }
@@ -146,20 +146,14 @@ class _BusinessListState extends State<BusinessList> {
     super.dispose();
   }
 
+
+
   getAll()async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
-       BusinessesModel bussisnes = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-
-    var getAllContactsResponse = await getAllContacts(user.company, user.token);
-     ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
-
-     print(contacts.data);
-
-       listContacts = contacts.data;
-       listBusiness = bussisnes.data;
+       BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+       listBusiness = busisness.data;
        getData = true;
-     print(getAllBusinessesResponse.body);
   }
   //search
   Icon _searchIcon = new Icon(Icons.search);
@@ -262,7 +256,6 @@ class _BusinessListState extends State<BusinessList> {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
       por = 0.07;
     }
-    print(listBusiness.length);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
@@ -271,7 +264,7 @@ class _BusinessListState extends State<BusinessList> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
         ],
       ),
-      body: getData ==true ? ListView.builder(
+      body: getData == true ? ListView.builder(
           itemCount:listBusiness.length,
           itemBuilder: (BuildContext context, index){
             return Card(
@@ -295,7 +288,7 @@ class _BusinessListState extends State<BusinessList> {
                           context: context,
                           barrierDismissible: false, // user must tap button for close dialog!
                           builder: (BuildContext context) {
-                            return FormBusiness(dataBusiness: listBusiness[index],listContact: listContacts,);
+                            return FormBusiness(dataBusiness: listBusiness[index]);
                           },
                         );
                       },
@@ -337,12 +330,9 @@ class _BusinessListState extends State<BusinessList> {
 
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed:(){
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => FormBusiness()));
-        },
+        onPressed:() {
+          Navigator.pushReplacementNamed(context, '/FormBusiness');
+        }
       ),
     );
   }

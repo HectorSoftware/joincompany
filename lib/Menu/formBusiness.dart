@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -8,6 +9,9 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/ContactService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 
 import 'clientes.dart';
 
@@ -21,10 +25,9 @@ enum type{
 
 class FormBusiness extends StatefulWidget {
 
-  FormBusiness({this.dataBusiness, this.listClients, this.listContact});
+  FormBusiness({this.dataBusiness});
   final BusinessModel dataBusiness;
-  final List<CustomerModel> listClients;
-  final List<ContactModel> listContact;
+
 
   @override
   _FormBusinessState createState() => _FormBusinessState();
@@ -40,6 +43,8 @@ class _FormBusinessState extends State<FormBusiness> {
 
   List<FieldOptionModel> optionsContacts = List<FieldOptionModel>();
   List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
+  List<CustomerModel> listCustomers = List<CustomerModel>();
+  List<ContactModel> listContacts = List<ContactModel>();
   FieldOptionModel aux =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
 
@@ -56,7 +61,7 @@ class _FormBusinessState extends State<FormBusiness> {
     );
   }//
 convertToItToFieldOption(){
-    for(CustomerModel v in widget.listClients)
+    for(CustomerModel v in listCustomers)
       {
         aux.value = v.id;
         aux.name = v.name;
@@ -65,7 +70,7 @@ convertToItToFieldOption(){
     setState(() {
       aux = null;
     });
-    for(ContactModel v in widget.listContact)
+    for(ContactModel v in listContacts)
     {
       aux.value = v.id;
       aux.name = v.name;
@@ -73,9 +78,9 @@ convertToItToFieldOption(){
     }
 
 
-}
+} List<String> dropdownMenuItems = List<String>();
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
-  List<String> dropdownMenuItems = List<String>();
+
     for(FieldOptionModel v in elements){
       dropdownMenuItems.add(v.name);
     }
@@ -94,7 +99,6 @@ convertToItToFieldOption(){
             setState(() {
               value = newValue;
             });
-
           },
         items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
@@ -282,6 +286,7 @@ convertToItToFieldOption(){
   @override
   void initState() {
     initController();
+    getOther();
     businessGet = widget.dataBusiness;
     super.initState();
   }
@@ -291,11 +296,67 @@ convertToItToFieldOption(){
     disposeController();
     super.dispose();
   }
+  getOther()async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
 
+    var getAllContactsResponse = await getAllContacts(user.company, user.token);
+    ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
+
+    var getAllCustomersResponse = await getAllCustomers(user.company, user.token);
+    CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
+    listCustomers = customers.data;
+    listContacts = contacts.data;
+    print(listCustomers[0].name);
+    print(listContacts[0].name);
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: ()=> showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.9,
+                      child: AlertDialog(
+                        title: Text('Guardar'),
+                        content: const Text(
+                            'Desea Guardar Tarea'),
+                        actions: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              FlatButton(
+                                child: const Text('SALIR'),
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(context, '/negocios');
+                                },
+                              ),
+                              FlatButton(
+                                child: const Text('CANCELAR'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: const Text('ACEPTAR'),
+                                onPressed: () async {
+
+                                },
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                }
+            )
+           //
+
+        ),
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
       ),

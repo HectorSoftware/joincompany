@@ -151,8 +151,6 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' +_timeTask.hour.toString()+':'+ _timeTask.minute.toString()+':00';
                                     saveTask.customValuesMap = dataInfo;
-
-                                    print(saveTask.planningDate );
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
                                       showDialog(
