@@ -45,10 +45,13 @@ class _FormBusinessState extends State<FormBusiness> {
   List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
   List<CustomerModel> listCustomers = List<CustomerModel>();
   List<ContactModel> listContacts = List<ContactModel>();
-  FieldOptionModel aux =FieldOptionModel();
+  FieldOptionModel auxClient =FieldOptionModel();
+  FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
   List<String> dropdownMenuItemsClients = List<String>();
-  String dropdownValue ;
+  List<String> dropdownMenuItemsContact = List<String>();
+  String dropdownValueContact ;
+  String dropdownValueClient ;
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
@@ -65,24 +68,26 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
-convertToModelToFieldOption(){
+  convertToModelToFieldOption(){
     for(CustomerModel v in listCustomers)
       {
-        aux.value = v.id;
-        aux.name = v.name;
-        optionsClients.add(aux);
+        auxClient.value = v.id;
+        auxClient.name = v.name;
+
+        optionsClients.add(auxClient);
       }
-    setState(() {
-      aux = null;
-    });
-    for(ContactModel v in listContacts)
-    {
-      aux.value = v.id;
-      aux.name = v.name;
-      optionsContacts.add(aux);
-    }
     for(FieldOptionModel v in optionsClients){
       dropdownMenuItemsClients.add(v.name);
+    }
+
+    for(ContactModel v in listContacts)
+    {
+      auxContact.value = v.id;
+      auxContact.name = v.name;
+      optionsContacts.add(auxContact);
+    }
+    for(FieldOptionModel v in optionsContacts){
+      dropdownMenuItemsContact.add(v.name);
     }
 
 }
@@ -294,7 +299,7 @@ convertToModelToFieldOption(){
   void initState() {
     initController();
     getOther();
-    convertToModelToFieldOption();
+
     businessGet = widget.dataBusiness;
     super.initState();
   }
@@ -318,6 +323,7 @@ convertToModelToFieldOption(){
       getData = true;
     });
 
+    await convertToModelToFieldOption();
   }
   @override
   Widget build(BuildContext context) {
@@ -409,11 +415,11 @@ convertToModelToFieldOption(){
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dropdownValue,
+                    value: dropdownValueClient,
                     hint: Text('Clientes'),
                     onChanged: (String newValue) {
                       setState(() {
-                        dropdownValue = newValue;
+                        dropdownValueClient = newValue;
                       });
                     },
                     items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
@@ -433,14 +439,14 @@ convertToModelToFieldOption(){
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dropdownValue,
+                    value: dropdownValueContact,
                     hint: Text('Contactos'),
                     onChanged: (String newValue) {
                       setState(() {
-                        dropdownValue = newValue;
+                        dropdownValueContact = newValue;
                       });
                     },
-                    items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
+                    items: dropdownMenuItemsContact.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
