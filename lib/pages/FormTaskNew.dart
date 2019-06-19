@@ -113,7 +113,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-
+                                    saveTask.customerId = widget.directionClient.id;
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
@@ -130,8 +130,6 @@ class _FormTaskState extends State<FormTask> {
 //                                    }else{
 //
 //                                    }
-
-
                                     if( directionClientIn.googlePlaceId != null) {
 
                                       if(directionClientIn.id == null) {
@@ -151,8 +149,9 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
-                                    saveTask.planningDate = _dateTask.toString().substring(0,19);
+                                    saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' +_timeTask.hour.toString()+':'+ _timeTask.minute.toString()+':00';
                                     saveTask.customValuesMap = dataInfo;
+
                                     print(saveTask.planningDate );
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
@@ -259,13 +258,13 @@ class _FormTaskState extends State<FormTask> {
               children: <Widget>[
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.70, //0.4
+                  height: MediaQuery.of(context).size.height * 0.65, //0.4
                   child: returnsStack(),
                 ),
                 Row(
                   children: <Widget>[
                     Container(
-                      width: MediaQuery.of(context).size.width *0.5,
+                      width: MediaQuery.of(context).size.width ,
                       height: MediaQuery.of(context).size.height * 0.05, //0.2
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -273,15 +272,7 @@ class _FormTaskState extends State<FormTask> {
                       ),
 
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width*0.5,
-                      height: MediaQuery.of(context).size.height * 0.05, //0.2
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: directionClientIn.name != null ? Text('Cliente : ${directionClientIn.name} ',style: TextStyle(fontSize: 15),):Text('Cliente: Sin Asignar'),
-                      ),
 
-                    ),
                   ],
                 ),
 
@@ -291,6 +282,15 @@ class _FormTaskState extends State<FormTask> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: taskCU  ? Text('Fecha:   ${_dateTask.toIso8601String().substring(0,10)}   ${_timeTask.format(context)}',style: TextStyle(fontSize: 15),): Text('Fecha: Sin asignar'),
+                  ),
+
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.05, //0.2
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: directionClientIn.name != null ? Text('Cliente : ${directionClientIn.name} ',style: TextStyle(fontSize: 15),):Text('Cliente: Sin Asignar'),
                   ),
 
                 ),

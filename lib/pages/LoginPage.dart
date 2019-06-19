@@ -36,9 +36,9 @@ class _LoginPageState extends State<LoginPage> {
 //     final companyController = TextEditingController(/*text : 'duperu'*/);
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
-  final companyController = TextEditingController(text : 'factochile');
-  final passwordController = TextEditingController(text: '123');
+  final nameController = TextEditingController(/*text : 'cbarrios@factochile.cl'*/);
+  final companyController = TextEditingController(/*text : 'factochile'*/);
+  final passwordController = TextEditingController(/*text: '123'*/);
 
   bool textViewVisible;
   bool addUser;
@@ -209,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                 validateData(nameController.text,passwordController.text,companyController.text);
+                validateData(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -507,6 +507,13 @@ class _LoginPageState extends State<LoginPage> {
       // contact.name = 'Nombre Actualizado';
       // var updateContactResponse = await updateContact('3', contact, customer, authorization);
       // print(updateContactResponse.body);
+
+      // Contact Delete
+      // var deleteContactResponse = await deleteContact('6', customer, authorization);
+      // print(deleteContactResponse.request);
+      // print(deleteContactResponse.body);
+      // bool eliminado = deleteContactResponse.body == '1' ? true : false;
+      // print(eliminado);
 
 
       print("------------------------------- Fin Test ----------------------------");
