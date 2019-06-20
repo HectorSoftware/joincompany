@@ -117,3 +117,28 @@ Future<http.Response> relateCustomerContact(String idCustomer, String idContact,
 Future<http.Response> unrelateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async{
   return null;
 }
+
+Future<http.Response> getCustomerBusinesses(String id, String customer, String authorization ) async{
+  
+  String resourcePath = '/businesses_by_customer';
+
+  return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+
+Future<http.Response> relateCustomerBusiness(String idCustomer, String idBusiness, String customer, String authorization) async{
+  
+  String resourcePath = '/customer/add_business';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'business_id': idBusiness,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
+
+}
+
+Future<http.Response> unrelateCustomerBusiness(String idCustomer, String idBusiness, String customer, String authorization) async{
+  return null;
+}
