@@ -136,25 +136,22 @@ class _BusinessListState extends State<BusinessList> {
     );
   }
 
-  Future<UserDataBase> deletetUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
-  }
-
   @override
   void dispose(){
     super.dispose();
   }
 
-
-
   getAll()async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
-       BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-       listBusiness = busisness.data;
-       getData = true;
+    BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+
+   setState(() {
+     listBusiness = busisness.data;
+     getData = true;
+   });
   }
+
   //search
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
@@ -188,67 +185,6 @@ class _BusinessListState extends State<BusinessList> {
     });
   }
 
-//  Widget cardBusiness(){
-//    var padding = 16.0;
-//    double por = 0.1;
-//    if (MediaQuery.of(context).orientation == Orientation.portrait) {
-//      por = 0.07;
-//    }
-//
-//    return Card(
-//      child: Column(
-//        children: <Widget>[
-//          Container(
-//            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-//            width: MediaQuery.of(context).size.width,
-//            height: MediaQuery.of(context).size.height * por,
-//            color: PrimaryColor,
-//            child: Text("Primer contacto", style: TextStyle(
-//                fontSize: 16, color: Colors.white)),
-//          ),
-//          Card(
-//            child: ListTile(
-//              title: Text("Posicionamiento - Cliente B"),
-//              subtitle: Text("Primer Contacto"),
-//              trailing: Text("29-02-2019"),
-//              onTap: (){
-//                return showDialog(
-//                  context: context,
-//                  barrierDismissible: false, // user must tap button for close dialog!
-//                  builder: (BuildContext context) {
-//                    return FormBusiness();
-//                  },
-//                );
-//              },
-//            ),
-//          ),
-//          Card(
-//            child:  ListTile(
-//              title: Text("Cliente A"),
-//              subtitle: Text("Primer Contacto"),
-//              trailing: Text("29-02-2019"),
-//            ),
-//          ),
-//          Container(
-//            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-//            width: MediaQuery.of(context).size.width,
-//            height: MediaQuery.of(context).size.height * por,
-//            color: PrimaryColor,
-//            child: Text("Presentacion", style: TextStyle(
-//                fontSize: 16, color: Colors.white)),
-//          ),
-//          Card(
-//            child: ListTile(
-//              title:  Text("Cliente A"),
-//              subtitle: Text("Presentacion"),
-//              trailing: Text("29-02-2019"),
-//            ),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
-
   @override
   Widget build(BuildContext context) {
     var padding = 16.0;
@@ -258,7 +194,16 @@ class _BusinessListState extends State<BusinessList> {
     }
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed:(){
+              if(!widget.vista){
+                Navigator.pushReplacementNamed(context, '/vistap');
+              }else{
+                Navigator.of(context).pop();
+              }
+            }
+            ),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
@@ -287,13 +232,17 @@ class _BusinessListState extends State<BusinessList> {
                           color: Colors.black)),
                       trailing:listBusiness[index].date != null ?Text(listBusiness[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                       onTap: (){
-                        return showDialog(
-                          context: context,
-                          barrierDismissible: false, // user must tap button for close dialog!
-                          builder: (BuildContext context) {
-                            return FormBusiness(dataBusiness: listBusiness[index]);
-                          },
-                        );
+                        if(!widget.vista){
+                          return showDialog(
+                            context: context,
+                            barrierDismissible: false, // user must tap button for close dialog!
+                            builder: (BuildContext context) {
+                              return FormBusiness(dataBusiness: listBusiness[index]);
+                            },
+                          );
+                        }else{
+                          Navigator.of(context).pop(listBusiness[index]);
+                        }
                       },
                     ),
                   ),

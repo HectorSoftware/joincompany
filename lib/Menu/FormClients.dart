@@ -6,6 +6,10 @@ import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
+import 'package:joincompany/models/BusinessesModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
@@ -32,7 +36,7 @@ class FormClient extends StatefulWidget {
 class _FormClientState extends State<FormClient> {
 
   UserDataBase userAct;
-
+  bool loading = false;
   Widget popUp;
 
   CustomerWithAddressModel client;
@@ -41,7 +45,14 @@ class _FormClientState extends State<FormClient> {
   List<AddressModel> directionsOld = List<AddressModel>();
   List<AddressModel> directionsAll = List<AddressModel>();
 
-  List<String> contacts = List<String>();
+  List<ContactModel> contactsAll = List<ContactModel>();
+  List<ContactModel> contactsOld = List<ContactModel>();
+  List<ContactModel> contactsNew = List<ContactModel>();
+
+
+  List<BusinessModel> businessAll = List<BusinessModel>();
+  List<BusinessModel> businessOld = List<BusinessModel>();
+  List<BusinessModel> businessNew = List<BusinessModel>();
 
   TextEditingController name,code,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
@@ -127,15 +138,6 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData() async {
-    userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    //Directions
-    if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
-      directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
-      for(CustomerWithAddressModel direction in directionsOld){
-        directionsAll.add(direction);
-      }
-    }
     setState(() {
       popUp =  AlertDialog(
         title: Text('¿Guardar?'),
@@ -166,8 +168,41 @@ class _FormClientState extends State<FormClient> {
         code.text = widget.client.code;
         note.text = widget.client.details;
       }
-      directionsOld;      //Directions
-      directionsAll;
+      loading = true;
+    });
+
+    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+
+    if(widget.client != null){
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
+      if(getCustomerAddressesResponse.statusCode == 200 || getCustomerAddressesResponse.statusCode == 201){
+        directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
+        for(CustomerWithAddressModel direction in directionsOld){
+          directionsAll.add(direction);
+        }
+      }
+
+      var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),userAct.company,userAct.token);
+      if(getCustomerContactsResponse.statusCode == 200 || getCustomerContactsResponse.statusCode == 201){
+        ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
+        contactsOld = customerContacts.data;
+        for(ContactModel contact in contactsOld){
+          contactsAll.add(contact);
+        }
+      }
+
+      var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),userAct.company,userAct.token);
+      if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
+        BusinessesModel customerbusiness = BusinessesModel.fromJson(getCustomerBusinessesResponse.body);
+        businessOld = customerbusiness.data;
+        for(BusinessModel buss in businessOld){
+          businessAll.add(buss);
+        }
+      }
+    }
+
+    setState(() {
+      loading = false;
     });
   }
 
@@ -181,9 +216,29 @@ class _FormClientState extends State<FormClient> {
     return resp.statusCode;
   }
 
+  Future<int> deletedContactUser(ContactModel contact)async{
+    var resp = await unrelateCustomerContact(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
+  Future<int> addContactUser(ContactModel contact, int id)async{
+    var resp = await relateCustomerContact(id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
+  Future<int> deletedBusinessUser(BusinessModel contact)async{
+    var resp = await unrelateCustomerBusiness(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
+  Future<int> addBusinessUser(BusinessModel contact, int id)async{
+    var resp = await relateCustomerBusiness(id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    return resp.statusCode;
+  }
+
   Future<bool> _asyncConfirmDialog() async {
     if(widget.client != null){
-      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && directionsOld.length == directionsAll.length){
+      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length){
         return true;
       }else{
         if(name.text == '' && code.text == ''){
@@ -220,7 +275,7 @@ class _FormClientState extends State<FormClient> {
   Future<bool> savedData() async {
     bool resp = await _asyncConfirmDialog();
     if(resp){
-      return true;
+      return resp;
     }else{
       if(validateData()){
           if(widget.client != null){
@@ -232,6 +287,18 @@ class _FormClientState extends State<FormClient> {
             );
 
             var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+            bool saveContact = await setContacts(client.id);
+            if(!saveContact){
+              return showDialog(
+                  context: context,
+                  barrierDismissible: true, // user must tap button for close dialog!
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text('Ha ocurrido un error guardando los contactos')
+                    );
+                  }
+              );
+            }
             bool saveDirections = await setDirections(client.id);
             if(!saveDirections){
               return showDialog(
@@ -239,7 +306,19 @@ class _FormClientState extends State<FormClient> {
                   barrierDismissible: true, // user must tap button for close dialog!
                   builder: (BuildContext context) {
                     return AlertDialog(
-                        title: Text('Ha ocurrido un error con las direcciones')
+                        title: Text('Ha ocurrido un error guardando las direcciones')
+                    );
+                  }
+              );
+            }
+            bool saveBussines = await setBusiness(client.id);
+            if(!saveBussines){
+              return showDialog(
+                  context: context,
+                  barrierDismissible: true, // user must tap button for close dialog!
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: Text('Ha ocurrido un error guardando los negocios.')
                     );
                   }
               );
@@ -264,10 +343,21 @@ class _FormClientState extends State<FormClient> {
               details: note.text,
             );
             var response = await createCustomer(client, userAct.company, userAct.token);
-            var cli = CustomerModel.fromJson(response.body);
-            if(response.statusCode == 200 || response.statusCode ==  201){
+            if((response.statusCode == 200 || response.statusCode ==  201) && response.body != "Cliente ya existe"){
+              var cli = CustomerModel.fromJson(response.body);
+              bool saveContact = await setContacts(cli.id);
+              if(!saveContact){
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error guardando las direcciones')
+                      );
+                    }
+                );
+              }
               bool saveDirections = await setDirections(cli.id);
-
               if(!saveDirections){
                 return showDialog(
                     context: context,
@@ -279,6 +369,18 @@ class _FormClientState extends State<FormClient> {
                     }
                 );
               }
+              bool saveBussines = await setBusiness(cli.id);
+              if(!saveBussines){
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error guardando los negocios.')
+                      );
+                    }
+                );
+              }
               return true;
             }else{
               return showDialog(
@@ -286,7 +388,7 @@ class _FormClientState extends State<FormClient> {
                   barrierDismissible: true, // user must tap button for close dialog!
                   builder: (BuildContext context) {
                     return AlertDialog(
-                        title: Text('Ha ocurrido un error'),
+                        title: Text(response.body == "Cliente ya existe"? "Cliente ya existe":"Ha ocurrido un error"),
                     );
                   }
               );
@@ -307,37 +409,95 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
+  bool searchOldContacts(ContactModel contact){
+    for(var cont in contactsOld){
+      if(cont.id == contact.id){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool searchOldBusiness(BusinessModel business){
+    for(var buss in businessOld){
+      if(buss.id == business.id){
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<bool> setDirections(int id)async{
-    bool statusCreate = false;
-    int resp = 200;
+    bool statusCreate = true;
+    int resp;
     for(var directionAct in directionsNews){
       if(!searchOldDirections(directionAct)){
         if(directionAct.id != null){
           resp = await addAddressUser(directionAct,id);
-          statusCreate = responceStatus(resp);
+          statusCreate = responseStatus(resp);
         }else{
           var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
-          if(responceStatus(responseCreateAddress.statusCode)){
+          if(responseStatus(responseCreateAddress.statusCode)){
             var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
             resp = await addAddressUser(directionAdd,id);
-            statusCreate = responceStatus(resp);
+            statusCreate = responseStatus(resp);
           }
         }
       }
     }
     for(var direction in directionsOld){
-      if(oldToEliminated(direction)){
+      if(oldToEliminatedDirection(direction)){
         resp = await deletedAddressUser(direction);
-        statusCreate = responceStatus(resp);
+        statusCreate = responseStatus(resp);
       }
     }
-
-    statusCreate = responceStatus(resp);
 
     return statusCreate;
   }
 
-  bool responceStatus(int resp){
+  Future<bool> setContacts(int id)async{
+    bool statusCreate = true;
+    int resp;
+    for(var contact in contactsNew){
+        if(contact.id != null){
+          resp = await addContactUser(contact,id);
+          statusCreate = responseStatus(resp);
+        }else{
+          return false;
+        }
+    }
+    for(var contact in contactsOld){
+      if(oldToEliminatedContact(contact)){
+        resp = await deletedContactUser(contact);
+        statusCreate = responseStatus(resp);
+      }
+    }
+    return statusCreate;
+  }
+
+  Future<bool> setBusiness(int id)async{//todo
+    bool statusCreate = true;
+    int resp;
+
+    for(var business in businessNew){
+      if(business.id != null){
+        resp = await addBusinessUser(business,id);
+        statusCreate = responseStatus(resp);
+      }else{
+        return false;
+      }
+    }
+
+    for(var business in contactsOld){
+      if(oldToEliminatedContact(business)){
+        resp = await deletedContactUser(business);
+        statusCreate = responseStatus(resp);
+      }
+    }
+    return statusCreate;
+  }
+
+  bool responseStatus(int resp){
     switch(resp){
       case 200:{
         return true;
@@ -349,9 +509,18 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
-  bool oldToEliminated(CustomerWithAddressModel direction){
+  bool oldToEliminatedDirection(CustomerWithAddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool oldToEliminatedContact(ContactModel contact){
+    for(var c in contactsAll){
+      if(c == contact){
         return false;
       }
     }
@@ -428,8 +597,8 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
-  Future<String> getContact() async{
-    return showDialog<String>(
+  Future<ContactModel> getContact() async{
+    return showDialog<ContactModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -438,8 +607,8 @@ class _FormClientState extends State<FormClient> {
     );
   } //TODO
 
-  Future<String> getNegocios() async{
-    return showDialog<String>(
+  Future<BusinessModel> getBusiness() async{
+    return showDialog<BusinessModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -500,16 +669,39 @@ class _FormClientState extends State<FormClient> {
   ListView getContactBuilder() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: contacts.length,
+        itemCount: contactsAll.length,
         itemBuilder: (context, int index) {
           return Container(
             child: ListTile(
               leading: const Icon(Icons.account_box,
                   size: 25.0),
-              title: Text(contacts[index]),
+              title: Text(contactsAll[index].name),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
                 setState(() {
-                  contacts.remove(contacts[index]);
+                  contactsAll.remove(contactsAll[index]);
+                  contactsNew.remove(contactsAll[index]);
+                });
+              }),
+            ),
+          );
+        }
+    );
+  }
+
+  ListView getBusinessBuilder() {
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: businessAll.length,
+        itemBuilder: (context, int index) {
+          return Container(
+            child: ListTile(
+              leading: const Icon(Icons.business,
+                  size: 25.0),
+              title: Text('${businessAll[index].name}-${businessAll[index].customer}'),
+              trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
+                setState(() {
+                  businessNew.remove(businessAll[index]);
+                  businessAll.remove(businessAll[index]);
                 });
               }),
             ),
@@ -559,9 +751,12 @@ class _FormClientState extends State<FormClient> {
                                   onPressed: ()async{
                                     var contact = await getContact();
                                     if (contact != null){
-                                      setState(() {
-                                        contacts.add(contact);
-                                      });
+                                      if(!searchOldContacts(contact)){
+                                        setState(() {
+                                          contactsNew.add(contact);
+                                          contactsAll.add(contact);
+                                        });
+                                      }
                                     }
                                   }
                               ),
@@ -577,9 +772,9 @@ class _FormClientState extends State<FormClient> {
                       ),
                     ),
                     Container(
-                      child: contacts.isNotEmpty ? Container(
+                      child: contactsAll.isNotEmpty ? Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * (0.1 * contacts.length),
+                          height: MediaQuery.of(context).size.height * (0.1 * contactsAll.length),
                           child:getContactBuilder()): Container() ,
                     ),
                     Container(
@@ -635,14 +830,21 @@ class _FormClientState extends State<FormClient> {
                               IconButton(
                                   icon: Icon(Icons.add),
                                   onPressed: ()async{
-                                    var resp = await getNegocios();
-                                    contacts.add(resp);
+                                    var resp = await getBusiness();
+                                    if(resp != null){
+                                      setState(() {
+                                        if(!searchOldBusiness(resp)){
+                                          businessAll.add(resp);
+                                          businessNew.add(resp);
+                                        }
+                                      });
+                                    }
                                   }
                               ),
                               IconButton(
                                   icon: Icon(Icons.visibility),
                                   onPressed: ()async{
-                                    getNegocios();
+                                    getBusiness();
                                   }
                               )
                             ],
@@ -650,10 +852,19 @@ class _FormClientState extends State<FormClient> {
                         ],
                       ),
                     ),
+                    Container(
+                      child: businessAll.isNotEmpty ? Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * (0.1 * businessAll.length),
+                          child:getBusinessBuilder()): Container() ,
 
+                    ),
                   ],
                 ),
               ),
+              loading ?  Center(
+                child: CircularProgressIndicator(),
+                ):Container()
               ],
             ),
           ),

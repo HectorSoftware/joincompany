@@ -33,9 +33,9 @@ class _LoginPageState extends State<LoginPage> {
 //     final companyController = TextEditingController(/*text : 'duperu'*/);
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController(/*text : 'cbarrios@factochile.cl'*/);
-  final companyController = TextEditingController(/*text : 'factochile'*/);
-  final passwordController = TextEditingController(/*text: '123'*/);
+  final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
+  final companyController = TextEditingController(text : 'factochile');
+  final passwordController = TextEditingController(text: '123');
 
   bool textViewVisible;
   bool addUser;
@@ -489,10 +489,10 @@ class _LoginPageState extends State<LoginPage> {
       // Contact Create
       // ContactModel contactObjNew = new ContactModel(
       //   customerId: 467, 
-      //   name: "Nombre Contacto", 
-      //   phone: "0414-123456", 
-      //   email: "contacto@contacto.com", 
-      //   details: "Nota de Contacto"
+      //   name: "Nombre Contacto", ''
+      //   phone: "0414-123456", ''
+      //   email: "contacto@contacto.com", ''
+      //   details: "Nota de Contacto"''
       // );
       // var createContactResponse = await createContact(contactObjNew, customer, authorization);
       // print(createContactResponse.statusCode);

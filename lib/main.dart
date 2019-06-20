@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget{
         "/negocios": (context) =>BusinessList(false),
         "/configuracion": (context) =>ConfigCli(),
         "/App": (context) =>App(),
-        "/addcontact": (context) =>AddContact(),
+        "/addcontact": (context) =>AddContact(null),
         "/FormBusiness": (context) =>FormBusiness(),
       },
       theme: ThemeData(

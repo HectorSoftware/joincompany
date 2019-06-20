@@ -25,12 +25,21 @@ class CustomersBloc{
     var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company,userActivity.token);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     _listCustomersWithAddress = customersWithAddress.data;
+
+
+
     if(_listCustomersWithAddress != null){
       _customerscontroller.add(_listCustomersWithAddress);
     }
 
   }
 
+  List<CustomerWithAddressModel> ordenByCreate( List<CustomerWithAddressModel> serverList){
+    List<CustomerWithAddressModel> ordenByCreate = new List<CustomerWithAddressModel>();
+
+
+    return ordenByCreate;
+  }
 
   void dispose() {
     _customerscontroller.close();
