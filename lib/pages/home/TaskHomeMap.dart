@@ -212,7 +212,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
           listplace = _listMarker;
           await allmark(listplace);
-          await allruta(listplace);
+          //await allruta(listplace);
 
       }
     }catch(error, stackTrace) {
@@ -257,24 +257,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       for(Place mark in listPlaces){
 
-
-//        Place oldMark;
-//        if(mark.statusTask == status.planificado){
-////          if(!inicio){
-////            inicio = !inicio;
-////            oldMark = mark;
-//            await createRoute(mark,_initialPosition);
-////          }else{
-////            LatLng oldPoint = LatLng(oldMark.latitude, oldMark.longitude);
-////            createRoute(mark,oldPoint);
-////            oldMark = mark;
-////          }
-//        }
-
-
-
-
-
         _markers.add(
           Marker(
               markerId: MarkerId(mark.id.toString()),
@@ -300,10 +282,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           cantPl--;
         }
       }
-//    //setState((){
-//    _markers;
-//    _polyLines;
-//    //});
+    setState((){
+      _markers;
+  //    _polyLines;
+    });
     }catch(error, stackTrace) {
     }
   }
