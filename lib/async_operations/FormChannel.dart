@@ -22,9 +22,9 @@ class FormChannel {
       idsFormsServer.add(formServer.id);
     });
 
-    Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
+    Set<int> idsFormsLocal = new Set<int>.from(await DatabaseProvider.db.RetrieveAllFormIds()); 
 
-    Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
+    Set<int> idsToCreate = idsFormsServer.difference(idsFormsLocal);
 
     await Future.forEach(formsServer.data, (formServer) async {
       if (idsToCreate.contains(formServer.id)) {

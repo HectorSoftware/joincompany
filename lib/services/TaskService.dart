@@ -1,14 +1,21 @@
 import 'dart:convert';
-
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/ResponseModel.dart';
-import 'dart:async';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/services/BaseService.dart';
 import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
 String resourcePath = '/tasks';
+
+ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
+bool isOnline = connectionStatus.connectionStatus;
+StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
+void connectionChanged(dynamic hasConnection) {
+  isOnline = !hasConnection;
+}
 
 Future<ResponseModel> createTask(TaskModel task, String customer, String authorization) async {
   SyncState syncState = SyncState.created;
@@ -42,7 +49,20 @@ Future<http.Response> createTaskFromServer(TaskModel taskObj, String customer, S
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
-Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
+Future<ResponseModel> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page}) async {
+  TaskModel query = new TaskModel(
+    beginDate,
+    endDate,
+    supervisorId,
+    responsibleId,
+    formId,
+    perPage,
+    page,
+  );
+  List<TaskModel> tasksFromLocal = await DatabaseProvider.db.QueryTaskForService();
+}
+
+Future<http.Response> getAllTasksFromServer(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page}) async {
 
   String resourcePath = '/tasks2';
 
@@ -59,6 +79,7 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
   if (supervisorId != null && supervisorId!=''){
     params["supervisor_id"]=supervisorId;
   }
+
   if (responsibleId != null && responsibleId!=''){
     params["responsible_id"]=responsibleId;
   }

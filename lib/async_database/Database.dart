@@ -1562,6 +1562,45 @@ class DatabaseProvider {
     return listOfFieldIds;
   }
 
+  Future<List<SectionModel>> ListSectionsByTask() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_fields" WHERE "type" = "section"');
+
+    List<SectionModel> listOfSections = List<SectionModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (section) async {
+        List<FieldModel> listOfFields = await GetFieldsBySection(section["id"]);
+
+        listOfSections.add(new SectionModel(
+          id: section["id"],
+          createdAt: section["created_at"],
+          updatedAt: section["updated_at"],
+          deletedAt: section["deleted_at"],
+          createdById: section["created_by_id"],
+          updatedById: section["updated_by_id"],
+          deletedById: section["deleted_by_id"],
+          sectionId: section["section_id"],
+          entityType: section["entity_type"],
+          entityId: section["entity_id"],
+          type: section["type"],
+          name: section["name"],
+          code: section["code"],
+          subtitle: section["subtitle"],
+          position: section["position"],
+          fieldDefaultValue: section["field_default_value"],
+          fieldType: section["field_type"],
+          fieldPlaceholder: section["field_placeholder"],
+          fieldOptions: section["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(section["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
+          fieldCollection: section["field_collection"],
+          fieldRequired: section["field_required"] == 1 ? true: false,
+          fieldWidth: section["field_width"],
+          fields: listOfFields,
+        ));
+      });
+    }
+  }
+
   Future<List<SectionModel>> ListSections() async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1869,7 +1908,7 @@ class DatabaseProvider {
     );
 
     if (data.isNotEmpty) {
-      LocalityModel localityModel = await ReadLocalityById(data.first["locality_id"]);
+      LocalityModel locality = await ReadLocalityById(data.first["locality_id"]);
 
       return AddressModel(
           id: data.first["id"],
@@ -1893,7 +1932,7 @@ class DatabaseProvider {
           contactPhone: data.first["contact_phone"],
           contactMobile: data.first["contact_mobile"],
           contactEmail: data.first["contact_email"],
-          locality: localityModel);
+          locality: locality);
     }
     else
       return null;
@@ -2532,11 +2571,6 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    // WARNING: customSection is always returned as null from the server
-    // that's why I ain't using it here. Anyway, if it changes (as it's supposed to)
-    // we will just have to modify this to add it to our database (but I think it
-    // wouldn't be necessary).
-
     await Future.forEach(task.customValues, (customValue) async {
       CreateCustomValue(customValue, syncState);
     });
@@ -2643,6 +2677,107 @@ class DatabaseProvider {
     }
     else
       return null;
+  }
+
+  // TODO: Parse dates here.
+  Future<List<TaskModel>> QueryTaskForService(QueryTask query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "tasks"
+      '''
+    );
+
+    List<TaskModel> listOfTasks = new List<TaskModel>();
+    if (data.isNotEmpty) {
+      bool dated = false;
+      await Future.forEach(data, (taskRetrieved) async {
+        String date;
+        if (data["planning_date"] != null)
+          date = data["planning_date"];
+        else if (data["created_at"] != null)
+          date = data["created_at"];
+
+        if (query.beginDate != null && query.endDate != null)
+          if (date != null)
+            if (date < query.beginDate && date > query.endDate)
+              return;
+        
+        if (dated && query.beginDate != null)
+          if (date != null)
+            if (date < query.beginDate)
+              return;
+        
+        if (dated && query.endDate != null)
+          if (date != null)
+            if (date > query.beginDate)
+              return;
+
+        if (query.supervisorId != null)
+          if (data["supervisor_id"] != query.supervisorId)
+            return;
+
+        if (query.responsibleId != null)
+          if (data["responsible_id"] != query.responsibleId)
+            return;
+
+        if (query.formId != null)
+          if (data["form_id"] != query.formId)
+            return;
+
+        if (query.perPage != null)
+          if (data["per_page"] != query.perPage)
+            return;
+
+        if (query.page != null)
+          if (data["page"] != query.page)
+            return;
+        
+        // I've got to write this...
+
+        List<CustomSectionModel> listOfSections = await DatabaseProvider.db.ListSectionsByTask(data["id"]);
+        List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(data["id"]);
+        // Until this point.
+        FormModel form = await DatabaseProvider.db.ReadFormById(data["form_id"]);
+        AddressModel address = await DatabaseProvider.db.ReadAddressById(data["address_id"]);
+        CustomerModel customer = await DatabaseProvider.db.ReadCustomerById(data["customer_id"]);
+        ResponsibleModel responsible = await DatabaseProvider.db.ReadResponsibleById(data["responsible_id"]);
+
+        listOfTasks.add(new TaskModel(
+          id: data["id"],
+          createdAt: data["created_at"],
+          updatedAt: data["updated_at"],
+          deletedAt: data["deleted_at"],
+          createdById: data["created_by_id"],
+          updatedById: data["updated_by_id"],
+          deletedById: data["deleted_by_id"],
+          formId: data["form_id"],
+          responsibleId: data["responsible_id"],
+          customerId: data["customer_id"],
+          addressId: data["address_id"],
+          name: data["name"],
+          planningDate: data["planning_date"],
+          checkinDate: data["checkin_date"],
+          checkinLatitude: data["checkin_latitude"],
+          checkinLongitude: data["checkin_longitude"],
+          checkinDistance: data["checkin_distance"],
+          checkoutDate: data["checkout_date"],
+          checkoutLatitude: data["checkout_latitude"],
+          checkoutLongitude: data["checkout_longitude"],
+          checkoutDistance: data["checkout_distance"],
+          status: data["status"],
+          customSections: listOfSections,
+          customValues: listOfCustomValues,
+          customValuesMap: null,
+          form: form,
+          address: address,
+          customer: customer,
+          responsible: responsible,
+        ));
+        
+      });
+    }
   }
 
   Future<List<TaskModel>> QueryTask(TaskModel query) async {
@@ -3308,6 +3443,12 @@ class DatabaseProvider {
     customValue.customizableType, customValue.customizableId,
     customValue.value, customValue.imageBase64], ...paramsBySyncState[syncState]],
     ); */
+  }
+
+  Future<List<CustomValueModel>> ListCustomValuesByTask(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_values" WHERE id = $id');
   }
 
   Future<CustomValueModel> ReadCustomValueById(int id) async {
@@ -4032,4 +4173,14 @@ class DatabaseProvider {
     return listOfAddressModels;
   }
 
+}
+
+class QueryTask {
+  String beginDate;
+  String endDate;
+  String supervisorId;
+  String responsibleId;
+  String formId;
+  String perPage;
+  String page;
 }
