@@ -45,15 +45,19 @@ class _FormBusinessState extends State<FormBusiness> {
   List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
   List<CustomerModel> listCustomers = List<CustomerModel>();
   List<ContactModel> listContacts = List<ContactModel>();
-  FieldOptionModel aux =FieldOptionModel();
+  FieldOptionModel auxClient =FieldOptionModel();
+  FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
-  List<String> dropdownMenuItems = List<String>();
-  String dropdownValue ;
+  List<String> dropdownMenuItemsClients = List<String>();
+  List<String> dropdownMenuItemsContact = List<String>();
+  String dropdownValueContact ;
+  String dropdownValueClient ;
 
   TextEditingController name,code,cargo,tlfF,tlfM,email,note;
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
 
   bool _dateBool = false;
+  bool getData = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -64,32 +68,38 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
-convertToItToFieldOption(){
+  convertToModelToFieldOption(){
     for(CustomerModel v in listCustomers)
       {
-        aux.value = v.id;
-        aux.name = v.name;
-        optionsClients.add(aux);
+        auxClient.value = v.id;
+        auxClient.name = v.name;
+
+        optionsClients.add(auxClient);
+        auxClient = FieldOptionModel();
       }
-    setState(() {
-      aux = null;
-    });
-    for(ContactModel v in listContacts)
-    {
-      aux.value = v.id;
-      aux.name = v.name;
-      optionsContacts.add(aux);
+    for(FieldOptionModel v in optionsClients){
+      dropdownMenuItemsClients.add(v.name);
     }
 
+    for(ContactModel v in listContacts)
+    {
+      auxContact.value = v.id;
+      auxContact.name = v.name;
+      optionsContacts.add(auxContact);
+      auxContact = FieldOptionModel();
+    }
+    for(FieldOptionModel v in optionsContacts){
+      dropdownMenuItemsContact.add(v.name);
+    }
 
 }
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
     for(FieldOptionModel v in elements){
-      dropdownMenuItems.add(v.name);
+     // dropdownMenuItems.add(v.name);
     }
 
-    return Container(
+   /* return Container(
       width: MediaQuery.of(context).size.width*0.95,
         height: MediaQuery.of(context).size.height * 0.10,
         child: DropdownButton<String>(
@@ -111,9 +121,8 @@ convertToItToFieldOption(){
           );
         }).toList(),
         ),
-    );
+    );*/
   }
-
   Widget customTextField(String title, type t, int maxLines){
     return Container(
       margin: EdgeInsets.all(12.0),
@@ -140,7 +149,6 @@ convertToItToFieldOption(){
       ),
     );
   }
-
    customForm(type t){
     switch(t){
       case type.POSS:
@@ -291,6 +299,7 @@ convertToItToFieldOption(){
   void initState() {
     initController();
     getOther();
+
     businessGet = widget.dataBusiness;
     super.initState();
   }
@@ -310,7 +319,11 @@ convertToItToFieldOption(){
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
     listContacts = contacts.data;
+    setState(() {
+      getData = true;
+    });
 
+    await convertToModelToFieldOption();
   }
   @override
   Widget build(BuildContext context) {
@@ -361,15 +374,15 @@ convertToItToFieldOption(){
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
       ),
-      body:ListView.builder(
+      body:getData? ListView.builder(
         itemCount: 1,
         itemBuilder: (context, index) {
           return Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
                 child: Container(
-                  margin: EdgeInsets.all(12.0),
+                  margin: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: Colors.white,
                       boxShadow: [
@@ -384,7 +397,7 @@ convertToItToFieldOption(){
                   //  controller: getController(t),
                    // maxLines: maxLines,
                     decoration: InputDecoration(
-                     // hintText: title,
+                      hintText: 'Posicionamiento',
                       border: InputBorder.none,
                      // errorText: getErrorText(t),
                       contentPadding: EdgeInsets.all(12.0),
@@ -402,14 +415,14 @@ convertToItToFieldOption(){
                     isDense: false,
                     icon: Icon(Icons.arrow_drop_down),
                     elevation: 10,
-                    value: dropdownValue,
+                    value: dropdownValueClient,
                     hint: Text('Clientes'),
                     onChanged: (String newValue) {
                       setState(() {
-                        dropdownValue = newValue;
+                        dropdownValueClient = newValue;
                       });
                     },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                    items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -418,30 +431,30 @@ convertToItToFieldOption(){
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: DropdownButton<String>(
-                    isDense: false,
-                    icon: Icon(Icons.arrow_drop_down),
-                    elevation: 10,
-                    value: dropdownValue,
-                    hint: Text('Contactos'),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        dropdownValue = newValue;
-                      });
-                    },
-                    items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.all(12.0),
+//                child: Container(
+//                  width: MediaQuery.of(context).size.width,
+//                  child: DropdownButton<String>(
+//                    isDense: false,
+//                    icon: Icon(Icons.arrow_drop_down),
+//                    elevation: 10,
+//                    value: dropdownValueContact,
+//                    hint: Text('Contactos'),
+//                    onChanged: (String newValue) {
+//                      setState(() {
+//                        dropdownValueContact = newValue;
+//                      });
+//                    },
+//                    items: dropdownMenuItemsContact.map<DropdownMenuItem<String>>((String value) {
+//                      return DropdownMenuItem<String>(
+//                        value: value,
+//                        child: Text(value),
+//                      );
+//                    }).toList(),
+//                  ),
+//                ),
+//              ),
               ListTile(
                 title: _dateBool ?Text("Fecha :    ${_date.toLocal().toString().substring(0,10)}"): Text("Fecha"),
                 trailing: Icon(Icons.calendar_today),
@@ -476,7 +489,7 @@ convertToItToFieldOption(){
                   //controller: getController(t),
                  // maxLines: maxLines,
                   decoration: InputDecoration(
-                   // hintText: title,
+                    hintText: 'Monto',
                     border: InputBorder.none,
                    // errorText: getErrorText(t),
                     contentPadding: EdgeInsets.all(12.0),
@@ -507,15 +520,15 @@ convertToItToFieldOption(){
                             },
                           ),
                         ),
-//                        Align(
-//                          alignment: Alignment.centerRight,
-//                          child: IconButton(
-//                            icon: Icon(Icons.visibility),
-//                            onPressed: (){
-////                              getTask();
-//                            },
-//                          ),
-//                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.visibility),
+                            onPressed: (){
+//                              getTask();
+                            },
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -530,7 +543,7 @@ convertToItToFieldOption(){
             ],
           );
         }
-      )
+      ): Center(child: CircularProgressIndicator(),),
 
 //
 

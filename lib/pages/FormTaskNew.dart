@@ -150,14 +150,12 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     String minute;
-                                    print(_timeTask.minute.toString().length);
-                                    if(_timeTask.minute.toString().length > 0){
+                                    if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
                                     }else{
                                       minute = _timeTask.minute.toString();
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
-                                    print(saveTask.planningDate);
                                     saveTask.customValuesMap = dataInfo;
                                   await  saveTaskApi();
                                     if(taskEnd == 201){

@@ -43,10 +43,20 @@ Future<http.Response> createContact(ContactModel contactObj, String customer, St
 }
 
 Future<http.Response> updateContact(String id, ContactModel contactObj, String customer, String authorization) async{
-  
-  var bodyJson = contactObj.toJson();
+  String resourcePath = '/contact/update';
 
-  return await httpPut(id, bodyJson, customer, authorization, resourcePath);
+  var contactMapAux = contactObj.toMap();
+  var contactMap = new Map<String, dynamic>();
+
+  contactMapAux.forEach((key, value) {
+    if (value != null) {
+      contactMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(contactMap);
+
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
 Future<http.Response> deleteContact(String id, String customer, String authorization) async {
