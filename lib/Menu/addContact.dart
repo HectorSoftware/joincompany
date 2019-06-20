@@ -6,6 +6,7 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/services/ContactService.dart';
+import 'package:joincompany/services/CustomerService.dart';
 
 enum type{
   NAME,
@@ -174,15 +175,22 @@ class _AddContactState extends State<AddContact> {
     initController();
 
     if(widget.contact != null){
-      name.text = widget.contact.name;
-      code.text = widget.contact.code;
-      phoneF.text = widget.contact.phone;
-      phoneM.text = widget.contact.phone;
-      email.text = widget.contact.email;
-      note.text = widget.contact.details;
+      var resp = await getCustomer(widget.contact.customerId.toString(),userAct.company,userAct.token);
+      if(resp.statusCode == 200 || resp.statusCode == 201){
+        clients = CustomerWithAddressModel.fromJson(resp.body);
+      }
     }
 
-    setState((){});
+    setState((){
+      if(widget.contact != null){
+        name.text = widget.contact.name;
+        code.text = widget.contact.code;
+        phoneF.text = widget.contact.phone;
+        phoneM.text = widget.contact.phone;
+        email.text = widget.contact.email;
+        note.text = widget.contact.details;
+      }
+    });
   }
 
   void disposeController() {

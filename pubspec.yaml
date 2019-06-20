@@ -49,6 +49,9 @@ dependencies:
   #CONECTIVITY
   connectivity: any
 
+  #CALL
+  url_launcher: ^5.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -3,8 +3,7 @@ import 'package:joincompany/models/ContactModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
 // ignore: must_be_immutable
@@ -98,34 +97,34 @@ class _ContactViewState extends State<ContactView> {
     //TODO: change String for Contacts
     return Card(
       child: ListTile(
-        title: Text(contact.name, style: TextStyle(fontSize: 14),),
-        subtitle: Text(contact.customer, style: TextStyle(fontSize: 12),),
-//        trailing: Column(
-//          mainAxisSize: MainAxisSize.min,
-//          children: <Widget>[
-//            Align(alignment: Alignment.centerLeft,
-//              child: Row(
-//                children: <Widget>[
-//                  IconButton(
-//                    icon: Icon(
-//                      Icons.mail,
-//                      size: 20,
-//                    ),
-//                    onPressed: () {},
-//                  ),
-//
-//                  IconButton(
-//                    icon: Icon(
-//                      Icons.call,
-//                      size: 20,
-//                    ),
-//                    onPressed: () {},
-//                  )
-//                ],
-//              ),
-//            ),
-//          ],
-//        ),
+        title: Text(contact.name, style: TextStyle(fontSize: 16),),
+        subtitle: Text(contact.customer, style: TextStyle(fontSize: 14),),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.call),
+                onPressed:(){
+                  _launchCall(contact.phone);
+                }
+            ),
+            IconButton(
+                icon: Icon(Icons.mail),
+                onPressed:(){
+                  return showDialog(
+                      context: context,
+                      barrierDismissible: true, // user must tap button for close dialog!
+                      builder: (BuildContext context) {
+                        var email = contact.email;
+                        return AlertDialog(
+                            title: Text('Correo : $email')
+                        );
+                      }
+                  );
+                }
+            )
+          ],
+        ),
         onTap: (){
           if(widget.modVista){
             Navigator.of(context).pop(contact);
@@ -135,6 +134,15 @@ class _ContactViewState extends State<ContactView> {
         }
       ),
     );
+  }
+
+  _launchCall(String phone) async {
+    var command = 'tel:$phone';
+    if (await canLaunch(command)) {
+      await launch(command);
+    } else {
+      throw 'Could not launch $phone';
+    }
   }
 
   listViewContacts(){
@@ -179,14 +187,6 @@ class _ContactViewState extends State<ContactView> {
             }
           }
           );
-  }
-
-
-
-
-  Future<UserDataBase> deletetUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
   }
 
 }
