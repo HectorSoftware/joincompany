@@ -98,20 +98,11 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       height: MediaQuery.of(context).size.height * aument,
       child: Scaffold(
         body:
-//        NotificationListener<ScrollNotification>(
-//              onNotification: (ScrollNotification scrollInfo) {
-//                if (scrollInfo.metrics.pixels ==
-//                    scrollInfo.metrics.maxScrollExtent) {
-//                  _loadMore();
-//                }
-//              },
-//            child:
         Stack(
           children: <Widget>[
             listViewTasks(),
           ],
         ),
-//        ),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
