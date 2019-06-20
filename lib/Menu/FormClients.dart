@@ -14,6 +14,7 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
 import 'package:joincompany/services/AddressService.dart';
+import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
@@ -227,7 +228,7 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> deletedBusinessUser(BusinessModel contact)async{
-    var resp = await unrelateCustomerBusiness(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    var resp = await deleteBusiness(contact.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
@@ -488,7 +489,7 @@ class _FormClientState extends State<FormClient> {
       }
     }
 
-    for(var business in contactsOld){
+    for(var business in contactsOld){ //CAMBIAR A BORRRAR NEGOCIOS
       if(oldToEliminatedContact(business)){
         resp = await deletedContactUser(business);
         statusCreate = responseStatus(resp);
