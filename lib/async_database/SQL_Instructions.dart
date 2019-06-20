@@ -385,36 +385,42 @@ const Map<DatabaseTables, String> databaseInstructions = {
     ''',
   DatabaseTables.customValues:
     '''CREATE TABLE "custom_values"(
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    "created_at" DATETIME,
-    "updated_at" DATETIME,
-    "deleted_at" DATETIME,
-    "form_id" INTEGER,
-    "section_id" INTEGER,
-    "field_id" INTEGER,
-    "customizable_type" TEXT,
-    "customizable_id" INTEGER,
-    "value" TEXT,
-    "image_base64" TEXT,
-    "in_server" BOOL,
-    "updated" BOOL,
-    "deleted" BOOL,
-    CONSTRAINT "fk_custom_values_forms1"
-    FOREIGN KEY("form_id")
-    REFERENCES "forms"("id")
-    ON UPDATE CASCADE,
-    CONSTRAINT "fk_custom_values_custom_fields1"
-    FOREIGN KEY("section_id")
-    REFERENCES "custom_fields"("id")
-    ON UPDATE CASCADE,
-    CONSTRAINT "fk_custom_values_custom_fields2"
-    FOREIGN KEY("field_id")
-    REFERENCES "custom_fields"("id")
-    ON UPDATE CASCADE
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      "created_at" DATETIME,
+      "updated_at" DATETIME,
+      "deleted_at" DATETIME,
+      "task_id" INTEGER,
+      "form_id" INTEGER,
+      "section_id" INTEGER,
+      "field_id" INTEGER,
+      "customizable_type" TEXT,
+      "customizable_id" INTEGER,
+      "value" TEXT,
+      "image_base64" TEXT,
+      "in_server" BOOL,
+      "updated" BOOL,
+      "deleted" BOOL,
+      CONSTRAINT "fk_custom_values_forms1"
+        FOREIGN KEY("form_id")
+        REFERENCES "forms"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_custom_fields1"
+        FOREIGN KEY("section_id")
+        REFERENCES "custom_fields"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_custom_fields2"
+        FOREIGN KEY("field_id")
+        REFERENCES "custom_fields"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_tasks1"
+        FOREIGN KEY("task_id")
+        REFERENCES "tasks"("id")
+        ON UPDATE CASCADE
     );
     CREATE INDEX "custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
+    CREATE INDEX "custom_values.fk_custom_values_tasks1_idx" ON "custom_values" ("task_id");
     ''',
   DatabaseTables.customersAddresses:
     '''CREATE TABLE "customers_addresses"(
