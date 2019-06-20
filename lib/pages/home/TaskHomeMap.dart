@@ -116,7 +116,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
               onCameraMove: _onCameraMove,
               markers: _markers,
               polylines: _polyLines,
-
             ),
           ),
           Positioned(
@@ -413,10 +412,9 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   // ignore: non_constant_identifier_names
   ListClientes(){
     List<Place> listToDo = new List<Place>();
-    for(Place p in listplace){
-      if(p.statusTask == status.planificado){
-        listToDo.add(p);
-      }else{
+    for(int x = listplace.length - 1; x > 0; x--){
+      if(listplace[x].statusTask == status.planificado){
+        listToDo.add(listplace[x]);
       }
     }
 
@@ -431,7 +429,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
               return ListTile(
                 title: Text(listToDo[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
                 subtitle: Text(listToDo[index].address),
-                leading: Icon(Icons.location_on,color: Colors.red,),
+//                leading: Icon(Icons.location_on,color: Colors.red,),
+                leading: Image.asset('assets/images/pinmap/pinmapRojo$index.png'),
                 onTap: (){
                   var center = LatLng(listToDo[index].latitude, listToDo[index].longitude);
                   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
