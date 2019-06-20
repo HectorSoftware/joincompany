@@ -115,7 +115,10 @@ Future<http.Response> relateCustomerContact(String idCustomer, String idContact,
 }
 
 Future<http.Response> unrelateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async{
-  return null;
+  String resourcePath = '/contact/delete_assoc';
+  String id = '$idContact/$idCustomer';
+  
+  return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
 Future<http.Response> getCustomerBusinesses(String id, String customer, String authorization ) async{
@@ -137,8 +140,4 @@ Future<http.Response> relateCustomerBusiness(String idCustomer, String idBusines
 
   return await httpPost(body, customer, authorization, resourcePath);
 
-}
-
-Future<http.Response> unrelateCustomerBusiness(String idCustomer, String idBusiness, String customer, String authorization) async{
-  return null;
 }
