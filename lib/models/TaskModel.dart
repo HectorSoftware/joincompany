@@ -215,6 +215,7 @@ class CustomValueModel {
   int id;
   String createdAt;
   String updatedAt;
+  int taskId;
   int formId;
   int sectionId;
   int fieldId;
@@ -228,6 +229,7 @@ class CustomValueModel {
     this.id,
     this.createdAt,
     this.updatedAt,
+    this.taskId,
     this.formId,
     this.sectionId,
     this.fieldId,
@@ -246,6 +248,7 @@ class CustomValueModel {
     id: json["id"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
+    taskId: json["task_id"],
     formId: json["form_id"],
     sectionId: json["section_id"],
     fieldId: json["field_id"],
@@ -260,6 +263,7 @@ class CustomValueModel {
     "id": id,
     "created_at": createdAt,
     "updated_at": updatedAt,
+    "task_id": taskId,
     "form_id": formId,
     "section_id": sectionId,
     "field_id": fieldId,
