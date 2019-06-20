@@ -176,8 +176,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           dateTask = DateTime.parse(tasks.data[i].createdAt);
         }
 
-        if(tasks.data[i].address != null && (
-            (dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
+        if(tasks.data[i].address != null && ((dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
         )){
           valadde = tasks.data[i].address.address;
           if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
@@ -212,7 +211,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
           listplace = _listMarker;
           await allmark(listplace);
-          //await allruta(listplace);
+          await allruta(listplace);
 
       }
     }catch(error, stackTrace) {
@@ -394,7 +393,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   // ignore: non_constant_identifier_names
   ListClientes(){
     List<Place> listToDo = new List<Place>();
-    for(int x = listplace.length -1; x > 0; x--){
+    for(int x = (listplace.length -1); x >= 0; x--){
       if(listplace[x].statusTask == status.planificado){
         listToDo.add(listplace[x]);
       }
@@ -409,10 +408,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
             itemCount: listToDo.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(listToDo[index].customer /*+ ' ' + listas_porhacer[index].id.toString()*/),
-                subtitle: Text(listToDo[index].address),
+                title: Text(listToDo[index].customer,style: TextStyle(fontSize: 18),),
+                subtitle: Text(listToDo[index].address,style: TextStyle(fontSize: 12),),
 //                leading: Icon(Icons.location_on,color: Colors.red,),
-                leading: Image.asset('assets/images/pinmap/pinmapRojo${index+1}.png'),
+                leading: Image.asset('assets/images/pinmap/pinmapRojo${index+1}.png',width: 30,),
                 onTap: (){
                   var center = LatLng(listToDo[index].latitude, listToDo[index].longitude);
                   mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
