@@ -37,13 +37,11 @@ class _SearchAddressState extends State<SearchAddress> {
   bool llenadoListaEncontrador = false;
   static const kGoogleApiKeyy = kGoogleApiKey;
   List<AddressModel> _listAddress;
-  List<AddressModel> _listAddressGoogle;
   ListWidgets ls = ListWidgets();
 
   @override
   void initState() {
     _listAddress = new List<AddressModel>();
-    _listAddressGoogle = new List<AddressModel>();
     _initialPosition = null;
     _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
@@ -144,69 +142,46 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest2(value);
           //sendRequest(value);
         },
-        onChanged: (text) async {
+        onChanged: (text) {
+          //await Future.delayed(Duration(seconds: 2, milliseconds: 0));
+
+          List<AddressModel> _listAddressBD = new List<AddressModel>();
+          List<AddressModel> _listAddressGoogle= new List<AddressModel>();
 
           setState(() {
             listPlacemark.clear();
             listAndressGoogleInt.clear();
           });
 
-
+          //LISTAR TAREAS DE BASE DE DATOS
           if(_listAddress.length != 0){
             for(int cost= 0; cost < _listAddress.length; cost++){
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
-                listPlacemark.add(_listAddress[cost]);
+                _listAddressBD.add(_listAddress[cost]);
               }
-            }
-            if(listPlacemark.length != 0){
-              setState(() {
-                llenadoListaEncontrador = true;
-              });
-            }else{
-              setState(() {
-                llenadoListaEncontrador=false;
-              });
             }
           }
 
           //BUSCAR DIRECCIONES DE MAPA
-          GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
-          direct.DirectionsModel directions = new direct.DirectionsModel();
-          directions = await _googleMapsServices.getSearchPlace(_initialPosition,kGoogleApiKeyy,text);
-          _listAddressGoogle = new List<AddressModel>();
-          if(directions.status == 'OK'){
-            for(var value in directions.candidates){
-              AddressModel AuxAddressModel = new AddressModel(
-                  address: value.formattedAddress + ',' + value.name,
-                  latitude: value.geometry.location.lat,
-                  longitude: value.geometry.location.lng,
-                  googlePlaceId: value.id
-              );
-              bool existe = false;
-              for (int cost = 0; cost < _listAddress.length; cost++) {
-                if (_listAddress[cost].googlePlaceId == AuxAddressModel.googlePlaceId){
-                  existe = true;
-                }
-              }
-              if (existe == false) {
-                listAndressGoogleInt.add(listPlacemark.length);
-                _listAddressGoogle.add(AuxAddressModel);
-                listPlacemark.add(AuxAddressModel);
-              }
+          //_listAddressGoogle = SearchDirectionGooogle(text);
+
+
+          if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
+            for(var valu in _listAddressBD){
+              listPlacemark.add(valu);
             }
-          }
-          if (_listAddressGoogle.length != 0) {
             setState(() {
               listPlacemark;
+              listAndressGoogleInt;
               llenadoListaEncontrador = true;
             });
           }
 
-          if(_listAddressGoogle.length == 0){
+          if(_listAddressGoogle.length == 0 && _listAddressBD.length == 0){
             setState(() {
-              llenadoListaEncontrador=false;
               listPlacemark.clear();
               listAndressGoogleInt.clear();
+              llenadoListaEncontrador=false;
             });
           }
         },
@@ -214,61 +189,44 @@ class _SearchAddressState extends State<SearchAddress> {
     );
   }
 
-  List<PlacesSearchResult> places = [];
-  List<int> listAndressGoogleInt = new List<int>();
-  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
-
-  Future getDirection(String direction)async {
-    try {
-      GoogleMapsPlaces places = new GoogleMapsPlaces(apiKey: kGoogleApiKey);
-      Location location = new Location( _initialPosition.latitude, _initialPosition.longitude);
-      //PlacesAutocompleteResponse queryResponse = await places.queryAutocomplete(direction, radius: 50000, location: location);
-
-      PlacesAutocompleteResponse query = await places.autocomplete(direction,location: location,radius: 50000,strictbounds: false);
-
-      query.predictions.forEach((f) async {
-        PlacesDetailsResponse details = await places.getDetailsByPlaceId(
-            f.placeId);
+  Future<List<AddressModel>> SearchDirectionGooogle(String text) async {
+    List<AddressModel> _listAddressGoogle= new List<AddressModel>();
+    GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
+    direct.DirectionsModel directions = new direct.DirectionsModel();
+    directions = await _googleMapsServices.getSearchPlace(_initialPosition,kGoogleApiKeyy,text);
+    if(directions.status == 'OK'){
+      for(var value in directions.candidates){
         AddressModel AuxAddressModel = new AddressModel(
-            address: f.description,
-            latitude: details.result.geometry.location.lat,
-            longitude: details.result.geometry.location.lng,
-            googlePlaceId: f.id
+            address: value.formattedAddress + ',' + value.name,
+            latitude: value.geometry.location.lat,
+            longitude: value.geometry.location.lng,
+            googlePlaceId: value.id
         );
-        _listAddressGoogle.add(AuxAddressModel);
         bool existe = false;
-        for (int cost = 0; cost < listPlacemark.length; cost++) {
-          if (listPlacemark[cost].id == AuxAddressModel.id) {
+        for (int cost = 0; cost < _listAddress.length; cost++) {
+          if ((_listAddress[cost].latitude == AuxAddressModel.latitude)&&
+              _listAddress[cost].longitude == AuxAddressModel.longitude) {
             existe = true;
           }
         }
         if (existe == false) {
           listAndressGoogleInt.add(listPlacemark.length);
+          _listAddressGoogle.add(AuxAddressModel);
           listPlacemark.add(AuxAddressModel);
         }
-        setState(() {
-          listPlacemark;
-        });
-        if (listPlacemark.length != 0) {
-          setState(() {
-            listPlacemark;
-            llenadoListaEncontrador = true;
-          });
-        } else {
-          setState(() {
-            listPlacemark;
-            llenadoListaEncontrador = false;
-          });
-        }
+      }
+      setState(() {
+        listAndressGoogleInt;
+        _listAddressGoogle;
+        listPlacemark;
       });
-    }catch(error, stackTrace) {
-      await sentry.captureException(
-        exception: error,
-        stackTrace: stackTrace,
-      );
     }
+    return _listAddressGoogle;
   }
 
+  List<PlacesSearchResult> places = [];
+  List<int> listAndressGoogleInt = new List<int>();
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
   Future _addMarker(LatLng location, String address) async {
     _markers.clear();

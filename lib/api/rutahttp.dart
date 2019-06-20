@@ -16,7 +16,7 @@ class GoogleMapsServices{
 
 class GoogleMapsSearchPlace{
   Future<DirectionsModel> getSearchPlace(LatLng l1, String apikey,String valor)async{
-    String url = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$valor&inputtype=textquery&fields=id,formatted_address,name,geometry&locationbias=circle:5000@${l1.latitude},${l1.longitude}&key=$apikey';
+    String url = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$valor&inputtype=textquery&fields=id,formatted_address,name,geometry&locationbias=circle:10000@${l1.latitude},${l1.longitude}&key=$apikey';
     http.Response response = await http.get(url);
     DirectionsModel directions = new DirectionsModel();
     DirectionModel direction = new DirectionModel();
