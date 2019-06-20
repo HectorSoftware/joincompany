@@ -56,6 +56,7 @@ class ContactModel {
 
   Map<String, dynamic> toMap() => {
     "id": id,
+    "contact_id": id,
     "created_at": createdAt,
     "updated_at": updatedAt,
     "deleted_at": deletedAt,

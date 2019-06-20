@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/BusinessModel.dart';
+import 'package:joincompany/models/BusinessesModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/UserService.dart';
 import 'formBusiness.dart';
+
 
 // ignore: must_be_immutable
 class BusinessList extends StatefulWidget {
@@ -24,9 +30,14 @@ class _BusinessListState extends State<BusinessList> {
 
   String nameUser = '';
   String emailUser = '';
+  BusinessesModel businessGlobal = BusinessesModel();
+  List<BusinessModel> listBusiness = List<BusinessModel>();
 
+  bool getData = false;
   @override
   void initState() {
+    getAll();
+
     extraerUser();
     super.initState();
   }
@@ -135,6 +146,15 @@ class _BusinessListState extends State<BusinessList> {
     super.dispose();
   }
 
+
+
+  getAll()async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
+       BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+       listBusiness = busisness.data;
+       getData = true;
+  }
   //search
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
@@ -168,69 +188,74 @@ class _BusinessListState extends State<BusinessList> {
     });
   }
 
-  Widget cardBusines(String bussines){
+//  Widget cardBusiness(){
+//    var padding = 16.0;
+//    double por = 0.1;
+//    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+//      por = 0.07;
+//    }
+//
+//    return Card(
+//      child: Column(
+//        children: <Widget>[
+//          Container(
+//            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+//            width: MediaQuery.of(context).size.width,
+//            height: MediaQuery.of(context).size.height * por,
+//            color: PrimaryColor,
+//            child: Text("Primer contacto", style: TextStyle(
+//                fontSize: 16, color: Colors.white)),
+//          ),
+//          Card(
+//            child: ListTile(
+//              title: Text("Posicionamiento - Cliente B"),
+//              subtitle: Text("Primer Contacto"),
+//              trailing: Text("29-02-2019"),
+//              onTap: (){
+//                return showDialog(
+//                  context: context,
+//                  barrierDismissible: false, // user must tap button for close dialog!
+//                  builder: (BuildContext context) {
+//                    return FormBusiness();
+//                  },
+//                );
+//              },
+//            ),
+//          ),
+//          Card(
+//            child:  ListTile(
+//              title: Text("Cliente A"),
+//              subtitle: Text("Primer Contacto"),
+//              trailing: Text("29-02-2019"),
+//            ),
+//          ),
+//          Container(
+//            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+//            width: MediaQuery.of(context).size.width,
+//            height: MediaQuery.of(context).size.height * por,
+//            color: PrimaryColor,
+//            child: Text("Presentacion", style: TextStyle(
+//                fontSize: 16, color: Colors.white)),
+//          ),
+//          Card(
+//            child: ListTile(
+//              title:  Text("Cliente A"),
+//              subtitle: Text("Presentacion"),
+//              trailing: Text("29-02-2019"),
+//            ),
+//          ),
+//        ],
+//      ),
+//    );
+//  }
+
+  @override
+  Widget build(BuildContext context) {
     var padding = 16.0;
     double por = 0.1;
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
       por = 0.07;
     }
-
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * por,
-            color: PrimaryColor,
-            child: Text("Primer contacto", style: TextStyle(
-                fontSize: 16, color: Colors.white)),
-          ),
-          Card(
-            child: ListTile(
-              title: Text("Posicionamiento - Cliente B"),
-              subtitle: Text("Primer Contacto"),
-              trailing: Text("29-02-2019"),
-              onTap: (){
-                return showDialog(
-                  context: context,
-                  barrierDismissible: false, // user must tap button for close dialog!
-                  builder: (BuildContext context) {
-                    return FormBusiness();
-                  },
-                );
-              },
-            ),
-          ),
-          Card(
-            child:  ListTile(
-              title: Text("Cliente A"),
-              subtitle: Text("Primer Contacto"),
-              trailing: Text("29-02-2019"),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * por,
-            color: PrimaryColor,
-            child: Text("Presentacion", style: TextStyle(
-                fontSize: 16, color: Colors.white)),
-          ),
-          Card(
-            child: ListTile(
-              title:  Text("Cliente A"),
-              subtitle: Text("Presentacion"),
-              trailing: Text("29-02-2019"),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
@@ -239,21 +264,75 @@ class _BusinessListState extends State<BusinessList> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            cardBusines("test"),
-          ],
+      body: getData == true ? ListView.builder(
+          itemCount:listBusiness.length,
+          itemBuilder: (BuildContext context, index){
+            return Card(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * por,
+                    color: PrimaryColor,
+                    child: Text("Primer contacto", style: TextStyle(
+                        fontSize: 16, color: Colors.white)),
+                  ),
+                  Card(
+                    child: ListTile(
+                      title: Text("Negocio - ${listBusiness[index].customer}"),
+                      subtitle: Text(listBusiness[index].name),
+                      trailing:listBusiness[index].date != null ?Text(listBusiness[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                      onTap: (){
+                        return showDialog(
+                          context: context,
+                          barrierDismissible: false, // user must tap button for close dialog!
+                          builder: (BuildContext context) {
+                            return FormBusiness(dataBusiness: listBusiness[index]);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    child:  ListTile(
+                      title: Text(listBusiness[index].customer),
+                      subtitle: Text("Primer Contacto"),
+                      trailing: Text("29-02-2019"),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * por,
+                    color: PrimaryColor,
+                    child: Text("Presentacion", style: TextStyle(
+                        fontSize: 16, color: Colors.white)),
+                  ),
+                  Card(
+                    child: ListTile(
+                      title:  Text("Cliente A"),
+                      subtitle: Text("Presentacion"),
+                      trailing: Text("29-02-2019"),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+
+      ):Center(
+        child: CircularProgressIndicator(
+
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed:(){
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => FormBusiness()));
-        },
+        onPressed:() {
+          Navigator.pushReplacementNamed(context, '/FormBusiness');
+        }
       ),
     );
   }

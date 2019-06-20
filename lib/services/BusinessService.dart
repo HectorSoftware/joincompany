@@ -44,9 +44,20 @@ Future<http.Response> createBusiness(BusinessModel businessObj, String customer,
 
 Future<http.Response> updateBusiness(String id, BusinessModel businessObj, String customer, String authorization) async{
   
-  var bodyJson = businessObj.toJson();
+  String resourcePath = '/business/update';
 
-  return await httpPut(id, bodyJson, customer, authorization, resourcePath);
+  var businessMapAux = businessObj.toMap();
+  var businessMap = new Map<String, dynamic>();
+
+  businessMapAux.forEach((key, value) {
+    if (value != null) {
+      businessMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(businessMap);
+
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
 Future<http.Response> deleteBusiness(String id, String customer, String authorization) async {
