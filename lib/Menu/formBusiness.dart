@@ -10,6 +10,7 @@ import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
@@ -35,8 +36,7 @@ class FormBusiness extends StatefulWidget {
 
 class _FormBusinessState extends State<FormBusiness> {
 
-  var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
-  var datePickedEnd = new DateTime.now();
+
   String value;
   DateTime _date = new DateTime.now();
   BusinessModel businessGet = BusinessModel();
@@ -52,12 +52,20 @@ class _FormBusinessState extends State<FormBusiness> {
   List<String> dropdownMenuItemsContact = List<String>();
   String dropdownValueContact ;
   String dropdownValueClient ;
+  int customerId;
 
-  TextEditingController name,code,cargo,tlfF,tlfM,email,note;
+
+  TextEditingController posController = TextEditingController();
+  TextEditingController clientController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
   String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
+
+  BusinessModel saveBusiness = BusinessModel();
 
   bool _dateBool = false;
   bool getData = false;
+  bool saveBusinessEnd = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -122,6 +130,17 @@ class _FormBusinessState extends State<FormBusiness> {
         }).toList(),
         ),
     );*/
+  }
+  initTextController(){
+    if(businessGet != null){
+      posController.text = businessGet.name;
+      dropdownValueClient = businessGet.customer;
+      amountController.text = businessGet.amount;
+      _date = businessGet.date as DateTime;
+
+
+
+    }
   }
   Widget customTextField(String title, type t, int maxLines){
     return Container(
@@ -221,21 +240,25 @@ class _FormBusinessState extends State<FormBusiness> {
   }
 
   void initController(){
-    name = TextEditingController();
-    code = TextEditingController();
-    tlfF = TextEditingController();
-    tlfM = TextEditingController();
-    email = TextEditingController();
-    note = TextEditingController();
+//    name = TextEditingController();
+//    code = TextEditingController();
+//    tlfF = TextEditingController();
+//    tlfM = TextEditingController();
+//    email = TextEditingController();
+//    note = TextEditingController();
   }
 
   void disposeController(){
-    name.dispose();
-    code.dispose();
-    tlfF.dispose();
-    tlfM.dispose();
-    email.dispose();
-    note.dispose();
+    posController.dispose();
+    amountController.dispose();
+    clientController.dispose();
+    dateController.dispose();
+//    name.dispose();
+//    code.dispose();
+//    tlfF.dispose();
+//    tlfM.dispose();
+//    email.dispose();
+//    note.dispose();
   }
 
   List<DateTime> valueselectDate = new List<DateTime>();
@@ -297,9 +320,9 @@ class _FormBusinessState extends State<FormBusiness> {
 
   @override
   void initState() {
+    initTextController();
     initController();
     getOther();
-
     businessGet = widget.dataBusiness;
     super.initState();
   }
@@ -359,7 +382,51 @@ class _FormBusinessState extends State<FormBusiness> {
                               FlatButton(
                                 child: const Text('ACEPTAR'),
                                 onPressed: () async {
+                                  saveBusiness.customer = clientController.text;
+                                  saveBusiness.amount = amountController.text;
+                                  saveBusiness.date = _date.toLocal().toString().substring(0,10);
+                                  saveBusiness.name = posController.text;
+                                  saveBusiness.customerId = customerId;
+                                await   saveBusinessApi();
+                                if(saveBusinessEnd == true){
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return   AlertDialog(
+                                          title: Text('Guardado con Exito'),
+                                          actions: <Widget>[
+                                            FlatButton(
 
+                                              child: const Text('Aceptar'),
+                                              onPressed: () {
+                                                Navigator.pushReplacementNamed(context, '/vistap');
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                  );
+                                }else{
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return   AlertDialog(
+                                          title: Text('A ocurido un Error '),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: const Text('Aceptar'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
+
+                                              },
+                                            ),
+
+                                          ],
+                                        );
+                                      }
+                                  );
+                                }
                                 },
                               )
                             ],
@@ -394,7 +461,7 @@ class _FormBusinessState extends State<FormBusiness> {
                   ),
                   //color: Colors.grey.shade300,
                   child: TextField(
-                  //  controller: getController(t),
+                    controller: posController,
                    // maxLines: maxLines,
                     decoration: InputDecoration(
                       hintText: 'Posicionamiento',
@@ -420,6 +487,15 @@ class _FormBusinessState extends State<FormBusiness> {
                     onChanged: (String newValue) {
                       setState(() {
                         dropdownValueClient = newValue;
+                        clientController.text = newValue;
+                        for(FieldOptionModel v in optionsClients){
+                          if(dropdownValueClient == v.name){
+                            customerId = v.value;
+
+
+                          }
+                        }
+
                       });
                     },
                     items: dropdownMenuItemsClients.map<DropdownMenuItem<String>>((String value) {
@@ -486,7 +562,7 @@ class _FormBusinessState extends State<FormBusiness> {
                 ),
                 //color: Colors.grey.shade300,
                 child: TextField(
-                  //controller: getController(t),
+                  controller:amountController,
                  // maxLines: maxLines,
                   decoration: InputDecoration(
                     hintText: 'Monto',
@@ -525,7 +601,7 @@ class _FormBusinessState extends State<FormBusiness> {
                           child: IconButton(
                             icon: Icon(Icons.visibility),
                             onPressed: (){
-//                              getTask();
+                              getTask();
                             },
                           ),
                         ),
@@ -549,5 +625,22 @@ class _FormBusinessState extends State<FormBusiness> {
 
 
     );
+  }
+  saveBusinessApi() async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.token);
+    print(createBusinessResponse.statusCode);
+      print(createBusinessResponse.body);
+
+    if(createBusinessResponse.statusCode == 201 || createBusinessResponse.statusCode == 200){
+      setState(() {
+        saveBusinessEnd = true;
+      });
+    }
+    if(createBusinessResponse.statusCode == 500){
+      setState(() {
+      saveBusinessEnd = false;
+      });
+    }
   }
 }

@@ -275,13 +275,16 @@ class _BusinessListState extends State<BusinessList> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * por,
                     color: PrimaryColor,
-                    child: Text("Primer contacto", style: TextStyle(
-                        fontSize: 16, color: Colors.white)),
+                    child:listBusiness[index].stage != null? Text(listBusiness[index].stage.toString(), style: TextStyle(
+                        fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
+                    fontSize: 16, color: Colors.white)),
                   ),
                   Card(
                     child: ListTile(
-                      title: Text("Negocio - ${listBusiness[index].customer}"),
-                      subtitle: Text(listBusiness[index].name),
+                      title: Text(listBusiness[index].name.toString()),
+                      subtitle: listBusiness[index].stage != null? Text(listBusiness[index].stage.toString(), style: TextStyle(
+                          color: Colors.black)): Text('Sin presentación', style: TextStyle(
+                          color: Colors.black)),
                       trailing:listBusiness[index].date != null ?Text(listBusiness[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                       onTap: (){
                         return showDialog(
@@ -297,8 +300,10 @@ class _BusinessListState extends State<BusinessList> {
                   Card(
                     child:  ListTile(
                       title: Text(listBusiness[index].customer),
-                      subtitle: Text("Primer Contacto"),
-                      trailing: Text("29-02-2019"),
+                      subtitle:listBusiness[index].stage != null? Text(listBusiness[index].stage.toString(), style: TextStyle(
+                           color: Colors.black)): Text('Sin presentación', style: TextStyle(
+                           color: Colors.black)),
+                      trailing: listBusiness[index].date != null ?Text(listBusiness[index].updatedAt.toString().substring(0,10)): Text('Sin Fecha asignada'),
                     ),
                   ),
                   Container(
@@ -311,9 +316,9 @@ class _BusinessListState extends State<BusinessList> {
                   ),
                   Card(
                     child: ListTile(
-                      title:  Text("Cliente A"),
+                      title:  Text(listBusiness[index].customer),
                       subtitle: Text("Presentacion"),
-                      trailing: Text("29-02-2019"),
+                      trailing:listBusiness[index].date != null ?Text(listBusiness[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                     ),
                   ),
                 ],

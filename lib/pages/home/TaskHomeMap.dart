@@ -300,10 +300,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           cantPl--;
         }
       }
-//    //setState((){
-//    _markers;
-//    _polyLines;
-//    //});
+    setState((){
+    _markers;
+
+    });
     }catch(error, stackTrace) {
     }
   }
