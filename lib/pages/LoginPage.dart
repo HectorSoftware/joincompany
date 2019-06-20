@@ -2,17 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/BusinessModel.dart';
-import 'package:joincompany/models/BusinessesModel.dart';
-import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/ContactService.dart';
-import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/UserService.dart';
 
 import 'package:http/http.dart' as http;
@@ -325,10 +318,10 @@ class _LoginPageState extends State<LoginPage> {
 
       print("------------------------------- Inicia Test ----------------------------");
 
-      String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
+      String email = 'cbarrios@factochile.cl';
       String password = '123';
-      String customer = 'getkem';
+      String customer = 'factochile';
 
       // login
       var loginResponse = await login(email, password, customer);
@@ -582,6 +575,25 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerContactResponse.request);
       // print(unrelateCustomerContactResponse.statusCode);
       // print(unrelateCustomerContactResponse.body);
+
+      // Customer Businesess All
+      // var getCustomerBusinesessResponse = await getCustomerBusinesses('21', customer, authorization);
+      // BusinessesModel customerBusinesess = BusinessesModel.fromJson(getCustomerBusinesessResponse.body);
+      // print(getCustomerBusinesessResponse.request);
+      // print(getCustomerBusinesessResponse.body);
+      // print(customerBusinesess.data.length);
+      // print(customerBusinesess.data[0].name);
+
+      // Customer Business Relate
+      // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
+      // print(relateCustomerBusinessResponse.statusCode);
+      // print(relateCustomerBusinessResponse.body);
+
+      // Customer Business Unrelate
+      // var unrelateCustomerBusinessResponse = await unrelateCustomerBusiness('417', '345', customer, authorization);
+      // print(unrelateCustomerBusinessResponse.request);
+      // print(unrelateCustomerBusinessResponse.statusCode);
+      // print(unrelateCustomerBusinessResponse.body);
 
 
       print("------------------------------- Fin Test ----------------------------");
