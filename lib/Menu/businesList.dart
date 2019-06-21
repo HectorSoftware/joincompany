@@ -238,7 +238,7 @@ class _BusinessListState extends State<BusinessList> {
                             context: context,
                             barrierDismissible: false, // user must tap button for close dialog!
                             builder: (BuildContext context) {
-                              return FormBusiness(dataBusiness: listBusiness[index]);
+                              return FormBusiness(dataBusiness: listBusiness[index],edit: true,);
                             },
                           );
                         }else{

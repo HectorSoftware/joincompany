@@ -26,8 +26,9 @@ enum type{
 
 class FormBusiness extends StatefulWidget {
 
-  FormBusiness({this.dataBusiness});
+  FormBusiness({this.dataBusiness, this.edit});
   final BusinessModel dataBusiness;
+  final bool edit;
 
 
   @override
@@ -140,8 +141,13 @@ class _FormBusinessState extends State<FormBusiness> {
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
-        dropdownValueClient = widget.dataBusiness.customer;
         amountController.text = widget.dataBusiness.amount;
+        if(widget.dataBusiness.customer == null){
+         // dropdownValueClient = widget.dataBusiness.customer;
+         // saveBusiness.customerId = widget.dataBusiness.customerId;
+        }else{
+         // dropdownValueClient = 'No asignado';
+        }
       });
 
 
@@ -394,7 +400,13 @@ class _FormBusinessState extends State<FormBusiness> {
                                   saveBusiness.date = _date.toLocal().toString().substring(0,10);
                                   saveBusiness.name = posController.text;
                                   saveBusiness.customerId = customerId;
-                                await   saveBusinessApi();
+                                  if(widget.edit == true){
+                                    await updateBusinessApi();
+                                  }
+                                  else{
+                                    await   saveBusinessApi();
+                                  }
+
                                 if(saveBusinessEnd == true){
                                   showDialog(
                                       context: context,
@@ -417,20 +429,38 @@ class _FormBusinessState extends State<FormBusiness> {
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return   AlertDialog(
-                                          title: Text('A ocurido un Error '),
-                                          actions: <Widget>[
-                                            FlatButton(
-                                              child: const Text('Aceptar'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
+                                        if(saveBusiness.customerId ==null){
+                                          return   AlertDialog(
+                                            title: Text('Selecccione un cliente para poder continuar '),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: const Text('Aceptar'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop();
 
-                                              },
-                                            ),
+                                                },
+                                              ),
 
-                                          ],
-                                        );
+                                            ],
+                                          );
+                                        }else{
+                                          return   AlertDialog(
+                                            title: Text('A ocurido un Error inesperado '),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: const Text('Aceptar'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop();
+
+                                                },
+                                              ),
+
+                                            ],
+                                          );
+                                        }
+
                                       }
                                   );
                                 }
@@ -452,7 +482,31 @@ class _FormBusinessState extends State<FormBusiness> {
               icon: Icon(Icons.delete),
               onPressed: () async {
                 UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-                deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return   AlertDialog(
+                        title: Text('Desea Eliminiar Negocio'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: const Text('Volver'),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: const Text('Aceptar'),
+                            onPressed: () async {
+                              await deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
+                              Navigator.pushReplacementNamed(context, '/negocios');
+                            },
+                          ),
+
+                        ],
+                      );
+                    }
+                );
+
               }
           ),
         ],
@@ -655,6 +709,23 @@ class _FormBusinessState extends State<FormBusiness> {
     if(createBusinessResponse.statusCode == 500){
       setState(() {
       saveBusinessEnd = false;
+      });
+    }
+  }
+  updateBusinessApi() async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.token);
+    print(updateBusinessResponse.statusCode);
+    print(updateBusinessResponse.body);
+
+    if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){
+      setState(() {
+        saveBusinessEnd = true;
+      });
+    }
+    if(updateBusinessResponse.statusCode == 500){
+      setState(() {
+        saveBusinessEnd = false;
       });
     }
   }
