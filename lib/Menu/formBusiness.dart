@@ -134,10 +134,10 @@ class _FormBusinessState extends State<FormBusiness> {
   }
   initTextController(){
     if(widget.dataBusiness != null){
-      print(widget.dataBusiness.name);
-      print(widget.dataBusiness.customer);
-      print(widget.dataBusiness.amount);
-      print(widget.dataBusiness.id);
+//      print(widget.dataBusiness.name);
+//      print(widget.dataBusiness.customer);
+//      print(widget.dataBusiness.amount);
+//      print(widget.dataBusiness.id);
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
@@ -698,8 +698,8 @@ class _FormBusinessState extends State<FormBusiness> {
   saveBusinessApi() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.token);
-    print(createBusinessResponse.statusCode);
-      print(createBusinessResponse.body);
+//    print(createBusinessResponse.statusCode);
+//      print(createBusinessResponse.body);
 
     if(createBusinessResponse.statusCode == 201 || createBusinessResponse.statusCode == 200){
       setState(() {
