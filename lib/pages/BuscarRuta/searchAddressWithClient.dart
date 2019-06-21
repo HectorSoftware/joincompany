@@ -183,9 +183,6 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
 
 
           if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
-            for(var valu in _listAddressBD){
-              listPlacemark.add(valu);
-            }
             setState(() {
               listPlacemark;
               listAndressGoogleInt;
@@ -231,7 +228,6 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
             existe = true;
           }
         }
-
 
         if (existe == false) {
           listAndressGoogleInt.add(listPlacemark.length);
