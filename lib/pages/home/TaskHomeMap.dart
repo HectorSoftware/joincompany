@@ -222,22 +222,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
   }
 
-    //////////////////////////////////////////////////////////////
-//    for(int x = newPl.length; x > 0; x--){
-//      if(!init){
-//        init = true;
-//        oldPos = newPl[x-1];
-//        await createRoute(newPl[x-1],_initialPosition);
-//      }else{
-//        LatLng oldPoint = LatLng(oldPos.latitude, oldPos.longitude);
-//        await createRoute(newPl[x-1],oldPoint);
-//        setState(() {
-//          oldPos = newPl[x-1];
-//        });
-//      }
-//
-//    }
-  ////////////////////////////////////////////////////////////////
   Future allruta(List<Place> listPlaces) async {
     List<Place> newPl = new List<Place>();
     _polyLines.clear();
