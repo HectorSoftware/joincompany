@@ -152,6 +152,7 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
+
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -160,6 +161,8 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
+
+
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
                                       showDialog(
@@ -172,12 +175,14 @@ class _FormTaskState extends State<FormTask> {
 
                                                 child: Text('Aceptar'),
                                                 onPressed: () {
-                                                  if(widget.toBusiness == false){
-                                                    Navigator.pushReplacementNamed(context, '/vistap');
-
+                                                  if(widget.toBusiness){
+                                                    Navigator.of(context).pop();
                                                   }else{
-                                                  Navigator.pop(context);
+                                                    Navigator.pushReplacementNamed(context, '/vistap');
                                                   }
+
+
+
                                                 },
                                               ),
                                             ],

@@ -71,7 +71,7 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return FormTask(toBusiness: true,);
+        return FormTask(toBusiness: true,directionClient: CustomerWithAddressModel(address: null,name: null),);
       },
     );
   }//
