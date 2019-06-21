@@ -36,6 +36,9 @@ class _AddContactState extends State<AddContact> {
 
   Widget popUp;
 
+  int lengthNumberTlf = 13;
+  int lengthNumberText = 80;
+
   CustomerWithAddressModel clientAct,clientOld;
 
   TextEditingController name, code, cargo, phoneF, phoneM, email, note;
@@ -68,13 +71,15 @@ class _AddContactState extends State<AddContact> {
       child: TextField(
         controller: getController(t),
         maxLines: maxLines,
+        keyboardType: setInput(t),
+        maxLength: t == type.PHONE_F ? lengthNumberTlf:lengthNumberText,
         decoration: InputDecoration(
           hintText: title,
           border: InputBorder.none,
           errorText: getErrorText(t),
           contentPadding: EdgeInsets.all(12.0),
         ),
-        onChanged: _onChanges(t),
+        onChanged:(value) => _onChanges(t,value),
       ),
     );
   }
@@ -117,7 +122,27 @@ class _AddContactState extends State<AddContact> {
     return "";
   }
 
-  _onChanges(type t) {
+  TextInputType setInput(type t){
+    switch(t){
+      case type.NAME:
+        return TextInputType.text;
+      case type.CODE:
+        return TextInputType.text;
+      case type.CARGO:
+        return TextInputType.text;
+      case type.PHONE_F:
+        return TextInputType.number;
+      case type.PHONE_M:
+        return TextInputType.number;
+      case type.EMAIL:
+        return TextInputType.emailAddress;
+      case type.NOTE:
+        return TextInputType.multiline;
+    }
+    return TextInputType.text;
+  }
+
+  _onChanges(type t, String value) {
     switch (t) {
       case type.NAME:
         {
@@ -150,7 +175,6 @@ class _AddContactState extends State<AddContact> {
         }
       case type.PHONE_F:
         {
-          //TODO
           break;
         }
       case type.PHONE_M:
@@ -303,7 +327,7 @@ class _AddContactState extends State<AddContact> {
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.contact != null){
-      if (name.text == widget.contact.name && code.text == widget.contact.code && clientAct == clientOld) {
+      if (name.text == widget.contact.name && code.text == widget.contact.code && clientAct == clientOld && phoneF.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details) {
         return true;
       } else {
         return showDialog<bool>(
@@ -343,7 +367,7 @@ class _AddContactState extends State<AddContact> {
             phone: phoneF.text,
             email: email.text,
             details: note.text,
-            customerId: clientAct.id,//TODO:customerID
+            customerId: clientAct.id,
           );
 
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
@@ -361,7 +385,6 @@ class _AddContactState extends State<AddContact> {
             );
           }
         }else{
-          print("crear");
           ContactModel contact = ContactModel(
             name: name.text,
             code: code.text,
@@ -370,10 +393,7 @@ class _AddContactState extends State<AddContact> {
             details: note.text,
             customerId: clientAct.id,//TODO:customerID
           );
-
           var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
-          print(resposeCreateContact.statusCode);
-          print(resposeCreateContact.body);
           if (resposeCreateContact.statusCode == 200){
             return true;
           }else{
@@ -532,5 +552,4 @@ class _AddContactState extends State<AddContact> {
         ),
     );
   }
-
 }
