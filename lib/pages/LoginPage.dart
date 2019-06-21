@@ -489,10 +489,10 @@ class _LoginPageState extends State<LoginPage> {
       // Contact Create
       // ContactModel contactObjNew = new ContactModel(
       //   customerId: 467, 
-      //   name: "Nombre Contacto", 
-      //   phone: "0414-123456", 
-      //   email: "contacto@contacto.com", 
-      //   details: "Nota de Contacto"
+      //   name: "Nombre Contacto", ''
+      //   phone: "0414-123456", ''
+      //   email: "contacto@contacto.com", ''
+      //   details: "Nota de Contacto"''
       // );
       // var createContactResponse = await createContact(contactObjNew, customer, authorization);
       // print(createContactResponse.statusCode);
@@ -571,7 +571,7 @@ class _LoginPageState extends State<LoginPage> {
       // print(relateCustomerContactResponse.body);
 
       // Customer Contact Unrelate
-      // var unrelateCustomerContactResponse = await unrelateCustomerContact('417', '345', customer, authorization);
+      // var unrelateCustomerContactResponse = await unrelateCustomerContact('40', '5', customer, authorization);
       // print(unrelateCustomerContactResponse.request);
       // print(unrelateCustomerContactResponse.statusCode);
       // print(unrelateCustomerContactResponse.body);
@@ -588,13 +588,6 @@ class _LoginPageState extends State<LoginPage> {
       // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
       // print(relateCustomerBusinessResponse.statusCode);
       // print(relateCustomerBusinessResponse.body);
-
-      // Customer Business Unrelate
-      // var unrelateCustomerBusinessResponse = await unrelateCustomerBusiness('417', '345', customer, authorization);
-      // print(unrelateCustomerBusinessResponse.request);
-      // print(unrelateCustomerBusinessResponse.statusCode);
-      // print(unrelateCustomerBusinessResponse.body);
-
 
       print("------------------------------- Fin Test ----------------------------");
 
