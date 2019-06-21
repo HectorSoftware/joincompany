@@ -207,39 +207,39 @@ class _FormClientState extends State<FormClient> {
     });
   }
 
-  Future<int> deletedAddressUser(AddressModel direction)async{
+  Future<int> deletedAddressCustomer(AddressModel direction)async{
      var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
      return resp.statusCode;
   }
 
-  Future<int> addAddressUser(AddressModel direction, int id)async{
+  Future<int> addAddressCustomer(AddressModel direction, int id)async{
     var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
-  Future<int> deletedContactUser(ContactModel contact)async{
+  Future<int> deletedContactCustomer(ContactModel contact)async{
     var resp = await unrelateCustomerContact(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
-  Future<int> addContactUser(ContactModel contact, int id)async{
+  Future<int> addContactCustomer(ContactModel contact, int id)async{
     var resp = await relateCustomerContact(id.toString(),contact.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
-  Future<int> deletedBusinessUser(BusinessModel contact)async{
-    var resp = await deleteBusiness(contact.id.toString(),userAct.company,userAct.token);
+  Future<int> deletedBusinessCustomer(BusinessModel business)async{
+    var resp = await deleteBusiness(business.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
-  Future<int> addBusinessUser(BusinessModel contact, int id)async{
-    var resp = await relateCustomerBusiness(id.toString(),contact.id.toString(),userAct.company,userAct.token);
+  Future<int> addBusinessCustomer(BusinessModel business, int id)async{
+    var resp = await relateCustomerBusiness(id.toString(),business.id.toString(),userAct.company,userAct.token);
     return resp.statusCode;
   }
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.client != null){
-      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length){
+      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && contactsNew.isEmpty && businessNew.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length ){
         return true;
       }else{
         if(name.text == '' && code.text == ''){
@@ -434,13 +434,13 @@ class _FormClientState extends State<FormClient> {
     for(var directionAct in directionsNews){
       if(!searchOldDirections(directionAct)){
         if(directionAct.id != null){
-          resp = await addAddressUser(directionAct,id);
+          resp = await addAddressCustomer(directionAct,id);
           statusCreate = responseStatus(resp);
         }else{
           var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
           if(responseStatus(responseCreateAddress.statusCode)){
             var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
-            resp = await addAddressUser(directionAdd,id);
+            resp = await addAddressCustomer(directionAdd,id);
             statusCreate = responseStatus(resp);
           }
         }
@@ -448,7 +448,7 @@ class _FormClientState extends State<FormClient> {
     }
     for(var direction in directionsOld){
       if(oldToEliminatedDirection(direction)){
-        resp = await deletedAddressUser(direction);
+        resp = await deletedAddressCustomer(direction);
         statusCreate = responseStatus(resp);
       }
     }
@@ -461,7 +461,7 @@ class _FormClientState extends State<FormClient> {
     int resp;
     for(var contact in contactsNew){
         if(contact.id != null){
-          resp = await addContactUser(contact,id);
+          resp = await addContactCustomer(contact,id);
           statusCreate = responseStatus(resp);
         }else{
           return false;
@@ -469,7 +469,7 @@ class _FormClientState extends State<FormClient> {
     }
     for(var contact in contactsOld){
       if(oldToEliminatedContact(contact)){
-        resp = await deletedContactUser(contact);
+        resp = await deletedContactCustomer(contact);
         statusCreate = responseStatus(resp);
       }
     }
@@ -482,16 +482,16 @@ class _FormClientState extends State<FormClient> {
 
     for(var business in businessNew){
       if(business.id != null){
-        resp = await addBusinessUser(business,id);
+        resp = await addBusinessCustomer(business,id);
         statusCreate = responseStatus(resp);
       }else{
         return false;
       }
     }
 
-    for(var business in contactsOld){ //CAMBIAR A BORRRAR NEGOCIOS
-      if(oldToEliminatedContact(business)){
-        resp = await deletedContactUser(business);
+    for(var business in businessOld){
+      if(oldToEliminatedBusiness(business)){
+        resp = await deletedBusinessCustomer(business);
         statusCreate = responseStatus(resp);
       }
     }
@@ -522,6 +522,15 @@ class _FormClientState extends State<FormClient> {
   bool oldToEliminatedContact(ContactModel contact){
     for(var c in contactsAll){
       if(c == contact){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool oldToEliminatedBusiness(BusinessModel business){
+    for(var bus in businessAll){
+      if(bus == business){
         return false;
       }
     }
@@ -606,7 +615,7 @@ class _FormClientState extends State<FormClient> {
         return ContactView(true);
       },
     );
-  } //TODO
+  }
 
   Future<BusinessModel> getBusiness() async{
     return showDialog<BusinessModel>(
@@ -616,7 +625,7 @@ class _FormClientState extends State<FormClient> {
         return BusinessList(true);
       },
     );
-  }//TODO
+  }
 
   void exitDeletedClient()async{
     await Future.delayed(Duration(seconds: 0, milliseconds: 300));

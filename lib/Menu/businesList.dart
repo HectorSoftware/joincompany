@@ -5,13 +5,9 @@ import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
-import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/UserService.dart';
 import 'formBusiness.dart';
 
 
@@ -28,8 +24,6 @@ class BusinessList extends StatefulWidget {
 class _BusinessListState extends State<BusinessList> {
   ListWidgets ls = ListWidgets();
 
-  String nameUser = '';
-  String emailUser = '';
   BusinessesModel businessGlobal = BusinessesModel();
   List<BusinessModel> listBusiness = List<BusinessModel>();
 
@@ -37,106 +31,10 @@ class _BusinessListState extends State<BusinessList> {
   @override
   void initState() {
     getAll();
-
-    extraerUser();
     super.initState();
   }
 
-  //drawer
-  bool drawerCustomer = true;
-  Drawer buildDrawer() {
-    return Drawer(
-      elevation: 12,
-      child: new ListView(
-        children: <Widget>[
-          new UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(color: SecondaryColor),
-            margin: EdgeInsets.only(bottom: 0),
-            accountName: new Text(nameUser,style: TextStyle(color: Colors.white,fontSize: 16,),),
-            accountEmail : Text(emailUser,style: TextStyle(color: Colors.white,fontSize: 15,),),
-            currentAccountPicture: CircleAvatar(
-              radius: 1,
-              backgroundColor: Colors.white,
-              backgroundImage: new AssetImage('assets/images/user.png'),
-            ),
-          ),
-          Container(
-              child: ListTile(
-                trailing: new Icon(Icons.assignment),
-                title: new Text('Tareas'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-              )
-          ),
-          Container(
-            child: ListTile(
-              title: new Text("Clientes"),
-              trailing: new Icon(Icons.business),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/cliente');
-//                Navigator.pushNamed(context, '/cliente');
-//              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new  Cliente()));
-              },
-            ),
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Contactos"),
-              trailing: new Icon(Icons.contacts),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/contactos');
-              },
-            ),
-          ),
-          Container(
-            color: drawerCustomer ? Colors.grey[200] :  null,
-            child: new ListTile(
-              title: new Text("Negocios"),
-              trailing: new Icon(Icons.account_balance),
-              onTap: () {
-                Navigator.pop(context);
-                //Navigator.pop(context);
-              },
-            ),
-          ),
-          Divider(
-            height: 30.0,
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Configuración"),
-              trailing: new Icon(Icons.filter_vintage),
-              onTap: () {
-                // Navigator.pushReplacementNamed(context, "/intro");
-                Navigator.of(context).pop();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/configuracion');
-              },
-            ),
-          ),
-          Container(
-            child: new ListTile(
-              title: new Text("Salir"),
-              trailing: new Icon(Icons.directions_run),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushReplacementNamed(context,'/App');
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
+   @override
   void dispose(){
     super.dispose();
   }
@@ -292,14 +190,4 @@ class _BusinessListState extends State<BusinessList> {
     );
   }
 
-  extraerUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
-
-    setState(() {
-      nameUser = user.name;
-      emailUser = user.email;
-    });
-  }
 }
