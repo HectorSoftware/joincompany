@@ -210,9 +210,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       if (this.mounted){
 
           listplace = _listMarker;
+          await allsrutes(listplace);
           await allmark(listplace);
-          await allruta(listplace);
-
       }
     }catch(error, stackTrace) {
       await sentry.captureException(
@@ -222,36 +221,29 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
   }
 
-    //////////////////////////////////////////////////////////////
-//    for(int x = newPl.length; x > 0; x--){
-//      if(!init){
-//        init = true;
-//        oldPos = newPl[x-1];
-//        await createRoute(newPl[x-1],_initialPosition);
-//      }else{
-//        LatLng oldPoint = LatLng(oldPos.latitude, oldPos.longitude);
-//        await createRoute(newPl[x-1],oldPoint);
-//        setState(() {
-//          oldPos = newPl[x-1];
-//        });
-//      }
-//
-//    }
-  ////////////////////////////////////////////////////////////////
-  Future allruta(List<Place> listPlaces) async {
+  Future allsrutes(List<Place> listPlaces) async {
     List<Place> newPl = new List<Place>();
+
+    Place oldPlace;
     _polyLines.clear();
+    bool init = false;
+
     for(Place mark in listPlaces){
       if(mark.statusTask == status.planificado){
         newPl.add(mark);
       }
     }
     for(int x = newPl.length; x > 0; x--){
-      await createRoute(newPl[x-1],_initialPosition);
+      if(!init){
+        await createRoute(newPl[x-1],_initialPosition);
+        init = !init;
+        oldPlace = newPl[x-1];
+      }else{
+        LatLng destination = LatLng(oldPlace.latitude, oldPlace.longitude);
+        await createRoute(newPl[x-1],destination);
+        oldPlace = newPl[x-1];
+      }
     }
-    setState(() { });
-
-
   }
 
   allmark(List<Place> listPlaces) async {
@@ -308,12 +300,13 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       String route = await _googleMapsServices.getRouteCoordinates(oldPosition, destination,kGoogleApiKeyy);
 
       _polyLines.add(
-          Polyline(polylineId: PolylineId(_initialPosition.toString()),
+          Polyline(polylineId: PolylineId(destination.toString()),
               width: 10,
               points: convertToLatLng(decodePoly(route)),
               color: Colors.red[200]
           )
       );
+      setState(() {});
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
