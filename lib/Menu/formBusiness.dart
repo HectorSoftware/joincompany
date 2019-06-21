@@ -8,13 +8,11 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
-
-import 'clientes.dart';
 
 enum type{
   POSS,
@@ -73,10 +71,12 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(true);
+        return FormTask(toBusiness: true,);
       },
     );
   }//
+
+
   convertToModelToFieldOption(){
     for(CustomerModel v in listCustomers)
       {
@@ -104,9 +104,9 @@ class _FormBusinessState extends State<FormBusiness> {
 }
   Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
-    for(FieldOptionModel v in elements){
-     // dropdownMenuItems.add(v.name);
-    }
+//    for(FieldOptionModel v in elements){
+//     // dropdownMenuItems.add(v.name);
+//    }
 
    /* return Container(
       width: MediaQuery.of(context).size.width*0.95,
@@ -133,6 +133,7 @@ class _FormBusinessState extends State<FormBusiness> {
     );*/
   }
   initTextController(){
+
     if(widget.dataBusiness != null){
 //      print(widget.dataBusiness.name);
 //      print(widget.dataBusiness.customer);
@@ -142,9 +143,9 @@ class _FormBusinessState extends State<FormBusiness> {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
         amountController.text = widget.dataBusiness.amount;
-        if(widget.dataBusiness.customer == null){
-         // dropdownValueClient = widget.dataBusiness.customer;
-         // saveBusiness.customerId = widget.dataBusiness.customerId;
+        if(widget.dataBusiness.customer != null){
+          dropdownValueClient = widget.dataBusiness.customer;
+          saveBusiness.customerId = widget.dataBusiness.customerId;
         }else{
          // dropdownValueClient = 'No asignado';
         }
@@ -376,7 +377,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       child: AlertDialog(
                         title: Text('Guardar'),
                         content: const Text(
-                            'Desea Guardar Tarea'),
+                            'Desea Guardar'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
@@ -479,34 +480,36 @@ class _FormBusinessState extends State<FormBusiness> {
         automaticallyImplyLeading: true,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.delete),
+              icon: Icon(Icons.delete,
+              color: widget.edit == true ? Colors.white : Colors.grey),
               onPressed: () async {
-                UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return   AlertDialog(
-                        title: Text('Desea Eliminiar Negocio'),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: const Text('Volver'),
-                            onPressed: () async {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          FlatButton(
-                            child: const Text('Aceptar'),
-                            onPressed: () async {
-                              await deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
-                              Navigator.pushReplacementNamed(context, '/negocios');
-                            },
-                          ),
+                if(widget.edit == true){
+                  UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return   AlertDialog(
+                          title: Text('Desea Eliminiar Negocio'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: const Text('Volver'),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            FlatButton(
+                              child: const Text('Aceptar'),
+                              onPressed: () async {
+                                await deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
+                                Navigator.pushReplacementNamed(context, '/negocios');
+                              },
+                            ),
 
-                        ],
-                      );
-                    }
-                );
-
+                          ],
+                        );
+                      }
+                  );
+                }
               }
           ),
         ],
@@ -656,13 +659,14 @@ class _FormBusinessState extends State<FormBusiness> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.add),
-                            onPressed: ()async{
-//                              var t = await getTask();
-//                              if (t != null){
-//                                setState(() {
-//                                  task.add(t);
-//                                });
-//                              }
+                            onPressed: () async{
+
+                              var t = await getTask();
+                              if (t != null){
+                                setState(() {
+                                  task.add(t);
+                                });
+                              }
                             },
                           ),
                         ),
@@ -715,8 +719,6 @@ class _FormBusinessState extends State<FormBusiness> {
   updateBusinessApi() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.token);
-    print(updateBusinessResponse.statusCode);
-    print(updateBusinessResponse.body);
 
     if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){
       setState(() {

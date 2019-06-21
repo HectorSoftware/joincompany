@@ -28,8 +28,9 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient});
+  FormTask({this.directionClient,this.toBusiness});
   final CustomerWithAddressModel  directionClient;
+  final bool toBusiness;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -61,15 +62,17 @@ class _FormTaskState extends State<FormTask> {
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
+  String defaultValue = 'NO';
 
 
   @override
   void initState(){
-    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
+    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');;
     directionClientIn = widget.directionClient;
     initFormsTypes();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     globalContext = context;
@@ -167,9 +170,14 @@ class _FormTaskState extends State<FormTask> {
                                             actions: <Widget>[
                                               FlatButton(
 
-                                                child: const Text('Aceptar'),
+                                                child: Text('Aceptar'),
                                                 onPressed: () {
-                                                  Navigator.pushReplacementNamed(context, '/vistap');
+                                                  if(widget.toBusiness == false){
+                                                    Navigator.pushReplacementNamed(context, '/vistap');
+
+                                                  }else{
+                                                  Navigator.pop(context);
+                                                  }
                                                 },
                                               ),
                                             ],
@@ -253,6 +261,7 @@ class _FormTaskState extends State<FormTask> {
         title: Text('Agregar Tareas'),
       ),
       body:  pass? ListView(
+
         children: <Widget>[
 
           Container(
@@ -333,6 +342,11 @@ class _FormTaskState extends State<FormTask> {
                                 title: Text('${formType.data[index].name}'),
                                 leading: Icon(Icons.poll),
                                 onTap: () async {
+//                                  if(directionClientIn.address == null){
+//                                    setState(() {
+//                                      directionClientIn.address = '';
+//                                    });
+//                                  }
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
                                   await lisC(form);
@@ -344,7 +358,10 @@ class _FormTaskState extends State<FormTask> {
                                     taskCU = false;
                                     image2 = null;
                                   });
+
+
                                   Navigator.pop(context);
+
                                 },
                               );
                             },
