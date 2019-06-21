@@ -142,53 +142,62 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest2(value);
           //sendRequest(value);
         },
-        onChanged: (text) {
+        onChanged: (text) async {
           //await Future.delayed(Duration(seconds: 2, milliseconds: 0));
 
-          List<AddressModel> _listAddressBD = new List<AddressModel>();
-          List<AddressModel> _listAddressGoogle= new List<AddressModel>();
+          if(conteo == 5){
+            conteo = 0;
 
-          setState(() {
-            listPlacemark.clear();
-            listAndressGoogleInt.clear();
-          });
+            List<AddressModel> _listAddressBD = new List<AddressModel>();
+            List<AddressModel> _listAddressGoogle= new List<AddressModel>();
 
-          //LISTAR TAREAS DE BASE DE DATOS
-          if(_listAddress.length != 0){
-            for(int cost= 0; cost < _listAddress.length; cost++){
-              if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
-                _listAddressBD.add(_listAddress[cost]);
-              }
-            }
-          }
-
-          //BUSCAR DIRECCIONES DE MAPA
-          //_listAddressGoogle = SearchDirectionGooogle(text);
-
-
-          if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
-            for(var valu in _listAddressBD){
-              listPlacemark.add(valu);
-            }
-            setState(() {
-              listPlacemark;
-              listAndressGoogleInt;
-              llenadoListaEncontrador = true;
-            });
-          }
-
-          if(_listAddressGoogle.length == 0 && _listAddressBD.length == 0){
             setState(() {
               listPlacemark.clear();
               listAndressGoogleInt.clear();
-              llenadoListaEncontrador=false;
             });
+
+            //LISTAR TAREAS DE BASE DE DATOS
+            if(_listAddress.length != 0){
+              for(int cost= 0; cost < _listAddress.length; cost++){
+                if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
+                  _listAddressBD.add(_listAddress[cost]);
+                }
+              }
+            }
+
+            //BUSCAR DIRECCIONES DE MAPA
+            try{
+              _listAddressGoogle = await SearchDirectionGooogle(text);
+            }catch(e){ }
+
+            if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
+              for(var valu in _listAddressBD){
+                listPlacemark.add(valu);
+              }
+              setState(() {
+                listPlacemark;
+                listAndressGoogleInt;
+                llenadoListaEncontrador = true;
+              });
+            }
+
+            if(_listAddressGoogle.length == 0 && _listAddressBD.length == 0){
+              setState(() {
+                listPlacemark.clear();
+                listAndressGoogleInt.clear();
+                llenadoListaEncontrador=false;
+              });
+            }
+
+          }else{
+            conteo++;
           }
         },
       ),
     );
   }
 
+  int conteo = 0;
   Future<List<AddressModel>> SearchDirectionGooogle(String text) async {
     List<AddressModel> _listAddressGoogle= new List<AddressModel>();
     GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();

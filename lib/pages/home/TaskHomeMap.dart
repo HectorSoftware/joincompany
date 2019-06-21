@@ -233,10 +233,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
     for(int x = newPl.length; x > 0; x--){
       await createRoute(newPl[x-1],_initialPosition);
-      setState(() {
-        _polyLines;
-      });
     }
+    setState(() { });
 
 
   }
@@ -301,9 +299,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           color: Colors.red[200]
           )
       );
-      setState(() {
-        _polyLines;
-      });
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
