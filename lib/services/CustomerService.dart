@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
+import 'package:joincompany/models/BusinessesModel.dart';
+import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
 import 'dart:async';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
@@ -24,7 +27,7 @@ void connectionChanged(dynamic hasConnection) {
   isOnline = !hasConnection;
 }
 
-Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async{
+Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async {
   
   List<CustomerModel> customers = await DatabaseProvider.db.RetrieveCustomersByUserToken(authorization);
 
@@ -35,7 +38,7 @@ Future<ResponseModel> getAllCustomers(String customer, String authorization, { S
   return response;
 }
 
-Future<http.Response> getAllCustomersFromServer(String customer, String authorization, { String perPage, String page } ) async{
+Future<http.Response> getAllCustomersFromServer(String customer, String authorization, { String perPage, String page } ) async {
   
   var params = new Map<String, String>();
 
@@ -50,7 +53,7 @@ Future<http.Response> getAllCustomersFromServer(String customer, String authoriz
   return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<ResponseModel> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page } ) async{
+Future<ResponseModel> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page } ) async {
   
   List<CustomerWithAddressModel> customers = await DatabaseProvider.db.RetrieveCustomersWithAddressByUserToken(authorization);
 
@@ -61,7 +64,7 @@ Future<ResponseModel> getAllCustomersWithAddress(String customer, String authori
   return response;
 }
 
-Future<http.Response> getAllCustomersWithAddressFromServer(String customer, String authorization, { String perPage, String page } ) async{
+Future<http.Response> getAllCustomersWithAddressFromServer(String customer, String authorization, { String perPage, String page } ) async {
   
   String resourcePath = '/customer_addresses';
 
@@ -78,7 +81,7 @@ Future<http.Response> getAllCustomersWithAddressFromServer(String customer, Stri
   return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<ResponseModel> getCustomer(String id, String customer, String authorization) async{
+Future<ResponseModel> getCustomer(String id, String customer, String authorization) async {
 
   CustomerModel customerObj = await DatabaseProvider.db.ReadCustomerById(int.parse(id));
 
@@ -87,12 +90,12 @@ Future<ResponseModel> getCustomer(String id, String customer, String authorizati
   return response;
 }
 
-Future<http.Response> getCustomerFromServer(String id, String customer, String authorization) async{
+Future<http.Response> getCustomerFromServer(String id, String customer, String authorization) async {
 
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer, String authorization) async{
+Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer, String authorization) async {
   var syncState = SyncState.created;
 
   if (isOnline) {
@@ -112,7 +115,7 @@ Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer,
   return response;
 }
 
-Future<http.Response> createCustomerFromServer(CustomerModel customerObj, String customer, String authorization) async{
+Future<http.Response> createCustomerFromServer(CustomerModel customerObj, String customer, String authorization) async {
   
   var bodyJson = customerObj.toJson();
 
@@ -138,7 +141,7 @@ Future<ResponseModel> updateCustomer(String id, CustomerModel customerObj, Strin
   return response;
 }
 
-Future<http.Response> updateCustomerFromServer(String id, CustomerModel customerObj, String customer, String authorization) async{
+Future<http.Response> updateCustomerFromServer(String id, CustomerModel customerObj, String customer, String authorization) async {
   
   var bodyJson = customerObj.toJson();
 
@@ -169,13 +172,13 @@ Future<ResponseModel> deleteCustomer(String id, String customer, String authoriz
   return response;
 }
 
-Future<http.Response> deleteCustomerFromServer(String id, String customer, String authorization) async{
+Future<http.Response> deleteCustomerFromServer(String id, String customer, String authorization) async {
   String resourcePath = '/customer/delete';
   
   return await httpDelete(id, customer, authorization, resourcePath, false);
 }
 
-Future<ResponseModel> getCustomerAddresses(String id, String customer, String authorization ) async{
+Future<ResponseModel> getCustomerAddresses(String id, String customer, String authorization ) async {
   List<AddressModel> addresses = await DatabaseProvider.db.RetrieveAddressModelByCustomerId(int.parse(id));
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: addresses);
@@ -183,14 +186,14 @@ Future<ResponseModel> getCustomerAddresses(String id, String customer, String au
   return response;
 }
 
-Future<http.Response> getCustomerAddressesFromServer(String id, String customer, String authorization ) async{
+Future<http.Response> getCustomerAddressesFromServer(String id, String customer, String authorization ) async {
   
   String extraPath = "/addresses";
 
   return await httpGet(customer, authorization, resourcePath, id: id, extraPath: extraPath);
 }
 
-Future<ResponseModel> relateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+Future<ResponseModel> relateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async {
 
   var syncState = SyncState.created;
 
@@ -208,7 +211,7 @@ Future<ResponseModel> relateCustomerAddress(String idCustomer, String idAddress,
   return response;
 }
 
-Future<http.Response> relateCustomerAddressFromServer(String idCustomer, String idAddress, String customer, String authorization) async{
+Future<http.Response> relateCustomerAddressFromServer(String idCustomer, String idAddress, String customer, String authorization) async {
   String resourcePath = '/addresses/customers/relate';
 
   var body = json.encode({
@@ -220,7 +223,7 @@ Future<http.Response> relateCustomerAddressFromServer(String idCustomer, String 
   return await httpPost(body, customer, authorization, resourcePath);
 }
 
-Future<ResponseModel> unrelateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async{
+Future<ResponseModel> unrelateCustomerAddress(String idCustomer, String idAddress, String customer, String authorization) async {
   var syncState = SyncState.deleted;
   bool unrelateFromServer = false;
 
@@ -244,9 +247,140 @@ Future<ResponseModel> unrelateCustomerAddress(String idCustomer, String idAddres
   return response;
 }
 
-Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, String idAddress, String customer, String authorization) async{
+Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, String idAddress, String customer, String authorization) async {
   String resourcePath = '/customer/delete_address';
   String id = '$idCustomer/$idAddress';
   
   return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization ) async {
+  //List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
+  
+  var contacts;
+
+  ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: contactsObj);
+
+  return response;
+}
+
+Future<http.Response> getCustomerContactsFromServer(String id, String customer, String authorization ) async {
+  
+  String resourcePath = '/contacts_by_customer';
+
+  return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async {
+
+  var syncState = SyncState.created;
+
+  if (isOnline) {
+    var relateCustomerContactResponse = await relateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
+    if (relateCustomerContactResponse.statusCode==200 || relateCustomerContactResponse.statusCode==201) {
+      syncState = SyncState.synchronized;
+    }
+  }
+  
+  // var customerContactCreated = await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, int.parse(idCustomer), int.parse(idContact), syncState);
+  var customerContactCreated;
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactCreated.toString());
+
+  return response;
+}
+
+Future<http.Response> relateCustomerContactFromServer(String idCustomer, String idContact, String customer, String authorization) async {
+  
+  String resourcePath = '/customer/add_contact';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'contact_id': idContact,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
+}
+
+Future<ResponseModel> unrelateCustomerContact(String idCustomer, String idContact, String customer, String authorization) async {
+  var syncState = SyncState.deleted;
+  bool unrelateFromServer = false;
+
+  if (isOnline) {
+    var unrelateCustomerContactResponse = await unrelateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
+    if (unrelateCustomerContactResponse.statusCode==200 || unrelateCustomerContactResponse.statusCode==201) {
+      unrelateFromServer = true;
+    }
+  }
+
+  var customerContactDelete;
+
+  if (unrelateFromServer) {
+    // customerContactDelete = await DatabaseProvider.db.DeleteCustomerContactById(int.parse(idCustomer), int.parse(idContact));
+  } else {
+    // customerContactDelete = await DatabaseProvider.db.ChangeSyncStateCustomerContact(int.parse(idCustomer), int.parse(idContact), syncState);
+  }
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactDelete.toString());
+
+  return response;
+}
+
+Future<http.Response> unrelateCustomerContactFromServer(String idCustomer, String idContact, String customer, String authorization) async {
+  String resourcePath = '/contact/delete_assoc';
+  String id = '$idContact/$idCustomer';
+  
+  return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization ) async {
+  //List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
+  
+  var businesses;
+  
+  BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
+  
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: businessesObj);
+
+  return response;
+}
+
+Future<http.Response> getCustomerBusinessesFromServer(String id, String customer, String authorization ) async {
+  
+  String resourcePath = '/businesses_by_customer';
+
+  return await httpGet(customer, authorization, resourcePath, id: id);
+}
+
+Future<ResponseModel> relateCustomerBusiness(String idCustomer, String idBusiness, String customer, String authorization) async {
+  var syncState = SyncState.created;
+
+  if (isOnline) {
+    var relateCustomerBusinessResponse = await relateCustomerBusinessFromServer(idCustomer, idBusiness, customer, authorization);
+    if (relateCustomerBusinessResponse.statusCode==200 || relateCustomerBusinessResponse.statusCode==201) {
+      syncState = SyncState.synchronized;
+    }
+  }
+  
+  // var customerBusinessCreated = await DatabaseProvider.db.CreateCustomerBusiness(null, null, null, null, int.parse(idCustomer), int.parse(idBusiness), syncState);
+  var customerBusinessCreated;
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: customerBusinessCreated.toString());
+
+  return response;
+}
+
+Future<http.Response> relateCustomerBusinessFromServer(String idCustomer, String idBusiness, String customer, String authorization) async {
+  
+  String resourcePath = '/customer/add_business';
+
+  var body = json.encode({
+    'customer_id': idCustomer,
+    'business_id': idBusiness,
+  });
+
+  return await httpPost(body, customer, authorization, resourcePath);
 }
