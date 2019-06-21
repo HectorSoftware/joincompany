@@ -132,11 +132,18 @@ class _FormBusinessState extends State<FormBusiness> {
     );*/
   }
   initTextController(){
-    if(businessGet != null){
-      posController.text = businessGet.name;
-      dropdownValueClient = businessGet.customer;
-      amountController.text = businessGet.amount;
-      _date = businessGet.date as DateTime;
+    if(widget.dataBusiness != null){
+      print(widget.dataBusiness.name);
+      print(widget.dataBusiness.customer);
+      print(widget.dataBusiness.amount);
+      print(widget.dataBusiness.id);
+      setState(() {
+        saveBusiness.id = widget.dataBusiness.id;
+        posController.text = widget.dataBusiness.name;
+        dropdownValueClient = widget.dataBusiness.customer;
+        amountController.text = widget.dataBusiness.amount;
+      });
+
 
 
 
@@ -440,6 +447,15 @@ class _FormBusinessState extends State<FormBusiness> {
         ),
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+                deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
+              }
+          ),
+        ],
       ),
       body:getData? ListView.builder(
         itemCount: 1,
@@ -622,7 +638,6 @@ class _FormBusinessState extends State<FormBusiness> {
       ): Center(child: CircularProgressIndicator(),),
 
 //
-
 
     );
   }

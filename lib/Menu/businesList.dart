@@ -207,6 +207,7 @@ class _BusinessListState extends State<BusinessList> {
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
+
         ],
       ),
       body: getData == true ? ListView.builder(

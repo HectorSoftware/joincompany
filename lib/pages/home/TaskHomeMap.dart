@@ -222,6 +222,22 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
   }
 
+    //////////////////////////////////////////////////////////////
+//    for(int x = newPl.length; x > 0; x--){
+//      if(!init){
+//        init = true;
+//        oldPos = newPl[x-1];
+//        await createRoute(newPl[x-1],_initialPosition);
+//      }else{
+//        LatLng oldPoint = LatLng(oldPos.latitude, oldPos.longitude);
+//        await createRoute(newPl[x-1],oldPoint);
+//        setState(() {
+//          oldPos = newPl[x-1];
+//        });
+//      }
+//
+//    }
+  ////////////////////////////////////////////////////////////////
   Future allruta(List<Place> listPlaces) async {
     List<Place> newPl = new List<Place>();
     _polyLines.clear();
@@ -230,10 +246,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
         newPl.add(mark);
       }
     }
-
     for(int x = newPl.length; x > 0; x--){
       await createRoute(newPl[x-1],_initialPosition);
-
+      setState(() {
+        _polyLines;
+      });
     }
 
 
@@ -294,12 +311,14 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       _polyLines.add(
           Polyline(polylineId: PolylineId(_initialPosition.toString()),
-          width: 10,
-          points: convertToLatLng(decodePoly(route)),
-          color: Colors.red[200]
+              width: 10,
+              points: convertToLatLng(decodePoly(route)),
+              color: Colors.red[200]
           )
       );
-
+      setState(() {
+        _polyLines;
+      });
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
