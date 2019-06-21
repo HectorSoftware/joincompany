@@ -142,7 +142,7 @@ class _SearchAddressState extends State<SearchAddress> {
           //sendRequest2(value);
           //sendRequest(value);
         },
-        onChanged: (text) {
+        onChanged: (text) async {
           //await Future.delayed(Duration(seconds: 2, milliseconds: 0));
 
           List<AddressModel> _listAddressBD = new List<AddressModel>();
@@ -156,20 +156,39 @@ class _SearchAddressState extends State<SearchAddress> {
           //LISTAR TAREAS DE BASE DE DATOS
           if(_listAddress.length != 0){
             for(int cost= 0; cost < _listAddress.length; cost++){
+              bool existe = true;
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
-                _listAddressBD.add(_listAddress[cost]);
+                for (int cost1 = 0; cost1 < _listAddressBD.length; cost1++) {
+                  if ((_listAddressBD[cost1].latitude == _listAddress[cost].latitude)&&
+                      _listAddressBD[cost1].longitude == _listAddress[cost].longitude) {
+                    existe = false;
+                  }
+                }
+                for (int cost2 = 0; cost2 < listPlacemark.length; cost2++) {
+                  if ((listPlacemark[cost2].latitude == _listAddress[cost].latitude)&&
+                      listPlacemark[cost2].longitude == _listAddress[cost].longitude) {
+                    existe = false;
+                  }
+                }
+                if(existe){
+                  _listAddressBD.add(_listAddress[cost]);
+                }
               }
             }
-          }
-
-          //BUSCAR DIRECCIONES DE MAPA
-          //_listAddressGoogle = SearchDirectionGooogle(text);
-
-
-          if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
             for(var valu in _listAddressBD){
               listPlacemark.add(valu);
             }
+            setState(() {
+              _listAddressBD;
+            });
+          }
+
+          //BUSCAR DIRECCIONES DE MAPA
+          try{
+            _listAddressGoogle = await SearchDirectionGooogle(text);
+          }catch(e){ }
+
+          if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
             setState(() {
               listPlacemark;
               listAndressGoogleInt;
@@ -189,6 +208,7 @@ class _SearchAddressState extends State<SearchAddress> {
     );
   }
 
+  int conteo = 0;
   Future<List<AddressModel>> SearchDirectionGooogle(String text) async {
     List<AddressModel> _listAddressGoogle= new List<AddressModel>();
     GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
@@ -209,6 +229,14 @@ class _SearchAddressState extends State<SearchAddress> {
             existe = true;
           }
         }
+
+        for (int cost = 0; cost < listPlacemark.length; cost++) {
+          if ((listPlacemark[cost].latitude == AuxAddressModel.latitude)&&
+              listPlacemark[cost].longitude == AuxAddressModel.longitude) {
+            existe = true;
+          }
+        }
+
         if (existe == false) {
           listAndressGoogleInt.add(listPlacemark.length);
           _listAddressGoogle.add(AuxAddressModel);
