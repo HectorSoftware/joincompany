@@ -17,9 +17,10 @@ import 'package:sentry/sentry.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
-  TaskHomeMap({this.blocListTaskCalendarResMapwidget});
+  TaskHomeMap({this.blocListTaskCalendarResMapwidget,this.dateActualRes});
 
   final BlocListTaskCalendarMap blocListTaskCalendarResMapwidget;
+  final DateTime dateActualRes;
 }
 
 /*
@@ -47,11 +48,12 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   // ignore: cancel_subscriptions
   StreamSubscription streamSubscription;
   BlocListTaskCalendarMap blocListTaskCalendarResMap;
-  DateTime dateActual = DateTime.now();
+  DateTime dateActual;
   List<DateTime> listCalendar = new List<DateTime>();
 
   @override
   void initState() {
+    dateActual = widget.dateActualRes;
     _getUserLocation();
     super.initState();
   }
@@ -210,8 +212,9 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       if (this.mounted){
 
           listplace = _listMarker;
-          await allsrutes(listplace);
           await allmark(listplace);
+          await allsrutes(listplace);
+
       }
     }catch(error, stackTrace) {
       await sentry.captureException(
