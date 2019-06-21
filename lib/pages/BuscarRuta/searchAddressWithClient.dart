@@ -149,14 +149,19 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
           });
 
           //LISTAR TAREAS DE BASE DE DATOS
-          //LISTAR TAREAS DE BASE DE DATOS
           if(_listAddress.length != 0){
             for(int cost= 0; cost < _listAddress.length; cost++){
               bool existe = true;
               if(ls.createState().checkSearchInText(_listAddress[cost].address, text) && (text.length != 0)) {
-                for (int cost = 0; cost < _listAddressBD.length; cost++) {
-                  if ((_listAddressBD[cost].latitude == _listAddress[cost].latitude)&&
-                      _listAddressBD[cost].longitude == _listAddress[cost].longitude) {
+                for (int cost1 = 0; cost1 < _listAddressBD.length; cost1++) {
+                  if ((_listAddressBD[cost1].latitude == _listAddress[cost].latitude)&&
+                      _listAddressBD[cost1].longitude == _listAddress[cost].longitude) {
+                    existe = false;
+                  }
+                }
+                for (int cost2 = 0; cost2 < listPlacemark.length; cost2++) {
+                  if ((listPlacemark[cost2].latitude == _listAddress[cost].latitude)&&
+                      listPlacemark[cost2].longitude == _listAddress[cost].longitude) {
                     existe = false;
                   }
                 }
@@ -164,6 +169,9 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
                   _listAddressBD.add(_listAddress[cost]);
                 }
               }
+            }
+            for(var valu in _listAddressBD){
+              listPlacemark.add(valu);
             }
             setState(() {
               _listAddressBD;
