@@ -213,6 +213,11 @@ class _BusinessListState extends State<BusinessList> {
       body: getData == true ? ListView.builder(
           itemCount:listBusiness.length,
           itemBuilder: (BuildContext context, index){
+            if(listBusiness.length == 0){
+              return Center(
+                child: Text('No hay Negocios Registrados'),
+              );
+            }
             return Card(
               child: Column(
                 children: <Widget>[
