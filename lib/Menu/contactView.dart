@@ -92,7 +92,7 @@ class _ContactViewState extends State<ContactView> {
         ],
       ),
       body: listViewContacts(),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.statusPage == STATUS_PAGE.full ? FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           if(widget.statusPage == STATUS_PAGE.view){
@@ -108,7 +108,7 @@ class _ContactViewState extends State<ContactView> {
                     builder: (BuildContext context) => new AddContact(null)));
           }
         },
-      ),
+      ) : null,
     );
   }
 
@@ -135,9 +135,7 @@ class _ContactViewState extends State<ContactView> {
                       barrierDismissible: true, // user must tap button for close dialog!
                       builder: (BuildContext context) {
                         var email = contact.email;
-                        return AlertDialog(
-                            title: Text('Correo : $email')
-                        );
+                        return AlertDialog(title: Text('Correo : $email'));
                       }
                   );
                 }

@@ -411,7 +411,12 @@ class _FormClientState extends State<FormClient> {
   }
 
   bool searchOldContacts(ContactModel contact){
-    for(var cont in contactsOld){
+//    for(var cont in contactsOld){
+//      if(cont.id == contact.id){
+//        return true;
+//      }
+//    }
+    for(var cont in contactsNew){
       if(cont.id == contact.id){
         return true;
       }
