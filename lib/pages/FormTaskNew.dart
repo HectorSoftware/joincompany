@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
 import 'package:sentry/sentry.dart';
@@ -28,9 +29,10 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness});
+  FormTask({this.directionClient,this.toBusiness,this.businessAs});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
+  final BusinessModel businessAs;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -117,6 +119,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
                                     saveTask.customerId = widget.directionClient.id;
+                                    saveTask.businessId = widget.businessAs.id;
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
@@ -175,8 +178,14 @@ class _FormTaskState extends State<FormTask> {
 
                                                 child: Text('Aceptar'),
                                                 onPressed: () {
-
+                                                  if(widget.toBusiness != true){
                                                     Navigator.pushReplacementNamed(context, '/vistap');
+                                                  }else{
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Navigator.of(context).pop();
+
+                                                  }
 
                                                 },
                                               ),

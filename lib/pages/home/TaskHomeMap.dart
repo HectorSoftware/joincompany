@@ -45,8 +45,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   static const kGoogleApiKeyy = kGoogleApiKey;
-  // ignore: cancel_subscriptions
-  StreamSubscription streamSubscription;
   BlocListTaskCalendarMap blocListTaskCalendarResMap;
   DateTime dateActual;
   List<DateTime> listCalendar = new List<DateTime>();
@@ -60,11 +58,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   @override
   void dispose(){
+    _polyLines;
+    _markers;
     blocListTaskCalendarResMap.dispose();
     super.dispose();
   }
-
-
 
   @override
   void setState(fn) {
@@ -144,10 +142,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   Future _getUserLocation() async{
     try{
       Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-      //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
-      //});
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
@@ -157,6 +152,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   }
 
   List<Place> listplace = new List<Place>();
+
   Future _addMarker(DateTime hasta) async {
     try{
       List<Place> _listMarker = new List<Place>();
@@ -232,13 +228,13 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     bool init = false;
 
     for(Place mark in listPlaces){
-      if(mark.statusTask == status.planificado){
+      if(mark.statusTask == status.planificado || mark.statusTask == status.culminada){
         newPl.add(mark);
       }
     }
     for(int x = newPl.length; x > 0; x--){
       if(!init){
-        await createRoute(newPl[x-1],_initialPosition);
+        //await createRoute(newPl[x-1],_initialPosition);
         init = !init;
         oldPlace = newPl[x-1];
       }else{
@@ -251,10 +247,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   allmark(List<Place> listPlaces) async {
     try{
-      //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
-      bool inicio= false;
       _markers.clear();
-      //_polyLines.clear();
       int cantPl = 0;
       for(Place mark in listPlaces){
         if(mark.statusTask != status.cliente){
@@ -289,11 +282,12 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           cantPl--;
         }
       }
-    setState((){
-      _markers;
-  //    _polyLines;
-    });
+    setState(() => _markers);
     }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 

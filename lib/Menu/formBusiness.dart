@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
@@ -77,7 +78,16 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return FormTask(toBusiness: true,directionClient: CustomerWithAddressModel(address: null,name: null),);
+        return Client(vista: true,statusPage: STATUS_PAGE_CLIENT.full);
+      },
+    );
+  }//
+  Future<TaskModel> createTaskBusiness() async{
+    return showDialog<TaskModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return FormTask(directionClient: CustomerWithAddressModel(),toBusiness: true ,businessAs: widget.dataBusiness,);
       },
     );
   }//
@@ -174,9 +184,6 @@ class _FormBusinessState extends State<FormBusiness> {
 
       });
 
-
-
-      getTaskBusiness();
     }
   }
   Widget customTextField(String title, type t, int maxLines){
@@ -387,6 +394,7 @@ class _FormBusinessState extends State<FormBusiness> {
   }
   @override
   Widget build(BuildContext context) {
+    getTaskBusiness();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -729,7 +737,7 @@ class _FormBusinessState extends State<FormBusiness> {
                             icon: Icon(Icons.add),
                             onPressed: () async{
 
-                              var t = await getTask();
+                              var t = await createTaskBusiness();
                               if (t != null){
                                 setState(() {
                                   task.add(t);
@@ -756,20 +764,28 @@ class _FormBusinessState extends State<FormBusiness> {
                                           child: listTasksBusiness.length != 0 ? ListView.builder(
                                             itemCount: listTasksBusiness.length,
                                             itemBuilder: (context, index) {
-                                              print(listTasksBusiness[index].name);
-                                              return ListTile(
-                                                title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-                                                subtitle: Text(listTasksBusiness[index].customer.toString(),style: TextStyle(fontSize: 12),),
-                                                onTap: (){
+                                              return Container(
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                    color: Colors.white,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          color: Colors.black12,
+                                                          blurRadius: 5
+                                                      )
+                                                    ]
+                                                ),
+                                                child: ListTile(
+                                                  title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
+                                                  subtitle:listTasksBusiness[index].customer != null ? Text(listTasksBusiness[index].customer.name,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
+                                                  leading: Icon(Icons.message),
+                                                  onTap: (){
 
-                                                },
+                                                  },
+                                                ),
                                               );
                                             },
-                                          ) : Center(
-                                            child: ListTile(
-                                              title: Text('Sin Tareas Asociadas'),
-                                            ),
-                                          ),
+                                          ): Center(child: CircularProgressIndicator(),),
+
                                         ),
                                       ],
                                     )
@@ -810,11 +826,7 @@ class _FormBusinessState extends State<FormBusiness> {
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
      setState(() {
        listTasksBusiness = tasks.data;
-       print(listTasksBusiness.length);
-       print(saveBusiness.id);
      });
-    
-
   }
   saveBusinessApi() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
@@ -849,3 +861,28 @@ class _FormBusinessState extends State<FormBusiness> {
     }
   }
 }
+/*ListView.builder(
+                                            itemCount: listTasksBusiness.length,
+                                            itemBuilder: (context, index) {
+                                              print(listTasksBusiness[index].name);
+                                              return Container(
+                                                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: Colors.black12,
+                                                              blurRadius: 5
+                                                          )
+                                                        ]
+                                                    ),
+                                                child: ListTile(
+                                                  title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
+                                                  subtitle:listTasksBusiness[index].customer != null ? Text(listTasksBusiness[index].customer.name,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
+                                                  leading: Icon(Icons.message),
+                                                  onTap: (){
+
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ) */
