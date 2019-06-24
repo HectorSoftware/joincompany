@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AuthModel.dart';
@@ -54,7 +57,14 @@ class _LoginPageState extends State<LoginPage> {
     textViewVisible = widget.textViewVisibleWidget;
     addUser = widget.addUserWidget;
     companyEstable = widget.companyEstableWidget;
+
     super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
   }
 @override
   void dispose() {

@@ -17,7 +17,7 @@ import 'package:sentry/sentry.dart';
 
 
 import '../../main.dart';
-
+import 'package:flutter/services.dart';
 class TaskHomeTask extends StatefulWidget {
 
   TaskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
@@ -54,6 +54,10 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     listCalendar = widget.listCalendarRes;
     actualizarusuario();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   actualizarusuario() async {

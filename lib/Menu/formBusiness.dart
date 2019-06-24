@@ -15,6 +15,8 @@ import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:flutter/services.dart';
+import 'clientes.dart';
 
 enum type{
   POSS,
@@ -77,7 +79,7 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(vista: true,statusPage: STATUS_PAGE_CLIENT.full);
+        return Client(vista: false,statusPage: STATUS_PAGE_CLIENT.full);
       },
     );
   }//
@@ -290,12 +292,6 @@ class _FormBusinessState extends State<FormBusiness> {
     amountController.dispose();
     clientController.dispose();
     dateController.dispose();
-//    name.dispose();
-//    code.dispose();
-//    tlfF.dispose();
-//    tlfM.dispose();
-//    email.dispose();
-//    note.dispose();
   }
 
   List<DateTime> valueselectDate = new List<DateTime>();
@@ -362,6 +358,10 @@ class _FormBusinessState extends State<FormBusiness> {
     getOther();
     businessGet = widget.dataBusiness;
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override

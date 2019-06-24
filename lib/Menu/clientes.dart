@@ -10,7 +10,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-
+import 'package:flutter/services.dart';
 enum STATUS_PAGE_CLIENT{
   view,
   select,
@@ -47,8 +47,19 @@ class _ClientState extends State<Client> {
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
+  @override
+  void dispose(){
+    _connectionChangeStream.cancel();
+    _filter.dispose();
+    super.dispose();
+
+  }
   void checkConnection(ConnectionStatusSingleton connectionStatus) async {
     isOffline = await connectionStatus.checkConnection();
     setState(() {
@@ -159,15 +170,17 @@ class _ClientState extends State<Client> {
                         },),
                         onTap:
                         widget.vista ? (){
-                          Navigator.of(context).pop(snapshot.data[index]);
+                          Navigator.of(context).pop();
                         }: (){
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  new  FormClient(snapshot.data[index])
-                              )
-                          );
+                          if(statusPage == STATUS_PAGE_CLIENT.select){
+                            Navigator.of(context).pop(snapshot.data[index]);
+                          }else{
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(builder: (BuildContext context) => new  FormClient(snapshot.data[index])
+                                )
+                            );
+                          }
                         },
                       ),
                     );
@@ -220,10 +233,4 @@ class _ClientState extends State<Client> {
     );
   }
 
-  @override
-  void dispose(){
-    _connectionChangeStream.cancel();
-    _filter.dispose();
-    super.dispose();
-  }
 }
