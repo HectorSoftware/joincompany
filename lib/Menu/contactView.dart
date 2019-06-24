@@ -124,7 +124,7 @@ class _ContactViewState extends State<ContactView> {
             IconButton(
                 icon: Icon(Icons.call),
                 onPressed:(){
-                  _launchCall(contact.phone);
+                  widget.statusPage == STATUS_PAGE.full ? _launchCall(contact.phone) : null;
                 }
             ),
             IconButton(

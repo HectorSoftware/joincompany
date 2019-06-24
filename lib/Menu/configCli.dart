@@ -228,8 +228,8 @@ class _ConfigCliState extends State<ConfigCli> {
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/cliente');
+                //Navigator.pop(context);
+                //Navigator.pushNamed(context, '/cliente');
               },
             ),
           ),

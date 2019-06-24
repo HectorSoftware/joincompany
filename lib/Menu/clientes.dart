@@ -4,20 +4,25 @@ import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/Menu//FormClients.dart';
+import 'package:joincompany/Menu/FormClients.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
+enum STATUS_PAGE_CLIENT{
+  view,
+  select,
+  full
+}
+
 // ignore: must_be_immutable
 class Client extends StatefulWidget {
 
+  STATUS_PAGE_CLIENT statusPage;
   bool vista;
-  Client(vista){
-    this.vista = vista;
-  }
+  Client({this.vista, this.statusPage});
 
   @override
   _ClientState createState() => _ClientState();
@@ -31,11 +36,13 @@ class _ClientState extends State<Client> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
   String textFilter='';
+  STATUS_PAGE_CLIENT statusPage;
 
   final TextEditingController _filter = new TextEditingController();
 
   @override
   void initState() {
+    statusPage = widget.statusPage;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
@@ -59,7 +66,13 @@ class _ClientState extends State<Client> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back),  onPressed:(){  Navigator.pushReplacementNamed(context, '/vistap');}),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed:(){
+              statusPage == STATUS_PAGE_CLIENT.full ?
+              Navigator.pushReplacementNamed(context, '/vistap') : Navigator.pop(context);
+            }
+            ),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
@@ -70,7 +83,7 @@ class _ClientState extends State<Client> {
           !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+       floatingActionButton: statusPage == STATUS_PAGE_CLIENT.full ? FloatingActionButton(
         child: Icon(Icons.add),
         elevation: 12,
         backgroundColor: PrimaryColor,
@@ -82,7 +95,7 @@ class _ClientState extends State<Client> {
                   builder: (BuildContext context) => new  FormClient(null)));
         },
 
-      ),
+      ) : null,
     );
   }
 
