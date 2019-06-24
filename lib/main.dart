@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget{
         "/formularioTareas": (context) =>FormTask(),
         "/cliente": (context) =>Client(false),
         "/firma": (context) =>FirmTouch(),
-        "/contactos": (context) =>ContactView(false),
+        "/contactos": (context) =>ContactView(STATUS_PAGE.full),
         "/negocios": (context) =>BusinessList(false),
         "/configuracion": (context) =>ConfigCli(),
         "/App": (context) =>App(),
