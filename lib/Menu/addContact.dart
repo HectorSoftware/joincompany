@@ -495,7 +495,7 @@ class _AddContactState extends State<AddContact> {
                 customTextField("Nombre / apellido *",type.NAME,1),
                 customTextField("Codigo *",type.CODE,1),
                 //customTextField("Cargo",type.CARGO,1),
-                customTextField("Telefono fijo",type.PHONE_F,1),
+                customTextField("Telefono",type.PHONE_F,1),
                 //customTextField("Telefono movil",type.PHONE_M,1),
                 customTextField("Emails",type.EMAIL,1),
                 customTextField("Notas",type.NOTE,4),
