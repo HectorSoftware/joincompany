@@ -6,12 +6,18 @@ import 'package:joincompany/Menu/addContact.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 
+enum STATUS_PAGE{
+  view,
+  select,
+  full
+}
+
 // ignore: must_be_immutable
 class ContactView extends StatefulWidget {
-  bool modVista;
+  STATUS_PAGE statusPage;
 
-  ContactView(vista){
-    this.modVista = vista;
+  ContactView(statusPage){
+    this.statusPage = statusPage;
   }
 
   @override
@@ -70,10 +76,15 @@ class _ContactViewState extends State<ContactView> {
       appBar: AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back),
             onPressed:(){
-              if(widget.modVista){
+              if(widget.statusPage == STATUS_PAGE.view){
                 Navigator.of(context).pop(null);
-              }else{
-                Navigator.pushReplacementNamed(context, '/vistap');}
+              }
+              if(widget.statusPage == STATUS_PAGE.select){
+                Navigator.of(context).pop(null);
+              }
+              if(widget.statusPage == STATUS_PAGE.full){
+                Navigator.pushReplacementNamed(context, '/vistap');
+              }
         }),
         title:_appBarTitle,
         actions: <Widget>[
@@ -84,10 +95,18 @@ class _ContactViewState extends State<ContactView> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => new AddContact(null)));
+          if(widget.statusPage == STATUS_PAGE.view){
+//            Navigator.of(context).pop(contact);
+          }
+          if(widget.statusPage == STATUS_PAGE.select){
+//            Navigator.of(context).pop(contact);
+          }
+          if(widget.statusPage == STATUS_PAGE.full){
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new AddContact(null)));
+          }
         },
       ),
     );
@@ -126,9 +145,13 @@ class _ContactViewState extends State<ContactView> {
           ],
         ),
         onTap: (){
-          if(widget.modVista){
+          if(widget.statusPage == STATUS_PAGE.view){
+//            Navigator.of(context).pop(contact);
+          }
+          if(widget.statusPage == STATUS_PAGE.select){
             Navigator.of(context).pop(contact);
-          }else{
+          }
+          if(widget.statusPage == STATUS_PAGE.full){
             Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new AddContact(contact)));
           }
         }

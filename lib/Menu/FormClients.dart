@@ -607,12 +607,12 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
-  Future<ContactModel> getContact() async{
+  Future<ContactModel> getContact(STATUS_PAGE st) async{
     return showDialog<ContactModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return ContactView(true);
+        return ContactView(st);
       },
     );
   }
@@ -759,7 +759,7 @@ class _FormClientState extends State<FormClient> {
                               IconButton(
                                   icon: Icon(Icons.add),
                                   onPressed: ()async{
-                                    var contact = await getContact();
+                                    var contact = await getContact(STATUS_PAGE.select);
                                     if (contact != null){
                                       if(!searchOldContacts(contact)){
                                         setState(() {
@@ -773,7 +773,7 @@ class _FormClientState extends State<FormClient> {
                               IconButton(
                                   icon: Icon(Icons.visibility),
                                   onPressed: ()async{
-                                    getContact();
+                                    getContact(STATUS_PAGE.view);
                                   }
                               )
                             ],

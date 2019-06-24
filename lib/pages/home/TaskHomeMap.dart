@@ -44,8 +44,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   static const kGoogleApiKeyy = kGoogleApiKey;
-  // ignore: cancel_subscriptions
-  StreamSubscription streamSubscription;
   BlocListTaskCalendarMap blocListTaskCalendarResMap;
   DateTime dateActual = DateTime.now();
   List<DateTime> listCalendar = new List<DateTime>();
@@ -61,8 +59,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     blocListTaskCalendarResMap.dispose();
     super.dispose();
   }
-
-
 
   @override
   void setState(fn) {
@@ -155,6 +151,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   }
 
   List<Place> listplace = new List<Place>();
+
   Future _addMarker(DateTime hasta) async {
     try{
       List<Place> _listMarker = new List<Place>();
@@ -221,22 +218,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
   }
 
-    //////////////////////////////////////////////////////////////
-//    for(int x = newPl.length; x > 0; x--){
-//      if(!init){
-//        init = true;
-//        oldPos = newPl[x-1];
-//        await createRoute(newPl[x-1],_initialPosition);
-//      }else{
-//        LatLng oldPoint = LatLng(oldPos.latitude, oldPos.longitude);
-//        await createRoute(newPl[x-1],oldPoint);
-//        setState(() {
-//          oldPos = newPl[x-1];
-//        });
-//      }
-//
-//    }
-  ////////////////////////////////////////////////////////////////
   Future allsrutes(List<Place> listPlaces) async {
     List<Place> newPl = new List<Place>();
 
@@ -264,10 +245,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   allmark(List<Place> listPlaces) async {
     try{
-      //Image.network('https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red1.png');
-      bool inicio= false;
       _markers.clear();
-      //_polyLines.clear();
       int cantPl = 0;
       for(Place mark in listPlaces){
         if(mark.statusTask != status.cliente){
@@ -302,11 +280,12 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           cantPl--;
         }
       }
-    setState((){
-      _markers;
-  //    _polyLines;
-    });
+    setState(() => _markers);
     }catch(error, stackTrace) {
+      await sentry.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
