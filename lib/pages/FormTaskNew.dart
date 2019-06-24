@@ -175,13 +175,8 @@ class _FormTaskState extends State<FormTask> {
 
                                                 child: Text('Aceptar'),
                                                 onPressed: () {
-                                                  if(widget.toBusiness){
-                                                    Navigator.of(context).pop();
-                                                  }else{
+
                                                     Navigator.pushReplacementNamed(context, '/vistap');
-                                                  }
-
-
 
                                                 },
                                               ),
