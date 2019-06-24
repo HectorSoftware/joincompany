@@ -60,6 +60,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   @override
   void dispose(){
+    _polyLines;
+    _markers;
     blocListTaskCalendarResMap.dispose();
     super.dispose();
   }
@@ -144,10 +146,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   Future _getUserLocation() async{
     try{
       Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      //List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
-      //setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
-      //});
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
@@ -232,13 +231,13 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     bool init = false;
 
     for(Place mark in listPlaces){
-      if(mark.statusTask == status.planificado){
+      if(mark.statusTask == status.planificado || mark.statusTask == status.culminada){
         newPl.add(mark);
       }
     }
     for(int x = newPl.length; x > 0; x--){
       if(!init){
-        await createRoute(newPl[x-1],_initialPosition);
+        //await createRoute(newPl[x-1],_initialPosition);
         init = !init;
         oldPlace = newPl[x-1];
       }else{
