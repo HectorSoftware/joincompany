@@ -7,7 +7,7 @@ import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/tasks';
 
-Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page} ) async{
+Future<http.Response> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String businessId, String perPage, String page} ) async{
 
   String resourcePath = '/tasks2';
 
@@ -30,6 +30,10 @@ Future<http.Response> getAllTasks(String customer, String authorization, {String
 
   if (formId != null && formId!=''){
     params["form_id"]=formId;
+  }
+
+  if (businessId != null && businessId!=''){
+    params["business_id"]=businessId;
   }
 
   if (perPage != null && perPage!=''){
