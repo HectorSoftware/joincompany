@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:joincompany/models/ContactModel.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1813,7 +1814,9 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    CreateLocality(address.locality, syncState);
+    if (address.locality != null){
+      CreateLocality(address.locality, syncState);
+    }
 
     address.id = await db.rawInsert(
       '''
@@ -2063,10 +2066,12 @@ class DatabaseProvider {
       '''
     );
 
-    if (data.isNotEmpty)
-      UpdateLocality(address.locality.id, address.locality, syncState);
-    else
-      CreateLocality(address.locality, syncState);
+    if (address.locality != null) {
+      if (data.isNotEmpty)
+        UpdateLocality(address.locality.id, address.locality, syncState);
+      else
+        CreateLocality(address.locality, syncState);
+    }
 
     address.id = await db.rawUpdate(
       '''
@@ -2958,7 +2963,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "tasks"
       '''
     );
@@ -3967,7 +3972,7 @@ class DatabaseProvider {
           contactName: customerWithAddressResponse["contact_name"],
           details: customerWithAddressResponse["details"],
           address: customerWithAddressResponse["address"],
-          locality: customerWithAddressResponse["locality"], // TODO: I must check this in order to see if I need to make recursive queries and then fill this...
+          locality: customerWithAddressResponse["locality"],
           reference: customerWithAddressResponse["reference"],
           longitude: customerWithAddressResponse["longitude"],
           latitude: customerWithAddressResponse["latitude"],
@@ -4032,4 +4037,315 @@ class DatabaseProvider {
     return listOfAddressModels;
   }
 
+  Future<List<ContactModel>> RetrieveContactModelByCustomerId (int customerId) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT co.*
+      from "contacts" as co
+      inner join "customers_contacts" as cc on cc.contact_id = co.id
+      WHERE cc.customer_id = $customerId;
+      '''
+    );
+
+    List<ContactModel> listOfContacts = new List<ContactModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (contact) async {
+        listOfContacts.add(new ContactModel(
+          id: contact["id"],
+          createdAt: contact["created_at"],
+          updatedAt: contact["updated_at"],
+          deletedAt: contact["deleted_at"],
+          createdById: contact["created_by_id"],
+          updatedById: contact["updated_by_id"],
+          deletedById: contact["deleted_by_id"],
+          customerId: contact["customer_id"],
+          customer: contact["customer"],
+          code: contact["code"],
+          name: contact["name"],
+          phone: contact["phone"],
+          email: contact["email"],
+          details: contact["details"],
+        ));
+      });
+    }
+    return listOfContacts;
+  }
+
+  Future<ContactModel> CreateContact (ContactModel contact, SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "contacts" WHERE id = ${contact.id}');
+
+    if (data.isNotEmpty)
+      return null;
+    
+    contact.id = await db.rawInsert(
+      '''
+      INSERT INTO "contacts" (
+        id,
+        created_at,
+        updated_at,
+        deleted_at,
+        created_by_id,
+        updated_by_id,
+        deleted_by_id,
+        name,
+        phone,
+        email,
+        details,
+        in_server,
+        updated,
+        deleted
+      )
+
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''',
+      [...[contact.id, contact.createdAt, contact.updatedAt,
+      contact.deletedAt, contact.createdById, contact.updatedById,
+      contact.deletedById, contact.name, contact.phone,
+      contact.email, contact.details], ...paramsBySyncState[syncState]],
+    );
+
+    return contact;
+  }
+
+  Future<int> CreateCustomerContact(int id, String createdAt, String updatedAt,
+                                     String deletedAt, int customerId,
+                                     int contactId, SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "customers_contacts" WHERE id = $id
+      '''
+    );
+
+    if (data.isNotEmpty)
+      return null;
+
+    return await db.rawInsert(
+      '''
+      INSERT INTO "customers_contacts"(
+        id,
+        created_at,
+        updated_at,
+        deleted_at,
+        customer_id,
+        contact_id,
+        in_server,
+        updated,
+        deleted
+      )
+      
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''',
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, deletedAt, customerId, contactId],
+    ...paramsBySyncState[syncState]],
+    );
+  }
+
+  Future<ContactModel> UpdateContact (int id, ContactModel contact, SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "contacts" WHERE id = $id');
+
+    if (data.isEmpty)
+      CreateContact(contact, syncState);
+    else {
+      await db.rawInsert(
+        '''
+        UPDATE "contacts" SET
+        id = ?,
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        name = ?,
+        phone = ?,
+        email = ?,
+        details = ?,
+        customer_id = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?
+        WHERE id = $id
+        ''',
+        [...[contact.id, contact.createdAt, contact.updatedAt,
+        contact.deletedAt, contact.createdById, contact.updatedById,
+        contact.deletedById, contact.name, contact.phone,
+        contact.email, contact.details, contact.customerId], ...paramsBySyncState[syncState]],
+      );
+    }
+      
+  }
+
+  Future<int> ChangeSyncStateContact (int id, SyncState syncState) async {
+    final db = await database;
+    return await db.rawUpdate(
+      '''
+      UPDATE "contacts" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?
+      WHERE id = $id
+      ''', 
+      paramsBySyncState[syncState],
+    );
+  }
+
+  Future<int> DeleteContactById (int id) async {
+    final db = await database;
+    return await db.rawDelete(
+      '''
+      DELETE FROM "contacts" WHERE id = $id
+      '''
+    );
+  }
+
+  Future<int> ChangeSyncStateCustomerContact(int customerId, int contactId, SyncState syncState) async {
+    final db = await database;
+    return await db.rawUpdate(
+      '''
+      UPDATE "customers_contacts" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?
+      WHERE 
+      customer_id = $customerId AND
+      contact_id = $contactId
+      ''', 
+      paramsBySyncState[syncState],
+    );
+  }
+
+  Future<int> DeleteCustomerContactById(int customerId, int contactId) async {
+    final db = await database;
+    return await db.rawDelete(
+      '''
+      DELETE FROM "customers_contacts" WHERE customer_id = $customerId AND contact_id = $contactId
+      '''
+    );
+  }
+
+  Future<List<ContactModel>> RetrieveContactsByUserToken (String userToken) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+
+    data = await db.rawQuery(
+      '''
+      Select c.* 
+      from "contacts" as c
+      inner join "users" as u on c.created_by_id = u.id
+      WHERE u.remember_token = '$userToken';
+      '''
+    );
+
+    List<ContactModel> listOfContacts = new List<ContactModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (contact) async {
+        listOfContacts.add(new ContactModel(
+          id: contact["id"],
+          createdAt: contact["created_at"],
+          updatedAt: contact["updated_at"],
+          deletedAt: contact["deleted_at"],
+          createdById: contact["created_by_id"],
+          updatedById: contact["updated_by_id"],
+          deletedById: contact["deleted_by_id"],
+          customerId: contact["customer_id"],
+          customer: contact["customer"],
+          code: contact["code"],
+          name: contact["name"],
+          phone: contact["phone"],
+          email: contact["email"],
+          details: contact["details"],
+        ));
+      });
+    }
+
+    return listOfContacts;
+  }
+  
+  Future<ContactModel> ReadContactById (int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "contacts" WHERE id = $id
+      '''
+    );
+
+    ContactModel contact;
+    if (data.isNotEmpty)
+      contact = new ContactModel(
+        id: data.first["id"],
+        createdAt: data.first["created_at"],
+        updatedAt: data.first["updated_at"],
+        deletedAt: data.first["deleted_at"],
+        createdById: data.first["created_by_id"],
+        updatedById: data.first["updated_by_id"],
+        deletedById: data.first["deleted_by_id"],
+        customerId: data.first["customer_id"],
+        customer: data.first["customer"],
+        code: data.first["code"],
+        name: data.first["name"],
+        phone: data.first["phone"],
+        email: data.first["email"],
+        details: data.first["details"],
+      );
+    return contact;
+  }
+
+  Future<List<ContactModel>> ReadContactsBySyncState(SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "customers" WHERE 
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
+      ''',
+      paramsBySyncState[syncState],
+    );
+
+    List<ContactModel> listOfContacts = new List<ContactModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (contact) async {
+        listOfContacts.add(new ContactModel(
+          id: contact["id"],
+          createdAt: contact["created_at"],
+          updatedAt: contact["updated_at"],
+          deletedAt: contact["deleted_at"],
+          createdById: contact["created_by_id"],
+          updatedById: contact["updated_by_id"],
+          deletedById: contact["deleted_by_id"],
+          customerId: contact["customer_id"],
+          customer: contact["customer"],
+          code: contact["code"],
+          name: contact["name"],
+          phone: contact["phone"],
+          email: contact["email"],
+          details: contact["details"],
+        ));
+      });
+    }
+    return listOfContacts;
+  }
+
+  Future<List<int>> RetrieveAllContactIds() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT id FROM "contacts"');
+
+    List<int> listOfContactIds = List<int>();
+    if (data.isNotEmpty)
+      await Future.forEach(data, (contact) {
+        listOfContactIds.add(contact["id"]);
+      });
+    return listOfContactIds;
+  }
 }

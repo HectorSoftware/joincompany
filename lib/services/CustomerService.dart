@@ -255,9 +255,7 @@ Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, Strin
 }
 
 Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization ) async {
-  //List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
-  
-  var contacts;
+  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 
@@ -284,8 +282,7 @@ Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact,
     }
   }
   
-  // var customerContactCreated = await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, int.parse(idCustomer), int.parse(idContact), syncState);
-  var customerContactCreated;
+  var customerContactCreated = await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, int.parse(idCustomer), int.parse(idContact), syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactCreated.toString());
 
@@ -318,9 +315,9 @@ Future<ResponseModel> unrelateCustomerContact(String idCustomer, String idContac
   var customerContactDelete;
 
   if (unrelateFromServer) {
-    // customerContactDelete = await DatabaseProvider.db.DeleteCustomerContactById(int.parse(idCustomer), int.parse(idContact));
+    customerContactDelete = await DatabaseProvider.db.DeleteCustomerContactById(int.parse(idCustomer), int.parse(idContact));
   } else {
-    // customerContactDelete = await DatabaseProvider.db.ChangeSyncStateCustomerContact(int.parse(idCustomer), int.parse(idContact), syncState);
+    customerContactDelete = await DatabaseProvider.db.ChangeSyncStateCustomerContact(int.parse(idCustomer), int.parse(idContact), syncState);
   }
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactDelete.toString());

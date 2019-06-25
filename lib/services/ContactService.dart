@@ -22,9 +22,7 @@ void connectionChanged(dynamic hasConnection) {
 }
 
 Future<ResponseModel> getAllContacts(String customer, String authorization, {String perPage, String page} ) async {
-  // List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactsByUserToken(authorization);
-
-  var contacts;
+  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactsByUserToken(authorization);
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 
@@ -49,8 +47,7 @@ Future<http.Response> getAllContactsFromServer(String customer, String authoriza
 }
 
 Future<ResponseModel> getContact(String id, String customer, String authorization) async {
-  // ContactModel contactObj = await DatabaseProvider.db.ReadContactById(int.parse(id));
-  var contactObj;
+  ContactModel contactObj = await DatabaseProvider.db.ReadContactById(int.parse(id));
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: contactObj);
 
@@ -73,9 +70,8 @@ Future<ResponseModel> createContact(ContactModel contactObj, String customer, St
     }
   }
   
-  // ContactModel contactCreated = await DatabaseProvider.db.CreateContact(contactObj, syncState);
-  var contactCreated;
-  // await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, contactCreated.customerId, contactCreated.id, syncState);
+  ContactModel contactCreated = await DatabaseProvider.db.CreateContact(contactObj, syncState);
+  await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, contactCreated.customerId, contactCreated.id, syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: contactCreated);
 
@@ -109,8 +105,7 @@ Future<ResponseModel> updateContact(String id, ContactModel contactObj, String c
     }
   }
   
-  // ContactModel contactUpdated = await DatabaseProvider.db.UpdateContact(int.parse(id), contactObj, syncState);
-  var contactUpdated;
+  ContactModel contactUpdated = await DatabaseProvider.db.UpdateContact(int.parse(id), contactObj, syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: contactUpdated);
 
@@ -148,9 +143,9 @@ Future<ResponseModel> deleteContact(String id, String customer, String authoriza
   int responseDelete;
 
   if (deletedFromServer) {
-    // responseDelete = await DatabaseProvider.db.DeleteContactById(int.parse(id));
+    responseDelete = await DatabaseProvider.db.DeleteContactById(int.parse(id));
   } else {
-    // responseDelete = await DatabaseProvider.db.ChangeSyncStateContact(int.parse(id), SyncState.deleted);
+    responseDelete = await DatabaseProvider.db.ChangeSyncStateContact(int.parse(id), SyncState.deleted);
   }
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: responseDelete.toString());

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
@@ -16,14 +17,17 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
@@ -422,6 +426,7 @@ class _LoginPageState extends State<LoginPage> {
                 await CustomerChannel.syncEverything();
                 await CustomerAddressesChannel.syncEverything();
                 await FormChannel.syncEverything();
+                await ContactChannel.syncEverything();
                 
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
@@ -871,6 +876,13 @@ class _LoginPageState extends State<LoginPage> {
     // print(relateCustomerBusinessResponse.statusCode);
     // print(relateCustomerBusinessResponse.body);
 
+    // await ContactChannel.syncEverything();
+
+      // UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+      // ResponseModel a = await getAllContacts(user.company, user.rememberToken);
+      // ContactsModel b = a.body;
+      // print(b.data.length);
 
 
 
