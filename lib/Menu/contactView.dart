@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-
+import 'package:flutter/services.dart';
 enum STATUS_PAGE{
   view,
   select,
@@ -36,6 +36,10 @@ class _ContactViewState extends State<ContactView> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override

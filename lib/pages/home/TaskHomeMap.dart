@@ -14,6 +14,7 @@ import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:sentry/sentry.dart';
+import 'package:flutter/services.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
@@ -54,6 +55,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     dateActual = widget.dateActualRes;
     _getUserLocation();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override

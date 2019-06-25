@@ -7,7 +7,7 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
-
+import 'package:flutter/services.dart';
 enum type{
   NAME,
   CODE,
@@ -43,6 +43,10 @@ class _ConfigCliState extends State<ConfigCli> {
     getConfig();
     setUser();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override

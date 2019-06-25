@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -16,6 +17,8 @@ import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:flutter/services.dart';
+import 'clientes.dart';
 
 enum type{
   POSS,
@@ -48,6 +51,8 @@ class _FormBusinessState extends State<FormBusiness> {
   List<CustomerModel> listCustomers = List<CustomerModel>();
   List<ContactModel> listContacts = List<ContactModel>();
   List<TaskModel> listTasksBusiness = List<TaskModel>();
+  List<AddressModel> listDirectionsClients = List<AddressModel>();
+
   FieldOptionModel auxClient =FieldOptionModel();
   FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
@@ -136,15 +141,16 @@ class _FormBusinessState extends State<FormBusiness> {
         amountController.text = widget.dataBusiness.amount;
         headerController.text = widget.dataBusiness.stage;
         businessId = widget.dataBusiness.id;
-        if(widget.dataBusiness.customer != null){
+       /* if(widget.dataBusiness.customer != null){
           dropdownValueClient = widget.dataBusiness.customer;
           saveBusiness.customerId = widget.dataBusiness.customerId;
           saveBusiness.date = widget.dataBusiness.date.toString();
           _dateBool =true;
           dateG = widget.dataBusiness.date.toString().substring(0,10);
 
-        }else{
-         // dropdownValueClient = 'No asignado';
+        }*/
+        if(widget.dataBusiness.customer == null){
+          dropdownValueClient = '';
         }
         if(widget.dataBusiness.stage != null)
           {
@@ -195,6 +201,10 @@ class _FormBusinessState extends State<FormBusiness> {
     getOther();
     businessGet = widget.dataBusiness;
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -204,14 +214,9 @@ class _FormBusinessState extends State<FormBusiness> {
   }
   getOther()async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-
-    var getAllContactsResponse = await getAllContacts(user.company, user.token);
-    ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
-
     var getAllCustomersResponse = await getAllCustomers(user.company, user.token);
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
-    listContacts = contacts.data;
     setState(() {
       getData = true;
     });

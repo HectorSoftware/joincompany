@@ -239,7 +239,7 @@ class _FormClientState extends State<FormClient> {
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.client != null){
-      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && contactsNew.isEmpty && businessNew.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length ){
+      if(name.text == widget.client.name && note.text == widget.client.details && code.text == widget.client.code && directionsNews.isEmpty && contactsNew.isEmpty && businessNew.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length ){
         return true;
       }else{
         if(name.text == '' && code.text == ''){

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
@@ -44,12 +45,12 @@ class _AddContactState extends State<AddContact> {
   TextEditingController name, code, cargo, phoneF, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
-  Future<CustomerWithAddressModel> getClient(STATUS_PAGE_CLIENT state) async {
+  Future<CustomerWithAddressModel> getClient(bool vista, STATUS_PAGE_CLIENT state) async {
     return showDialog<CustomerWithAddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(vista: true,statusPage: state);
+        return Client(vista: vista,statusPage: state);
       },
     );
   }
@@ -286,6 +287,10 @@ class _AddContactState extends State<AddContact> {
       );
     });
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -512,7 +517,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: ()async{
-                                  var client = await getClient(STATUS_PAGE_CLIENT.select);
+                                  var client = await getClient(false,STATUS_PAGE_CLIENT.select);
                                   if (client != null){
                                     print(client.toString());
                                     setState(() {
@@ -527,7 +532,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.visibility),
                                 onPressed: (){
-                                  getClient(STATUS_PAGE_CLIENT.view);
+                                  getClient(true,STATUS_PAGE_CLIENT.view);
                                 },
                               ),
                             ),

@@ -10,7 +10,7 @@ import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'formBusiness.dart';
-
+import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class BusinessList extends StatefulWidget {
@@ -33,6 +33,10 @@ class _BusinessListState extends State<BusinessList> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
    @override
