@@ -54,9 +54,9 @@ class _LoginPageState extends State<LoginPage> {
 
 //  final nameController = TextEditingController(text : 'eibanez@duperu.com');
 //     final companyController = TextEditingController(text : 'duperu');
-    final nameController = TextEditingController();
-     final companyController = TextEditingController();
-  final passwordController = TextEditingController();
+    final nameController = TextEditingController(text: 'cbarrios@factochile.cl');
+     final companyController = TextEditingController(text: 'factochile');
+  final passwordController = TextEditingController(text: '123');
 
   bool TextViewVisible;
   bool AgregarUser;
@@ -78,9 +78,9 @@ class _LoginPageState extends State<LoginPage> {
       isOnline = connectionStatus.connectionStatus;
     });
 
-    TextViewVisible = widget.TextViewVisiblewidget;
-    AgregarUser = widget.AgregarUserwidget;
-    companyEstable = widget.companyEstablewidget;
+    TextViewVisible = widget.textViewVisibleWidget;
+    AgregarUser = widget.addUserWidget;
+    companyEstable = widget.companyEstableWidget;
     super.initState();
   }
 

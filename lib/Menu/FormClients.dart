@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
@@ -140,13 +142,6 @@ class _FormClientState extends State<FormClient> {
   void initData() async {
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     //Directions
-    if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(), user.company, user.rememberToken);
-      directionsOld =  getCustomerAddressesResponse.body;
-      for(AddressModel direction in directionsOld){
-        directionsAll.add(direction);
-      }
-    }
     setState(() {
       popUp =  AlertDialog(
         title: Text('¿Guardar?'),
@@ -180,20 +175,21 @@ class _FormClientState extends State<FormClient> {
       loading = true;
     });
 
-    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     if(widget.client != null){
       var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerAddressesResponse.statusCode == 200 || getCustomerAddressesResponse.statusCode == 201){
-        directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
-        for(CustomerWithAddressModel direction in directionsOld){
+        directionsOld =  getCustomerAddressesResponse.body;
+
+        for(AddressModel direction in directionsOld){
           directionsAll.add(direction);
         }
       }
 
       var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerContactsResponse.statusCode == 200 || getCustomerContactsResponse.statusCode == 201){
-        ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
+        ContactsModel customerContacts = getCustomerContactsResponse.body;
         contactsOld = customerContacts.data;
         for(ContactModel contact in contactsOld){
           contactsAll.add(contact);
@@ -202,7 +198,7 @@ class _FormClientState extends State<FormClient> {
 
       var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
-        BusinessesModel customerbusiness = BusinessesModel.fromJson(getCustomerBusinessesResponse.body);
+        BusinessesModel customerbusiness = getCustomerBusinessesResponse.body;
         businessOld = customerbusiness.data;
         for(BusinessModel buss in businessOld){
           businessAll.add(buss);

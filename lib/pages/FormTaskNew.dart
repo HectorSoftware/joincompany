@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
 import 'package:sentry/sentry.dart';
@@ -16,7 +18,6 @@ import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
@@ -50,7 +51,7 @@ class _FormTaskState extends State<FormTask> {
   BuildContext globalContext;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   FormModel formGlobal;
-  UserDataBase userToken ;
+  UserModel userToken;
   String token,customer, user;
   int responsibleId;
   FormsModel formType;
@@ -1221,7 +1222,7 @@ class _FormTaskState extends State<FormTask> {
     FormsModel forms;
     FormsModel formType;
     await getElements();
-    http.Response getAllFormsResponse = await getAllForms(customer , token);
+    var getAllFormsResponse = await getAllForms(customer , token);
     try{
       if(getAllFormsResponse.statusCode == 200)
       {
@@ -1239,11 +1240,11 @@ class _FormTaskState extends State<FormTask> {
     formType = await getAll();
   }
   getElements()async{
-    userToken = await ClientDatabaseProvider.db.getCodeId('1');
-    token = userToken.token;
+    userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    token = userToken.rememberToken;
     customer = userToken.company;
     user = userToken.name;
-    responsibleId = userToken.idUserCompany;
+    responsibleId = userToken.id;
   }
   void _showModalDateTimeAndDirections() {
 

@@ -5,10 +5,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/api/rutahttp.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/DirectionSModel.dart' as direct;
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:sentry/sentry.dart';
@@ -335,8 +336,8 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
   getListAnddress() async {
 
     //DIRECCIONES LOCALES
-    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
-    var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company, userActivity.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
     if(customersWithAddressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < customersWithAddress.data.length; cantAddress++){

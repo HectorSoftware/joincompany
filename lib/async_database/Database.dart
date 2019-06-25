@@ -2228,8 +2228,7 @@ class DatabaseProvider {
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt,
     customer.deletedAt, customer.createdById, customer.updatedById,
-    customer.deletedById, customer.name, customer.code, customer.phone,
-    customer.email, customer.contactName, customer.details],
+    customer.deletedById, customer.name, customer.code, customer.details],
     ...paramsBySyncState[syncState]],
     );
 
@@ -2256,9 +2255,6 @@ class DatabaseProvider {
         deletedById: data.first["deleted_by_id"],
         name: data.first["name"],
         code: data.first["code"],
-        phone: data.first["phone"],
-        email: data.first["email"],
-        contactName: data.first["contact_name"],
         details: data.first["details"],
         pivot: null,
       );
@@ -2305,15 +2301,6 @@ class DatabaseProvider {
         if (query.code != null)
           if (query.code != customerResponse["code"])
             return;
-        if (query.phone != null)
-          if (query.phone != customerResponse["phone"])
-            return;
-        if (query.email != null)
-          if (query.email != customerResponse["email"])
-            return;
-        if (query.contactName != null)
-          if (query.contactName != customerResponse["contact_name"])
-            return;
         if (query.details != null)
           if (query.details != customerResponse["details"])
             return;
@@ -2328,9 +2315,6 @@ class DatabaseProvider {
           deletedById: customerResponse["deleted_by_id"],
           name: customerResponse["name"],
           code: customerResponse["code"],
-          phone: customerResponse["phone"],
-          email: customerResponse["email"],
-          contactName: customerResponse["contact_name"],
           details: customerResponse["details"],
           pivot: null,
         ));
@@ -2365,9 +2349,6 @@ class DatabaseProvider {
           deletedById: customerResponse["deleted_by_id"],
           name: customerResponse["name"],
           code: customerResponse["code"],
-          phone: customerResponse["phone"],
-          email: customerResponse["email"],
-          contactName: customerResponse["contact_name"],
           details: customerResponse["details"],
           pivot: null,
         ));
@@ -2401,8 +2382,7 @@ class DatabaseProvider {
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt, customer.deletedAt,
     customer.createdById, customer.updatedById, customer.deletedById,
-    customer.name, customer.code, customer.phone, customer.email,
-    customer.contactName, customer.details],
+    customer.name, customer.code, customer.details],
     ...paramsBySyncState[syncState]],
     );
 
@@ -2454,9 +2434,6 @@ class DatabaseProvider {
           deletedById: customerResponse["deleted_by_id"],
           name: customerResponse["name"],
           code: customerResponse["code"],
-          phone: customerResponse["phone"],
-          email: customerResponse["email"],
-          contactName: customerResponse["contact_name"],
           details: customerResponse["details"],
           pivot: null,
         ));
@@ -2508,9 +2485,6 @@ class DatabaseProvider {
           deletedById: customerResponse["deleted_by_id"],
           name: customerResponse["name"],
           code: customerResponse["code"],
-          phone: customerResponse["phone"],
-          email: customerResponse["email"],
-          contactName: customerResponse["contact_name"],
           details: customerResponse["details"],
           pivot: null,
         ));
@@ -3962,8 +3936,6 @@ class DatabaseProvider {
           deletedById: customerWithAddressResponse["deleted_by_id"],
           name: customerWithAddressResponse["name"],
           code: customerWithAddressResponse["code"],
-          phone: customerWithAddressResponse["phone"],
-          email: customerWithAddressResponse["email"],
           contactName: customerWithAddressResponse["contact_name"],
           details: customerWithAddressResponse["details"],
           address: customerWithAddressResponse["address"],

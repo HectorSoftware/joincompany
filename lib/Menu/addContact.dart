@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
@@ -31,8 +31,7 @@ class AddContact extends StatefulWidget {
 }
 
 class _AddContactState extends State<AddContact> {
-
-  UserDataBase userAct;
+  UserModel user;
 
   Widget popUp;
 
@@ -195,11 +194,11 @@ class _AddContactState extends State<AddContact> {
   }
 
   void initData() async {
-    userAct = await ClientDatabaseProvider.db.getCodeId('1');
+    user  = await DatabaseProvider.db.RetrieveLastLoggedUser();
     initController();
 
     if(widget.contact != null){
-      var resp = await getCustomer(widget.contact.customerId.toString(),userAct.company,userAct.token);
+      var resp = await getCustomer(widget.contact.customerId.toString(),user.company,user.rememberToken);
       if(resp.statusCode == 200 || resp.statusCode == 201){
         clientAct = CustomerWithAddressModel.fromJson(resp.body);
         clientOld = clientAct;
@@ -370,7 +369,7 @@ class _AddContactState extends State<AddContact> {
             customerId: clientAct.id,
           );
 
-          var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
+          var resposeUpdateContact = await updateContact(contact.id.toString(),contact,user.company,user.rememberToken);
           if (resposeUpdateContact.statusCode == 200){
             return true;
           }else{
@@ -393,7 +392,7 @@ class _AddContactState extends State<AddContact> {
             details: note.text,
             customerId: clientAct.id,//TODO:customerID
           );
-          var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
+          var resposeCreateContact = await createContact(contact,user.company,user.rememberToken);
           if (resposeCreateContact.statusCode == 200){
             return true;
           }else{
@@ -454,7 +453,7 @@ class _AddContactState extends State<AddContact> {
     var resp = await _asyncConfirmDialogDeleteUser();
     if (resp) {
       var responseDelete = await deleteContact(
-          widget.contact.id.toString(), userAct.company, userAct.token);
+          widget.contact.id.toString(), user.company, user.rememberToken);
       if (responseDelete.statusCode == 200) {
         exitDeletedContact();
       } else {

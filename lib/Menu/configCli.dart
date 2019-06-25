@@ -282,9 +282,9 @@ class _ConfigCliState extends State<ConfigCli> {
     );
   }
 
-  Future<UserDataBase> deleteUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
+  Future<UserModel> deleteUser() async {
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    return user;
   }
   setUser() async {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();

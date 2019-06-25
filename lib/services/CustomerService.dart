@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -24,7 +25,7 @@ bool isOnline = connectionStatus.connectionStatus;
 StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
 
 void connectionChanged(dynamic hasConnection) {
-  isOnline = !hasConnection;
+  isOnline = hasConnection;
 }
 
 Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async {
@@ -256,8 +257,8 @@ Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, Strin
 
 Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization ) async {
   //List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
-  
-  var contacts;
+
+  List<ContactModel> contacts = new List<ContactModel>();
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 
@@ -337,8 +338,8 @@ Future<http.Response> unrelateCustomerContactFromServer(String idCustomer, Strin
 
 Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization ) async {
   //List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
-  
-  var businesses;
+
+  List<BusinessModel> businesses = new List<BusinessModel>();
   
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
   

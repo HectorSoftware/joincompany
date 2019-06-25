@@ -5,9 +5,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/api/rutahttp.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:sentry/sentry.dart';
@@ -340,8 +341,8 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   getListAnddress() async {
-    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
-    var addressResponse = await getAllAddresses(userActivity.company, userActivity.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var addressResponse = await getAllAddresses(user.company, user.rememberToken);
     AddressesModel address = AddressesModel.fromJson(addressResponse.body);
     if(addressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < address.data.length; cantAddress++){

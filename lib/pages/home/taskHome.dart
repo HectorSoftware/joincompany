@@ -232,9 +232,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     );
   }
 
-  Future<UserDataBase> deletetUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
+  Future<UserModel> deletetUser() async {
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    return user;
   }
 
   Future<Null> selectDate( context )async{

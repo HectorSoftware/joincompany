@@ -1,4 +1,5 @@
 import 'dart:async'; //For StreamController/Stream
+import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 
@@ -48,9 +49,19 @@ class ConnectionStatusSingleton {
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      hasConnection = true;
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        hasConnection = true;
+      } else {
+        hasConnection = false;
+      }
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      hasConnection = true;
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        hasConnection = true;
+      } else {
+        hasConnection = false;
+      }
     } else {
       hasConnection = false;
     }

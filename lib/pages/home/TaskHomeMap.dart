@@ -10,16 +10,13 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'package:joincompany/widgets/FormTaskNew.dart';
 import 'package:extended_image/extended_image.dart';
 import 'dart:ui' as ui;
-
-class taskHomeMap extends StatefulWidget {
 import 'package:sentry/sentry.dart';
+
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 

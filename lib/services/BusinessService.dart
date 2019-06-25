@@ -18,7 +18,7 @@ bool isOnline = connectionStatus.connectionStatus;
 StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
 
 void connectionChanged(dynamic hasConnection) {
-  isOnline = !hasConnection;
+  isOnline = hasConnection;
 }
 
 Future<ResponseModel> getAllBusinesses(String customer, String authorization, {String perPage, String page} ) async {

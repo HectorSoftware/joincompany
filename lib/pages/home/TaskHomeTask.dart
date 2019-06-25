@@ -8,9 +8,7 @@ import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/TaskService.dart';
@@ -60,11 +58,11 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   actualizarusuario() async{
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
-    ListCalender = widget.listCalendarRes;
-    PageTasks = 1;
+    listCalender = widget.listCalendarRes;
+    pageTasks = 1;
     //getdatalist(listCalendar[1],listCalendar[0],1);
     setState(() {
-      user;ListCalender;
+      user;listCalender;
     });
   }
 
@@ -513,7 +511,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    await deleteTask(taskID, user.company, user.rememberToken;
+    await deleteTask(taskID, user.company, user.rememberToken);
   }
 
   void _getUserLocation() async {

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -9,7 +10,7 @@ import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
@@ -340,12 +341,12 @@ class _FormBusinessState extends State<FormBusiness> {
     super.dispose();
   }
   getOther()async{
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    var getAllContactsResponse = await getAllContacts(user.company, user.token);
+    var getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
     ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
 
-    var getAllCustomersResponse = await getAllCustomers(user.company, user.token);
+    var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken);
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
     listContacts = contacts.data;
@@ -451,8 +452,8 @@ class _FormBusinessState extends State<FormBusiness> {
           IconButton(
               icon: Icon(Icons.delete),
               onPressed: () async {
-                UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-                deleteBusiness(saveBusiness.id.toString(),user.company,user.token);
+                UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+                deleteBusiness(saveBusiness.id.toString(),user.company,user.rememberToken);
               }
           ),
         ],
@@ -642,8 +643,8 @@ class _FormBusinessState extends State<FormBusiness> {
     );
   }
   saveBusinessApi() async{
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.rememberToken);
 //    print(createBusinessResponse.statusCode);
 //      print(createBusinessResponse.body);
 

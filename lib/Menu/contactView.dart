@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocContact.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +31,9 @@ class _ContactViewState extends State<ContactView> {
 
   ListWidgets ls = ListWidgets();
 
+  StreamSubscription _connectionChangeStream;
+  bool isOnline = false;
+
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Contactos');
   String textFilter='';
@@ -35,7 +41,52 @@ class _ContactViewState extends State<ContactView> {
 
   @override
   void initState() {
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    checkConnection(connectionStatus);
     super.initState();
+  }
+
+  void checkConnection(ConnectionStatusSingleton connectionStatus) async {
+    isOnline = await connectionStatus.checkConnection();
+    setState(() {});
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOnline = hasConnection;
+    });
+
+    if (!isOnline && hasConnection){
+      sync();
+      syncDialog();
+    }
+  }
+
+  void sync() async{
+//    await AddressChannel.syncEverything();
+//    await CustomerChannel.syncEverything();
+//    await CustomerAddressesChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+  Future<void> syncDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text("Sincronizando ... "),
+            content:SizedBox(
+              height: 100.0,
+              width: 100.0,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+        );
+      },
+    );
   }
 
   @override

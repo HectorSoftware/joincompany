@@ -41,6 +41,21 @@ Future<http.Response> getAddressFromServer(String id, String customer, String au
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
+Future<http.Response> createAddress(AddressModel addressObj, String customer, String authorization) async{
+
+  var addressMapAux = addressObj.toMap();
+  var addressMap = new Map<String, dynamic>();
+
+  addressMapAux.forEach((key, value) {
+    if (value != null) {
+      addressMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(addressMap);
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
+}
+
 Future<http.Response> createAddressFromServer(AddressModel addressObj, String customer, String authorization) async{
 
   var addressMapAux = addressObj.toMap();

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/ContactService.dart';
 
 
@@ -19,9 +20,9 @@ class ContactBloc{
 
   Future getContact() async {
 
-    UserDataBase user =  await ClientDatabaseProvider.db.getCodeId('1');
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    var contactsAlls = await getAllContacts(user.company, user.token);
+    var contactsAlls = await getAllContacts(user.company, user.rememberToken);
     ContactsModel contactsList = ContactsModel.fromJson(contactsAlls.body);
     _listContacts = contactsList.data;
     if(_listContacts != null){

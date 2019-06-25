@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
@@ -9,7 +8,6 @@ import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
@@ -66,6 +64,7 @@ class _ClientState extends State<Client> {
     await AddressChannel.syncEverything();
     await CustomerChannel.syncEverything();
     await CustomerAddressesChannel.syncEverything();
+    setState(() {});
     Navigator.pop(context);
   }
 
@@ -178,10 +177,7 @@ class _ClientState extends State<Client> {
                         }: (){
                           Navigator.push(
                               context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  new  FormClient(snapshot.data[index])
-                              )
+                              new MaterialPageRoute(builder: (BuildContext context) =>new FormClient(snapshot.data[index]))
                           );
                         },
                       ),
