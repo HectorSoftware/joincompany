@@ -15,16 +15,15 @@ class CustomerContactsChannel {
   static Future _relateCustomerContactsInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
-    // List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.created);
-    List <Map> customerContactsLocal;
-
+    List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.created);
+    
     await Future.forEach(customerContactsLocal, (customerContactLocal) async {
       var relateCustomerContactResponseServer = await relateCustomerContactFromServer(customerContactLocal["customer_id"], customerContactLocal["contact_id"], customer, authorization);
       if (relateCustomerContactResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerContactResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // await DatabaseProvider.db.UpdateCustomerContact(customerContactLocal["id"], null, null, null, customerContactLocal["customer_id"], customerContactLocal["contact_id"], SyncState.synchronized);
+        await DatabaseProvider.db.UpdateCustomerContact(customerContactLocal["id"], null, null, null, customerContactLocal["customer_id"], customerContactLocal["contact_id"], SyncState.synchronized);
       }
     });
 
@@ -43,8 +42,7 @@ class CustomerContactsChannel {
       }
     });
 
-    // Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
-    var customersContactsLocal;
+    Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
     Set customersContactsToCreate = customersContactsServer.difference(customersContactsLocal);
 
     await Future.forEach(customersContactsToCreate, (customerContactToCreate) async {
@@ -52,20 +50,19 @@ class CustomerContactsChannel {
     	int customerId = int.parse(customerContactIds[0]);
     	int contactId = int.parse(customerContactIds[1]);
       // Cambiar el SyncState Local
-      // await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, customerId, contactId, SyncState.synchronized);
+      await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, customerId, contactId, SyncState.synchronized);
     });
   }
 
   static Future _unrelateCustomerContactsInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
-    // List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
-    var customerAdressesLocal;
-
+    List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
+    
     await Future.forEach(customerAdressesLocal, (customerContactLocal) async {
       var unrelateCustomerContactResponseServer = await unrelateCustomerContactFromServer(customerContactLocal["customer_id"], customerContactLocal["contact_id"], customer, authorization);
       if (unrelateCustomerContactResponseServer.statusCode==200) {
-        // await DatabaseProvider.db.DeleteCustomerContactById(customerContactLocal["customer_id"], customerContactLocal["contact_id"]);
+        await DatabaseProvider.db.DeleteCustomerContactById(customerContactLocal["customer_id"], customerContactLocal["contact_id"]);
       }
     });
 
@@ -79,9 +76,8 @@ class CustomerContactsChannel {
       customersContactsServer.add("${contact.customerId}-${contact.id}");
     });
 
-    // Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
-    var customersContactsLocal;
-
+    Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
+    
     Set customersContactsToDelete = customersContactsLocal.difference(customersContactsServer);
 
     await Future.forEach(customersContactsToDelete, (customerContactToDelete) async {
@@ -89,7 +85,7 @@ class CustomerContactsChannel {
     	int customerId = int.parse(customerContactIds[0]);
     	int contactId = int.parse(customerContactIds[1]);
       // sobrecargar método para eliminar con los parámetros customerId, contactId
-      // await DatabaseProvider.db.DeleteCustomerContactById(customerId, contactId);
+      await DatabaseProvider.db.DeleteCustomerContactById(customerId, contactId);
     });
   }
 
