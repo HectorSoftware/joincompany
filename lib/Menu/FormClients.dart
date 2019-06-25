@@ -349,7 +349,8 @@ class _FormClientState extends State<FormClient> {
             );
             var response = await createCustomer(client, user.company, user.rememberToken);
             if((response.statusCode == 200 || response.statusCode ==  201) && response.body != "Cliente ya existe"){
-              var cli = CustomerModel.fromJson(response.body);
+
+              var cli = response.body;
               bool saveContact = await setContacts(cli.id);
               if(!saveContact){
                 return showDialog(

@@ -101,7 +101,7 @@ Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer,
 
   if (isOnline) {
     var createCustomerResponse = await createCustomerFromServer(customerObj, customer, authorization);
-    if (createCustomerResponse.statusCode==200 || createCustomerResponse.statusCode==201) {
+    if ((createCustomerResponse.statusCode==200 || createCustomerResponse.statusCode==201) && createCustomerResponse.body != 'Cliente ya existe') {
       customerObj = CustomerModel.fromJson(createCustomerResponse.body);
       syncState = SyncState.synchronized;
     }
@@ -152,7 +152,7 @@ Future<http.Response> updateCustomerFromServer(String id, CustomerModel customer
 Future<ResponseModel> deleteCustomer(String id, String customer, String authorization) async {
 
   bool deletedFromServer = false;
-
+  print("estoy");
   if (isOnline) {
     var deleteCustomerResponse = await deleteCustomerFromServer(id, customer, authorization);
     if (deleteCustomerResponse.statusCode==200 || deleteCustomerResponse.statusCode==201) {
