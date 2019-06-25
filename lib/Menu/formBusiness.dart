@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -87,12 +90,40 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
-  Future<TaskModel> createTaskBusiness() async{
+  Future<TaskModel> createTaskBusiness(AddressModel addressClient) async{
     return showDialog<TaskModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return FormTask(directionClient: CustomerWithAddressModel(),toBusiness: true ,businessAs: widget.dataBusiness,);
+        CustomerWithAddressModel directionClientBus = CustomerWithAddressModel();
+        if(addressClient == null){
+          directionClientBus = CustomerWithAddressModel();
+        }
+        else{
+          directionClientBus = CustomerWithAddressModel(
+            address: addressClient.address,
+            name:dropdownValueClient ,
+            id: addressClient.id,
+            city: addressClient.city,
+            addressId: 1,
+            createdById:addressClient.createdById,
+            customerId: 1,
+            longitude: addressClient.longitude,
+            latitude: addressClient.latitude,
+            googlePlaceId: addressClient.googlePlaceId,
+            locality: addressClient.locality,
+            localityId: addressClient.localityId,
+            state: addressClient.state,
+            country: addressClient.country,
+            details: addressClient.details,
+            createdAt: addressClient.createdAt,
+            updatedAt: addressClient.updatedAt,
+            reference: addressClient.reference,
+            updatedById: addressClient.updatedById,
+            contactEmail: addressClient.contactEmail,
+          );
+        }
+        return FormTask(directionClient: directionClientBus,toBusiness: true ,businessAs: widget.dataBusiness);
       },
     );
   }//
@@ -128,36 +159,36 @@ class _FormBusinessState extends State<FormBusiness> {
 
 }
 
-  initTextController(){
+  initTextController() async {
 
     if(widget.dataBusiness != null){
 //      print(widget.dataBusiness.name);
 //      print(widget.dataBusiness.customer);
 //      print(widget.dataBusiness.amount);
 //      print(widget.dataBusiness.id);
+      UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+      var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.token,);
+      if(getCustomerResponse.statusCode == 200 || getCustomerResponse.statusCode == 201){
+        dropdownValueClient = widget.dataBusiness.customer;
+        saveBusiness.customerId = widget.dataBusiness.customerId;
+      }else if(widget.dataBusiness.customer == null){
+
+
+      }
+
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
         amountController.text = widget.dataBusiness.amount;
         headerController.text = widget.dataBusiness.stage;
         businessId = widget.dataBusiness.id;
-       /* if(widget.dataBusiness.customer != null){
-          dropdownValueClient = widget.dataBusiness.customer;
-          saveBusiness.customerId = widget.dataBusiness.customerId;
-          saveBusiness.date = widget.dataBusiness.date.toString();
-          _dateBool =true;
-          dateG = widget.dataBusiness.date.toString().substring(0,10);
-
-        }*/
-        if(widget.dataBusiness.customer == null){
-          dropdownValueClient = '';
-        }
-        if(widget.dataBusiness.stage != null)
-          {
+        saveBusiness.date = widget.dataBusiness.date.toString();
+        dateG = widget.dataBusiness.date.toString().substring(0,10);
+        _dateBool =true;
+        if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
-          }else{
-
         }
+
 
       });
 
@@ -226,6 +257,7 @@ class _FormBusinessState extends State<FormBusiness> {
   @override
   Widget build(BuildContext context) {
     getTaskBusiness();
+    getDirectionsClients();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -565,67 +597,160 @@ class _FormBusinessState extends State<FormBusiness> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.add),
-                            onPressed: () async{
-                              UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-                              var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.token);
+                              onPressed: () async {
+                              if(widget.edit == true && listDirectionsClients.length > 0){
+                                return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return
+                                        Container(
+                                            width: MediaQuery.of(context).size.width,
+                                            height: MediaQuery.of(context).size.height *(1.0 *listDirectionsClients.length ),
+                                            child: SimpleDialog(
+                                                title: Text('Escoja una direccion para crear una tarea:'),
+                                                children: <Widget>[
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width ,
+                                                        height: MediaQuery.of(context).size.height *(0.1 *listDirectionsClients.length ),
+                                                        child: listDirectionsClients.length != 0 ? ListView.builder(
+                                                          itemCount: listDirectionsClients.length,
+                                                          itemBuilder: (context, index) {
+                                                            return Container(
+                                                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                                  color: Colors.white,
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.black12,
+                                                                        blurRadius: 5
+                                                                    )
+                                                                  ]
+                                                              ),
+                                                              child: ListTile(
+                                                                title: Text(listDirectionsClients[index].address,style: TextStyle(fontSize: 18),),
+                                                                subtitle:dropdownValueClient!= null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text(''),
+                                                                leading: Icon(Icons.location_on),
+                                                                onTap: () async {
+                                                                  var t = await createTaskBusiness(listDirectionsClients[index]);
+                                                                  if (t != null){
+                                                                    setState(() {
+                                                                      task.add(t);
+                                                                    });
+                                                                  }
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ): Center(child: Text('Cliente sin direcciones'),),
 
-                             print(getCustomerAddressesResponse.statusCode);
-                             print(getCustomerAddressesResponse.body);
-                      //       var t = await createTaskBusiness();
-//                              if (t != null){
-//                                setState(() {
-//                                  task.add(t);
-//                                });
-//                              }
-                            },
+                                                      ),
+                                                    ],
+                                                  )
+                                                ]
+                                            )
+                                        );
+                                    }
+                                );
+                              }else{
+                                return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return
+                                        Container(
+                                            width: MediaQuery.of(context).size.width *0.9,
+                                            child: SimpleDialog(
+                                                title: Text('Cliente sin direcciones.'),
+                                                children: <Widget>[
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width ,
+                                                        height: MediaQuery.of(context).size.height *0.1,
+                                                      ),
+                                                      Row(
+                                                        children: <Widget>[
+                                                          Expanded(
+                                                            child: FlatButton(
+                                                              child: const Text('CONTINUAR'),
+                                                              onPressed: ()async {
+                                                                Navigator.of(context).pop();
+                                                                var t = await createTaskBusiness(null);
+                                                                if (t != null){
+                                                                  setState(() {
+                                                                    task.add(t);
+                                                                  });
+                                                                }
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  )
+                                                ]
+                                            )
+                                        );
+                                    }
+                                );
+                              }
+                              }
+
                           ),
                         ),
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.visibility),
-                            onPressed: () async => await showDialog(
-                              context: context,
-                              // ignore: deprecated_member_use
-                              child: SimpleDialog(
-                                  title: Text('Tareas:'),
-                                  children: <Widget>[
-                                    Column(
-                                      children: <Widget>[
-                                        Container(
-                                          width: MediaQuery.of(context).size.width ,
-                                          height: MediaQuery.of(context).size.height *0.5,
-                                          child: listTasksBusiness.length != 0 ? ListView.builder(
-                                            itemCount: listTasksBusiness.length,
-                                            itemBuilder: (context, index) {
-                                              return Container(
-                                                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                                                    color: Colors.white,
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.black12,
-                                                          blurRadius: 5
-                                                      )
-                                                    ]
-                                                ),
-                                                child: ListTile(
-                                                  title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-                                                  subtitle:listTasksBusiness[index].customer != null ? Text(listTasksBusiness[index].customer.name,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
-                                                  leading: Icon(Icons.message),
-                                                  onTap: (){
+                            onPressed: () {
+                              if(widget.edit){
+                                return   showDialog(
+                                    context: context,
+                                    // ignore: deprecated_member_use
+                                    child: SimpleDialog(
+                                        title: Text('Tareas:'),
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              Container(
+                                                width: MediaQuery.of(context).size.width ,
+                                                height: MediaQuery.of(context).size.height *0.5,
+                                                child: listTasksBusiness.length != 0 ? ListView.builder(
+                                                  itemCount: listTasksBusiness.length,
+                                                  itemBuilder: (context, index) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                          color: Colors.white,
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.black12,
+                                                                blurRadius: 5
+                                                            )
+                                                          ]
+                                                      ),
+                                                      child: ListTile(
+                                                        title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
+                                                        subtitle:listTasksBusiness[index].id != null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
+                                                        leading: Icon(Icons.message),
+                                                        onTap: (){
 
+                                                        },
+                                                      ),
+                                                    );
                                                   },
-                                                ),
-                                              );
-                                            },
-                                          ): Center(child: CircularProgressIndicator(),),
+                                                ): Center(child: CircularProgressIndicator(),),
 
-                                        ),
-                                      ],
+                                              ),
+                                            ],
+                                          )
+                                        ]
                                     )
-                                  ]
-                              )
-                          ),
+                                );
+                              }else{
+
+                              }
+
+                            }
 
                           ),
                         ),
@@ -645,6 +770,13 @@ class _FormBusinessState extends State<FormBusiness> {
         }
       ): Center(child: CircularProgressIndicator(),),
     );
+  }
+
+  getDirectionsClients()async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.token);
+    List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+    listDirectionsClients = customerAddresses;
   }
   getTaskBusiness() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
