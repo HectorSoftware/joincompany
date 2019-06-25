@@ -3216,7 +3216,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-      SELECT * FROM "customer_users"
+      SELECT * FROM "customers_users"
       '''
     );
 
@@ -3260,7 +3260,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "customer_users" WHERE 
+      SELECT * FROM "customers_users" WHERE 
       in_server = ? AND
       updated = ? AND
       deleted = ?
@@ -3290,7 +3290,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawUpdate(
       '''
-      UPDATE "customer_users" SET
+      UPDATE "customers_users" SET
       id = ?,
       created_at = ?,
       updated_at = ?,
@@ -3323,7 +3323,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawDelete(
         '''
-      DELETE FROM "customer_users" WHERE id = $id
+      DELETE FROM "customers_users" WHERE id = $id
       '''
     );
   }
@@ -3332,7 +3332,7 @@ class DatabaseProvider {
     final db = await database;
     return await db.rawUpdate(
       '''
-      UPDATE "customer_users" SET
+      UPDATE "customers_users" SET
       in_server = ?,
       updated = ?,
       deleted = ?
@@ -3347,7 +3347,7 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
-      SELECT * FROM "customer_users"
+      SELECT * FROM "customers_users"
       '''
     );
 
@@ -4728,6 +4728,76 @@ class DatabaseProvider {
     }
 
     return null;
+  }
+
+  Future<List<Map>> ReadCustomerContactsBySyncState(SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "customers_contacts" WHERE 
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
+      ''',
+      paramsBySyncState[syncState],
+    );
+
+    List<Map> listOfCustomerContacts = new List<Map>();
+    if (data.isNotEmpty) {
+      data.forEach((customerContact) {
+        listOfCustomerContacts.add({
+          "id": customerContact["id"],
+          "created_at": customerContact["created_at"],
+          "updated_at": customerContact["updated_at"],
+          "deleted_at": customerContact["deleted_at"],
+          "customer_id": customerContact["customer_id"],
+          "contact_id": customerContact["contact_id"],
+        });
+      });
+    }
+    return listOfCustomerContacts;
+  }
+
+  Future<int> UpdateCustomerContact(int id, String createdAt,
+      String updatedAt, String deletedAt,
+      int customerId, int contactId,
+      SyncState syncState) async {
+    final db = await database;
+    return await db.rawUpdate(
+      '''
+      UPDATE "customers_contacts" SET
+      id = ?,
+      created_at = ?,
+      updated_at = ?,
+      deleted_at = ?,
+      customer_id = ?,
+      contact_id = ?,
+      in_server = ?,
+      updated = ?,
+      deleted = ?
+      WHERE customer_id = $customerId AND contact_id = $contactId
+      ''',
+      [...[id, createdAt, updatedAt == null ? DateTime.now().toString() : updatedAt, 
+      deletedAt, customerId, contactId], ...paramsBySyncState[syncState]],
+    );
+  }
+
+  Future<List<String>> RetrieveAllCustomerContactRelations() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT customer_id, contact_id FROM "customers_contacts"
+      '''
+    );
+
+    List<String> relations = new List<String>();
+    if (data.isNotEmpty) 
+      data.forEach((relation) => relations.add(
+          relation["customer_id"].toString() + "-" + relation["contact_id"].toString()
+      ));
+    return relations;
   }
 }
 

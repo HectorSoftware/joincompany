@@ -11,6 +11,7 @@ import 'package:joincompany/async_operations/BusinessChannel.dart';
 import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
@@ -18,6 +19,8 @@ import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
+import 'package:joincompany/models/BusinessesModel.dart';
+import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FormModel.dart';
@@ -26,6 +29,8 @@ import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/BusinessService.dart';
+import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
@@ -39,10 +44,10 @@ import 'dart:async';
 
 class LoginPage extends StatefulWidget {
 
-  LoginPage({this.addUserWidget,this.companyEstableWidget,this.textViewVisibleWidget});
-  final bool textViewVisibleWidget;
-  final bool addUserWidget;
-  final String companyEstableWidget;
+  LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
+  final bool TextViewVisiblewidget;
+  final bool AgregarUserwidget;
+  final String companyEstablewidget;
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -54,11 +59,11 @@ class _LoginPageState extends State<LoginPage> {
   StreamSubscription _connectionChangeStream;
   bool isOnline = false;
 
-//  final nameController = TextEditingController(text : 'eibanez@duperu.com');
-//     final companyController = TextEditingController(text : 'duperu');
-    final nameController = TextEditingController(text: 'cbarrios@factochile.cl');
-     final companyController = TextEditingController(text: 'factochile');
-  final passwordController = TextEditingController(text: '123');
+  // final nameController = TextEditingController(text : 'eibanez@duperu.com');
+  // final companyController = TextEditingController(text : 'duperu');
+ final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+ final companyController = TextEditingController(text : 'getkem');
+  final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
   bool AgregarUser;
@@ -79,10 +84,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       isOnline = connectionStatus.connectionStatus;
     });
-
-    TextViewVisible = widget.textViewVisibleWidget;
-    AgregarUser = widget.addUserWidget;
-    companyEstable = widget.companyEstableWidget;
+    TextViewVisible = widget.TextViewVisiblewidget;
+    AgregarUser = widget.AgregarUserwidget;
+    companyEstable = widget.companyEstablewidget;
     super.initState();
   }
 
@@ -91,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
       isOnline = hasConnection;
     });
   }
-
   @override
   void dispose() {
   passwordController.dispose();
@@ -332,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos_DB(String email, String password, String company) async {
-
+    
     Circuleprogress = true;
     setState(() => Circuleprogress);
 
@@ -492,18 +495,18 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       }
-    }
+    }      
   }
 
   testApi() async{
+
     try {
+      print("---------------- Inicia test. ----------------------------");
 
-      print("------------------------------- Inicia Test ----------------------------");
-
+      String email = 'jgarcia@getkem.com';
       // String email = 'jgarcia@getkem.com';
-      String email = 'cbarrios@factochile.cl';
       String password = '123';
-      String customer = 'factochile';
+      String customer = 'getkem';
 
       // login
       // var loginResponse = await login(email, password, customer);
@@ -695,15 +698,15 @@ class _LoginPageState extends State<LoginPage> {
       //   FormModel formServer = FormModel.fromJson(getFormResponse);
       //   FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
       //   if (formLocal != null) {
-
-      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt);
+          
+      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
       //     DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
       //     int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       //     print(diffInMilliseconds);
       //     if ( diffInMilliseconds < 0 ) { // Actualizar Local
       //       await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
       //     }
-      //   }
+      //   } 
       // }
 
       // var formsResponse = await getAllForms(customer, "");
@@ -714,175 +717,182 @@ class _LoginPageState extends State<LoginPage> {
       // print(sections);
 
       // Create Server To Local
-    // var formsServerResponse = await getFormsRaw();
-    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
+      // var formsServerResponse = await getFormsRaw();
+      // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
 
-    // Set idsFormsServer = new Set();
-    // await Future.forEach(formsServer.data, (formServer) async {
-    //   idsFormsServer.add(formServer.id);
-    // });
+      // Set idsFormsServer = new Set();
+      // await Future.forEach(formsServer.data, (formServer) async {
+      //   idsFormsServer.add(formServer.id);
+      // });
 
-    // Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
+      // Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
 
-    // Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
+      // Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
 
-    // await Future.forEach(formsServer.data, (formServer) async {
-    //   if (idsToCreate.contains(formServer.id)) {
-    //     // Cambiar el SyncState Local
-    //     var getFormResponse = await getFormRaw(formServer.id);
-    //     FormModel form = FormModel.fromJson(getFormResponse);
+      // await Future.forEach(formsServer.data, (formServer) async {
+      //   if (idsToCreate.contains(formServer.id)) {
+      //     // Cambiar el SyncState Local
+      //     var getFormResponse = await getFormRaw(formServer.id);
+      //     FormModel form = FormModel.fromJson(getFormResponse);
 
-    //     print("Se va a crear: " + form.name);
+      //     print("Se va a crear: " + form.name);
 
-    //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
-    //   }
-    // });
+      //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
+      //   }
+      // });
 
 
 
-    // Delete
-    // var formsServerResponse = await getFormsRaw();
-    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
+      // Delete
+      // var formsServerResponse = await getFormsRaw();
+      // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
 
-    // Set idsFormsServer = new Set();
-    // await Future.forEach(formsServer.data, (formServer) async {
-    //   idsFormsServer.add(formServer.id);
-    // });
+      // Set idsFormsServer = new Set();
+      // await Future.forEach(formsServer.data, (formServer) async {
+      //   idsFormsServer.add(formServer.id);
+      // });
 
-    // Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
+      // Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
 
-    // Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
+      // Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
 
-    // await Future.forEach(idsToDelete, (idToDelete) async{
-    //   print("Delete... $idsToDelete" );
-    //   await DatabaseProvider.db.DeleteFormById(idToDelete);
-    // });
+      // await Future.forEach(idsToDelete, (idToDelete) async{
+      //   print("Delete... $idsToDelete" );
+      //   await DatabaseProvider.db.DeleteFormById(idToDelete);
+      // });
 
-    // Contact All
-    // var getAllContactsResponse = await getAllContacts(customer, authorization);
-    // ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
-    // print(getAllContactsResponse.request);
-    // print(getAllContactsResponse.body);
-    // print(contacts.data.length);
-    // print(contacts.data[0].name);
+      // Contact All
+      // var getAllContactsResponse = await getAllContacts(customer, authorization);
+      // ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
+      // print(getAllContactsResponse.request);
+      // print(getAllContactsResponse.body);
+      // print(contacts.data.length);
+      // print(contacts.data[0].name);
 
-    // Contact Get
-    // var getContactResponse = await getContact("5", customer, authorization);
-    // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
-    // print(getContactResponse.body);
-    // print(contact.id);
-    // print(contact.name);
+      // Contact Get
+      // var getContactResponse = await getContact("5", customer, authorization);
+      // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
+      // print(getContactResponse.body);
+      // print(contact.id);
+      // print(contact.name);
 
-    // Contact Create
-    // ContactModel contactObjNew = new ContactModel(
-    //   customerId: 467,
-    //   name: "Nombre Contacto",
-    //   phone: "0414-123456",
-    //   email: "contacto@contacto.com",
-    //   details: "Nota de Contacto"
-    // );
-    // var createContactResponse = await createContact(contactObjNew, customer, authorization);
-    // print(createContactResponse.statusCode);
-    // print(createContactResponse.body);
-    // ContactModel contactCreated = ContactModel.fromJson(createContactResponse.body);
-    // print(contactCreated.name);
+      // Contact Create
+      // ContactModel contactObjNew = new ContactModel(
+      //   customerId: 467,
+      //   name: "Nombre Contacto",
+      //   phone: "0414-123456",
+      //   email: "contacto@contacto.com",
+      //   details: "Nota de Contacto"
+      // );
+      // var createContactResponse = await createContact(contactObjNew, customer, authorization);
+      // print(createContactResponse.statusCode);
+      // print(createContactResponse.body);
+      // ContactModel contactCreated = ContactModel.fromJson(createContactResponse.body);
+      // print(contactCreated.name);
 
-    // Contact Update
-    // contact.name = 'Nombre Actualizado';
-    // var updateContactResponse = await updateContact('5', contact, customer, authorization);
-    // print(updateContactResponse.request);
-    // print(updateContactResponse.statusCode);
-    // print(updateContactResponse.body);
+      // Contact Update
+      // contact.name = 'Nombre Actualizado';
+      // var updateContactResponse = await updateContact('5', contact, customer, authorization);
+      // print(updateContactResponse.request);
+      // print(updateContactResponse.statusCode);
+      // print(updateContactResponse.body);
 
-    // Contact Delete
-    // var deleteContactResponse = await deleteContact('6', customer, authorization);
-    // print(deleteContactResponse.request);
-    // print(deleteContactResponse.body);
-    // bool eliminado = deleteContactResponse.body == '1' ? true : false;
-    // print(eliminado);
+      // Contact Delete
+      // var deleteContactResponse = await deleteContact('6', customer, authorization);
+      // print(deleteContactResponse.request);
+      // print(deleteContactResponse.body);
+      // bool eliminado = deleteContactResponse.body == '1' ? true : false;
+      // print(eliminado);
 
-    // Business All
-    // var getAllBusinessesResponse = await getAllBusinesses(customer, authorization);
-    // BusinessesModel businesses = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-    // print(getAllBusinessesResponse.request);
-    // print(getAllBusinessesResponse.body);
-    // print(businesses.data.length);
-    // print(businesses.data[0].name);
+      // Business All
+      // var getAllBusinessesResponse = await getAllBusinesses(customer, authorization);
+      // BusinessesModel businesses = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+      // print(getAllBusinessesResponse.request);
+      // print(getAllBusinessesResponse.body);
+      // print(businesses.data.length);
+      // print(businesses.data[0].name);
 
-    // Business Get
-    // var getBusinessResponse = await getBusiness("4", customer, authorization);
-    // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
-    // print(getBusinessResponse.body);
-    // print(business.id);
-    // print(business.name);
+      // Business Get
+      // var getBusinessResponse = await getBusiness("4", customer, authorization);
+      // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
+      // print(getBusinessResponse.body);
+      // print(business.id);
+      // print(business.name);
 
-    // Business Create
-    // BusinessModel businessObjNew = new BusinessModel(
-    //   customerId: 467,
-    //   name: "Nombre Business",
-    //   stage: "Nueva Etapa",
-    //   date: "2019-06-19",
-    //   amount: "0"
-    // );
-    // var createBusinessResponse = await createBusiness(businessObjNew, customer, authorization);
-    // print(createBusinessResponse.statusCode);
-    // print(createBusinessResponse.body);
-    // BusinessModel businessCreated = BusinessModel.fromJson(createBusinessResponse.body);
-    // print(businessCreated.name);
+      // Business Create
+      // BusinessModel businessObjNew = new BusinessModel(
+      //   customerId: 467,
+      //   name: "Nombre Business",
+      //   stage: "Nueva Etapa",
+      //   date: "2019-06-19",
+      //   amount: "0"
+      // );
+      // var createBusinessResponse = await createBusiness(businessObjNew, customer, authorization);
+      // print(createBusinessResponse.statusCode);
+      // print(createBusinessResponse.body);
+      // BusinessModel businessCreated = BusinessModel.fromJson(createBusinessResponse.body);
+      // print(businessCreated.name);
 
-    // Business Update
-    // business.name = 'Nombre Actualizado 33';
-    // var updateBusinessResponse = await updateBusiness('4', business, customer, authorization);
-    // print(updateBusinessResponse.request);
-    // print(updateBusinessResponse.statusCode);
-    // print(updateBusinessResponse.body);
+      // Business Update
+      // business.name = 'Nombre Actualizado 33';
+      // var updateBusinessResponse = await updateBusiness('4', business, customer, authorization);
+      // print(updateBusinessResponse.request);
+      // print(updateBusinessResponse.statusCode);
+      // print(updateBusinessResponse.body);
 
-    // Business Delete
-    // var deleteBusinessResponse = await deleteBusiness('3', customer, authorization);
-    // print(deleteBusinessResponse.request);
-    // print(deleteBusinessResponse.body);
-    // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
-    // print(eliminado);
+      // Business Delete
+      // var deleteBusinessResponse = await deleteBusiness('3', customer, authorization);
+      // print(deleteBusinessResponse.request);
+      // print(deleteBusinessResponse.body);
+      // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
+      // print(eliminado);
 
-    // Customer Contacts All
-    // var getCustomerContactsResponse = await getCustomerContacts('467', customer, authorization);
-    // ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
-    // print(getCustomerContactsResponse.request);
-    // print(getCustomerContactsResponse.body);
-    // print(customerContacts.data.length);
-    // print(customerContacts.data[0].name);
+      // Customer Contacts All
+      // var getCustomerContactsResponse = await getCustomerContacts('467', customer, authorization);
+      // ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
+      // print(getCustomerContactsResponse.request);
+      // print(getCustomerContactsResponse.body);
+      // print(customerContacts.data.length);
+      // print(customerContacts.data[0].name);
 
-    // Customer Contact Relate
-    // var relateCustomerContactResponse = await relateCustomerContact('472', '5', customer, authorization);
-    // print(relateCustomerContactResponse.statusCode);
-    // print(relateCustomerContactResponse.body);
+      // Customer Contact Relate
+      // var relateCustomerContactResponse = await relateCustomerContact('472', '5', customer, authorization);
+      // print(relateCustomerContactResponse.statusCode);
+      // print(relateCustomerContactResponse.body);
 
-    // Customer Contact Unrelate
-    // var unrelateCustomerContactResponse = await unrelateCustomerContact('40', '5', customer, authorization);
-    // print(unrelateCustomerContactResponse.request);
-    // print(unrelateCustomerContactResponse.statusCode);
-    // print(unrelateCustomerContactResponse.body);
+      // Customer Contact Unrelate
+      // var unrelateCustomerContactResponse = await unrelateCustomerContact('40', '5', customer, authorization);
+      // print(unrelateCustomerContactResponse.request);
+      // print(unrelateCustomerContactResponse.statusCode);
+      // print(unrelateCustomerContactResponse.body);
 
-    // Customer Businesess All
-    // var getCustomerBusinesessResponse = await getCustomerBusinesses('21', customer, authorization);
-    // BusinessesModel customerBusinesess = BusinessesModel.fromJson(getCustomerBusinesessResponse.body);
-    // print(getCustomerBusinesessResponse.request);
-    // print(getCustomerBusinesessResponse.body);
-    // print(customerBusinesess.data.length);
-    // print(customerBusinesess.data[0].name);
+      // Customer Businesess All
+      // var getCustomerBusinesessResponse = await getCustomerBusinesses('21', customer, authorization);
+      // BusinessesModel customerBusinesess = BusinessesModel.fromJson(getCustomerBusinesessResponse.body);
+      // print(getCustomerBusinesessResponse.request);
+      // print(getCustomerBusinesessResponse.body);
+      // print(customerBusinesess.data.length);
+      // print(customerBusinesess.data[0].name);
 
-    // Customer Business Relate
-    // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
-    // print(relateCustomerBusinessResponse.statusCode);
-    // print(relateCustomerBusinessResponse.body);
+      // Customer Business Relate
+      // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
+      // print(relateCustomerBusinessResponse.statusCode);
+      // print(relateCustomerBusinessResponse.body);
 
-    // await ContactChannel.syncEverything();
+      // await ContactChannel.syncEverything();
+      // await CustomerContactsChannel.syncEverything();
 
       // UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-      // ResponseModel a = await getAllContacts(user.company, user.rememberToken);
-      // ContactsModel b = a.body;
-      // print(b.data.length);
+      // ResponseModel getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
+      // ContactsModel contacts = getAllContactsResponse.body;
+      // print(contacts.data.length);
+
+      // await BusinessChannel.syncEverything();
+
+      // ResponseModel getAllBusinessesResponse = await getAllBusinesses(user.company, user.rememberToken);
+      // BusinessesModel businesses = getAllBusinessesResponse.body;
+      // print(businesses.data.length);
 
 
 
