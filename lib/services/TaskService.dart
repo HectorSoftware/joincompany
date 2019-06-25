@@ -115,7 +115,8 @@ Future<http.Response> getAllTasksFromServer(String customer, String authorizatio
     params["page"]=page;
   }
 
-  return await httpGet(customer, authorization, resourcePath, params: params);
+  var output = await httpGet(customer, authorization, resourcePath, params: params);
+  return output;
 }
 
 Future<ResponseModel> getTask(String id, String customer, String authorization) async {

@@ -11,6 +11,7 @@ import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
+import 'package:joincompany/async_operations/TaskChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
@@ -240,7 +241,8 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+                testApi();
+                // ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -884,10 +886,9 @@ class _LoginPageState extends State<LoginPage> {
       // ContactsModel b = a.body;
       // print(b.data.length);
 
+    print("---------------------------- Fin test ----------------------------");
 
-
-      print("---------------- Fin test. ----------------------------");
-    }catch(error, stackTrace){
+    } catch(error, stackTrace) {
       print(error);
       print(stackTrace);
     }
