@@ -79,7 +79,7 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(vista: false,statusPage: STATUS_PAGE_CLIENT.full);
+        return Client(statusPage: STATUS_PAGE_CLIENT.full);
       },
     );
   }//

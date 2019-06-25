@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget{
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>TaskHomePage(),
         "/formularioTareas": (context) =>FormTask(),
-        "/cliente": (context) =>Client(vista: false,statusPage: STATUS_PAGE_CLIENT.full),
+        "/cliente": (context) =>Client(statusPage: STATUS_PAGE_CLIENT.full),
         "/firma": (context) =>FirmTouch(),
         "/contactos": (context) =>ContactView(STATUS_PAGE.full),
         "/negocios": (context) =>BusinessList(false),
