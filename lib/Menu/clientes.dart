@@ -58,8 +58,8 @@ class _ClientState extends State<Client> {
     _connectionChangeStream.cancel();
     _filter.dispose();
     super.dispose();
-
   }
+
   void checkConnection(ConnectionStatusSingleton connectionStatus) async {
     isOffline = await connectionStatus.checkConnection();
     setState(() {
@@ -162,7 +162,7 @@ class _ClientState extends State<Client> {
                         title: Text(name , style: TextStyle(fontSize: 14),),
                         subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                         trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
-                          if(!widget.vista){
+                          if(statusPage == STATUS_PAGE_CLIENT.full){
                             Navigator.push(
                                 context,
                                 new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],)));
@@ -174,12 +174,9 @@ class _ClientState extends State<Client> {
                         }: (){
                           if(statusPage == STATUS_PAGE_CLIENT.select){
                             Navigator.of(context).pop(snapshot.data[index]);
-                          }else{
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(builder: (BuildContext context) => new  FormClient(snapshot.data[index])
-                                )
-                            );
+                          }
+                          if(statusPage == STATUS_PAGE_CLIENT.full){
+                            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new  FormClient(snapshot.data[index])));
                           }
                         },
                       ),
