@@ -44,8 +44,6 @@ class _BusinessListState extends State<BusinessList> {
     super.dispose();
   }
 
-  //search
-
   final TextEditingController _filter = new TextEditingController();
 
   void _searchPressed() {
@@ -151,7 +149,7 @@ class _BusinessListState extends State<BusinessList> {
                               ),
                               Card(
                                 child: ListTile(
-                                  title: Text(snapshot.data[index].name.toString()),
+                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
                                   subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
                                       color: Colors.black)): Text('', style: TextStyle(
                                       color: Colors.black)),
@@ -171,16 +169,7 @@ class _BusinessListState extends State<BusinessList> {
                                   },
                                 ),
                               ),
-                              Card(
-                                child:  ListTile(
-                                  title: Text(snapshot.data[index].customer),
-                                  subtitle:snapshot.data[index].stage != null? Text(snapshot.data[index].amount.toString(), style: TextStyle(
-                                      color: Colors.black)): Text('', style: TextStyle(
-                                      color: Colors.black)),
-                                  trailing: snapshot.data[index].date != null ?Text(snapshot.data[index].updatedAt.toString().substring(0,10)): Text('Sin Fecha asignada'),
-                                ),
-                              ),
-                              Container(
+                             /* Container(
                                 padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
                                 width: MediaQuery.of(context).size.width,
                                 height: MediaQuery.of(context).size.height * por,
@@ -194,7 +183,7 @@ class _BusinessListState extends State<BusinessList> {
                                   subtitle: Text(""),
                                   trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                 ),
-                              ),
+                              ),*/
                             ],
                           ),
                         );

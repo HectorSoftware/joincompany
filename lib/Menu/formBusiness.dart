@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'clientes.dart';
 
 enum type{
-  POSS,
+  PRIMER,
   CLIENT,
   CONTACT,
   DATE,
@@ -314,7 +314,7 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                               child: const Text('Aceptar'),
                                               onPressed: () {
-                                                Navigator.pushReplacementNamed(context, '/vistap');
+                                                Navigator.pushReplacementNamed(context, '/negocios');
                                               },
                                             ),
                                           ],
@@ -582,7 +582,6 @@ class _FormBusinessState extends State<FormBusiness> {
                    // errorText: getErrorText(t),
                     contentPadding: EdgeInsets.all(12.0),
                   ),
-                //  onChanged: _onChanges(t),
                 ),
               ), //Monto
               Container(
@@ -652,7 +651,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                         );
                                     }
                                 );
-                              }else{
+                              }else if(!widget.edit){
                                 return showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -703,6 +702,9 @@ class _FormBusinessState extends State<FormBusiness> {
                           child: IconButton(
                             icon: Icon(Icons.visibility),
                             onPressed: () {
+                              setState(() {
+
+                              });
                               if(widget.edit){
                                 return   showDialog(
                                     context: context,
@@ -714,7 +716,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                             children: <Widget>[
                                               Container(
                                                 width: MediaQuery.of(context).size.width ,
-                                                height: MediaQuery.of(context).size.height *0.5,
+                                                height: MediaQuery.of(context).size.height * (0.1 *listTasksBusiness.length) +50,
                                                 child: listTasksBusiness.length != 0 ? ListView.builder(
                                                   itemCount: listTasksBusiness.length,
                                                   itemBuilder: (context, index) {
@@ -738,7 +740,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                                       ),
                                                     );
                                                   },
-                                                ): Center(child: CircularProgressIndicator(),),
+                                                ): Center(child: Text('No hay tareas asociadas'),),
 
                                               ),
                                             ],
