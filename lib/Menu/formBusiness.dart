@@ -122,36 +122,7 @@ class _FormBusinessState extends State<FormBusiness> {
 
 
 }
-  Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
-//    for(FieldOptionModel v in elements){
-//     // dropdownMenuItems.add(v.name);
-//    }
-
-   /* return Container(
-      width: MediaQuery.of(context).size.width*0.95,
-        height: MediaQuery.of(context).size.height * 0.10,
-        child: DropdownButton<String>(
-          isDense: false,
-          icon: Icon(Icons.arrow_drop_down),
-          elevation: 10,
-          value: value,
-          hint: Text(title),
-          isExpanded: true,
-          onChanged: (String newValue) {
-            setState(() {
-              value = newValue;
-            });
-          },
-        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        ),
-    );*/
-  }
   initTextController(){
 
     if(widget.dataBusiness != null){
@@ -186,160 +157,16 @@ class _FormBusinessState extends State<FormBusiness> {
 
     }
   }
-  Widget customTextField(String title, type t, int maxLines){
-    return Container(
-      margin: EdgeInsets.all(12.0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5
-            )
-          ]
-      ),
-      //color: Colors.grey.shade300,
-      child: TextField(
-        controller: getController(t),
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          hintText: title,
-          border: InputBorder.none,
-          errorText: getErrorText(t),
-          contentPadding: EdgeInsets.all(12.0),
-        ),
-        onChanged: _onChanges(t),
-      ),
-    );
-  }
-   customForm(type t){
-    switch(t){
-      case type.POSS:
-        return customTextField('Posicionamiento cliente',t,1);
-      case type.CLIENT:
-        return customDropdownMenu(optionsClients,' cliente B',value);
-      case type.CONTACT:
-        return customDropdownMenu(optionsContacts,' Primer Contacto',value);
-      case type.DATE:
-        return ListTile(
-          title: _date.toString() != null ?Text("Fecha ${_date.toLocal()}"): Text("Fecha"),
-          trailing: Icon(Icons.calendar_today),
-          onTap: ()async{
-            final DateTime picked = await showDatePicker(
-                context: context,
-                initialDate: _date,
-                firstDate: new DateTime(2000),
-                lastDate: new DateTime(2020)
-            );
-            if (picked != null && picked != _date){
-              setState(() {
-                _date = picked;
-              });
-            }
-          },
-        );
-      case type.MOUNT:
-        return customTextField('Monto',t,1);
-    }
-  }
 
-  String getErrorText(type t){
-    switch(t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-
-        break;
-    }
-    return "";
-  }
-
-  _onChanges(type t){
-    switch(t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-        break;
-    }
-  }
-
-  void initController(){
-//    name = TextEditingController();
-//    code = TextEditingController();
-//    tlfF = TextEditingController();
-//    tlfM = TextEditingController();
-//    email = TextEditingController();
-//    note = TextEditingController();
-  }
 
   void disposeController(){
     posController.dispose();
     amountController.dispose();
     clientController.dispose();
     dateController.dispose();
-//    name.dispose();
-//    code.dispose();
-//    tlfF.dispose();
-//    tlfM.dispose();
-//    email.dispose();
-//    note.dispose();
+
   }
 
-  List<DateTime> valueselectDate = new List<DateTime>();
-  Future<Null> selectDate( context )async{
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _date,
-        firstDate: new DateTime(2000),
-        lastDate: new DateTime(2020)
-    );
-    if (picked != null && picked != _date){
-      setState(() {
-        _date = picked;
-      });
-    }
-  }
-
-  TextEditingController getController(type t){
-    switch (t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-
-        break;
-    }
-    return null;
-  }
 
   ListView getClientBuilder() {
     return ListView.builder(
@@ -365,7 +192,6 @@ class _FormBusinessState extends State<FormBusiness> {
   @override
   void initState() {
     initTextController();
-    initController();
     getOther();
     businessGet = widget.dataBusiness;
     super.initState();
@@ -699,7 +525,6 @@ class _FormBusinessState extends State<FormBusiness> {
                 ),
               ), //Fecha
               Container(
-
                 margin: EdgeInsets.all(12.0),
                 decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
                     color: Colors.white,
@@ -736,12 +561,17 @@ class _FormBusinessState extends State<FormBusiness> {
                           child: IconButton(
                             icon: Icon(Icons.add),
                             onPressed: () async{
-                              var t = await createTaskBusiness();
-                              if (t != null){
-                                setState(() {
-                                  task.add(t);
-                                });
-                              }
+                              UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+                              var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.token);
+
+                             print(getCustomerAddressesResponse.statusCode);
+                             print(getCustomerAddressesResponse.body);
+                      //       var t = await createTaskBusiness();
+//                              if (t != null){
+//                                setState(() {
+//                                  task.add(t);
+//                                });
+//                              }
                             },
                           ),
                         ),
@@ -788,8 +618,6 @@ class _FormBusinessState extends State<FormBusiness> {
                                         ),
                                       ],
                                     )
-
-
                                   ]
                               )
                           ),
@@ -811,13 +639,7 @@ class _FormBusinessState extends State<FormBusiness> {
           );
         }
       ): Center(child: CircularProgressIndicator(),),
-
-//
-
     );
-  }
-  Future listTaskBusiness() async {
-
   }
   getTaskBusiness() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
@@ -860,28 +682,3 @@ class _FormBusinessState extends State<FormBusiness> {
     }
   }
 }
-/*ListView.builder(
-                                            itemCount: listTasksBusiness.length,
-                                            itemBuilder: (context, index) {
-                                              print(listTasksBusiness[index].name);
-                                              return Container(
-                                                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                                                        color: Colors.white,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                              color: Colors.black12,
-                                                              blurRadius: 5
-                                                          )
-                                                        ]
-                                                    ),
-                                                child: ListTile(
-                                                  title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-                                                  subtitle:listTasksBusiness[index].customer != null ? Text(listTasksBusiness[index].customer.name,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
-                                                  leading: Icon(Icons.message),
-                                                  onTap: (){
-
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                          ) */
