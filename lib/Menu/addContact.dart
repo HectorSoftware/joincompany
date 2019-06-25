@@ -45,12 +45,12 @@ class _AddContactState extends State<AddContact> {
   TextEditingController name, code, cargo, phoneF, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
-  Future<CustomerWithAddressModel> getClient(bool vista, STATUS_PAGE_CLIENT state) async {
+  Future<CustomerWithAddressModel> getClient(STATUS_PAGE_CLIENT state) async {
     return showDialog<CustomerWithAddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(vista: vista,statusPage: state);
+        return Client(statusPage: state);
       },
     );
   }
@@ -517,7 +517,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: ()async{
-                                  var client = await getClient(false,STATUS_PAGE_CLIENT.select);
+                                  var client = await getClient(STATUS_PAGE_CLIENT.select);
                                   if (client != null){
                                     print(client.toString());
                                     setState(() {
@@ -532,7 +532,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.visibility),
                                 onPressed: (){
-                                  getClient(true,STATUS_PAGE_CLIENT.view);
+                                  getClient(STATUS_PAGE_CLIENT.view);
                                 },
                               ),
                             ),

@@ -55,10 +55,11 @@ class TaskBloc{
     }
 
     _taskcontroller.add(_listMarker);
+    _taskcontroller.close();
   }
 
 
   void dispose() {
-    _taskcontroller.close();
+
   }
 }

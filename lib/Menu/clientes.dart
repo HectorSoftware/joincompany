@@ -21,8 +21,7 @@ enum STATUS_PAGE_CLIENT{
 class Client extends StatefulWidget {
 
   STATUS_PAGE_CLIENT statusPage;
-  bool vista;
-  Client({this.vista, this.statusPage});
+  Client({this.statusPage, bool vista});
 
   @override
   _ClientState createState() => _ClientState();
@@ -168,14 +167,7 @@ class _ClientState extends State<Client> {
                                 new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],)));
                           }
                         },),
-                        onTap:
-                        widget.vista ? (){
-                          Navigator.of(context).pop();
-                        }: (){
-
-                          if(statusPage == STATUS_PAGE_CLIENT.view){
-                            Navigator.of(context).pop();
-                          }
+                        onTap:(){
                           if(statusPage == STATUS_PAGE_CLIENT.select){
                             Navigator.of(context).pop(snapshot.data[index]);
                           }
