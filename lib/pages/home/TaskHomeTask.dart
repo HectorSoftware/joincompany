@@ -64,7 +64,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     userActivity = await ClientDatabaseProvider.db.getCodeId('1');
 
     pageTasks = 1;
-    //getdatalist(listCalendar[1],listCalendar[0],1);
     if (this.mounted) {
       setState(() {
         userActivity;
@@ -121,18 +120,20 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     //BLOCK CALENDARIO
     blocListTaskCalendarRes = widget.blocListTaskCalendarReswidget;
     try {
-      setState(() {
-        // ignore: cancel_subscriptions
-        StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes
-            .outTaksCalendar.listen((onData) =>
-            setState(() {
-              listTaskModellocal.clear();
-              listTaskModellocalbool.clear();
-              pageTasks = 1;
-              listCalendar = onData;
-              //getdatalist(onData[1],onData[0],1);
-            }));
-      });
+      if (this.mounted){
+        setState(() {
+          // ignore: cancel_subscriptions
+          StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes
+              .outTaksCalendar.listen((onData) =>
+              setState(() {
+                listTaskModellocal.clear();
+                listTaskModellocalbool.clear();
+                pageTasks = 1;
+                listCalendar = onData;
+                //getdatalist(onData[1],onData[0],1);
+              }));
+        });
+      }
     } catch (e) {}
 
     //BLOCK LISTA
@@ -166,11 +167,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       if (this.mounted) {
         setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionListToal = blocList
-              .outListTaksTotal.listen((onDataListTotal) =>
-              setState(() {
-                taskTotals = onDataListTotal;
-              }));
+          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() { taskTotals = onDataListTotal; }));
         });
       }
     } catch (e) {}
@@ -181,11 +178,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       if (this.mounted) {
         setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionFilter = bloctasksFilter
-              .outTaksFilter.listen((newVal) =>
-              setState(() {
-                filterText = newVal;
-              }));
+          StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal) => setState(() {filterText = newVal;}));
         });
       }
     } catch (e) {}
@@ -220,9 +213,11 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   LastCircule() async {
     await Future.delayed(Duration(seconds: 6, milliseconds: 0));
-    setState(() {
-      chanceCircule = false;
-    });
+    if (this.mounted){
+      setState(() {
+        chanceCircule = false;
+      });
+    }
   }
 
   int taskTotals = 0;
