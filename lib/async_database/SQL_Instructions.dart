@@ -1,15 +1,18 @@
 enum DatabaseTables {
   users,
+  contacts,
   forms,
   localities,
   responsibles,
   customFields,
   addresses,
   customers,
-  tasks,
   customersUsers,
-  customValues,
+  customersContacts,
+  businesses,
   customersAddresses,
+  tasks,
+  customValues,
 }
 
 const Map<DatabaseTables, String> databaseInstructions = {
@@ -33,8 +36,8 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "details" TEXT,
     "profile" TEXT,
     "remember_token" TEXT,
-    "company" TEXT,
     "logged_at" DATETIME,
+    "company" TEXT,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,
@@ -54,6 +57,36 @@ const Map<DatabaseTables, String> databaseInstructions = {
     CREATE INDEX "users.fk_users_users1_idx" ON "users" ("created_by_id");
     CREATE INDEX "users.fk_users_users2_idx" ON "users" ("updated_by_id");
     CREATE INDEX "users.fk_users_users3_idx" ON "users" ("deleted_by_id");
+    ''',
+  DatabaseTables.contacts: 
+    '''CREATE TABLE "contacts"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created_at" DATETIME,
+    "updated_at" DATETIME,
+    "deleted_at" DATETIME,
+    "created_by_id" INTEGER,
+    "updated_by_id" INTEGER,
+    "deleted_by_id" INTEGER,
+    "name" TEXT,
+    "phone" TEXT,
+    "email" TEXT,
+    "details" TEXT,
+    "in_server" BOOL,
+    "updated" BOOL,
+    "deleted" BOOL,
+    CONSTRAINT "fk_contacts_users1"
+    FOREIGN KEY("created_by_id")
+    REFERENCES "users"("id"),
+    CONSTRAINT "fk_contacts_users2"
+    FOREIGN KEY("updated_by_id")
+    REFERENCES "users"("id"),
+    CONSTRAINT "fk_contacts_users3"
+    FOREIGN KEY("deleted_by_id")
+    REFERENCES "users"("id")
+    );
+    CREATE INDEX "contacts.fk_contacts_users1_idx" ON "contacts" ("created_by_id");
+    CREATE INDEX "contacts.fk_contacts_users2_idx" ON "contacts" ("updated_by_id");
+    CREATE INDEX "contacts.fk_contacts_users3_idx" ON "contacts" ("deleted_by_id");
     ''',
   DatabaseTables.forms:
     '''CREATE TABLE "forms"(
@@ -294,6 +327,110 @@ const Map<DatabaseTables, String> databaseInstructions = {
     CREATE INDEX "customers.fk_customers_users2_idx" ON "customers" ("updated_by_id");
     CREATE INDEX "customers.fk_customers_users3_idx" ON "customers" ("deleted_by_id");
     ''',
+  DatabaseTables.customersUsers:
+    '''CREATE TABLE "customers_users"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created_at" DATETIME,
+    "updated_at" DATETIME,
+    "deleted_at" DATETIME,
+    "customer_id" INTEGER,
+    "user_id" INTEGER,
+    "in_server" BOOL,
+    "updated" BOOL,
+    "deleted" BOOL,
+    CONSTRAINT "fk_customers_users_customers2"
+    FOREIGN KEY("customer_id")
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_customers_users_users2"
+    FOREIGN KEY("user_id")
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE
+    );
+    CREATE INDEX "customers_users.fk_customers_users_customers2_idx" ON "customers_users" ("customer_id");
+    CREATE INDEX "customers_users.fk_customers_users_users2_idx" ON "customers_users" ("user_id");
+    ''',
+  DatabaseTables.customersContacts:
+    '''CREATE TABLE "customers_contacts"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created_at" DATETIME,
+    "updated_at" DATETIME,
+    "deleted_at" DATETIME,
+    "customer_id" INTEGER,
+    "contact_id" INTEGER,
+    "in_server" BOOL,
+    "updated" BOOL,
+    "deleted" BOOL,
+    CONSTRAINT "fk_customers_contacts_customers1"
+    FOREIGN KEY("customer_id")
+    REFERENCES "customers"("id"),
+    CONSTRAINT "fk_customers_contacts_contacts1"
+    FOREIGN KEY("contact_id")
+    REFERENCES "contacts"("id")
+    );
+    CREATE INDEX "customers_contacts.fk_customers_contacts_customers1_idx" ON "customers_contacts" ("customer_id");
+    CREATE INDEX "customers_contacts.fk_customers_contacts_contacts1_idx" ON "customers_contacts" ("contact_id");
+    ''',
+  DatabaseTables.businesses:
+    '''CREATE TABLE "businesses"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created_at" DATETIME,
+    "updated_at" DATETIME,
+    "deleted_at" DATETIME,
+    "created_by_id" INTEGER,
+    "updated_by_id" INTEGER,
+    "deleted_by_id" INTEGER,
+    "customer_id" INTEGER,
+    "name" TEXT,
+    "stage" TEXT,
+    "date" DATETIME,
+    "amount" TEXT,
+    "in_server" BOOL,
+    "updated" BOOL,
+    "deleted" BOOL,
+    CONSTRAINT "fk_businesses_customers1"
+    FOREIGN KEY("customer_id")
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_businesses_users1"
+    FOREIGN KEY("created_by_id")
+    REFERENCES "users"("id"),
+    CONSTRAINT "fk_businesses_users2"
+    FOREIGN KEY("updated_by_id")
+    REFERENCES "users"("id"),
+    CONSTRAINT "fk_businesses_users3"
+    FOREIGN KEY("deleted_by_id")
+    REFERENCES "users"("id")
+    );
+    CREATE INDEX "businesses.fk_businesses_customers1_idx" ON "businesses" ("customer_id");
+    CREATE INDEX "businesses.fk_businesses_users1_idx" ON "businesses" ("created_by_id");
+    CREATE INDEX "businesses.fk_businesses_users2_idx" ON "businesses" ("updated_by_id");
+    CREATE INDEX "businesses.fk_businesses_users3_idx" ON "businesses" ("deleted_by_id");
+    ''',
+  DatabaseTables.customersAddresses:
+    '''CREATE TABLE "customers_addresses"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created_at" DATETIME,
+    "updated_at" DATETIME,
+    "deleted_at" DATETIME,
+    "customer_id" INTEGER,
+    "address_id" INTEGER,
+    "approved" BOOL,
+    "in_server" BOOL,
+    "updated" BOOL,
+    "deleted" BOOL,
+    CONSTRAINT "fk_customers_addresses_customers1"
+    FOREIGN KEY("customer_id")
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_customers_addresses_addresses1"
+    FOREIGN KEY("address_id")
+    REFERENCES "addresses"("id")
+    ON UPDATE CASCADE
+    );
+    CREATE INDEX "customers_addresses.fk_customers_addresses_addresses1_idx" ON "customers_addresses" ("address_id");
+    CREATE INDEX "customers_addresses.fk_customers_addresses_customers1_idx" ON "customers_addresses" ("customer_id");
+    ''',
   DatabaseTables.tasks:
     '''CREATE TABLE "tasks"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -307,6 +444,7 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "responsible_id" INTEGER,
     "customer_id" INTEGER,
     "address_id" INTEGER,
+    "business_id" INTEGER,
     "name" TEXT,
     "planning_date" DATETIME,
     "checkin_date" DATETIME,
@@ -348,6 +486,10 @@ const Map<DatabaseTables, String> databaseInstructions = {
     CONSTRAINT "fk_tasks_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_tasks_businesses1"
+    FOREIGN KEY("business_id")
+    REFERENCES "businesses"("id")
     ON UPDATE CASCADE
     );
     CREATE INDEX "tasks.fk_tasks_forms_idx" ON "tasks" ("form_id");
@@ -357,93 +499,47 @@ const Map<DatabaseTables, String> databaseInstructions = {
     CREATE INDEX "tasks.fk_tasks_users1_idx" ON "tasks" ("created_by_id");
     CREATE INDEX "tasks.fk_tasks_users2_idx" ON "tasks" ("updated_by_id");
     CREATE INDEX "tasks.fk_tasks_users3_idx" ON "tasks" ("deleted_by_id");
-    INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(1, 'now()', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(2, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    CREATE INDEX "tasks.fk_tasks_businesses1_idx" ON "tasks" ("business_id");
+    INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","business_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(1, 'now()', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    INSERT INTO "tasks"("id","created_at","updated_at","deleted_at","created_by_id","updated_by_id","deleted_by_id","form_id","responsible_id","customer_id","address_id","business_id","name","planning_date","checkin_date","checkin_latitude","checkin_longitude","checkin_distance","checkout_date","checkout_latitude","checkout_longitude","checkout_distance","status","in_server","updated","deleted") VALUES(2, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     ''',
-  DatabaseTables.customersUsers:
-    '''CREATE TABLE "customers_users"(
+  DatabaseTables.customValues:
+    '''CREATE TABLE "custom_values"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "created_at" DATETIME,
     "updated_at" DATETIME,
     "deleted_at" DATETIME,
-    "customer_id" INTEGER,
-    "user_id" INTEGER,
+    "task_id" INTEGER,
+    "form_id" INTEGER,
+    "section_id" INTEGER,
+    "field_id" INTEGER,
+    "customizable_type" TEXT,
+    "customizable_id" INTEGER,
+    "value" TEXT,
+    "image_base64" TEXT,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,
-    CONSTRAINT "fk_customers_users_customers2"
-    FOREIGN KEY("customer_id")
-    REFERENCES "customers"("id")
+    CONSTRAINT "fk_custom_values_forms1"
+    FOREIGN KEY("form_id")
+    REFERENCES "forms"("id")
     ON UPDATE CASCADE,
-    CONSTRAINT "fk_customers_users_users2"
-    FOREIGN KEY("user_id")
-    REFERENCES "users"("id")
+    CONSTRAINT "fk_custom_values_custom_fields1"
+    FOREIGN KEY("section_id")
+    REFERENCES "custom_fields"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_custom_values_custom_fields2"
+    FOREIGN KEY("field_id")
+    REFERENCES "custom_fields"("id")
+    ON UPDATE CASCADE,
+    CONSTRAINT "fk_custom_values_tasks1"
+    FOREIGN KEY("task_id")
+    REFERENCES "tasks"("id")
     ON UPDATE CASCADE
-    );
-    CREATE INDEX "customers_users.fk_customers_users_customers2_idx" ON "customers_users" ("customer_id");
-    CREATE INDEX "customers_users.fk_customers_users_users2_idx" ON "customers_users" ("user_id");
-    ''',
-  DatabaseTables.customValues:
-    '''CREATE TABLE "custom_values"(
-      "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-      "created_at" DATETIME,
-      "updated_at" DATETIME,
-      "deleted_at" DATETIME,
-      "task_id" INTEGER,
-      "form_id" INTEGER,
-      "section_id" INTEGER,
-      "field_id" INTEGER,
-      "customizable_type" TEXT,
-      "customizable_id" INTEGER,
-      "value" TEXT,
-      "image_base64" TEXT,
-      "in_server" BOOL,
-      "updated" BOOL,
-      "deleted" BOOL,
-      CONSTRAINT "fk_custom_values_forms1"
-        FOREIGN KEY("form_id")
-        REFERENCES "forms"("id")
-        ON UPDATE CASCADE,
-      CONSTRAINT "fk_custom_values_custom_fields1"
-        FOREIGN KEY("section_id")
-        REFERENCES "custom_fields"("id")
-        ON UPDATE CASCADE,
-      CONSTRAINT "fk_custom_values_custom_fields2"
-        FOREIGN KEY("field_id")
-        REFERENCES "custom_fields"("id")
-        ON UPDATE CASCADE,
-      CONSTRAINT "fk_custom_values_tasks1"
-        FOREIGN KEY("task_id")
-        REFERENCES "tasks"("id")
-        ON UPDATE CASCADE
     );
     CREATE INDEX "custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
     CREATE INDEX "custom_values.fk_custom_values_tasks1_idx" ON "custom_values" ("task_id");
-    ''',
-  DatabaseTables.customersAddresses:
-    '''CREATE TABLE "customers_addresses"(
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    "created_at" DATETIME,
-    "updated_at" DATETIME,
-    "deleted_at" DATETIME,
-    "customer_id" INTEGER,
-    "address_id" INTEGER,
-    "approved" BOOL,
-    "in_server" BOOL,
-    "updated" BOOL,
-    "deleted" BOOL,
-    CONSTRAINT "fk_customers_addresses_customers1"
-    FOREIGN KEY("customer_id")
-    REFERENCES "customers"("id")
-    ON UPDATE CASCADE,
-    CONSTRAINT "fk_customers_addresses_addresses1"
-    FOREIGN KEY("address_id")
-    REFERENCES "addresses"("id")
-    ON UPDATE CASCADE
-    );
-    CREATE INDEX "customers_addresses.fk_customers_addresses_addresses1_idx" ON "customers_addresses" ("address_id");
-    CREATE INDEX "customers_addresses.fk_customers_addresses_customers1_idx" ON "customers_addresses" ("customer_id");
     ''',
 };

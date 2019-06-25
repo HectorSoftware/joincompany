@@ -12,8 +12,7 @@ class ContactChannel {
   static Future _createContactsInBothLocalAndServer(String customer, String authorization) async {
 
     // Create Local To Server    
-    // List<ContactModel> contactsLocal = await DatabaseProvider.db.ReadContactsBySyncState(SyncState.created);
-    var contactsLocal;
+    List<ContactModel> contactsLocal = await DatabaseProvider.db.ReadContactsBySyncState(SyncState.created);
 
     await Future.forEach(contactsLocal, (contactLocal) async {
       var createContactResponseServer = await createContactFromServer(contactLocal, customer, authorization);
@@ -21,7 +20,7 @@ class ContactChannel {
         ContactModel contactServer = ContactModel.fromJson(createContactResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
-        // await DatabaseProvider.db.UpdateContact(contactLocal.id, contactServer, SyncState.synchronized);
+        await DatabaseProvider.db.UpdateContact(contactLocal.id, contactServer, SyncState.synchronized);
       }
     });
 
@@ -34,16 +33,15 @@ class ContactChannel {
       idsContactsServer.add(contactServer.id);
     });
 
-    // Set idsContactsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllContactIds()); //método de albert
-    var idsContactsLocal;
+    Set idsContactsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllContactIds()); //método de albert
 
     Set idsToCreate = idsContactsServer.difference(idsContactsLocal);
 
     await Future.forEach(contactsServer.data, (contactServer) async {
       if (idsToCreate.contains(contactServer.id)) {
         // Cambiar el SyncState Local
-        // await DatabaseProvider.db.CreateContact(contactServer, SyncState.synchronized);
-        // await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, contactServer.customerId, contactServer.id, SyncState.synchronized);
+        await DatabaseProvider.db.CreateContact(contactServer, SyncState.synchronized);
+        await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, contactServer.customerId, contactServer.id, SyncState.synchronized);
       }
     });
   }
@@ -51,13 +49,12 @@ class ContactChannel {
   static Future _deleteContactsInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
-    // List<ContactModel> contactsLocal = await DatabaseProvider.db.ReadContactsBySyncState(SyncState.deleted);
-    var contactsLocal;
+    List<ContactModel> contactsLocal = await DatabaseProvider.db.ReadContactsBySyncState(SyncState.deleted);
 
     await Future.forEach(contactsLocal, (contactLocal) async {
       var deleteContactResponseServer = await deleteContactFromServer(contactLocal.id.toString(), customer, authorization);
       if (deleteContactResponseServer.statusCode==200) {
-        // await DatabaseProvider.db.DeleteContactById(contactLocal.id);
+        await DatabaseProvider.db.DeleteContactById(contactLocal.id);
       }
     });
 
@@ -70,13 +67,12 @@ class ContactChannel {
       idsContactsServer.add(contactServer.id);
     });
 
-    // Set idsContactsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllContactIds()); //método de albert
-    var idsContactsLocal;
+    Set idsContactsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllContactIds()); //método de albert
 
     Set idsToDelete = idsContactsLocal.difference(idsContactsServer);
 
     await Future.forEach(idsToDelete, (idToDelete) async{
-      // await DatabaseProvider.db.DeleteContactById(idToDelete);
+      await DatabaseProvider.db.DeleteContactById(idToDelete);
     });
   }
 
@@ -87,8 +83,7 @@ class ContactChannel {
 
     await Future.forEach(contactsServer.data, (contactServer) async {
 
-      // ContactModel contactLocal = await DatabaseProvider.db.ReadContactById(contactServer.id);
-      var contactLocal;
+      ContactModel contactLocal = await DatabaseProvider.db.ReadContactById(contactServer.id);
       if (contactLocal != null) {
         
         DateTime updateDateLocal  = DateTime.parse(contactLocal.updatedAt); 
@@ -101,10 +96,10 @@ class ContactChannel {
             ContactModel contactServerUpdated = ContactModel.fromJson(updateContactServerResponse.body);
             //Cambiar el sycn state
             // Actualizar fecha de actualización local con la respuesta del servidor para evitar un ciclo infinito
-            // await DatabaseProvider.db.UpdateContact(contactServerUpdated.id, contactServerUpdated, SyncState.synchronized);
+            await DatabaseProvider.db.UpdateContact(contactServerUpdated.id, contactServerUpdated, SyncState.synchronized);
           }
         } else if ( diffInMilliseconds < 0) { // Actualizar Local
-          // await DatabaseProvider.db.UpdateContact(contactServer.id, contactServer, SyncState.synchronized);
+          await DatabaseProvider.db.UpdateContact(contactServer.id, contactServer, SyncState.synchronized);
         }
       }
     });

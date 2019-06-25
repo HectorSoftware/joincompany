@@ -152,7 +152,7 @@ Future<http.Response> updateCustomerFromServer(String id, CustomerModel customer
 Future<ResponseModel> deleteCustomer(String id, String customer, String authorization) async {
 
   bool deletedFromServer = false;
-  print("estoy");
+
   if (isOnline) {
     var deleteCustomerResponse = await deleteCustomerFromServer(id, customer, authorization);
     if (deleteCustomerResponse.statusCode==200 || deleteCustomerResponse.statusCode==201) {
@@ -285,8 +285,7 @@ Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact,
     }
   }
   
-  // var customerContactCreated = await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, int.parse(idCustomer), int.parse(idContact), syncState);
-  var customerContactCreated;
+  var customerContactCreated = await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, int.parse(idCustomer), int.parse(idContact), syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactCreated.toString());
 
@@ -319,9 +318,9 @@ Future<ResponseModel> unrelateCustomerContact(String idCustomer, String idContac
   var customerContactDelete;
 
   if (unrelateFromServer) {
-    // customerContactDelete = await DatabaseProvider.db.DeleteCustomerContactById(int.parse(idCustomer), int.parse(idContact));
+    customerContactDelete = await DatabaseProvider.db.DeleteCustomerContactById(int.parse(idCustomer), int.parse(idContact));
   } else {
-    // customerContactDelete = await DatabaseProvider.db.ChangeSyncStateCustomerContact(int.parse(idCustomer), int.parse(idContact), syncState);
+    customerContactDelete = await DatabaseProvider.db.ChangeSyncStateCustomerContact(int.parse(idCustomer), int.parse(idContact), syncState);
   }
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerContactDelete.toString());
