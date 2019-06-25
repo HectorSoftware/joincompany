@@ -168,9 +168,6 @@ class _ClientState extends State<Client> {
                           }
                         },),
                         onTap:(){
-                          if(statusPage == STATUS_PAGE_CLIENT.view){
-                            Navigator.of(context).pop();
-                          }
                           if(statusPage == STATUS_PAGE_CLIENT.select){
                             Navigator.of(context).pop(snapshot.data[index]);
                           }
