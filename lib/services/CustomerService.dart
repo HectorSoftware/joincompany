@@ -256,9 +256,7 @@ Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, Strin
 }
 
 Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization ) async {
-  //List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
-
-  List<ContactModel> contacts = new List<ContactModel>();
+  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 
@@ -336,9 +334,7 @@ Future<http.Response> unrelateCustomerContactFromServer(String idCustomer, Strin
 }
 
 Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization ) async {
-  //List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
-
-  List<BusinessModel> businesses = new List<BusinessModel>();
+  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
   
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
   
@@ -365,8 +361,7 @@ Future<ResponseModel> relateCustomerBusiness(String idCustomer, String idBusines
     }
   }
   
-  // var customerBusinessCreated = await DatabaseProvider.db.CreateCustomerBusiness(null, null, null, null, int.parse(idCustomer), int.parse(idBusiness), syncState);
-  var customerBusinessCreated;
+  var customerBusinessCreated = await DatabaseProvider.db.CreateCustomerBusiness(null, null, null, null, int.parse(idCustomer), int.parse(idBusiness), syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerBusinessCreated.toString());
 

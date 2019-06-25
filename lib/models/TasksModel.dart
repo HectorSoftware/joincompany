@@ -64,4 +64,15 @@ class TasksModel {
     "to": to,
     "total": total,
   };
+
+  List<int> listTasksIds() {
+    List<int> listOfTaskIds = List<int>();
+
+    if(data != null)
+      data.forEach((task) {
+        if (task.id != null)
+          listOfTaskIds.add(task.id);
+      });
+    return listOfTaskIds;
+  }
 }
