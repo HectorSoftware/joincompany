@@ -4325,29 +4325,17 @@ class DatabaseProvider {
   Future<List<ContactModel>> RetrieveContactsByUserToken (String userToken) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-//    data = await db.rawQuery(
-//        '''
-//      Select c.*, cu.name as customer, cu.id as customer_id
-//      from "contacts" as c
-//      inner join "customers_contacts" as cc on cc.contact_id = c.id
-//      inner join "customers" as cu on cc.customer_id = cu.id
-//      inner join "users" as u on c.created_by_id = u.id
-//      WHERE u.remember_token = '$userToken';
-//      '''
-//    );
-
 
     data = await db.rawQuery(
         '''
-      Select c.*
+      Select c.*, cu.name as customer, cu.id as customer_id
       from "contacts" as c
-      inner join "customers_contacts" as cc on cc.contact_id = c.id
+      left join "customers_contacts" as cc on cc.contact_id = c.id
+      left join "customers" as cu on cc.customer_id = cu.id
       inner join "users" as u on c.created_by_id = u.id
       WHERE u.remember_token = '$userToken';
       '''
     );
-
-    print(data.toList());
 
     List<ContactModel> listOfContacts = new List<ContactModel>();
     if (data.isNotEmpty) {
@@ -4621,8 +4609,9 @@ class DatabaseProvider {
   Future<List<BusinessModel>> RetrieveBusinessesByUserToken(String userToken) async {
     final db = await database;
     List<Map<String, dynamic>> data;
+
     data = await db.rawQuery(
-      '''
+        '''
       Select b.*, cu.name as customer
       from "businesses" as b
       inner join "customers" as cu on cu.id = b.customer_id
@@ -4631,7 +4620,6 @@ class DatabaseProvider {
       '''
     );
 
-    print(data.toList());
 
     List<BusinessModel> listOfBusinesses = new List<BusinessModel>();
     if (data.isNotEmpty) {

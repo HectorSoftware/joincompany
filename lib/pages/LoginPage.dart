@@ -25,6 +25,7 @@ import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
@@ -61,8 +62,8 @@ class _LoginPageState extends State<LoginPage> {
 
   // final nameController = TextEditingController(text : 'eibanez@duperu.com');
   // final companyController = TextEditingController(text : 'duperu');
- final nameController = TextEditingController(text : 'jgarcia@getkem.com');
- final companyController = TextEditingController(text : 'getkem');
+ final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
+ final companyController = TextEditingController(text : 'factochile');
   final passwordController = TextEditingController(text : '123');
 
   bool TextViewVisible;
@@ -245,6 +246,7 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+//                testApi();
               },
               child: Center(
                   child: Center(
@@ -430,6 +432,7 @@ class _LoginPageState extends State<LoginPage> {
                 await CustomerAddressesChannel.syncEverything();
                 await FormChannel.syncEverything();
                 await ContactChannel.syncEverything();
+                await CustomerContactsChannel.syncEverything();
                 await BusinessChannel.syncEverything();
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
@@ -893,6 +896,8 @@ class _LoginPageState extends State<LoginPage> {
       // ResponseModel getAllBusinessesResponse = await getAllBusinesses(user.company, user.rememberToken);
       // BusinessesModel businesses = getAllBusinessesResponse.body;
       // print(businesses.data.length);
+
+      // await CustomerContactsChannel.syncEverything();
 
 
 

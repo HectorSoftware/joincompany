@@ -68,7 +68,7 @@ class _ContactViewState extends State<ContactView> {
 
   void sync() async{
     await ContactChannel.syncEverything();
-//    await CustomerContactsChannel.syncEverything();
+    await CustomerContactsChannel.syncEverything();
     Navigator.pop(context);
   }
 

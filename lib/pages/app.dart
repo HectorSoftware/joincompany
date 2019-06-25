@@ -47,7 +47,7 @@ class _AppState extends State<App> {
         body: Stack(
             children: <Widget>[
               salirMail ?
-              LoginPage(textViewVisibleWidget: TextViewVisible,addUserWidget: AgregarUser,companyEstableWidget: companyEstable)
+              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
               : Center(
                 child: CircularProgressIndicator(),
               ),
