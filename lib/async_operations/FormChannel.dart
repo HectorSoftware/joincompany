@@ -56,7 +56,7 @@ class FormChannel {
         dynamic formFromServerResponse = await getFormFromServer(formFromServerInList.id.toString(), customer, authorization);
         FormModel formFromServer = FormModel.fromJson(formFromServerResponse.body);
 
-        List<int> sectionsFromServer = await formFromServer.listSectionIds();
+        List<int> sectionsFromServer = formFromServer.listSectionIds();
         List<int> sectionsFromLocal = await DatabaseProvider.db.ListSectionIdsByForm(formFromServer.id);
 
         Set<int> setOfSectionsFromServer = Set<int>.from(sectionsFromServer);

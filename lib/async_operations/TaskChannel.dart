@@ -1,3 +1,4 @@
+// TODO: Crear tambien hijos y actualizarlos de ser necesario
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
@@ -6,13 +7,14 @@ import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:http/http.dart' as http;
 
 class TaskChannel {
   static void createTasksInBothLocalAndServer() async {
     UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
-    
+
     await Future.forEach(tasksFromLocal, (taskFromLocal) async {
       var createTaskInServerRes = await createTask(taskFromLocal, lastLoggedUser.company, lastLoggedUser.rememberToken);
       if (createTaskInServerRes.statusCode == 200) {
@@ -23,9 +25,12 @@ class TaskChannel {
 
     var requestedTasksFromServer = await getAllTasks(lastLoggedUser.company, lastLoggedUser.rememberToken, responsibleId: lastLoggedUser.id.toString());
     TasksModel tasksFromServer = TasksModel.fromJson(requestedTasksFromServer.body);
-
+  
     Set<int> idsOfTasksFromServer = new Set<int>();
-    tasksFromServer.data.forEach((taskFromServer) {idsOfTasksFromServer.add(taskFromServer.id))});
+    tasksFromServer.data.forEach((taskFromServer) {
+      idsOfTasksFromServer.add(taskFromServer.id);}
+    );
+
     Set<int> idsOfTasksFromLocal = new Set<int>.from(await DatabaseProvider.db.RetrieveAllTaskIds());
     Set<int> idsOfTasksToCreate = idsOfTasksFromServer.difference(idsOfTasksFromLocal);
 
@@ -39,48 +44,29 @@ class TaskChannel {
   static void deleteTaskInBothLocalAndServer() async {
     UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.deleted);
-    await Future.forEach(tasksFromLocal, (task) async {
-      var deleteTaskInServerRes = await deleteTask(task.id.toString(), lastLoggedUser.company, lastLoggedUser.rememberToken);
-      if (deleteTaskInServerRes.statusCode == 200)
-        await DatabaseProvider.db.DeleteTaskById(task.id);
+    http.Response tasksFromServerRes = await getAllTasksFromServer(lastLoggedUser.company, lastLoggedUser.rememberToken);
+    TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
+
+    List<int> taskIdsFromServer = tasksFromServer.listTasksIds();
+    List<int> taskIdsFromLocal = await DatabaseProvider.db.RetrieveAllTaskIds();
+
+    Set<int> setOfTaskIdsFromServer = Set<int>.from(taskIdsFromServer);
+    Set<int> setOfTaskIdsFromLocal = Set<int>.from(taskIdsFromLocal);
+    Set<int> setOfTaskIdsToDeleteWith = setOfTaskIdsFromLocal.difference(setOfTaskIdsFromServer);
+
+    await Future.forEach(setOfTaskIdsToDeleteWith, (id) async {
+      await DatabaseProvider.db.DeleteTaskById(id);
     });
 
-    var requestedTasksFromServer = await getAllTasks(null /*lastLoggedUser.company*/, lastLoggedUser.rememberToken, responsibleId: lastLoggedUser.id.toString());
-    TasksModel tasksFromServer = TasksModel.fromJson(requestedTasksFromServer.body);
-
-    Set<int> idsOfTasksFromServer = new Set<int>();
-    tasksFromServer.data.forEach((taskFromServer) {idsOfTasksFromServer.add(taskFromServer.id))});
-    Set<int> idsOfTasksFromLocal = new Set<int>.from(await DatabaseProvider.db.RetrieveAllTaskIds());
-    Set<int> idsOfTasksToDelete = idsOfTasksFromLocal.difference(idsOfTasksFromServer);
-
-    await Future.forEach(idsOfTasksToDelete, (taskToDelete) async {
-      await DatabaseProvider.db.DeleteTaskById(taskToDelete);
-    });
-  }
-
-  static void updateTaskInBothLocalAndServer() async {
-    UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
-
-    dynamic requestedTasksFromServer = await getAllTasks(lastLoggedUser.company, lastLoggedUser.rememberToken, responsibleId: lastLoggedUser.id.toString());
-    TasksModel tasksFromServer = TasksModel.fromJson(requestedTasksFromServer.body);
-
-    await Future.forEach(tasksFromServer.data, (taskFromServer) async {
-      TaskModel taskFromLocal = await DatabaseProvider.db.ReadTaskById(taskFromServer.id);
-      // Looking for differences between local's and server's task
-      DateTime updateDateLocal  = DateTime.parse(taskFromLocal.updatedAt);
-      DateTime updateDateServer = DateTime.parse(taskFromServer.updatedAt);
-      int diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
-
-      if (diffInMilliseconds > 0) {
-        var jsonUpdateTaskInServer = await updateTask(task.id.toString(), task, lastLoggedUser.company, lastLoggedUser.rememberToken);
-        if (jsonUpdateTaskInServer.statusCode == 200) {
-          TaskModel updatedTaskFromServer = TaskModel.fromJson(updateTaskInServerRes.body);
-          await DatabaseProvider.db.UpdateTask(task.id, updatedTaskFromServer, SyncState.synchronized);
+    List<TaskModel> tasksToDelete = await DatabaseProvider.db.ReadTaskBySyncState(SyncState.deleted);
+    
+    if (tasksToDelete != null) {
+      await Future.forEach(tasksToDelete, (taskToDelete) async {
+        http.Response deleteTaskRes = await deleteTask(taskToDelete.id.toString(), lastLoggedUser.company, lastLoggedUser.rememberToken);
+        if (deleteTaskRes.statusCode == 200 || deleteTaskRes.statusCode != 201) {
+          await DatabaseProvider.db.DeleteTaskById(taskToDelete.id);
         }
-      } else if ( diffInMilliseconds < 0 ) {
-        await DatabaseProvider.db.UpdateTask(taskFromServer.id, taskFromServer, SyncState.synchronized);
-      }
-    });
+      });
+    }
   }
 }

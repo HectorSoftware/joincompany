@@ -133,6 +133,16 @@ class TaskModel {
    "customer": customer != null ? customer.toMap() : null,
    "responsible": responsible != null ? responsible.toMap() : null,
  };
+
+ List<int> listCustomValueIds() {
+   List<int> listOfCustomValueIds = List<int>();
+
+   customValues.forEach((customValue) {
+     listOfCustomValueIds.add(customValue.id);
+   });
+
+   return listOfCustomValueIds;
+ }
 }
 
 class CustomSectionModel {
