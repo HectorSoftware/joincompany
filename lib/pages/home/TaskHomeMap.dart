@@ -2,17 +2,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/api/rutahttp.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'package:joincompany/widgets/FormTaskNew.dart';
+import 'package:extended_image/extended_image.dart';
+import 'dart:ui' as ui;
+
+class taskHomeMap extends StatefulWidget {
 import 'package:sentry/sentry.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
@@ -160,8 +166,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
       String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
-      UserDataBase UserActiv = await ClientDatabaseProvider.db.getCodeId('1');
-      var getAllTasksResponse = await getAllTasks(UserActiv.company,UserActiv.token,beginDate : diadesde ,endDate : hastadesde, responsibleId: UserActiv.idUserCompany.toString());
+      UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+      var getAllTasksResponse = await getAllTasks(user.company, user.rememberToken,beginDate : diadesde ,endDate : hastadesde, responsibleId: user.id.toString());
       TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
       status sendStatus = status.cliente;
       for(int i=0; i < tasks.data.length;i++){
@@ -183,7 +189,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
           _listMarker.add(marker);
         }
       }
-      var customersWithAddressResponse = await getAllCustomersWithAddress(UserActiv.company,UserActiv.token);
+      var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
       CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
       for(int y = 0; y < customersWithAddress.data.length; y++){
         Place marker;

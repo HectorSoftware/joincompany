@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/async_operations/FormChannel.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/CustomerModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/models/FormModel.dart';
+import 'package:joincompany/models/FormsModel.dart';
+import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
+import 'package:joincompany/services/CustomerService.dart';
+import 'package:joincompany/services/FormService.dart';
+import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
 //import 'package:joincompany/models/ValidatorSms.dart';
+
 
 
 class LoginPage extends StatefulWidget {
@@ -26,48 +48,58 @@ class LoginPage extends StatefulWidget {
 }
 class _LoginPageState extends State<LoginPage> {
 
-  UserDataBase saveUser;
-  UserDataBase userVe;
+  //singleton
+  StreamSubscription _connectionChangeStream;
+  bool isOnline = false;
 
-//  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
-//     final companyController = TextEditingController(/*text : 'duperu'*/);
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-//  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController(text : 'cbarrios@factochile.cl'/**/);
-  final companyController = TextEditingController(text : 'factochile'/**/);
-  final passwordController = TextEditingController(text: '123'/**/);
+//  final nameController = TextEditingController(text : 'eibanez@duperu.com');
+//     final companyController = TextEditingController(text : 'duperu');
+    final nameController = TextEditingController();
+     final companyController = TextEditingController();
+  final passwordController = TextEditingController();
 
-  bool textViewVisible;
-  bool addUser;
+  bool TextViewVisible;
+  bool AgregarUser;
   String companyEstable;
-  bool errorTextFieldEmail = false;
-  bool errorTextFieldPsd = false;
-  bool errorTextFieldCompany = false;
-  String errorTextFieldTextEmail = '';
-  String errorTextFieldTextPassword = '';
-  String errorTextFieldTextCompany = '';
-  bool circularProgress = false;
+  bool ErrorTextFieldEmail = false;
+  bool ErrorTextFieldpsd = false;
+  bool ErrorTextFieldcompany = false;
+  String ErrorTextFieldTextemail = '';
+  String ErrorTextFieldTextpwd = '';
+  String ErrorTextFieldTextcompany = '';
+  bool Circuleprogress = false;
   bool ori = false;
 
   @override
   void initState() {
-    textViewVisible = widget.textViewVisibleWidget;
-    addUser = widget.addUserWidget;
-    companyEstable = widget.companyEstableWidget;
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    setState(() {
+      isOnline = connectionStatus.connectionStatus;
+    });
+
+    TextViewVisible = widget.TextViewVisiblewidget;
+    AgregarUser = widget.AgregarUserwidget;
+    companyEstable = widget.companyEstablewidget;
     super.initState();
   }
-@override
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOnline = !hasConnection;
+    });
+  }
+  @override
   void dispose() {
   passwordController.dispose();
   nameController.dispose();
   companyController.dispose();
+  _connectionChangeStream.cancel();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
-
-
     if (mediaQueryData.orientation == Orientation.portrait) {
       ori = true;
     }
@@ -75,16 +107,16 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
-          listViewMain(),
+          ListViewPrincipal(),
           Center(
-            child: circularProgress ? CircularProgressIndicator() : null,
+            child: Circuleprogress ? CircularProgressIndicator() : null,
           ),
         ],
       )
     );
   }
 
-  listViewMain(){
+  ListViewPrincipal(){
     return ListView(
       children: <Widget>[
         Container(
@@ -125,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(Icons.email,
                         color: Colors.black,
                       ),
-                      errorText: errorTextFieldEmail ? errorTextFieldTextEmail : null,
+                      errorText: ErrorTextFieldEmail ? ErrorTextFieldTextemail : null,
                       hintText: 'Usuario',
                     ),
                   );
@@ -155,13 +187,13 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.black,
                     ),
                     hintText: 'Password',
-                    errorText: errorTextFieldPsd ? errorTextFieldTextPassword : null,
+                    errorText: ErrorTextFieldpsd ? ErrorTextFieldTextpwd : null,
                   ),
                 );
               },
             ),
           ),
-          textViewVisible ?
+          TextViewVisible ?
           Container(
             width: MediaQuery.of(context).size.width/1.2,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -179,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.business,
                   color: Colors.black,
                 ),
-                errorText: errorTextFieldCompany ? errorTextFieldTextCompany : null,
+                errorText: ErrorTextFieldcompany ? ErrorTextFieldTextcompany : null,
                 hintText: 'Empresa',
               ),
             ) ,
@@ -206,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
               splashColor: Colors.white10,
 
               onPressed: () async {
-                validateData(nameController.text,passwordController.text,companyController.text);
+                ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
               },
               child: Center(
                   child: Center(
@@ -220,98 +252,245 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  validateData(String user, String pwd, String company) async {
+  void ValidateEmail(String email) {
+    if (email.isEmpty) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldTextemail = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldTextemail;
+      });
+    } else
+      ErrorTextFieldEmail = false;
+  }
 
+  void ValidatePassword(String password) {
+    if (password.isEmpty) {
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldTextpwd = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldpsd;
+        ErrorTextFieldTextpwd;
+      });
+    } else
+      ErrorTextFieldpsd = false;
+  }
 
-    setState(() {
-      circularProgress = true;
-    });
+  void ValidateCompany(String company) {
+    if (company.isEmpty) {
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextcompany = 'Campo requerido';
+      setState(() {
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextcompany;
+      });
+    } else
+      ErrorTextFieldcompany = false;
+  }
 
-    String companyLocal = companyEstable;
-    if(addUser){
-      companyLocal = company;
-    }
+  bool EvalValidations() {
+    return (!ErrorTextFieldpsd && !ErrorTextFieldcompany && !ErrorTextFieldcompany);
+  }
 
-    if(user == ''){
-    setState(() {
-      errorTextFieldEmail = true; errorTextFieldTextEmail = 'Campo requerido';
-    });
-
-    }else{
-      errorTextFieldEmail = false;
-    }
-    if(pwd == ''){
-    setState(() {
-      errorTextFieldPsd = true; errorTextFieldTextPassword = 'Campo requerido';
-    });
-    }else{
-      errorTextFieldPsd = false;
-    }
-    if(companyLocal == ''){
-    setState(() {
-      errorTextFieldCompany = true; errorTextFieldTextCompany = 'Campo requerido';
-    });
-    }else{errorTextFieldCompany = false;}
-
-    if((!errorTextFieldPsd)&&(!errorTextFieldCompany)&&(!errorTextFieldCompany)){
-      var loginResponse;
-      try{
-        loginResponse = await login(user, pwd, companyLocal);
-      }catch(e){ }
-
-      if(loginResponse != null){
-        if(loginResponse.statusCode == 401){
-          setState(() {
-            errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
-            errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany = 'Datos incorrectos';
-            circularProgress = false;
-          });
-        }
-        if(loginResponse.statusCode == 500){
-          setState(() {
-            errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
-            errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
-            circularProgress = false;
-          });
-        }
-        if(loginResponse.statusCode == 200){
-          AuthModel auth = AuthModel.fromJson(loginResponse.body);
-
-          var getUserResponseid = await getUser(companyLocal,auth.accessToken);
-          if(getUserResponseid != null){
-            if(addUser){
-              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);
-              UserDataBase newuser = UserDataBase(name: user,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companyLocal, token: auth.accessToken);
-              await ClientDatabaseProvider.db.saveUser(newuser);
-            }else{
-              UserModel userIdLogueado = UserModel.fromJson(getUserResponseid.body);//Desde aca Modificaciones
-              UserDataBase newuser = UserDataBase(name: user,idUserCompany: userIdLogueado.id, idTable: 1,password: pwd,company: companyLocal, token: auth.accessToken);
-              await ClientDatabaseProvider.db.updateUser(newuser.idUserCompany.toString(), newuser.name,newuser.password,auth.accessToken);
-             // int res = await ClientDatabaseProvider.db.updatetoken(auth.accessToken);
-
-            }
-            Navigator.pushReplacementNamed(context, '/vistap');
-            //sendSmsLogin();
-          }else{
-
-            setState(() {
-              errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
-              errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
-              circularProgress = false;
-            });
-
-          }
-        }
-      }else{
-        setState(() {
-          errorTextFieldEmail = true;errorTextFieldPsd = true;errorTextFieldCompany = true;
-          errorTextFieldTextEmail = errorTextFieldTextPassword = errorTextFieldTextCompany ='Error en conexion';
-          circularProgress = false;
-        });
-      }
+  void HandleUnsuccessfulResponse(Response loginResponse) {
+    if (loginResponse.statusCode == 401) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+          ErrorTextFieldTextcompany = 'Datos incorrectos';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldpsd;
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextemail;
+        ErrorTextFieldTextpwd;
+        ErrorTextFieldTextcompany;
+      });
+      Circuleprogress = false;
+      setState(() => Circuleprogress);
+    } else if (loginResponse.statusCode == 500) {
+      ErrorTextFieldEmail = true;
+      ErrorTextFieldpsd = true;
+      ErrorTextFieldcompany = true;
+      ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+          ErrorTextFieldTextcompany = 'Error en conexion';
+      setState(() {
+        ErrorTextFieldEmail;
+        ErrorTextFieldpsd;
+        ErrorTextFieldcompany;
+        ErrorTextFieldTextemail;
+        ErrorTextFieldTextpwd;
+        ErrorTextFieldTextcompany;
+      });
+      Circuleprogress = false;
+      setState(() => Circuleprogress);
     }
   }
 
+  ValidarDatos_DB(String email, String password, String company) async {
+
+    Circuleprogress = true;
+    setState(() => Circuleprogress);
+
+    String companyLocal = companyEstable;
+    if (AgregarUser)
+      companyLocal = company;
+
+    ValidateEmail(email);
+    ValidatePassword(password);
+    ValidateCompany(companyLocal);
+
+    if (isOnline) {
+      if (EvalValidations()) {
+        // Query by email:
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(
+            query);
+
+        // If there is any user with that email in the db request login from server.
+        if (usersFromDatabaseByEmail.isNotEmpty) {
+          // Set user so that you don't have to dereference it by the first getter.
+          // (You will use it whether or not there is internet connection).
+          UserModel user = usersFromDatabaseByEmail.first;
+
+          // Send login request to the server.
+          Response loginResponse = await login(email, password, companyLocal);
+          if (loginResponse != null) {
+            // Validate the http response (Is or isn't 200 the status code?)
+            if (loginResponse.statusCode != 200) {
+              HandleUnsuccessfulResponse(loginResponse);
+            } else {
+              // If it was successful, then it SHOULD have a valid token and the like
+              // so that it can be just stored in a authModel in order for us to use it.
+              AuthModel authFromResponse = AuthModel.fromJson(loginResponse.body);
+              // Update the local user's access token.
+              user.rememberToken = authFromResponse.accessToken;
+              user.password = md5.convert(utf8.encode(password)).toString();
+              user.company = companyLocal;
+              await DatabaseProvider.db.UpdateUser(
+                  user.id,
+                  user,
+                  SyncState.synchronized
+              );
+
+              Navigator.pushReplacementNamed(context, '/vistap');
+            }
+          } else {
+            ErrorTextFieldEmail = true;
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+                ErrorTextFieldTextcompany = 'Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;
+              ErrorTextFieldpsd;
+              ErrorTextFieldcompany;
+              ErrorTextFieldTextemail;
+              ErrorTextFieldTextpwd;
+              ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false;
+            setState(() => Circuleprogress);
+          }
+        } else
+          /* A.K.A* the case in which there is no user with that email in the local db */ {
+          // If there is no user with that email in the db request login and store a new user in the local db...
+          // Send login request to the server.
+          var loginResponse = await login(email, password, companyLocal);
+          // The response has arrived!
+          if (loginResponse != null) {
+            // The login didn't success...
+            if (loginResponse.statusCode != 200) {
+              HandleUnsuccessfulResponse(loginResponse);
+            } else {
+              // The login successed!
+              var authFromResponse = AuthModel.fromJson(loginResponse.body);
+              // Now get an user based on the given token from the server...
+              var userFromServerResponse = await getUser(
+                  companyLocal, authFromResponse.accessToken);
+              // Validate it!
+              if (userFromServerResponse != null) {
+                UserModel userFromServer = UserModel.fromJson(
+                    userFromServerResponse.body);
+
+                userFromServer.rememberToken = authFromResponse.accessToken;
+                userFromServer.password = md5.convert(utf8.encode(password)).toString();
+                userFromServer.company = companyLocal;
+
+                await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
+
+                await AddressChannel.syncEverything();
+                await CustomerChannel.syncEverything();
+                await CustomerAddressesChannel.syncEverything();
+                await FormChannel.syncEverything();
+
+                Navigator.pushReplacementNamed(context, '/vistap');
+              }
+            }
+          } else {
+            // If response is null, do this...
+            ErrorTextFieldEmail = true;
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldcompany = true;
+            ErrorTextFieldTextemail = ErrorTextFieldTextpwd =
+                ErrorTextFieldTextcompany = 'Error en conexion';
+            setState(() {
+              ErrorTextFieldEmail;
+              ErrorTextFieldpsd;
+              ErrorTextFieldcompany;
+              ErrorTextFieldTextemail;
+              ErrorTextFieldTextpwd;
+              ErrorTextFieldTextcompany;
+            });
+            Circuleprogress = false;
+            setState(() => Circuleprogress);
+          }
+        }
+      }
+    } else {
+      if ((await DatabaseProvider.db.RetrieveLastLoggedUser()) == null) {
+        ErrorTextFieldEmail = true;
+        ErrorTextFieldpsd = true;
+        ErrorTextFieldcompany = true;
+        ErrorTextFieldTextemail = ErrorTextFieldTextpwd = ErrorTextFieldTextcompany ='Error en conexion';
+        setState(() {
+          ErrorTextFieldEmail;
+          ErrorTextFieldpsd;
+          ErrorTextFieldcompany;
+          ErrorTextFieldTextemail;
+          ErrorTextFieldTextpwd;
+          ErrorTextFieldTextcompany;
+        });
+        Circuleprogress = false;
+        setState(() => Circuleprogress);
+      } else {
+        UserModel query = UserModel(email: email);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+        if (usersFromDatabaseByEmail.isEmpty) {
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldTextemail = "No se ha encontrado ningun usuario con este correo.";
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldTextemail;
+          });
+        } else {
+          UserModel user = usersFromDatabaseByEmail.first;
+          password = md5.convert(utf8.encode(password)).toString();
+          if (user.password == password) {
+            Navigator.pushReplacementNamed(context, '/vistap');
+          } else {
+            ErrorTextFieldpsd = true;
+            ErrorTextFieldTextpwd = "Las contraseñas no coinciden.";
+            setState(() {
+              ErrorTextFieldpsd;
+              ErrorTextFieldTextpwd;
+            });
+          }
+        }
+      }
+    }
+  }
 
   testApi() async{
     try {
@@ -324,9 +503,9 @@ class _LoginPageState extends State<LoginPage> {
       String customer = 'factochile';
 
       // login
-      var loginResponse = await login(email, password, customer);
-      AuthModel auth = AuthModel.fromJson(loginResponse.body);
-      String authorization = auth.accessToken;
+      // var loginResponse = await login(email, password, customer);
+      // AuthModel auth = AuthModel.fromJson(loginResponse.body);
+      // String authorization = auth.accessToken;
       // print(auth.accessToken);
       // print(auth.accessToken.length);
       // print(loginResponse.headers['content-type']);
@@ -339,7 +518,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customer Get
       // var getCustomerResponse = await getCustomer('387', customer, authorization);
-      // CustomerModel customerObj = CustomerModel.fromJson(getCustomerResponse.body);
+      // CustomerModel customerObj = getCustomerResponse.body;
       // print(customerObj.name);
       // print(getCustomerResponse.body);
 
@@ -376,7 +555,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Customers With Address
       // var getAllCustomersWithAddressResponse = await getAllCustomersWithAddress(customer, authorization);
-      // CustomersWithAddressModel customersWithAddres = CustomersWithAddressModel.fromJson(getAllCustomersWithAddressResponse.body);
+      // CustomersWithAddressModel customersWithAddres = getAllCustomersWithAddressResponse.body;
       // print(customersWithAddres.data[0].name);
       // print(customersWithAddres.data[0].latitude);
       // print(getAllCustomersWithAddressResponse.body);
@@ -399,14 +578,15 @@ class _LoginPageState extends State<LoginPage> {
       // print(unrelateCustomerAddressResponse.body);
       // Task Create
       // TaskModel taskNew = new TaskModel(
-        // name: 'Enrolamiento eHuapi',
-        // formId: 3,
-        // responsibleId: 3,
-        // customerId: 408,
-        // addressId: 345,
-        // customValuesMap: {"18": "test", "20": "valor test"}
+      //   name: 'Enrolamiento eHuapi',
+      //   formId: 3,
+      //   responsibleId: 3,
+      //   customerId: 408,
+      //   addressId: 345,
+      //   customValuesMap: {"18": "test", "20": "valor test"}
       // );
       // var createTaskResponse = await createTask(taskNew, customer, authorization);
+      // var body = createTaskResponse.body;
       // print(createTaskResponse.request);
       // print(createTaskResponse.statusCode);
       // print(createTaskResponse.body);
@@ -471,126 +651,232 @@ class _LoginPageState extends State<LoginPage> {
       // print(user.email);
       // print(user.profile);
 
-      // Contact All
-      // var getAllContactsResponse = await getAllContacts(customer, authorization);
-      // ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
-      // print(getAllContactsResponse.request);
-      // print(getAllContactsResponse.body);
-      // print(contacts.data.length);
-      // print(contacts.data[0].name);
+      // LocalityModel locality = new LocalityModel(id: 1, name: "Locality Manuel");
+      // AddressModel address = new AddressModel(id: 355, address: "Manuel Gonzalez Olachea", locality: locality);
+      // var res = await DatabaseProvider.db.CreateAddress(address, SyncState.synchronized);
+      // print(res);
+      // var data = await DatabaseProvider.db.QueryCustomerAddress(null, null, null, null, null, null, null, null);
+      // print(data.toString());
 
-      // Contact Get
-      // var getContactResponse = await getContact("5", customer, authorization);
-      // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
-      // print(getContactResponse.body);
-      // print(contact.id);
-      // print(contact.name);
 
-      // Contact Create
-      // ContactModel contactObjNew = new ContactModel(
-      //   customerId: 467, 
-      //   name: "Nombre Contacto", ''
-      //   phone: "0414-123456", ''
-      //   email: "contacto@contacto.com", ''
-      //   details: "Nota de Contacto"''
-      // );
-      // var createContactResponse = await createContact(contactObjNew, customer, authorization);
-      // print(createContactResponse.statusCode);
-      // print(createContactResponse.body);
-      // ContactModel contactCreated = ContactModel.fromJson(createContactResponse.body);
-      // print(contactCreated.name);
+      // var data = await DatabaseProvider.db.QueryAddress(AddressModel());
+      // print(data.toString());
 
-      // Contact Update
-      // contact.name = 'Nombre Actualizado';
-      // var updateContactResponse = await updateContact('5', contact, customer, authorization);
-      // print(updateContactResponse.request);
-      // print(updateContactResponse.statusCode);
-      // print(updateContactResponse.body);
+      // var a1 = await DatabaseProvider.db.ListAddresses();
+      // await AddressChannel.syncEverything();
+      // var a2 = await DatabaseProvider.db.ListAddresses();
 
-      // Contact Delete
-      // var deleteContactResponse = await deleteContact('6', customer, authorization);
-      // print(deleteContactResponse.request);
-      // print(deleteContactResponse.body);
-      // bool eliminado = deleteContactResponse.body == '1' ? true : false;
-      // print(eliminado);
+      // var c1 = await DatabaseProvider.db.ListCustomers();
+      // await CustomerChannel.syncEverything();
+      // var c2 = await DatabaseProvider.db.ListCustomers();
 
-      // Business All
-      // var getAllBusinessesResponse = await getAllBusinesses(customer, authorization);
-      // BusinessesModel businesses = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-      // print(getAllBusinessesResponse.request);
-      // print(getAllBusinessesResponse.body);
-      // print(businesses.data.length);
-      // print(businesses.data[0].name);
+      // var ca1 = await DatabaseProvider.db.ListCustomerAddresses();
+      // await CustomerAddressesChannel.syncEverything();
+      // var ca2 = await DatabaseProvider.db.ListCustomerAddresses();
 
-      // Business Get
-      // var getBusinessResponse = await getBusiness("4", customer, authorization);
-      // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
-      // print(getBusinessResponse.body);
-      // print(business.id);
-      // print(business.name);
+      // var fcs = await DatabaseProvider.db.ListForms();
+      // await FormChannel.syncEverything();
+      // var fce = await DatabaseProvider.db.ListForms();
 
-      // Business Create
-      // BusinessModel businessObjNew = new BusinessModel(
-      //   customerId: 467, 
-      //   name: "Nombre Business", 
-      //   stage: "Nueva Etapa", 
-      //   date: "2019-06-19", 
-      //   amount: "0"
-      // );
-      // var createBusinessResponse = await createBusiness(businessObjNew, customer, authorization);
-      // print(createBusinessResponse.statusCode);
-      // print(createBusinessResponse.body);
-      // BusinessModel businessCreated = BusinessModel.fromJson(createBusinessResponse.body);
-      // print(businessCreated.name);
+      // var response = await getAllForms(customer, "");
+      // print(response.body);
 
-      // Business Update
-      // business.name = 'Nombre Actualizado 33';
-      // var updateBusinessResponse = await updateBusiness('4', business, customer, authorization);
-      // print(updateBusinessResponse.request);
-      // print(updateBusinessResponse.statusCode);
-      // print(updateBusinessResponse.body);
+      // await FormChannel.syncEverything();
 
-      // Business Delete
-      // var deleteBusinessResponse = await deleteBusiness('3', customer, authorization);
-      // print(deleteBusinessResponse.request);
-      // print(deleteBusinessResponse.body);
-      // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
-      // print(eliminado);
+      // var formsRaw = getFormsRaw();
+      // FormsModel formsServer = FormsModel.fromJson(formsRaw);
+      // print(formsServer);
 
-      // Customer Contacts All
-      // var getCustomerContactsResponse = await getCustomerContacts('467', customer, authorization);
-      // ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
-      // print(getCustomerContactsResponse.request);
-      // print(getCustomerContactsResponse.body);
-      // print(customerContacts.data.length);
-      // print(customerContacts.data[0].name);
+      // for (var i = 0; i < formsServer.data.length; i++) {
+      //   var getFormResponse = await getFormRaw(formsServer.data[i].id);
+      //   FormModel formServer = FormModel.fromJson(getFormResponse);
+      //   FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
+      //   if (formLocal != null) {
 
-      // Customer Contact Relate
-      // var relateCustomerContactResponse = await relateCustomerContact('472', '5', customer, authorization);
-      // print(relateCustomerContactResponse.statusCode);
-      // print(relateCustomerContactResponse.body);
+      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt);
+      //     DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
+      //     int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
+      //     print(diffInMilliseconds);
+      //     if ( diffInMilliseconds < 0 ) { // Actualizar Local
+      //       await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
+      //     }
+      //   }
+      // }
 
-      // Customer Contact Unrelate
-      // var unrelateCustomerContactResponse = await unrelateCustomerContact('40', '5', customer, authorization);
-      // print(unrelateCustomerContactResponse.request);
-      // print(unrelateCustomerContactResponse.statusCode);
-      // print(unrelateCustomerContactResponse.body);
+      // var formsResponse = await getAllForms(customer, "");
+      // var forms = await formsResponse.body;
+      // print(forms);
 
-      // Customer Businesess All
-      // var getCustomerBusinesessResponse = await getCustomerBusinesses('21', customer, authorization);
-      // BusinessesModel customerBusinesess = BusinessesModel.fromJson(getCustomerBusinesessResponse.body);
-      // print(getCustomerBusinesessResponse.request);
-      // print(getCustomerBusinesessResponse.body);
-      // print(customerBusinesess.data.length);
-      // print(customerBusinesess.data[0].name);
+      // var sections = await DatabaseProvider.db.ListSections();
+      // print(sections);
 
-      // Customer Business Relate
-      // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
-      // print(relateCustomerBusinessResponse.statusCode);
-      // print(relateCustomerBusinessResponse.body);
+      // Create Server To Local
+    // var formsServerResponse = await getFormsRaw();
+    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
 
-      print("------------------------------- Fin Test ----------------------------");
+    // Set idsFormsServer = new Set();
+    // await Future.forEach(formsServer.data, (formServer) async {
+    //   idsFormsServer.add(formServer.id);
+    // });
 
+    // Set idsFormsLocal = new Set.from(await DatabaseProvider.db.RetrieveAllFormIds()); //método de albert
+
+    // Set idsToCreate = idsFormsServer.difference(idsFormsLocal);
+
+    // await Future.forEach(formsServer.data, (formServer) async {
+    //   if (idsToCreate.contains(formServer.id)) {
+    //     // Cambiar el SyncState Local
+    //     var getFormResponse = await getFormRaw(formServer.id);
+    //     FormModel form = FormModel.fromJson(getFormResponse);
+
+    //     print("Se va a crear: " + form.name);
+
+    //     await DatabaseProvider.db.CreateForm(form, SyncState.synchronized);
+    //   }
+    // });
+
+
+
+    // Delete
+    // var formsServerResponse = await getFormsRaw();
+    // FormsModel formsServer = FormsModel.fromJson(formsServerResponse);
+
+    // Set idsFormsServer = new Set();
+    // await Future.forEach(formsServer.data, (formServer) async {
+    //   idsFormsServer.add(formServer.id);
+    // });
+
+    // Set idsFormsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllFormIds() ); //método de albert
+
+    // Set idsToDelete = idsFormsLocal.difference(idsFormsServer);
+
+    // await Future.forEach(idsToDelete, (idToDelete) async{
+    //   print("Delete... $idsToDelete" );
+    //   await DatabaseProvider.db.DeleteFormById(idToDelete);
+    // });
+
+    // Contact All
+    // var getAllContactsResponse = await getAllContacts(customer, authorization);
+    // ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
+    // print(getAllContactsResponse.request);
+    // print(getAllContactsResponse.body);
+    // print(contacts.data.length);
+    // print(contacts.data[0].name);
+
+    // Contact Get
+    // var getContactResponse = await getContact("5", customer, authorization);
+    // ContactModel contact = ContactModel.fromJson(getContactResponse.body);
+    // print(getContactResponse.body);
+    // print(contact.id);
+    // print(contact.name);
+
+    // Contact Create
+    // ContactModel contactObjNew = new ContactModel(
+    //   customerId: 467,
+    //   name: "Nombre Contacto",
+    //   phone: "0414-123456",
+    //   email: "contacto@contacto.com",
+    //   details: "Nota de Contacto"
+    // );
+    // var createContactResponse = await createContact(contactObjNew, customer, authorization);
+    // print(createContactResponse.statusCode);
+    // print(createContactResponse.body);
+    // ContactModel contactCreated = ContactModel.fromJson(createContactResponse.body);
+    // print(contactCreated.name);
+
+    // Contact Update
+    // contact.name = 'Nombre Actualizado';
+    // var updateContactResponse = await updateContact('5', contact, customer, authorization);
+    // print(updateContactResponse.request);
+    // print(updateContactResponse.statusCode);
+    // print(updateContactResponse.body);
+
+    // Contact Delete
+    // var deleteContactResponse = await deleteContact('6', customer, authorization);
+    // print(deleteContactResponse.request);
+    // print(deleteContactResponse.body);
+    // bool eliminado = deleteContactResponse.body == '1' ? true : false;
+    // print(eliminado);
+
+    // Business All
+    // var getAllBusinessesResponse = await getAllBusinesses(customer, authorization);
+    // BusinessesModel businesses = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+    // print(getAllBusinessesResponse.request);
+    // print(getAllBusinessesResponse.body);
+    // print(businesses.data.length);
+    // print(businesses.data[0].name);
+
+    // Business Get
+    // var getBusinessResponse = await getBusiness("4", customer, authorization);
+    // BusinessModel business = BusinessModel.fromJson(getBusinessResponse.body);
+    // print(getBusinessResponse.body);
+    // print(business.id);
+    // print(business.name);
+
+    // Business Create
+    // BusinessModel businessObjNew = new BusinessModel(
+    //   customerId: 467,
+    //   name: "Nombre Business",
+    //   stage: "Nueva Etapa",
+    //   date: "2019-06-19",
+    //   amount: "0"
+    // );
+    // var createBusinessResponse = await createBusiness(businessObjNew, customer, authorization);
+    // print(createBusinessResponse.statusCode);
+    // print(createBusinessResponse.body);
+    // BusinessModel businessCreated = BusinessModel.fromJson(createBusinessResponse.body);
+    // print(businessCreated.name);
+
+    // Business Update
+    // business.name = 'Nombre Actualizado 33';
+    // var updateBusinessResponse = await updateBusiness('4', business, customer, authorization);
+    // print(updateBusinessResponse.request);
+    // print(updateBusinessResponse.statusCode);
+    // print(updateBusinessResponse.body);
+
+    // Business Delete
+    // var deleteBusinessResponse = await deleteBusiness('3', customer, authorization);
+    // print(deleteBusinessResponse.request);
+    // print(deleteBusinessResponse.body);
+    // bool eliminado = deleteBusinessResponse.body == '1' ? true : false;
+    // print(eliminado);
+
+    // Customer Contacts All
+    // var getCustomerContactsResponse = await getCustomerContacts('467', customer, authorization);
+    // ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
+    // print(getCustomerContactsResponse.request);
+    // print(getCustomerContactsResponse.body);
+    // print(customerContacts.data.length);
+    // print(customerContacts.data[0].name);
+
+    // Customer Contact Relate
+    // var relateCustomerContactResponse = await relateCustomerContact('472', '5', customer, authorization);
+    // print(relateCustomerContactResponse.statusCode);
+    // print(relateCustomerContactResponse.body);
+
+    // Customer Contact Unrelate
+    // var unrelateCustomerContactResponse = await unrelateCustomerContact('40', '5', customer, authorization);
+    // print(unrelateCustomerContactResponse.request);
+    // print(unrelateCustomerContactResponse.statusCode);
+    // print(unrelateCustomerContactResponse.body);
+
+    // Customer Businesess All
+    // var getCustomerBusinesessResponse = await getCustomerBusinesses('21', customer, authorization);
+    // BusinessesModel customerBusinesess = BusinessesModel.fromJson(getCustomerBusinesessResponse.body);
+    // print(getCustomerBusinesessResponse.request);
+    // print(getCustomerBusinesessResponse.body);
+    // print(customerBusinesess.data.length);
+    // print(customerBusinesess.data[0].name);
+
+    // Customer Business Relate
+    // var relateCustomerBusinessResponse = await relateCustomerBusiness('21', '2', customer, authorization);
+    // print(relateCustomerBusinessResponse.statusCode);
+    // print(relateCustomerBusinessResponse.body);
+
+
+
+
+      print("---------------- Fin test. ----------------------------");
     }catch(error, stackTrace){
       print(error);
       print(stackTrace);

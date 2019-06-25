@@ -33,19 +33,23 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "details" TEXT,
     "profile" TEXT,
     "remember_token" TEXT,
+    "company" TEXT,
     "logged_at" DATETIME,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,
     CONSTRAINT "fk_users_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_users_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_users_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "users.fk_users_users1_idx" ON "users" ("created_by_id");
     CREATE INDEX "users.fk_users_users2_idx" ON "users" ("updated_by_id");
@@ -68,13 +72,16 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_forms_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_forms_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_forms_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "forms.fk_forms_users1_idx" ON "forms" ("created_by_id");
     CREATE INDEX "forms.fk_forms_users2_idx" ON "forms" ("updated_by_id");
@@ -97,13 +104,16 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_localities_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_localities_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_localities_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "localities.fk_localities_users1_idx" ON "localities" ("created_by_id");
     CREATE INDEX "localities.fk_localities_users2_idx" ON "localities" ("updated_by_id");
@@ -132,16 +142,20 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_responsibles_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_responsibles_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_responsibles_users3"
     FOREIGN KEY("deleted_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_responsibles_responsibles1"
     FOREIGN KEY("supervisor_id")
     REFERENCES "responsibles"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "responsibles.fk_responsibles_users1_idx" ON "responsibles" ("created_by_id");
     CREATE INDEX "responsibles.fk_responsibles_users2_idx" ON "responsibles" ("updated_by_id");
@@ -177,16 +191,20 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_custom_fields_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_custom_fields_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_custom_fields_users3"
     FOREIGN KEY("deleted_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_custom_fields_custom_fields1"
     FOREIGN KEY("section_id")
     REFERENCES "custom_fields"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "custom_fields.fk_custom_fields_users1_idx" ON "custom_fields" ("created_by_id");
     CREATE INDEX "custom_fields.fk_custom_fields_users2_idx" ON "custom_fields" ("updated_by_id");
@@ -221,16 +239,20 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_addresses_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_addresses_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_addresses_users3"
     FOREIGN KEY("deleted_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_addresses_localities1"
     FOREIGN KEY("locality_id")
     REFERENCES "localities"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "addresses.fk_addresses_users1_idx" ON "addresses" ("created_by_id");
     CREATE INDEX "addresses.fk_addresses_users2_idx" ON "addresses" ("updated_by_id");
@@ -257,13 +279,16 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_customers_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_customers_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_customers_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "customers.fk_customers_users1_idx" ON "customers" ("created_by_id");
     CREATE INDEX "customers.fk_customers_users2_idx" ON "customers" ("updated_by_id");
@@ -298,25 +323,32 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_tasks_forms"
     FOREIGN KEY("form_id")
-    REFERENCES "forms"("id"),
+    REFERENCES "forms"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_responsibles1"
     FOREIGN KEY("responsible_id")
-    REFERENCES "responsibles"("id"),
+    REFERENCES "responsibles"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_customers1"
     FOREIGN KEY("customer_id")
-    REFERENCES "customers"("id"),
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_addresses1"
     FOREIGN KEY("address_id")
-    REFERENCES "addresses"("id"),
+    REFERENCES "addresses"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_users1"
     FOREIGN KEY("created_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_users2"
     FOREIGN KEY("updated_by_id")
-    REFERENCES "users"("id"),
+    REFERENCES "users"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_tasks_users3"
     FOREIGN KEY("deleted_by_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "tasks.fk_tasks_forms_idx" ON "tasks" ("form_id");
     CREATE INDEX "tasks.fk_tasks_responsibles1_idx" ON "tasks" ("responsible_id");
@@ -341,42 +373,54 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_customers_users_customers2"
     FOREIGN KEY("customer_id")
-    REFERENCES "customers"("id"),
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_customers_users_users2"
     FOREIGN KEY("user_id")
     REFERENCES "users"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "customers_users.fk_customers_users_customers2_idx" ON "customers_users" ("customer_id");
     CREATE INDEX "customers_users.fk_customers_users_users2_idx" ON "customers_users" ("user_id");
     ''',
   DatabaseTables.customValues:
     '''CREATE TABLE "custom_values"(
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    "created_at" DATETIME,
-    "updated_at" DATETIME,
-    "deleted_at" DATETIME,
-    "form_id" INTEGER,
-    "section_id" INTEGER,
-    "field_id" INTEGER,
-    "customizable_type" TEXT,
-    "customizable_id" INTEGER,
-    "value" TEXT,
-    "in_server" BOOL,
-    "updated" BOOL,
-    "deleted" BOOL,
-    CONSTRAINT "fk_custom_values_forms1"
-    FOREIGN KEY("form_id")
-    REFERENCES "forms"("id"),
-    CONSTRAINT "fk_custom_values_custom_fields1"
-    FOREIGN KEY("section_id")
-    REFERENCES "custom_fields"("id"),
-    CONSTRAINT "fk_custom_values_custom_fields2"
-    FOREIGN KEY("field_id")
-    REFERENCES "custom_fields"("id")
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      "created_at" DATETIME,
+      "updated_at" DATETIME,
+      "deleted_at" DATETIME,
+      "task_id" INTEGER,
+      "form_id" INTEGER,
+      "section_id" INTEGER,
+      "field_id" INTEGER,
+      "customizable_type" TEXT,
+      "customizable_id" INTEGER,
+      "value" TEXT,
+      "image_base64" TEXT,
+      "in_server" BOOL,
+      "updated" BOOL,
+      "deleted" BOOL,
+      CONSTRAINT "fk_custom_values_forms1"
+        FOREIGN KEY("form_id")
+        REFERENCES "forms"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_custom_fields1"
+        FOREIGN KEY("section_id")
+        REFERENCES "custom_fields"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_custom_fields2"
+        FOREIGN KEY("field_id")
+        REFERENCES "custom_fields"("id")
+        ON UPDATE CASCADE,
+      CONSTRAINT "fk_custom_values_tasks1"
+        FOREIGN KEY("task_id")
+        REFERENCES "tasks"("id")
+        ON UPDATE CASCADE
     );
     CREATE INDEX "custom_values.fk_custom_values_forms1_idx" ON "custom_values" ("form_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields1_idx" ON "custom_values" ("section_id");
     CREATE INDEX "custom_values.fk_custom_values_custom_fields2_idx" ON "custom_values" ("field_id");
+    CREATE INDEX "custom_values.fk_custom_values_tasks1_idx" ON "custom_values" ("task_id");
     ''',
   DatabaseTables.customersAddresses:
     '''CREATE TABLE "customers_addresses"(
@@ -392,10 +436,12 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "deleted" BOOL,
     CONSTRAINT "fk_customers_addresses_customers1"
     FOREIGN KEY("customer_id")
-    REFERENCES "customers"("id"),
+    REFERENCES "customers"("id")
+    ON UPDATE CASCADE,
     CONSTRAINT "fk_customers_addresses_addresses1"
     FOREIGN KEY("address_id")
     REFERENCES "addresses"("id")
+    ON UPDATE CASCADE
     );
     CREATE INDEX "customers_addresses.fk_customers_addresses_addresses1_idx" ON "customers_addresses" ("address_id");
     CREATE INDEX "customers_addresses.fk_customers_addresses_customers1_idx" ON "customers_addresses" ("customer_id");

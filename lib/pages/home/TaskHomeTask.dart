@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
+import 'package:joincompany/models/TasksModel.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
@@ -32,7 +34,7 @@ class TaskHomeTask extends StatefulWidget {
 class _MytaskPageTaskState extends State<TaskHomeTask> {
   ListWidgets ls = ListWidgets();
   bool viewList = false;
-  UserDataBase userActivity;
+  UserModel user;
   static LatLng _initialPosition;
   List<TaskModel> listTaskModellocal;
   List<bool> listTaskModellocalbool;
@@ -56,17 +58,14 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     super.initState();
   }
 
-  actualizarusuario() async {
-    userActivity = await ClientDatabaseProvider.db.getCodeId('1');
-
-    pageTasks = 1;
+  actualizarusuario() async{
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    ListCalender = widget.listCalendarRes;
+    PageTasks = 1;
     //getdatalist(listCalendar[1],listCalendar[0],1);
-    if (this.mounted) {
-      setState(() {
-        userActivity;
-        listCalender = widget.listCalendarRes;
-      });
-    }
+    setState(() {
+      user;ListCalender;
+    });
   }
 
   @override
@@ -448,8 +447,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                           });
                         }
                         var checkInTaskResponse = await checkOutTask(
-                            listTask.id.toString(), userActivity.company,
-                            userActivity.token,
+                            listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
                         if (checkInTaskResponse.statusCode != 200) {
@@ -466,8 +464,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                           });
                         }
                         var checkInTaskResponse = await checkInTask(
-                            listTask.id.toString(), userActivity.company,
-                            userActivity.token,
+                            listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
                         if (checkInTaskResponse.statusCode != 200) {
@@ -516,7 +513,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    await deleteTask(taskID, userActivity.company, userActivity.token);
+    await deleteTask(taskID, user.company, user.rememberToken;
   }
 
   void _getUserLocation() async {

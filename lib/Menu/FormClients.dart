@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
@@ -11,7 +9,7 @@ import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/BusinessService.dart';
@@ -36,8 +34,9 @@ class FormClient extends StatefulWidget {
 
 class _FormClientState extends State<FormClient> {
 
-  UserDataBase userAct;
+  UserModel user;
   bool loading = false;
+
   Widget popUp;
 
   CustomerWithAddressModel client;
@@ -139,6 +138,15 @@ class _FormClientState extends State<FormClient> {
   }
 
   void initData() async {
+    user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    //Directions
+    if(widget.client != null){
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(), user.company, user.rememberToken);
+      directionsOld =  getCustomerAddressesResponse.body;
+      for(AddressModel direction in directionsOld){
+        directionsAll.add(direction);
+      }
+    }
     setState(() {
       popUp =  AlertDialog(
         title: Text('¿Guardar?'),
@@ -175,7 +183,7 @@ class _FormClientState extends State<FormClient> {
     userAct = await ClientDatabaseProvider.db.getCodeId('1');
 
     if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),userAct.company,userAct.token);
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerAddressesResponse.statusCode == 200 || getCustomerAddressesResponse.statusCode == 201){
         directionsOld =  new List<CustomerWithAddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => CustomerWithAddressModel.fromMap(x)));
         for(CustomerWithAddressModel direction in directionsOld){
@@ -183,7 +191,7 @@ class _FormClientState extends State<FormClient> {
         }
       }
 
-      var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),userAct.company,userAct.token);
+      var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerContactsResponse.statusCode == 200 || getCustomerContactsResponse.statusCode == 201){
         ContactsModel customerContacts = ContactsModel.fromJson(getCustomerContactsResponse.body);
         contactsOld = customerContacts.data;
@@ -192,7 +200,7 @@ class _FormClientState extends State<FormClient> {
         }
       }
 
-      var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),userAct.company,userAct.token);
+      var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),user.company,user.rememberToken);
       if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
         BusinessesModel customerbusiness = BusinessesModel.fromJson(getCustomerBusinessesResponse.body);
         businessOld = customerbusiness.data;
@@ -208,32 +216,32 @@ class _FormClientState extends State<FormClient> {
   }
 
   Future<int> deletedAddressCustomer(AddressModel direction)async{
-     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),userAct.company,userAct.token);
+     var resp = await unrelateCustomerAddress(widget.client.id.toString(),direction.id.toString(),user.company,user.rememberToken);
      return resp.statusCode;
   }
 
   Future<int> addAddressCustomer(AddressModel direction, int id)async{
-    var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),userAct.company,userAct.token);
+    var resp = await relateCustomerAddress(id.toString(),direction.id.toString(),user.company,user.rememberToken);
     return resp.statusCode;
   }
 
   Future<int> deletedContactCustomer(ContactModel contact)async{
-    var resp = await unrelateCustomerContact(widget.client.id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    var resp = await unrelateCustomerContact(widget.client.id.toString(),contact.id.toString(),user.company,user.rememberToken);
     return resp.statusCode;
   }
 
   Future<int> addContactCustomer(ContactModel contact, int id)async{
-    var resp = await relateCustomerContact(id.toString(),contact.id.toString(),userAct.company,userAct.token);
+    var resp = await relateCustomerContact(id.toString(),contact.id.toString(),user.company,user.rememberToken);
     return resp.statusCode;
   }
 
   Future<int> deletedBusinessCustomer(BusinessModel business)async{
-    var resp = await deleteBusiness(business.id.toString(),userAct.company,userAct.token);
+    var resp = await deleteBusiness(business.id.toString(),user.company,user.rememberToken);
     return resp.statusCode;
   }
 
   Future<int> addBusinessCustomer(BusinessModel business, int id)async{
-    var resp = await relateCustomerBusiness(id.toString(),business.id.toString(),userAct.company,userAct.token);
+    var resp = await relateCustomerBusiness(id.toString(),business.id.toString(),user.company,user.rememberToken);
     return resp.statusCode;
   }
 
@@ -287,7 +295,7 @@ class _FormClientState extends State<FormClient> {
               details: note.text,
             );
 
-            var response = await updateCustomer(client.id.toString(), client, userAct.company, userAct.token);
+            var response = await updateCustomer(client.id.toString(), client, user.company, user.rememberToken);
             bool saveContact = await setContacts(client.id);
             if(!saveContact){
               return showDialog(
@@ -343,7 +351,7 @@ class _FormClientState extends State<FormClient> {
               code: code.text,
               details: note.text,
             );
-            var response = await createCustomer(client, userAct.company, userAct.token);
+            var response = await createCustomer(client, user.company, user.rememberToken);
             if((response.statusCode == 200 || response.statusCode ==  201) && response.body != "Cliente ya existe"){
               var cli = CustomerModel.fromJson(response.body);
               bool saveContact = await setContacts(cli.id);
@@ -437,7 +445,7 @@ class _FormClientState extends State<FormClient> {
           resp = await addAddressCustomer(directionAct,id);
           statusCreate = responseStatus(resp);
         }else{
-          var responseCreateAddress = await createAddress(directionAct,userAct.company,userAct.token);
+          var responseCreateAddress = await createAddress(directionAct,user.company,user.rememberToken);
           if(responseStatus(responseCreateAddress.statusCode)){
             var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
             resp = await addAddressCustomer(directionAdd,id);
@@ -537,7 +545,7 @@ class _FormClientState extends State<FormClient> {
     return true;
   }
 
-  bool validateData(){//TODO
+  bool validateData(){
     if(name.text == ''){
       setState(() {
         errorTextFieldName = 'Campo requerido';
@@ -635,7 +643,7 @@ class _FormClientState extends State<FormClient> {
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
-      var responseDelete = await deleteCustomer( widget.client.id.toString(), userAct.company, userAct.token);
+      var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
       if(responseDelete.statusCode == 200){
         exitDeletedClient();
       }else{

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 
 class App extends StatefulWidget {
@@ -11,23 +11,21 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
 
-  Future<UserDataBase> getUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
-  }
+  Future<UserModel> getUser() async =>
+    await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-  bool textViewVisible = true;
-  bool addUser = true;
+  bool TextViewVisible = true;
+  bool AgregarUser = true;
   String companyEstable = '';
   bool salirMail = false;
 
-  validateUserForFirstV() async {
-    UserDataBase userActivity = await getUser();
-    if(userActivity != null){
+  ValidarUsrPrimeraVez() async {
+    UserModel lastActiveUser = await getUser();
+    if(lastActiveUser != null){
       setState(() {
-        textViewVisible = false;
-        addUser = false;
-        companyEstable = userActivity.company;
+        TextViewVisible = false;
+        AgregarUser = false;
+        companyEstable = lastActiveUser.company;
       });
     }
 
@@ -39,7 +37,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    validateUserForFirstV();
+    ValidarUsrPrimeraVez();
     super.initState();
   }
 
@@ -49,7 +47,7 @@ class _AppState extends State<App> {
         body: Stack(
             children: <Widget>[
               salirMail ?
-              LoginPage(textViewVisibleWidget: textViewVisible,addUserWidget: addUser,companyEstableWidget: companyEstable)
+              LoginPage(TextViewVisiblewidget: TextViewVisible,AgregarUserwidget: AgregarUser,companyEstablewidget: companyEstable)
               : Center(
                 child: CircularProgressIndicator(),
               ),

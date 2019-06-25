@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 
@@ -19,14 +19,14 @@ class BlocListTask {
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     TasksModel tasks = new TasksModel();
     var getAllTasksResponse;
     try{
       DateTime dateNew = DateTime.parse('1990-05-05');
       for(int countPage = 1; countPage <= pageTasks;countPage++){
-        getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate: diaDesde,endDate: diaHasta,responsibleId: userActivity.idUserCompany.toString(), perPage: '20',page: countPage.toString());
+        getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: countPage.toString());
         if(getAllTasksResponse.statusCode == 200){
           tasks = TasksModel.fromJson(getAllTasksResponse.body);
           //if(tasks)
@@ -69,7 +69,7 @@ class BlocListTask {
   Sink<int> get inListTaksTotal => _tasksTotalController.sink;
 
 
-
+  @override
   void dispose() {
     _tasksController.close();
     _tasksTotalController.close();

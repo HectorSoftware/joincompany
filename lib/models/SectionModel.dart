@@ -108,4 +108,25 @@ class SectionModel {
     "field_width": fieldWidth,
     "fields": fields != null ? new List<FieldModel>.from(fields.map((x) => x.toMap())) : null,
   };
+
+  FieldModel findFieldById(int id) {
+    FieldModel foundField;
+    if (fields != null)
+      fields.forEach((field) {
+        if (field.id == id)
+          foundField = field;
+      });
+    return foundField;
+  }
+
+  List<int> listFieldIds() {
+    List<int> listOfFieldIds = new List<int>();
+    if (fields != null)
+      fields.forEach((field) {
+        if (field.id != null) 
+          listOfFieldIds.add(field.id);
+      });
+
+    return listOfFieldIds;
+  }
 }

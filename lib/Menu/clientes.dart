@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu//FormClients.dart';
@@ -26,7 +29,6 @@ class Client extends StatefulWidget {
 class _ClientState extends State<Client> {
   ListWidgets ls = ListWidgets();
   StreamSubscription _connectionChangeStream;
-
   bool isOffline = false;
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Clientes');
@@ -53,6 +55,37 @@ class _ClientState extends State<Client> {
     setState(() {
       isOffline = !hasConnection;
     });
+
+    if (!isOffline && hasConnection){
+      sync();
+      syncDialog();
+    }
+  }
+
+  void sync() async{
+    await AddressChannel.syncEverything();
+    await CustomerChannel.syncEverything();
+    await CustomerAddressesChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+  Future<void> syncDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Sincronizando ... "),
+          content:SizedBox(
+            height: 100.0,
+            width: 100.0,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        );
+      },
+    );
   }
 
   @override
@@ -67,7 +100,7 @@ class _ClientState extends State<Client> {
       ),
       body: Stack(
         children: <Widget>[
-          !isOffline ? listViewCustomers() : Text("no posee conexion a internet"),
+          listViewCustomers()
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -86,10 +119,6 @@ class _ClientState extends State<Client> {
     );
   }
 
-  Future<UserDataBase> deletetUser() async {
-    UserDataBase userActiv = await ClientDatabaseProvider.db.getCodeId('1');
-    return userActiv;
-  }
 
   void _searchPressed() {
     setState(() {
@@ -120,7 +149,6 @@ class _ClientState extends State<Client> {
 
   listViewCustomers(){
     CustomersBloc _bloc = new CustomersBloc();
-
     return StreamBuilder<List<CustomerWithAddressModel>>(
       stream: _bloc.outCustomers,
       initialData: <CustomerWithAddressModel>[],

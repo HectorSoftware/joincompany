@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
+import 'package:joincompany/Menu/contactView.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
@@ -324,9 +325,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   extraerUser() async {
-    UserDataBase userAct = await ClientDatabaseProvider.db.getCodeId('1');
-    var getUserResponse = await getUser(userAct.company, userAct.token);
-    UserModel user = UserModel.fromJson(getUserResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     if (this.mounted){
       setState((){

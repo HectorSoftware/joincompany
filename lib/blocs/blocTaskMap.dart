@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 
@@ -23,9 +25,9 @@ class TaskBloc{
     String diadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 00:00:00';
     String hastadesde = hasta.year.toString() + '-' + hasta.month.toString() + '-' + hasta.day.toString() + ' 23:59:59';
 
-    UserDataBase userActivity = await ClientDatabaseProvider.db.getCodeId('1');
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    var getAllTasksResponse = await getAllTasks(userActivity.company,userActivity.token,beginDate : diadesde ,endDate : hastadesde, );
+    var getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate : diadesde ,endDate : hastadesde, );
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
     status sendStatus = status.cliente;
 
@@ -41,8 +43,8 @@ class TaskBloc{
       }
     }
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(userActivity.company,userActivity.token);
-    CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
+    CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
 
     for(int y = 0; y < customersWithAddress.data.length; y++){
       Place marker;

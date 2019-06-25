@@ -13,6 +13,8 @@ class ConnectionStatusSingleton {
   //This tracks the current connection status
   bool hasConnection = false;
 
+  bool get connectionStatus => hasConnection;
+
   //This is how we'll allow subscribing to connection changes
   StreamController connectionChangeController = new StreamController.broadcast();
 

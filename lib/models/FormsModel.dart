@@ -50,6 +50,9 @@ class FormsModel {
     total: json["total"],
   );
 
+  factory FormsModel.fromDatabase(Map<String, dynamic> data) => new FormsModel(
+  );
+
   Map<String, dynamic> toMap() => {
     "current_page": currentPage,
     "data": data != null ? new List<FormModel>.from(data.map((x) => x.toMap())) : null,
@@ -64,4 +67,15 @@ class FormsModel {
     "to": to,
     "total": total,
   };
+
+  List<int> listFormIds() {
+    List<int> listOfFormIds = List<int>();
+
+    if(data != null)
+      data.forEach((form) {
+        if (form.id != null)
+          listOfFormIds.add(form.id);
+      });
+    return listOfFormIds;
+  }
 }

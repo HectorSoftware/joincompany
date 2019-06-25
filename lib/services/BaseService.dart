@@ -62,6 +62,7 @@ Future<http.Response> httpDelete(String id, String customer, String authorizatio
 
   var response;
   var uri = Uri.https(hostApi, versionApi + resourcePath + '/$id');
+  
   var headers = {
     'customer': customer,
     'Authorization': 'Bearer $authorization',
