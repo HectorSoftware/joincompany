@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -333,9 +334,7 @@ Future<http.Response> unrelateCustomerContactFromServer(String idCustomer, Strin
 }
 
 Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization ) async {
-  //List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
-  
-  var businesses;
+  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
   
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
   
@@ -362,8 +361,7 @@ Future<ResponseModel> relateCustomerBusiness(String idCustomer, String idBusines
     }
   }
   
-  // var customerBusinessCreated = await DatabaseProvider.db.CreateCustomerBusiness(null, null, null, null, int.parse(idCustomer), int.parse(idBusiness), syncState);
-  var customerBusinessCreated;
+  var customerBusinessCreated = await DatabaseProvider.db.CreateCustomerBusiness(null, null, null, null, int.parse(idCustomer), int.parse(idBusiness), syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: customerBusinessCreated.toString());
 

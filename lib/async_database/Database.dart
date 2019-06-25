@@ -1,7 +1,12 @@
+// TODO: Activar llave foranea para que se actualize automaticamente
+// TODO: Verificar que se eliminan las relaciones donde se elimina el objeto padre.
+// TODO: Al devolver los contactos y negocios, incluir el id del customer.
+// TODO: Verificar si devuelvo el date correcto al crear y actualizar tareas
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -377,8 +382,8 @@ class DatabaseProvider {
   }
 
   Future<int> ChangeSyncStateUser(int id, SyncState syncState) async {
-    final db = await database;return
-      db.rawUpdate(
+    final db = await database;
+    return db.rawUpdate(
         '''
       UPDATE "users" SET
       in_server = ?,
@@ -1563,6 +1568,45 @@ class DatabaseProvider {
     return listOfFieldIds;
   }
 
+  Future<List<SectionModel>> ListSectionsByTask() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_fields" WHERE "type" = "section"');
+
+    List<SectionModel> listOfSections = List<SectionModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (section) async {
+        List<FieldModel> listOfFields = await GetFieldsBySection(section["id"]);
+
+        listOfSections.add(new SectionModel(
+          id: section["id"],
+          createdAt: section["created_at"],
+          updatedAt: section["updated_at"],
+          deletedAt: section["deleted_at"],
+          createdById: section["created_by_id"],
+          updatedById: section["updated_by_id"],
+          deletedById: section["deleted_by_id"],
+          sectionId: section["section_id"],
+          entityType: section["entity_type"],
+          entityId: section["entity_id"],
+          type: section["type"],
+          name: section["name"],
+          code: section["code"],
+          subtitle: section["subtitle"],
+          position: section["position"],
+          fieldDefaultValue: section["field_default_value"],
+          fieldType: section["field_type"],
+          fieldPlaceholder: section["field_placeholder"],
+          fieldOptions: section["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(section["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
+          fieldCollection: section["field_collection"],
+          fieldRequired: section["field_required"] == 1 ? true: false,
+          fieldWidth: section["field_width"],
+          fields: listOfFields,
+        ));
+      });
+    }
+  }
+
   Future<List<SectionModel>> ListSections() async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1872,7 +1916,7 @@ class DatabaseProvider {
     );
 
     if (data.isNotEmpty) {
-      LocalityModel localityModel = await ReadLocalityById(data.first["locality_id"]);
+      LocalityModel locality = await ReadLocalityById(data.first["locality_id"]);
 
       return AddressModel(
           id: data.first["id"],
@@ -1896,7 +1940,7 @@ class DatabaseProvider {
           contactPhone: data.first["contact_phone"],
           contactMobile: data.first["contact_mobile"],
           contactEmail: data.first["contact_email"],
-          locality: localityModel);
+          locality: locality);
     }
     else
       return null;
@@ -2537,11 +2581,6 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    // WARNING: customSection is always returned as null from the server
-    // that's why I ain't using it here. Anyway, if it changes (as it's supposed to)
-    // we will just have to modify this to add it to our database (but I think it
-    // wouldn't be necessary).
-
     await Future.forEach(task.customValues, (customValue) async {
       CreateCustomValue(customValue, syncState);
     });
@@ -2611,9 +2650,7 @@ class DatabaseProvider {
       FormModel form = await ReadFormById(data.first["form_id"]);
       ResponsibleModel responsible = await ReadResponsibleById(data.first["responsible_id"]);
 
-      List<CustomValueModel> customValues = await QueryCustomValue(CustomValueModel(
-        formId: form.id,
-      ));
+      List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(data.first["id"]);
 
       return TaskModel(
         id: data.first["id"],
@@ -2642,12 +2679,101 @@ class DatabaseProvider {
         customer: customer,
         form: form,
         responsible: responsible,
-        customValues: customValues,
+        customValues: listOfCustomValues,
         customSections: null,
       );
     }
     else
       return null;
+  }
+
+  // TODO: Parse dates here.
+  Future<List<TaskModel>> QueryTaskForService(QueryTasks query) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "tasks"');
+
+    List<TaskModel> listOfTasks = new List<TaskModel>();
+    if (data.isNotEmpty) {
+      bool dated = false;
+      await Future.forEach(data, (taskRetrieved) async {
+        DateTime date;
+        if (taskRetrieved["planning_date"])
+          date = DateTime.parse(taskRetrieved["planning_date"]);
+        else if (taskRetrieved["created_at"] != null)
+          date = DateTime.parse(taskRetrieved["created_at"]);
+
+        if (dated && query.beginDate != null)
+          if (date != null)
+            if (date.difference(DateTime.parse(query.beginDate)).inMilliseconds > 0)
+              return;
+        
+        if (dated && query.endDate != null)
+          if (date != null)
+            if (date.difference(DateTime.parse(query.endDate)).inMilliseconds < 0)
+              return;
+
+        if (query.supervisorId != null)
+          if (taskRetrieved["supervisor_id"] != query.supervisorId)
+            return;
+
+        if (query.responsibleId != null)
+          if (taskRetrieved["responsible_id"] != query.responsibleId)
+            return;
+
+        if (query.formId != null)
+          if (taskRetrieved["form_id"] != query.formId)
+            return;
+
+        if (query.perPage != null)
+          if (taskRetrieved["per_page"] != query.perPage)
+            return;
+
+        if (query.page != null)
+          if (taskRetrieved["page"] != query.page)
+            return;
+        
+        List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(taskRetrieved["id"]);
+        
+        FormModel form = await DatabaseProvider.db.ReadFormById(taskRetrieved["form_id"]);
+        AddressModel address = await DatabaseProvider.db.ReadAddressById(taskRetrieved["address_id"]);
+        CustomerModel customer = await DatabaseProvider.db.ReadCustomerById(taskRetrieved["customer_id"]);
+        ResponsibleModel responsible = await DatabaseProvider.db.ReadResponsibleById(taskRetrieved["responsible_id"]);
+
+        listOfTasks.add(new TaskModel(
+          id: taskRetrieved["id"],
+          createdAt: taskRetrieved["created_at"],
+          updatedAt: taskRetrieved["updated_at"],
+          deletedAt: taskRetrieved["deleted_at"],
+          createdById: taskRetrieved["created_by_id"],
+          updatedById: taskRetrieved["updated_by_id"],
+          deletedById: taskRetrieved["deleted_by_id"],
+          formId: taskRetrieved["form_id"],
+          responsibleId: taskRetrieved["responsible_id"],
+          customerId: taskRetrieved["customer_id"],
+          addressId: taskRetrieved["address_id"],
+          name: taskRetrieved["name"],
+          planningDate: taskRetrieved["planning_date"],
+          checkinDate: taskRetrieved["checkin_date"],
+          checkinLatitude: taskRetrieved["checkin_latitude"],
+          checkinLongitude: taskRetrieved["checkin_longitude"],
+          checkinDistance: taskRetrieved["checkin_distance"],
+          checkoutDate: taskRetrieved["checkout_date"],
+          checkoutLatitude: taskRetrieved["checkout_latitude"],
+          checkoutLongitude: taskRetrieved["checkout_longitude"],
+          checkoutDistance: taskRetrieved["checkout_distance"],
+          status: taskRetrieved["status"],
+          customSections: new List<CustomSectionModel>(),
+          customValues: listOfCustomValues,
+          customValuesMap: new Map<String,String>(),
+          form: form,
+          address: address,
+          customer: customer,
+          responsible: responsible,
+        ));
+        
+      });
+    }
   }
 
   Future<List<TaskModel>> QueryTask(TaskModel query) async {
@@ -2734,9 +2860,7 @@ class DatabaseProvider {
         FormModel form = await ReadFormById(taskRetrieved["form_id"]);
         ResponsibleModel responsible = await ReadResponsibleById(taskRetrieved["responsible_id"]);
 
-        List<CustomValueModel> customValues = await QueryCustomValue(CustomValueModel(
-          formId: form.id,
-        ));
+        List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(taskRetrieved["id"]);
 
         listOfTasks.add(new TaskModel(
           id: taskRetrieved["id"],
@@ -2765,7 +2889,7 @@ class DatabaseProvider {
           customer: customer,
           form: form,
           responsible: responsible,
-          customValues: customValues,
+          customValues: listOfCustomValues,
           customSections: null,
         ));
       });
@@ -2794,9 +2918,7 @@ class DatabaseProvider {
         FormModel form = await ReadFormById(taskRetrieved["form_id"]);
         ResponsibleModel responsible = await ReadResponsibleById(taskRetrieved["responsible_id"]);
 
-        List<CustomValueModel> customValues = await QueryCustomValue(CustomValueModel(
-          formId: form.id,
-        ));
+        List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(taskRetrieved["id"]);
 
         listOfTasks.add(new TaskModel(
           id: taskRetrieved["id"],
@@ -2825,7 +2947,7 @@ class DatabaseProvider {
           customer: customer,
           form: form,
           responsible: responsible,
-          customValues: customValues,
+          customValues: listOfCustomValues,
           customSections: null,
         ));
       });
@@ -2833,7 +2955,7 @@ class DatabaseProvider {
     return listOfTasks;
   }
 
-  Future<int> UpdateTask(int taskId, TaskModel task, SyncState syncState) async {
+  Future<TaskModel> UpdateTask(int taskId, TaskModel task, SyncState syncState) async {
     final db = await database;
 
     await Future.forEach(task.customValues, (customValue) async {
@@ -2852,52 +2974,32 @@ class DatabaseProvider {
 
     // individual items
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "forms" WHERE id = ${task.form.id}
-      '''
-    );
-
+    data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
     if (data.isNotEmpty)
       UpdateForm(task.form.id, task.form, syncState);
     else
       CreateForm(task.form, syncState);
 
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "addresses" WHERE id = ${task.address.id}
-      '''
-    );
-
+    data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
     if (data.isNotEmpty)
       UpdateAddress(task.address.id, task.address, syncState);
     else
       CreateAddress(task.address, syncState);
 
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "customers" WHERE id = ${task.customer.id}
-      '''
-    );
-
+    data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
     if (data.isNotEmpty)
       UpdateCustomer(task.customer.id, task.customer, syncState);
     else
       CreateCustomer(task.customer, syncState);
 
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}
-      '''
-    );
-
+    data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
     if (data.isNotEmpty)
       UpdateResponsible(task.responsible.id, task.responsible, syncState);
     else
       CreateResponsible(task.responsible, syncState);
 
-    return await db.rawUpdate(
-        '''
+    task.id = await db.rawUpdate(
+      '''
       UPDATE "tasks" SET
       id = ?,
       created_at = ?,
@@ -2934,20 +3036,63 @@ class DatabaseProvider {
     task.checkoutLongitude, task.checkoutDistance, task.status],
     ...paramsBySyncState[syncState]],
     );
+
+    return task;
   }
 
   Future<int> DeleteTaskById(int id) async {
     final db = await database;
-    return await db.rawDelete(
-        '''
-      DELETE FROM "tasks" WHERE id = $id
-      '''
-    );
+    return await db.rawDelete('DELETE FROM "custom_values" WHERE task_id = $id');
+    return await db.rawDelete('DELETE FROM "tasks" WHERE id = $id');
   }
 
-  Future<int> ChangeSyncStateTaks(int id, SyncState syncState) async {
+  Future<TaskModel> UpdateTaskCheckOut(int id, String longitude, String latitude, String distance, SyncState syncState, {String date}) async {
     final db = await database;
-    return await db.rawUpdate(
+    await db.rawUpdate(
+      '''
+      UPDATE "tasks" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      status = "done",
+      checkout_longitude = ${longitude},
+      checkout_latitude = ${latitude},
+      checkout_distance = ${distance}
+      ${date != null ? ", checkout_date = ?," : ","}
+      
+      WHERE id = $id
+      ''',
+      paramsBySyncState[syncState],
+    );
+
+    return await ReadTaskById(id);
+  }
+
+  Future<TaskModel> UpdateTaskCheckIn(int id, String longitude, String latitude, String distance, SyncState syncState, {String date}) async {
+    final db = await database;
+    await db.rawUpdate(
+      '''
+      UPDATE "tasks" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      status = "working",
+      checkin_longitude = ${longitude},
+      checkin_latitude = ${latitude},
+      checkin_distance = ${distance}
+      ${date != null ? ", checkin_date = ?," : ","}
+      
+      WHERE id = $id
+      ''',
+      paramsBySyncState[syncState],
+    );
+
+    return await ReadTaskById(id);
+  }
+
+  Future<int> ChangeSyncStateTask(int id, SyncState syncState) async {
+    final db = await database;
+    await db.rawUpdate(
       '''
       UPDATE "tasks" SET
       in_server = ?,
@@ -3250,19 +3395,14 @@ class DatabaseProvider {
 
   // Operations on custom_values
   Future<int> CreateCustomValue(CustomValueModel customValue, SyncState syncState) async {
-    /* final db = await database;
+    final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "custom_values" WHERE id = ${customValue.id}
-      '''
-    );
+    data = await db.rawQuery('SELECT * FROM "custom_values" WHERE id = ${customValue.id}');
 
     if (data.isNotEmpty)
       return null;
 
-    // lookatmeplease
-    CreateCustomField(SectionModel(
+    CreateField(new FieldModel(
       id: customValue.field.id,
       createdAt: customValue.field.createdAt,
       entityId: customValue.field.entityId,
@@ -3301,22 +3441,69 @@ class DatabaseProvider {
         customizable_id,
         value,
         image_base64,
+        task_id,
         in_server,
         updated,
         deleted  
       )
         
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
     customValue.formId, customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
-    customValue.value, customValue.imageBase64], ...paramsBySyncState[syncState]],
-    ); */
+    customValue.value, customValue.imageBase64, customValue.taskId], ...paramsBySyncState[syncState]],
+    );
+  }
+
+  Future<List<CustomValueModel>> ListCustomValuesByTask(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "custom_values" WHERE task_id = $id');
+
+    List<CustomValueModel> listOfCustomValues = List<CustomValueModel>();
+    // TODO: convert this in order to add a list...
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (data) async {
+        FieldModel field = await ReadFieldById(data["field_id"]);
+
+        listOfCustomValues.add(new CustomValueModel(
+          id: data["id"],
+          createdAt: data["created_at"],
+          updatedAt: data["updated_at"],
+          formId: data["form_id"],
+          sectionId: data["section_id"],
+          fieldId: data["field_id"],
+          customizableType: data["customizable_type"],
+          customizableId: data["customizable_id"],
+          value: data["value"],
+          imageBase64: data["image_base64"],
+          field: field,
+        ));
+      });
+    }
+
+    return listOfCustomValues;
+  }
+
+  Future<List<int>> ListCustomValueIdsByTask(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT id FROM "custom_values" WHERE task_id = $id');
+
+    List<int> listOfCustomValueIds = List<int>();
+    if (data.isNotEmpty) {
+      // TODO: FIELD FIELD, there were a field and I deleted it!
+      data.forEach((data) {
+        listOfCustomValueIds.add(data["id"]);
+      });
+    }
+
+    return listOfCustomValueIds;
   }
 
   Future<CustomValueModel> ReadCustomValueById(int id) async {
-    /* final db = await database;
+    final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
@@ -3324,9 +3511,8 @@ class DatabaseProvider {
       '''
     );
 
-    // lookatmeplease
     if (data.isNotEmpty) {
-      SectionModel customField = await ReadCustomFieldById(data.first["field_id"]);
+      FieldModel customField = await ReadFieldById(data.first["field_id"]);
       FieldModel field = FieldModel(
         id: customField.id,
         createdAt: customField.createdAt,
@@ -3357,6 +3543,7 @@ class DatabaseProvider {
         createdAt: data.first["created_at"],
         updatedAt: data.first["updated_at"],
         formId: data.first["form_id"],
+        taskId: data.first["task_id"],
         sectionId: data.first["section_id"],
         fieldId: data.first["field_id"],
         customizableType: data.first["customizable_type"],
@@ -3367,12 +3554,11 @@ class DatabaseProvider {
       );
     }
     else
-      return null; */
+      return null;
   }
 
   Future<List<CustomValueModel>> QueryCustomValue(CustomValueModel query) async {
-    // lookatmeplease
-    /* final db = await database;
+    final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
@@ -3414,32 +3600,7 @@ class DatabaseProvider {
           if (query.imageBase64 != customValueRetrieved["image_base64"])
             return;
 
-        SectionModel customField = await ReadCustomFieldById(customValueRetrieved["field_id"]);
-
-        FieldModel field = FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
-        );
+        FieldModel field = await ReadFieldById(customValueRetrieved["field_id"]);
 
         listOfCustomValues.add(new CustomValueModel(
           id: customValueRetrieved["id"],
@@ -3451,17 +3612,18 @@ class DatabaseProvider {
           customizableType: customValueRetrieved["customizable_type"],
           customizableId: customValueRetrieved["customizable_id"],
           value: customValueRetrieved["value"],
+          taskId: customValueRetrieved["task_id"],
           imageBase64: customValueRetrieved["image_base64"],
           field: field,
         ));
       });
     }
-    return listOfCustomValues; */
+
+    return listOfCustomValues;
   }
 
   Future<List<CustomValueModel>> ReadCustomValuesBySyncState(SyncState syncState) async {
-    // lookatmeplease
-    /* final db = await database;
+    final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
@@ -3476,32 +3638,7 @@ class DatabaseProvider {
     List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (customValueRetrieved) async {
-        SectionModel customField = await ReadCustomFieldById(customValueRetrieved["field_id"]);
-
-        FieldModel field = FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
-        );
+        FieldModel field = await ReadFieldById(customValueRetrieved["field_id"]);
 
         listOfCustomValues.add(new CustomValueModel(
           id: customValueRetrieved["id"],
@@ -3509,6 +3646,7 @@ class DatabaseProvider {
           updatedAt: customValueRetrieved["updated_at"],
           formId: customValueRetrieved["form_id"],
           sectionId: customValueRetrieved["section_id"],
+          taskId: customValueRetrieved["task_id"],
           fieldId: customValueRetrieved["field_id"],
           customizableType: customValueRetrieved["customizable_type"],
           customizableId: customValueRetrieved["customizable_id"],
@@ -3518,12 +3656,12 @@ class DatabaseProvider {
         ));
       });
     }
-    return listOfCustomValues; */
+
+    return listOfCustomValues;
   }
 
   Future<int> UpdateCustomValue(int customValueId, CustomValueModel customValue, SyncState syncState) async {
-    // lookatmeplease
-    /* final db = await database;
+    final db = await database;
 
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -3533,58 +3671,62 @@ class DatabaseProvider {
     );
 
     if (data.isNotEmpty)
-      UpdateCustomField(
-          customValue.field.id,
-          SectionModel(
-            id: customValue.field.id,
-            createdAt: customValue.field.createdAt,
-            entityId: customValue.field.entityId,
-            sectionId: customValue.field.sectionId,
-            name: customValue.field.name,
-            deletedById: customValue.field.deletedById,
-            updatedById: customValue.field.updatedById,
-            createdById: customValue.field.createdById,
-            deletedAt: customValue.field.deletedAt,
-            code: customValue.field.code,
-            entityType: customValue.field.entityType,
-            fieldCollection: customValue.field.fieldCollection,
-            fieldDefaultValue: customValue.field.fieldDefaultValue,
-            fieldOptions: customValue.field.fieldOptions,
-            fieldPlaceholder: customValue.field.fieldPlaceholder,
-            fieldRequired: customValue.field.fieldRequired,
-            fieldType: customValue.field.fieldType,
-            fieldWidth: customValue.field.fieldWidth,
-            position: customValue.field.position,
-            subtitle: customValue.field.subtitle,
-            type: customValue.field.type,
-            updatedAt: customValue.field.updatedAt,
-          ),
-          syncState);
+      UpdateField(
+        customValue.field.id,
+        FieldModel(
+          id: customValue.field.id,
+          createdAt: customValue.field.createdAt,
+          entityId: customValue.field.entityId,
+          sectionId: customValue.field.sectionId,
+          name: customValue.field.name,
+          deletedById: customValue.field.deletedById,
+          updatedById: customValue.field.updatedById,
+          createdById: customValue.field.createdById,
+          deletedAt: customValue.field.deletedAt,
+          code: customValue.field.code,
+          entityType: customValue.field.entityType,
+          fieldCollection: customValue.field.fieldCollection,
+          fieldDefaultValue: customValue.field.fieldDefaultValue,
+          fieldOptions: customValue.field.fieldOptions,
+          fieldPlaceholder: customValue.field.fieldPlaceholder,
+          fieldRequired: customValue.field.fieldRequired,
+          fieldType: customValue.field.fieldType,
+          fieldWidth: customValue.field.fieldWidth,
+          position: customValue.field.position,
+          subtitle: customValue.field.subtitle,
+          type: customValue.field.type,
+          updatedAt: customValue.field.updatedAt,
+        ),
+        syncState
+      );
     else
-      CreateCustomField(SectionModel(
-        id: customValue.field.id,
-        createdAt: customValue.field.createdAt,
-        entityId: customValue.field.entityId,
-        sectionId: customValue.field.sectionId,
-        name: customValue.field.name,
-        deletedById: customValue.field.deletedById,
-        updatedById: customValue.field.updatedById,
-        createdById: customValue.field.createdById,
-        deletedAt: customValue.field.deletedAt,
-        code: customValue.field.code,
-        entityType: customValue.field.entityType,
-        fieldCollection: customValue.field.fieldCollection,
-        fieldDefaultValue: customValue.field.fieldDefaultValue,
-        fieldOptions: customValue.field.fieldOptions,
-        fieldPlaceholder: customValue.field.fieldPlaceholder,
-        fieldRequired: customValue.field.fieldRequired,
-        fieldType: customValue.field.fieldType,
-        fieldWidth: customValue.field.fieldWidth,
-        position: customValue.field.position,
-        subtitle: customValue.field.subtitle,
-        type: customValue.field.type,
-        updatedAt: customValue.field.updatedAt,
-      ), syncState);
+      CreateField(
+        FieldModel(
+          id: customValue.field.id,
+          createdAt: customValue.field.createdAt,
+          entityId: customValue.field.entityId,
+          sectionId: customValue.field.sectionId,
+          name: customValue.field.name,
+          deletedById: customValue.field.deletedById,
+          updatedById: customValue.field.updatedById,
+          createdById: customValue.field.createdById,
+          deletedAt: customValue.field.deletedAt,
+          code: customValue.field.code,
+          entityType: customValue.field.entityType,
+          fieldCollection: customValue.field.fieldCollection,
+          fieldDefaultValue: customValue.field.fieldDefaultValue,
+          fieldOptions: customValue.field.fieldOptions,
+          fieldPlaceholder: customValue.field.fieldPlaceholder,
+          fieldRequired: customValue.field.fieldRequired,
+          fieldType: customValue.field.fieldType,
+          fieldWidth: customValue.field.fieldWidth,
+          position: customValue.field.position,
+          subtitle: customValue.field.subtitle,
+          type: customValue.field.type,
+          updatedAt: customValue.field.updatedAt
+        ),
+        syncState
+      );
 
     return await db.rawUpdate(
       '''
@@ -3600,6 +3742,7 @@ class DatabaseProvider {
       customizable_id = ?,
       value = ?,
       image_base64 = ?,
+      task_id = ?,
       in_server = ?,
       updated = ?,
       deleted = ?,  
@@ -3608,14 +3751,14 @@ class DatabaseProvider {
       [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt, customValue.formId,
     customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
-    customValue.value, customValue.imageBase64], ...paramsBySyncState[syncState]],
-    ); */
+    customValue.value, customValue.imageBase64, customValue.taskId], ...paramsBySyncState[syncState]],
+    );
   }
 
   Future<int> DeleteCustomValueById(int id) async {
     final db = await database;
     return await db.rawDelete(
-        '''
+      '''
       DELETE FROM "custom_values" WHERE id = $id
       '''
     );
@@ -3636,8 +3779,7 @@ class DatabaseProvider {
   }
 
   Future<List<CustomValueModel>> ListCustomValues() async {
-    // lookatmeplease
-    /* final db = await database;
+    final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
         '''
@@ -3648,32 +3790,7 @@ class DatabaseProvider {
     List<CustomValueModel> listOfCustomValues = new List<CustomValueModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (customValueRetrieved) async {
-        SectionModel customField = await ReadCustomFieldById(customValueRetrieved["field_id"]);
-
-        FieldModel field = FieldModel(
-          id: customField.id,
-          createdAt: customField.createdAt,
-          entityId: customField.entityId,
-          sectionId: customField.sectionId,
-          name: customField.name,
-          deletedById: customField.deletedById,
-          updatedById: customField.updatedById,
-          createdById: customField.createdById,
-          deletedAt: customField.deletedAt,
-          code: customField.code,
-          entityType: customField.entityType,
-          fieldCollection: customField.fieldCollection,
-          fieldDefaultValue: customField.fieldDefaultValue,
-          fieldOptions: customField.fieldOptions,
-          fieldPlaceholder: customField.fieldPlaceholder,
-          fieldRequired: customField.fieldRequired,
-          fieldType: customField.fieldType,
-          fieldWidth: customField.fieldWidth,
-          position: customField.position,
-          subtitle: customField.subtitle,
-          type: customField.type,
-          updatedAt: customField.updatedAt,
-        );
+        FieldModel field = await ReadFieldById(customValueRetrieved["field_id"]);
 
         listOfCustomValues.add(new CustomValueModel(
           id: customValueRetrieved["id"],
@@ -3687,10 +3804,12 @@ class DatabaseProvider {
           value: customValueRetrieved["value"],
           imageBase64: customValueRetrieved["image_base64"],
           field: field,
+          taskId: customValueRetrieved["task_id"],
         ));
       });
     }
-    return listOfCustomValues; */
+
+    return listOfCustomValues;
   }
 
   // Operations on customers_addresses
@@ -4348,4 +4467,296 @@ class DatabaseProvider {
       });
     return listOfContactIds;
   }
+
+  Future<BusinessModel> CreateBusiness(BusinessModel business, SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "businesses" WHERE id = ${business.id}');
+
+    if (data.isNotEmpty)
+      return null;
+    
+    business.id = await db.rawInsert(
+      '''
+      INSERT INTO "businesses" (
+        id,
+        created_at,
+        updated_at,
+        deleted_at,
+        created_by_id,
+        updated_by_id,
+        deleted_by_id,
+        customer_id,
+        name,
+        stage,
+        date,
+        amount,
+        in_server,
+        updated,
+        deleted,
+      )
+
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''', 
+      [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
+      business.deletedAt, business.createdById, business.updatedById, business.deletedById,
+      business.customerId, business.name, business.stage, business.date,
+      business.amount, ...paramsBySyncState[syncState]]],
+    );
+
+    return business;
+  }
+
+  Future<BusinessModel> UpdateBusiness(int businessId, BusinessModel business, SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "businesses" WHERE id = ${business.id}');
+
+    if (data.isEmpty)
+      return CreateBusiness(business, syncState);
+    else {
+      business.id = await db.rawUpdate(
+      '''
+      UPDATE "businesses" SET
+        id = ?,
+        created_at = ?,
+        updated_at = ?,
+        deleted_at = ?,
+        created_by_id = ?,
+        updated_by_id = ?,
+        deleted_by_id = ?,
+        customer_id = ?,
+        name = ?,
+        stage = ?,
+        date = ?,
+        amount = ?,
+        in_server = ?,
+        updated = ?,
+        deleted = ?,
+      WHERE id = $businessId
+      ''', 
+      [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
+      business.deletedAt, business.createdById, business.updatedById, business.deletedById,
+      business.customerId, business.name, business.stage, business.date,
+      business.amount, ...paramsBySyncState[syncState]]],
+      );
+    }
+
+    return business;
+  }
+
+  Future<List<BusinessModel>> ReadBusinessesBySyncState(SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "businesses" WHERE 
+      in_server = ? AND
+      updated = ? AND
+      deleted = ?
+      ''',
+      paramsBySyncState[syncState],
+    );
+
+    List<BusinessModel> listOfBusinesses = new List<BusinessModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (business) async {
+        listOfBusinesses.add(new BusinessModel(
+          id: business["id"],
+          createdAt: business["created_at"],
+          updatedAt: business["updated_at"],
+          deletedAt: business["deleted_at"],
+          createdById: business["created_by_id"],
+          updatedById: business["updated_by_id"],
+          deletedById: business["deleted_by_id"],
+          customerId: business["customer_id"],
+          name: business["name"],
+          stage: business["stage"],
+          date: business["date"],
+          amount: business["amount"],
+        ));
+      });
+    }
+
+    return listOfBusinesses;
+  }
+
+  Future<List<int>> RetrieveAllBusinessIds() async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT id FROM "businesses"');
+
+    List<int> listOfBusinessIds = List<int>();
+    if (data.isNotEmpty)
+      await Future.forEach(data, (business) {
+        listOfBusinessIds.add(business["id"]);
+      });
+    return listOfBusinessIds;
+  }
+
+  Future<int> DeleteBusinessById(int id) async {
+    final db = await database;
+    return await db.rawDelete(
+      '''
+      DELETE FROM "businesses" WHERE id = $id
+      '''
+    );
+  }  
+
+  Future<BusinessModel> ReadBusinessById(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "businesses" WHERE id = $id
+      '''
+    );
+
+    if (data.isNotEmpty) {
+      return new BusinessModel(
+        id: data.first["id"],
+        createdAt: data.first["created_at"],
+        updatedAt: data.first["updated_at"],
+        deletedAt: data.first["deleted_at"],
+        createdById: data.first["created_by_id"],
+        updatedById: data.first["updated_by_id"],
+        deletedById: data.first["deleted_by_id"],
+        customerId: data.first["customer_id"],
+        name: data.first["name"],
+        stage: data.first["stage"],
+        date: data.first["date"],
+        amount: data.first["amount"],
+      );
+    }
+    else
+      return null;
+  }
+
+  Future<List<BusinessModel>> RetrieveBusinessesByUserToken(String userToken) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      Select b.* 
+      from "businesses" as b
+      inner join "users" as u on b.created_by_id = u.id
+      WHERE u.remember_token = '$userToken';
+      '''
+    );
+
+    List<BusinessModel> listOfBusinesses = new List<BusinessModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (business) async {
+        listOfBusinesses.add(new BusinessModel(
+          id: business["id"],
+          createdAt: business["created_at"],
+          updatedAt: business["updated_at"],
+          deletedAt: business["deleted_at"],
+          createdById: business["created_by_id"],
+          updatedById: business["updated_by_id"],
+          deletedById: business["deleted_by_id"],
+          customerId: business["customer_id"],
+          name: business["name"],
+          stage: business["stage"],
+          date: business["date"],
+          amount: business["amount"],
+        ));
+      });
+    }
+
+    return listOfBusinesses;
+  }
+
+  Future<int> ChangeSyncStateBusiness(int id, SyncState syncState) async {
+    final db = await database;
+    return db.rawUpdate(
+      '''
+      UPDATE "businesses" SET
+      in_server = ?,
+      updated = ?,
+      deleted = ?
+      WHERE id = $id
+      ''',
+      paramsBySyncState[syncState],
+    );
+  }
+
+  Future<List<BusinessModel>> RetrieveBusinessModelByCustomerId(int customerId) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "businesses" WHERE customer_id = $customerId
+      '''
+    );
+
+    List<BusinessModel> listOfBusinesses = new List<BusinessModel>();
+    if (data.isNotEmpty) {
+      await Future.forEach(data, (business) async {
+        listOfBusinesses.add(new BusinessModel(
+          id: business["id"],
+          createdAt: business["created_at"],
+          updatedAt: business["updated_at"],
+          deletedAt: business["deleted_at"],
+          createdById: business["created_by_id"],
+          updatedById: business["updated_by_id"],
+          deletedById: business["deleted_by_id"],
+          customerId: business["customer_id"],
+          name: business["name"],
+          stage: business["stage"],
+          date: business["date"],
+          amount: business["amount"],
+        ));
+      });
+    }
+
+    return listOfBusinesses;
+  }
+
+  Future<int> CreateCustomerBusiness(int id, String createdAt, 
+                                               String updatedAt,
+                                               String deletedAt, 
+                                               int customerId,
+                                               int businessId, 
+                                               SyncState syncState) async {
+    final db = await database;
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery('SELECT * FROM "businesses" WHERE id = $businessId');
+
+    if (data.isNotEmpty) {
+      return await db.rawUpdate(
+      '''
+      UPDATE "businesses" SET
+      customer_id = ?,
+      in_server = ?,
+      updated = ?,
+      deleted = ?,
+      WHERE id = $businessId
+      ''', 
+      [...[customerId], ...paramsBySyncState[syncState]],
+      );
+    }
+
+    return null;
+  }
+}
+
+class QueryTasks {
+  String beginDate;
+  String endDate;
+  String supervisorId;
+  String responsibleId;
+  String formId;
+  String perPage;
+  String page;
+
+  QueryTasks({
+    this.beginDate,
+    this.endDate,
+    this.supervisorId,
+    this.responsibleId,
+    this.formId,
+    this.perPage,
+    this.page,
+  });
 }

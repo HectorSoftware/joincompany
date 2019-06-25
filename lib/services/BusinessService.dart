@@ -22,9 +22,7 @@ void connectionChanged(dynamic hasConnection) {
 }
 
 Future<ResponseModel> getAllBusinesses(String customer, String authorization, {String perPage, String page} ) async {
-  // List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessesByUserToken(authorization);
-
-  var businesses;
+  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessesByUserToken(authorization);
 
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
 
@@ -49,9 +47,8 @@ Future<http.Response> getAllBusinessesFromServer(String customer, String authori
 }
 
 Future<ResponseModel> getBusiness(String id, String customer, String authorization) async {
-  // BusinessModel businessObj = await DatabaseProvider.db.ReadBusinessById(int.parse(id));
-  var businessObj;
-
+  BusinessModel businessObj = await DatabaseProvider.db.ReadBusinessById(int.parse(id));
+  
   ResponseModel response = new ResponseModel(statusCode: 200, body: businessObj);
 
   return response;
@@ -73,9 +70,8 @@ Future<ResponseModel> createBusiness(BusinessModel businessObj, String customer,
     }
   }
   
-  // BusinessModel businessCreated = await DatabaseProvider.db.CreateBusiness(businessObj, syncState);
-  var businessCreated;
-
+  BusinessModel businessCreated = await DatabaseProvider.db.CreateBusiness(businessObj, syncState);
+  
   ResponseModel response = new ResponseModel(statusCode: 200, body: businessCreated);
 
   return response;
@@ -108,9 +104,8 @@ Future<ResponseModel> updateBusiness(String id, BusinessModel businessObj, Strin
     }
   }
   
-  // BusinessModel businessUpdated = await DatabaseProvider.db.UpdateBusiness(int.parse(id), businessObj, syncState);
-  var businessUpdated;
-
+  BusinessModel businessUpdated = await DatabaseProvider.db.UpdateBusiness(int.parse(id), businessObj, syncState);
+  
   ResponseModel response = new ResponseModel(statusCode: 200, body: businessUpdated);
 
   return response;
@@ -148,9 +143,9 @@ Future<ResponseModel> deleteBusiness(String id, String customer, String authoriz
   int responseDelete;
 
   if (deletedFromServer) {
-    // responseDelete = await DatabaseProvider.db.DeleteBusinessById(int.parse(id));
+    responseDelete = await DatabaseProvider.db.DeleteBusinessById(int.parse(id));
   } else {
-    // responseDelete = await DatabaseProvider.db.ChangeSyncStateBusiness(int.parse(id), SyncState.deleted);
+    responseDelete = await DatabaseProvider.db.ChangeSyncStateBusiness(int.parse(id), SyncState.deleted);
   }
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: responseDelete.toString());
