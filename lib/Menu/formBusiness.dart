@@ -344,10 +344,10 @@ class _FormBusinessState extends State<FormBusiness> {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     var getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
-    ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
+    ContactsModel contacts = getAllContactsResponse.body;
 
     var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken);
-    CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
+    CustomersModel customers = getAllCustomersResponse.body;
     listCustomers = customers.data;
     listContacts = contacts.data;
     setState(() {

@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/BusinessChannel.dart';
+import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
@@ -86,9 +88,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void connectionChanged(dynamic hasConnection) {
     setState(() {
-      isOnline = !hasConnection;
+      isOnline = hasConnection;
     });
   }
+
   @override
   void dispose() {
   passwordController.dispose();
@@ -419,12 +422,12 @@ class _LoginPageState extends State<LoginPage> {
                 userFromServer.company = companyLocal;
 
                 await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
-
                 await AddressChannel.syncEverything();
                 await CustomerChannel.syncEverything();
                 await CustomerAddressesChannel.syncEverything();
                 await FormChannel.syncEverything();
-
+                await ContactChannel.syncEverything();
+                await BusinessChannel.syncEverything();
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
             }
@@ -873,6 +876,13 @@ class _LoginPageState extends State<LoginPage> {
     // print(relateCustomerBusinessResponse.statusCode);
     // print(relateCustomerBusinessResponse.body);
 
+    // await ContactChannel.syncEverything();
+
+      // UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+      // ResponseModel a = await getAllContacts(user.company, user.rememberToken);
+      // ContactsModel b = a.body;
+      // print(b.data.length);
 
 
 
@@ -881,5 +891,6 @@ class _LoginPageState extends State<LoginPage> {
       print(error);
       print(stackTrace);
     }
+
   }
 }

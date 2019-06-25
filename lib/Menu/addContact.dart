@@ -200,7 +200,7 @@ class _AddContactState extends State<AddContact> {
     if(widget.contact != null){
       var resp = await getCustomer(widget.contact.customerId.toString(),user.company,user.rememberToken);
       if(resp.statusCode == 200 || resp.statusCode == 201){
-        clientAct = CustomerWithAddressModel.fromJson(resp.body);
+        clientAct = resp.body;
         clientOld = clientAct;
       }
     }

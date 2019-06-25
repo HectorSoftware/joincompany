@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:joincompany/async_operations/ContactChannel.dart';
+import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocContact.dart';
 import 'package:joincompany/models/ContactModel.dart';
@@ -32,7 +34,7 @@ class _ContactViewState extends State<ContactView> {
   ListWidgets ls = ListWidgets();
 
   StreamSubscription _connectionChangeStream;
-  bool isOnline = false;
+  bool isOnline = true;
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Contactos');
@@ -53,20 +55,20 @@ class _ContactViewState extends State<ContactView> {
   }
 
   void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOnline = hasConnection;
-    });
 
     if (!isOnline && hasConnection){
       sync();
       syncDialog();
     }
+
+    setState(() {
+      isOnline = hasConnection;
+    });
   }
 
   void sync() async{
-//    await AddressChannel.syncEverything();
-//    await CustomerChannel.syncEverything();
-//    await CustomerAddressesChannel.syncEverything();
+    await ContactChannel.syncEverything();
+//    await CustomerContactsChannel.syncEverything();
     Navigator.pop(context);
   }
 
@@ -167,8 +169,8 @@ class _ContactViewState extends State<ContactView> {
     //TODO: change String for Contacts
     return Card(
       child: ListTile(
-        title: Text(contact.name, style: TextStyle(fontSize: 16),),
-        subtitle: Text(contact.customer, style: TextStyle(fontSize: 14),),
+        title: Text(contact.name != null ? contact.name :"", style: TextStyle(fontSize: 16),),
+        subtitle: Text(contact.customer != null ? contact.customer :"", style: TextStyle(fontSize: 14),),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -185,7 +187,7 @@ class _ContactViewState extends State<ContactView> {
                       context: context,
                       barrierDismissible: true, // user must tap button for close dialog!
                       builder: (BuildContext context) {
-                        var email = contact.email;
+                        var email = contact.email != null ? contact.email :"";
                         return AlertDialog(
                             title: Text('Correo : $email')
                         );

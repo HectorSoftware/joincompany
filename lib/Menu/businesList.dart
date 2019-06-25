@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/BusinessChannel.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
@@ -28,14 +32,61 @@ class _BusinessListState extends State<BusinessList> {
   BusinessesModel businessGlobal = BusinessesModel();
   List<BusinessModel> listBusiness = List<BusinessModel>();
 
+  StreamSubscription _connectionChangeStream;
+  bool isOnline = true;
+
   bool getData = false;
   @override
+
   void initState() {
     getAll();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    checkConnection(connectionStatus);
     super.initState();
   }
 
-   @override
+  void checkConnection(ConnectionStatusSingleton connectionStatus) async {
+    isOnline = await connectionStatus.checkConnection();
+    setState(() {});
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    if (!isOnline && hasConnection){
+      sync();
+      syncDialog();
+    }
+
+    setState(() {
+      isOnline = hasConnection;
+    });
+  }
+
+  void sync() async{
+    await BusinessChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+  Future<void> syncDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text("Sincronizando ... "),
+            content:SizedBox(
+              height: 100.0,
+              width: 100.0,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+        );
+      },
+    );
+  }
+
+  @override
   void dispose(){
     super.dispose();
   }
@@ -149,7 +200,7 @@ class _BusinessListState extends State<BusinessList> {
                   ),
                   Card(
                     child:  ListTile(
-                      title: Text(listBusiness[index].customer),
+                      title: Text(listBusiness[index].customer!= null ? listBusiness[index].customer: ""),
                       subtitle:listBusiness[index].stage != null? Text(listBusiness[index].stage.toString(), style: TextStyle(
                            color: Colors.black)): Text('Sin presentación', style: TextStyle(
                            color: Colors.black)),
@@ -166,7 +217,7 @@ class _BusinessListState extends State<BusinessList> {
                   ),
                   Card(
                     child: ListTile(
-                      title:  Text(listBusiness[index].customer),
+                      title:  Text(listBusiness[index].customer != null ? listBusiness[index].customer: ""),
                       subtitle: Text("Presentacion"),
                       trailing:listBusiness[index].date != null ?Text(listBusiness[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                     ),

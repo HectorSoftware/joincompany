@@ -4325,17 +4325,29 @@ class DatabaseProvider {
   Future<List<ContactModel>> RetrieveContactsByUserToken (String userToken) async {
     final db = await database;
     List<Map<String, dynamic>> data;
+//    data = await db.rawQuery(
+//        '''
+//      Select c.*, cu.name as customer, cu.id as customer_id
+//      from "contacts" as c
+//      inner join "customers_contacts" as cc on cc.contact_id = c.id
+//      inner join "customers" as cu on cc.customer_id = cu.id
+//      inner join "users" as u on c.created_by_id = u.id
+//      WHERE u.remember_token = '$userToken';
+//      '''
+//    );
+
 
     data = await db.rawQuery(
-      '''
-      Select c.*, cu.name as customer, cu.id as customer_id
+        '''
+      Select c.*
       from "contacts" as c
       inner join "customers_contacts" as cc on cc.contact_id = c.id
-      inner join "customers" as cu on cc.customer_id = cu.id
       inner join "users" as u on c.created_by_id = u.id
       WHERE u.remember_token = '$userToken';
       '''
     );
+
+    print(data.toList());
 
     List<ContactModel> listOfContacts = new List<ContactModel>();
     if (data.isNotEmpty) {
@@ -4467,7 +4479,7 @@ class DatabaseProvider {
         amount,
         in_server,
         updated,
-        deleted,
+        deleted
       )
 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -4611,12 +4623,15 @@ class DatabaseProvider {
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      Select b.* 
+      Select b.*, cu.name as customer
       from "businesses" as b
+      inner join "customers" as cu on cu.id = b.customer_id
       inner join "users" as u on b.created_by_id = u.id
       WHERE u.remember_token = '$userToken';
       '''
     );
+
+    print(data.toList());
 
     List<BusinessModel> listOfBusinesses = new List<BusinessModel>();
     if (data.isNotEmpty) {
@@ -4630,6 +4645,7 @@ class DatabaseProvider {
           updatedById: business["updated_by_id"],
           deletedById: business["deleted_by_id"],
           customerId: business["customer_id"],
+          customer: business["customer"],
           name: business["name"],
           stage: business["stage"],
           date: business["date"],
