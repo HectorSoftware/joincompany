@@ -66,7 +66,7 @@ Future<http.Response> createTask(TaskModel taskObj, String customer, String auth
   });
 
   var bodyJson = json.encode(taskMap);
-
+print(bodyJson);
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
