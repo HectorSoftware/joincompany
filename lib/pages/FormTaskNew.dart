@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
 import 'package:sentry/sentry.dart';
@@ -28,11 +29,13 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness,this.taskmodelres,this.toListTask});
+  FormTask({this.directionClient,this.toBusiness,this.businessAs,this.taskmodelres,this.toListTask});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
+  final BusinessModel businessAs;
   final TaskModel taskmodelres;
   final bool toListTask;
+
   @override
   _FormTaskState createState() => new _FormTaskState();
 
@@ -145,9 +148,11 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-                                    saveTask.customerId = widget.directionClient.id;
+                                    saveTask.customerId = directionClientIn.id;
+                                    if(widget.toBusiness == true ){
+                                      saveTask.businessId = widget.businessAs.id;
+                                    }
                                     if( directionClientIn.googlePlaceId != null) {
-
                                       if(directionClientIn.id == null) {
                                         AddressModel auxAddressModel = new AddressModel(
                                             address: directionClientIn.address ,
@@ -180,10 +185,8 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
-
-
                                   await  saveTaskApi();
-                                    if(taskEnd == 201){
+                                    if(taskEnd == 201 || taskEnd == 200){
                                       showDialog(
                                         context: context,
                                       builder: (BuildContext context) {
@@ -191,11 +194,15 @@ class _FormTaskState extends State<FormTask> {
                                             title: Text('Tarea Guardada con Exito'),
                                             actions: <Widget>[
                                               FlatButton(
-
                                                 child: Text('Aceptar'),
                                                 onPressed: () {
-
+                                                  if(widget.toBusiness != true){
                                                     Navigator.pushReplacementNamed(context, '/vistap');
+                                                  }else{
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Navigator.of(context).pop();
+                                                  }
 
                                                 },
                                               ),
@@ -1305,7 +1312,6 @@ class _FormTaskState extends State<FormTask> {
         });
   }
    Future<bool> saveTaskApi() async{
-
    var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201){
      setState(() {
@@ -1319,8 +1325,6 @@ class _FormTaskState extends State<FormTask> {
      }
   return true;
   }
-
-
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);

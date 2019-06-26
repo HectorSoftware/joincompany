@@ -21,7 +21,7 @@ enum STATUS_PAGE_CLIENT{
 class Client extends StatefulWidget {
 
   STATUS_PAGE_CLIENT statusPage;
-  Client({this.statusPage});
+  Client({this.statusPage, bool vista});
 
   @override
   _ClientState createState() => _ClientState();

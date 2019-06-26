@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
@@ -19,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'clientes.dart';
 
 enum type{
-  POSS,
+  PRIMER,
   CLIENT,
   CONTACT,
   DATE,
@@ -49,6 +54,8 @@ class _FormBusinessState extends State<FormBusiness> {
   List<CustomerModel> listCustomers = List<CustomerModel>();
   List<ContactModel> listContacts = List<ContactModel>();
   List<TaskModel> listTasksBusiness = List<TaskModel>();
+  List<AddressModel> listDirectionsClients = List<AddressModel>();
+
   FieldOptionModel auxClient =FieldOptionModel();
   FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
@@ -79,7 +86,44 @@ class _FormBusinessState extends State<FormBusiness> {
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(statusPage: STATUS_PAGE_CLIENT.full);
+        return Client(vista: true,statusPage: STATUS_PAGE_CLIENT.full);
+      },
+    );
+  }//
+  Future<TaskModel> createTaskBusiness(AddressModel addressClient) async{
+    return showDialog<TaskModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        CustomerWithAddressModel directionClientBus = CustomerWithAddressModel();
+        if(addressClient == null){
+          directionClientBus = CustomerWithAddressModel();
+        }
+        else{
+          directionClientBus = CustomerWithAddressModel(
+            address: addressClient.address,
+            name:dropdownValueClient ,
+            id: addressClient.id,
+            city: addressClient.city,
+            addressId: 1,
+            createdById:addressClient.createdById,
+            customerId: 1,
+            longitude: addressClient.longitude,
+            latitude: addressClient.latitude,
+            googlePlaceId: addressClient.googlePlaceId,
+            locality: addressClient.locality,
+            localityId: addressClient.localityId,
+            state: addressClient.state,
+            country: addressClient.country,
+            details: addressClient.details,
+            createdAt: addressClient.createdAt,
+            updatedAt: addressClient.updatedAt,
+            reference: addressClient.reference,
+            updatedById: addressClient.updatedById,
+            contactEmail: addressClient.contactEmail,
+          );
+        }
+        return FormTask(directionClient: directionClientBus,toBusiness: true ,businessAs: widget.dataBusiness);
       },
     );
   }//
@@ -114,221 +158,52 @@ class _FormBusinessState extends State<FormBusiness> {
 
 
 }
-  Widget customDropdownMenu(List<FieldOptionModel> elements, String title, String value){
 
-//    for(FieldOptionModel v in elements){
-//     // dropdownMenuItems.add(v.name);
-//    }
-
-   /* return Container(
-      width: MediaQuery.of(context).size.width*0.95,
-        height: MediaQuery.of(context).size.height * 0.10,
-        child: DropdownButton<String>(
-          isDense: false,
-          icon: Icon(Icons.arrow_drop_down),
-          elevation: 10,
-          value: value,
-          hint: Text(title),
-          isExpanded: true,
-          onChanged: (String newValue) {
-            setState(() {
-              value = newValue;
-            });
-          },
-        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        ),
-    );*/
-  }
-  initTextController(){
+  initTextController() async {
 
     if(widget.dataBusiness != null){
 //      print(widget.dataBusiness.name);
 //      print(widget.dataBusiness.customer);
 //      print(widget.dataBusiness.amount);
 //      print(widget.dataBusiness.id);
+      UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+      var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.token,);
+      if(getCustomerResponse.statusCode == 200 || getCustomerResponse.statusCode == 201){
+        dropdownValueClient = widget.dataBusiness.customer;
+        saveBusiness.customerId = widget.dataBusiness.customerId;
+      }else if(widget.dataBusiness.customer == null){
+
+
+      }
+
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
         amountController.text = widget.dataBusiness.amount;
         headerController.text = widget.dataBusiness.stage;
         businessId = widget.dataBusiness.id;
-        if(widget.dataBusiness.customer != null){
-          dropdownValueClient = widget.dataBusiness.customer;
-          saveBusiness.customerId = widget.dataBusiness.customerId;
-          saveBusiness.date = widget.dataBusiness.date.toString();
-          _dateBool =true;
-          dateG = widget.dataBusiness.date.toString().substring(0,10);
-
-        }else{
-         // dropdownValueClient = 'No asignado';
-        }
-        if(widget.dataBusiness.stage != null)
-          {
+        saveBusiness.date = widget.dataBusiness.date.toString();
+        dateG = widget.dataBusiness.date.toString().substring(0,10);
+        _dateBool =true;
+        if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
-          }else{
-
         }
+
 
       });
 
-
-
-      getTaskBusiness();
-    }
-  }
-  Widget customTextField(String title, type t, int maxLines){
-    return Container(
-      margin: EdgeInsets.all(12.0),
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5
-            )
-          ]
-      ),
-      //color: Colors.grey.shade300,
-      child: TextField(
-        controller: getController(t),
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          hintText: title,
-          border: InputBorder.none,
-          errorText: getErrorText(t),
-          contentPadding: EdgeInsets.all(12.0),
-        ),
-        onChanged: _onChanges(t),
-      ),
-    );
-  }
-   customForm(type t){
-    switch(t){
-      case type.POSS:
-        return customTextField('Posicionamiento cliente',t,1);
-      case type.CLIENT:
-        return customDropdownMenu(optionsClients,' cliente B',value);
-      case type.CONTACT:
-        return customDropdownMenu(optionsContacts,' Primer Contacto',value);
-      case type.DATE:
-        return ListTile(
-          title: _date.toString() != null ?Text("Fecha ${_date.toLocal()}"): Text("Fecha"),
-          trailing: Icon(Icons.calendar_today),
-          onTap: ()async{
-            final DateTime picked = await showDatePicker(
-                context: context,
-                initialDate: _date,
-                firstDate: new DateTime(2000),
-                lastDate: new DateTime(2020)
-            );
-            if (picked != null && picked != _date){
-              setState(() {
-                _date = picked;
-              });
-            }
-          },
-        );
-      case type.MOUNT:
-        return customTextField('Monto',t,1);
     }
   }
 
-  String getErrorText(type t){
-    switch(t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-
-        break;
-    }
-    return "";
-  }
-
-  _onChanges(type t){
-    switch(t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-        break;
-    }
-  }
-
-  void initController(){
-//    name = TextEditingController();
-//    code = TextEditingController();
-//    tlfF = TextEditingController();
-//    tlfM = TextEditingController();
-//    email = TextEditingController();
-//    note = TextEditingController();
-  }
 
   void disposeController(){
     posController.dispose();
     amountController.dispose();
     clientController.dispose();
     dateController.dispose();
+
   }
 
-  List<DateTime> valueselectDate = new List<DateTime>();
-  Future<Null> selectDate( context )async{
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _date,
-        firstDate: new DateTime(2000),
-        lastDate: new DateTime(2020)
-    );
-    if (picked != null && picked != _date){
-      setState(() {
-        _date = picked;
-      });
-    }
-  }
-
-  TextEditingController getController(type t){
-    switch (t){
-      case type.POSS:
-
-        break;
-      case type.CLIENT:
-
-        break;
-      case type.CONTACT:
-
-        break;
-      case type.DATE:
-
-        break;
-      case type.MOUNT:
-
-        break;
-    }
-    return null;
-  }
 
   ListView getClientBuilder() {
     return ListView.builder(
@@ -354,7 +229,6 @@ class _FormBusinessState extends State<FormBusiness> {
   @override
   void initState() {
     initTextController();
-    initController();
     getOther();
     businessGet = widget.dataBusiness;
     super.initState();
@@ -371,14 +245,9 @@ class _FormBusinessState extends State<FormBusiness> {
   }
   getOther()async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-
-    var getAllContactsResponse = await getAllContacts(user.company, user.token);
-    ContactsModel contacts = ContactsModel.fromJson(getAllContactsResponse.body);
-
     var getAllCustomersResponse = await getAllCustomers(user.company, user.token);
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
-    listContacts = contacts.data;
     setState(() {
       getData = true;
     });
@@ -387,6 +256,8 @@ class _FormBusinessState extends State<FormBusiness> {
   }
   @override
   Widget build(BuildContext context) {
+    getTaskBusiness();
+    getDirectionsClients();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -443,7 +314,7 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                               child: const Text('Aceptar'),
                                               onPressed: () {
-                                                Navigator.pushReplacementNamed(context, '/vistap');
+                                                Navigator.pushReplacementNamed(context, '/negocios');
                                               },
                                             ),
                                           ],
@@ -691,7 +562,6 @@ class _FormBusinessState extends State<FormBusiness> {
                 ),
               ), //Fecha
               Container(
-
                 margin: EdgeInsets.all(12.0),
                 decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
                     color: Colors.white,
@@ -712,7 +582,6 @@ class _FormBusinessState extends State<FormBusiness> {
                    // errorText: getErrorText(t),
                     contentPadding: EdgeInsets.all(12.0),
                   ),
-                //  onChanged: _onChanges(t),
                 ),
               ), //Monto
               Container(
@@ -727,57 +596,163 @@ class _FormBusinessState extends State<FormBusiness> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.add),
-                            onPressed: () async{
+                              onPressed: () async {
+                              if(widget.edit == true && listDirectionsClients.length > 0){
+                                return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return
+                                        Container(
+                                            width: MediaQuery.of(context).size.width,
+                                            height: MediaQuery.of(context).size.height *(1.0 *listDirectionsClients.length ),
+                                            child: SimpleDialog(
+                                                title: Text('Escoja una direccion para crear una tarea:'),
+                                                children: <Widget>[
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width ,
+                                                        height: MediaQuery.of(context).size.height *(0.1 *listDirectionsClients.length ),
+                                                        child: listDirectionsClients.length != 0 ? ListView.builder(
+                                                          itemCount: listDirectionsClients.length,
+                                                          itemBuilder: (context, index) {
+                                                            return Container(
+                                                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                                  color: Colors.white,
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.black12,
+                                                                        blurRadius: 5
+                                                                    )
+                                                                  ]
+                                                              ),
+                                                              child: ListTile(
+                                                                title: Text(listDirectionsClients[index].address,style: TextStyle(fontSize: 18),),
+                                                                subtitle:dropdownValueClient!= null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text(''),
+                                                                leading: Icon(Icons.location_on),
+                                                                onTap: () async {
+                                                                  var t = await createTaskBusiness(listDirectionsClients[index]);
+                                                                  if (t != null){
+                                                                    setState(() {
+                                                                      task.add(t);
+                                                                    });
+                                                                  }
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ): Center(child: Text('Cliente sin direcciones'),),
 
-                              var t = await getTask();
-                              if (t != null){
-                                setState(() {
-                                  task.add(t);
-                                });
+                                                      ),
+                                                    ],
+                                                  )
+                                                ]
+                                            )
+                                        );
+                                    }
+                                );
+                              }else if(!widget.edit){
+                                return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return
+                                        Container(
+                                            width: MediaQuery.of(context).size.width *0.9,
+                                            child: SimpleDialog(
+                                                title: Text('Cliente sin direcciones.'),
+                                                children: <Widget>[
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width ,
+                                                        height: MediaQuery.of(context).size.height *0.1,
+                                                      ),
+                                                      Row(
+                                                        children: <Widget>[
+                                                          Expanded(
+                                                            child: FlatButton(
+                                                              child: const Text('CONTINUAR'),
+                                                              onPressed: ()async {
+                                                                Navigator.of(context).pop();
+                                                                var t = await createTaskBusiness(null);
+                                                                if (t != null){
+                                                                  setState(() {
+                                                                    task.add(t);
+                                                                  });
+                                                                }
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  )
+                                                ]
+                                            )
+                                        );
+                                    }
+                                );
                               }
-                            },
+                              }
+
                           ),
                         ),
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.visibility),
-                            onPressed: () async => await showDialog(
-                              context: context,
-                              // ignore: deprecated_member_use
-                              child: SimpleDialog(
-                                  title: Text('Tareas:'),
-                                  children: <Widget>[
-                                    Column(
-                                      children: <Widget>[
-                                        Container(
-                                          width: MediaQuery.of(context).size.width ,
-                                          height: MediaQuery.of(context).size.height *0.5,
-                                          child: listTasksBusiness.length != 0 ? ListView.builder(
-                                            itemCount: listTasksBusiness.length,
-                                            itemBuilder: (context, index) {
-                                              print(listTasksBusiness[index].name);
-                                              return ListTile(
-                                                title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-                                                subtitle: Text(listTasksBusiness[index].customer.toString(),style: TextStyle(fontSize: 12),),
-                                                onTap: (){
+                            onPressed: () {
+                              setState(() {
 
-                                                },
-                                              );
-                                            },
-                                          ) : Center(
-                                            child: ListTile(
-                                              title: Text('Sin Tareas Asociadas'),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                              });
+                              if(widget.edit){
+                                return   showDialog(
+                                    context: context,
+                                    // ignore: deprecated_member_use
+                                    child: SimpleDialog(
+                                        title: Text('Tareas:'),
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              Container(
+                                                width: MediaQuery.of(context).size.width ,
+                                                height: MediaQuery.of(context).size.height * (0.1 *listTasksBusiness.length) +50,
+                                                child: listTasksBusiness.length != 0 ? ListView.builder(
+                                                  itemCount: listTasksBusiness.length,
+                                                  itemBuilder: (context, index) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                                          color: Colors.white,
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.black12,
+                                                                blurRadius: 5
+                                                            )
+                                                          ]
+                                                      ),
+                                                      child: ListTile(
+                                                        title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
+                                                        subtitle:listTasksBusiness[index].id != null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
+                                                        leading: Icon(Icons.message),
+                                                        onTap: (){
+
+                                                        },
+                                                      ),
+                                                    );
+                                                  },
+                                                ): Center(child: Text('No hay tareas asociadas'),),
+
+                                              ),
+                                            ],
+                                          )
+                                        ]
                                     )
+                                );
+                              }else{
 
+                              }
 
-                                  ]
-                              )
-                          ),
+                            }
 
                           ),
                         ),
@@ -796,13 +771,14 @@ class _FormBusinessState extends State<FormBusiness> {
           );
         }
       ): Center(child: CircularProgressIndicator(),),
-
-//
-
     );
   }
-  Future listTaskBusiness() async {
 
+  getDirectionsClients()async{
+    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
+    var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.token);
+    List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+    listDirectionsClients = customerAddresses;
   }
   getTaskBusiness() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
@@ -810,11 +786,7 @@ class _FormBusinessState extends State<FormBusiness> {
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
      setState(() {
        listTasksBusiness = tasks.data;
-       print(listTasksBusiness.length);
-       print(saveBusiness.id);
      });
-
-
   }
   saveBusinessApi() async{
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');

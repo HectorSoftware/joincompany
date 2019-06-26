@@ -109,7 +109,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,taskmodelres: null,toListTask: false,)));
+              TaskModel taskk = new TaskModel();
+              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,toBusiness: false,toListTask: false,taskmodelres: taskk)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),

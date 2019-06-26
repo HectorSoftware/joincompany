@@ -56,7 +56,6 @@ Future<http.Response> createTask(TaskModel taskObj, String customer, String auth
 
   String resourcePath = '/tasks2_';
 
-  taskObj.businessId = 1;
   var taskMapAux = taskObj.toMap();
   var taskMap = new Map<String, dynamic>();
 
@@ -67,7 +66,7 @@ Future<http.Response> createTask(TaskModel taskObj, String customer, String auth
   });
 
   var bodyJson = json.encode(taskMap);
-
+print(bodyJson);
 
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
