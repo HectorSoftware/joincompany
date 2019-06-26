@@ -28,10 +28,11 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness});
+  FormTask({this.directionClient,this.toBusiness,this.taskmodelres,this.toListTask});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
-
+  final TaskModel taskmodelres;
+  final bool toListTask;
   @override
   _FormTaskState createState() => new _FormTaskState();
 
@@ -67,10 +68,38 @@ class _FormTaskState extends State<FormTask> {
 
   @override
   void initState(){
-    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');;
+    sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
+
+    if(widget.taskmodelres != null){
+      listWithTask();
+    }
+
     super.initState();
+  }
+
+  Future listWithTask() async {
+    //await lisC(widget.taskmodelres.form);
+
+    await getElements();
+    var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
+    FormModel form = FormModel.fromJson(getFormResponse.body);
+
+    setState(() {
+      _dateTask = DateTime.parse(widget.taskmodelres.planningDate);
+    });
+
+    await lisC(form);
+    setState(() {
+      //   dropdownValue = null;
+      pass = true;
+      image = null;
+      dataInfo = new Map();
+      taskCU = true;
+      image2 = null;
+    });
+
   }
 
   @override
@@ -117,22 +146,6 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
                                     saveTask.customerId = widget.directionClient.id;
-//                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
-//
-//                                      AddressModel AuxAddressModel = new AddressModel(
-//                  name                        address: directionClientIn.name ,
-//                                          latitude: directionClientIn.latitude,
-//                                          longitude: directionClientIn.longitude,
-//                                          googlePlaceId: directionClientIn.googlePlaceId
-//                                      );
-//                                      var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
-//                                      if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-//                                        var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
-//                                        saveTask.addressId = directionAdd.id;
-//                                      }
-//                                    }else{
-//
-//                                    }
                                     if( directionClientIn.googlePlaceId != null) {
 
                                       if(directionClientIn.id == null) {
@@ -150,6 +163,12 @@ class _FormTaskState extends State<FormTask> {
                                       } else {
                                         saveTask.customerId = directionClientIn.id;
                                         saveTask.addressId = directionClientIn.addressId;
+                                      }
+                                    }
+                                    //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
+                                    if(widget.toListTask && directionClientIn==null){
+                                      if(widget.taskmodelres.addressId != null){
+                                        saveTask.addressId = widget.taskmodelres.addressId;
                                       }
                                     }
 
@@ -258,7 +277,8 @@ class _FormTaskState extends State<FormTask> {
               )
           )
         ],
-        title: Text('Agregar Tareas'),
+        title: widget.toListTask ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
+                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
       ),
       body:  pass? ListView(
 
@@ -281,7 +301,11 @@ class _FormTaskState extends State<FormTask> {
                       height: MediaQuery.of(context).size.height * 0.05, //0.2
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),)
+                              : widget.toListTask ?
+                                widget.taskmodelres.address != null ? Text('Direccion:  ${widget.taskmodelres.address.address}',style: TextStyle(fontSize: 15),)
+                                                                    : Text('Direccion: Sin Asignar')
+                                : Text('Direccion: Sin Asignar')
                       ),
 
                     ),
@@ -342,11 +366,6 @@ class _FormTaskState extends State<FormTask> {
                                 title: Text('${formType.data[index].name}'),
                                 leading: Icon(Icons.poll),
                                 onTap: () async {
-//                                  if(directionClientIn.address == null){
-//                                    setState(() {
-//                                      directionClientIn.address = '';
-//                                    });
-//                                  }
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
                                   FormModel form = FormModel.fromJson(getFormResponse.body);
                                   await lisC(form);
@@ -358,10 +377,7 @@ class _FormTaskState extends State<FormTask> {
                                     taskCU = false;
                                     image2 = null;
                                   });
-
-
                                   Navigator.pop(context);
-
                                 },
                               );
                             },
@@ -534,12 +550,8 @@ class _FormTaskState extends State<FormTask> {
                       width: MediaQuery.of(context).size.width *0.5,
                       height: MediaQuery.of(context).size.height *0.1,
                       child: Card(
-
                       ),
-
                     ),
-
-
                   ],
                 );
               }
@@ -1207,10 +1219,8 @@ class _FormTaskState extends State<FormTask> {
       formGlobal = form;
       listFieldsModels.clear();
     });
-    for(SectionModel section in form.sections)
-    {
-      for(FieldModel fields in section.fields)
-      {
+    for(SectionModel section in form.sections){
+      for(FieldModel fields in section.fields){
         listFieldsModelsCopia.add(fields);
       }
     }
@@ -1240,8 +1250,7 @@ class _FormTaskState extends State<FormTask> {
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
     try{
-      if(getAllFormsResponse.statusCode == 200)
-      {
+      if(getAllFormsResponse.statusCode == 200){
         //  print(getAllFormsResponse.headers['content-type']);
         forms = FormsModel.fromJson(getAllFormsResponse.body);
         formType = forms;
@@ -1252,7 +1261,7 @@ class _FormTaskState extends State<FormTask> {
     }
     return formType;
   }
-  initFormsTypes()async{
+  initFormsTypes() async {
     formType = await getAll();
   }
   getElements()async{
@@ -1296,10 +1305,8 @@ class _FormTaskState extends State<FormTask> {
         });
   }
    Future<bool> saveTaskApi() async{
-     var createTaskResponse = await createTask(saveTask, customer, token);
-//    print(createTaskResponse.statusCode);
-  //  print(createTaskResponse.body);
 
+   var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = 201;
@@ -1308,11 +1315,12 @@ class _FormTaskState extends State<FormTask> {
      if(createTaskResponse.statusCode == 500){
        setState(() {
          taskEnd = 500;
-
        });
      }
   return true;
   }
+
+
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);

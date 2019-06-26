@@ -109,7 +109,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,)));
+              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,taskmodelres: null,toListTask: false,)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
@@ -422,8 +422,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     );
   }
 
-  Container listCard(String title, String address, String date,
-      TaskModel listTask, int index) {
+  Container listCard(String title, String address, String date,TaskModel listTask, int index) {
     return Container(
         child: Card(
           child: Column(
@@ -502,6 +501,29 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                         icon: Icon(Icons.delete),
                         onPressed: () {
                           deleteCustomer(listTask.id.toString(), index);
+                        }
+                    ),
+                  ),
+                  Container(
+                    child: IconButton(
+                        icon: Icon(Icons.remove_red_eye,size: 20,),
+                        onPressed: () {
+                          String idTask = '',idAddress ='',nameAddress='',customerName='';
+                          if(listTask.customerId != null){idTask = listTask.customerId.toString();}
+                          if(listTask.addressId != null){idAddress = listTask.addressId.toString();}
+                          if(listTask.address != null){nameAddress = listTask.address.address.toString();}
+                          if(listTask.customer != null){customerName = listTask.customer.name.toString();}
+
+                          CustomerWithAddressModel custoWandress = new CustomerWithAddressModel();
+                          if(listTask.customerId != null){
+                            custoWandress = new CustomerWithAddressModel(
+                              id: int.parse(idTask),// listTask.customerId,
+                              addressId: int.parse(idAddress), //listTask.addressId,
+                              address: nameAddress,//listTask.address.address,
+                              name: customerName,//listTask.customer.name,
+                            );
+                          }
+                          Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: custoWandress,taskmodelres: listTask,toListTask: true,toBusiness: false,)));
                         }
                     ),
                   ),
