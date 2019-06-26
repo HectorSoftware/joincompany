@@ -2264,16 +2264,13 @@ class DatabaseProvider {
         deleted_by_id,
         name,
         code,
-        phone,
-        email,
-        contact_name,
         details,
         in_server,
         updated,
         deleted
       )
         
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt,
     customer.deletedAt, customer.createdById, customer.updatedById,
@@ -2420,9 +2417,6 @@ class DatabaseProvider {
       deleted_by_id = ?,
       name = ?,
       code = ?,
-      phone = ?,
-      email = ?,
-      contact_name = ?,
       details = ?,
       in_server = ?,
       updated = ?,
@@ -4035,6 +4029,7 @@ class DatabaseProvider {
   Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken) async {
     final db = await database;
     List<Map<String, dynamic>> data;
+
     data = await db.rawQuery(
       '''
       Select c.*, a.address, a.reference, a.longitude, a.latitude, a.locality_id, a.google_place_id, a.country, a.state, a.city, a.contact_phone, a.contact_mobile, a.contact_email, ca.address_id, ca.approved, ca.customer_id
@@ -4046,7 +4041,7 @@ class DatabaseProvider {
       WHERE u.remember_token = '$userToken';
       '''
     );
-
+    
     List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (customerWithAddressResponse) async {

@@ -28,7 +28,7 @@ class TaskBloc{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     var getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate : diadesde ,endDate : hastadesde, );
-    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+    TasksModel tasks = getAllTasksResponse.body;
     status sendStatus = status.cliente;
 
     for(int i=0; i < tasks.data.length;i++){

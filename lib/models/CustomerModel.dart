@@ -12,9 +12,6 @@ class CustomerModel {
   int deletedById;
   String name;
   String code;
-//  String phone;
-//  String email;
-//  String contactName;
   String details;
   PivotCustomerUserModel pivot;
 
@@ -28,9 +25,6 @@ class CustomerModel {
     this.deletedById,
     this.name,
     this.code,
-//    this.phone,
-//    this.email,
-//    this.contactName,
     this.details,
     this.pivot,
   });
@@ -49,9 +43,6 @@ class CustomerModel {
     deletedById: json["deleted_by_id"],
     name: json["name"],
     code: json["code"],
-//    phone: json["phone"],
-//    email: json["email"],
-//    contactName: json["contact_name"],
     details: json["details"],
     pivot: json['pivot'] != null ? PivotCustomerUserModel.fromMap(json["pivot"]) : null,
   );
@@ -67,9 +58,6 @@ class CustomerModel {
     "deleted_by_id": deletedById,
     "name": name,
     "code": code,
-//    "phone": phone,
-//    "email": email,
-//    "contact_name": contactName,
     "details": details,
     "pivot": pivot != null ? pivot.toMap() : null,
   };
@@ -105,8 +93,6 @@ class CustomerWithAddressModel extends AddressModel{
   int approved;
   String name;
   String code;
-//  String phone;
-//  String email;
 
   CustomerWithAddressModel({
     int id,
@@ -136,8 +122,6 @@ class CustomerWithAddressModel extends AddressModel{
     this.approved,
     this.name,
     this.code,
-//    this.phone,
-//    this.email,
   }) : super(
     id: id,
     createdAt: createdAt,
@@ -194,8 +178,6 @@ class CustomerWithAddressModel extends AddressModel{
     approved: json["approved"],
     name: json["name"],
     code: json["code"],
-//    phone: json["phone"],
-//    email: json["email"],
     locality: json["locality"] != null ? LocalityModel.fromMap(json["locality"]) : null,
   );
 
@@ -226,8 +208,6 @@ class CustomerWithAddressModel extends AddressModel{
     "approved": approved,
     "name": name,
     "code": code,
-//    "phone": phone,
-//    "email": email,
     "locality": locality != null ? locality.toMap() : null,
   };
 }

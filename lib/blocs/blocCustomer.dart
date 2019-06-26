@@ -20,7 +20,7 @@ class CustomersBloc{
   Future getCustomers() async {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     // var customersResponse = await getAllCustomers(user.company, user.rememberToken);
-    // CustomersModel customers = CustomersModel.fromJson(customersResponse.body);
+    // CustomersModel customers = customersResponse.body;
 
     var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
     CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;

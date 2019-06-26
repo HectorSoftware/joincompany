@@ -354,7 +354,7 @@ class _FormTaskState extends State<FormTask> {
                                 leading: Icon(Icons.poll),
                                 onTap: () async {
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  FormModel form = getFormResponse.body;
                                   await lisC(form);
                                   setState(() {
                                     //   dropdownValue = null;
@@ -1248,7 +1248,7 @@ class _FormTaskState extends State<FormTask> {
       if(getAllFormsResponse.statusCode == 200)
       {
         //  print(getAllFormsResponse.headers['content-type']);
-        forms = FormsModel.fromJson(getAllFormsResponse.body);
+        forms = getAllFormsResponse.body;
         formType = forms;
 
       }

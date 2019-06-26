@@ -28,7 +28,7 @@ class BlocListTask {
       for(int countPage = 1; countPage <= pageTasks;countPage++){
         getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: countPage.toString());
         if(getAllTasksResponse.statusCode == 200){
-          tasks = TasksModel.fromJson(getAllTasksResponse.body);
+          tasks = getAllTasksResponse.body;
           //if(tasks)
           for(int i = 0; i < tasks.data.length; i++ ){
 
@@ -60,7 +60,7 @@ class BlocListTask {
       }
     }catch(e){}
 
-    inListTaksTotal.add(tasks.total);
+    inListTaksTotal.add(tasks !=null ? tasks.total : 0);
     inListTaks.add(_listTaskModellocal);
     _tasksController.close();
     _tasksTotalController.close();

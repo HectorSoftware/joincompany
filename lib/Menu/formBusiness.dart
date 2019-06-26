@@ -764,7 +764,7 @@ class _FormBusinessState extends State<FormBusiness> {
   getTaskBusiness() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var getAllTasksResponse = await getAllTasks(user.company, user.rememberToken, businessId: saveBusiness.id.toString());
-    TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+    TasksModel tasks = getAllTasksResponse.body;
      setState(() {
        listTasksBusiness = tasks.data;
      });

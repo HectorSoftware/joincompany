@@ -170,7 +170,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
       var getAllTasksResponse = await getAllTasks(user.company, user.rememberToken,beginDate : diadesde ,endDate : hastadesde, responsibleId: user.id.toString());
-      TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
+      TasksModel tasks = getAllTasksResponse.body;
       status sendStatus = status.cliente;
       for(int i=0; i < tasks.data.length;i++){
         Place marker;
@@ -192,7 +192,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
         }
       }
       var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
-      CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
+      CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
       for(int y = 0; y < customersWithAddress.data.length; y++){
         Place marker;
         String valadde = 'N/A';

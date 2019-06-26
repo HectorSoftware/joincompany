@@ -343,7 +343,7 @@ class _SearchAddressState extends State<SearchAddress> {
   getListAnddress() async {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var addressResponse = await getAllAddresses(user.company, user.rememberToken);
-    AddressesModel address = AddressesModel.fromJson(addressResponse.body);
+    AddressesModel address = addressResponse.body;
     if(addressResponse.statusCode == 200){
       for(int cantAddress = 0; cantAddress < address.data.length; cantAddress++){
         if(address.data[cantAddress].address != null){
