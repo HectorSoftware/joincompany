@@ -6,7 +6,7 @@ import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/UserService.dart';
-
+import 'package:flutter/services.dart';
 enum type{
   NAME,
   CODE,
@@ -42,6 +42,10 @@ class _ConfigCliState extends State<ConfigCli> {
     getConfig();
     setUser();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -225,8 +229,8 @@ class _ConfigCliState extends State<ConfigCli> {
               trailing: new Icon(Icons.business),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/cliente');
+                //Navigator.pop(context);
+                //Navigator.pushNamed(context, '/cliente');
               },
             ),
           ),

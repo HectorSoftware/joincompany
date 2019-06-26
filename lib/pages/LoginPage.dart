@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -14,6 +16,7 @@ import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
+import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/AddressModel.dart';
@@ -60,11 +63,13 @@ class _LoginPageState extends State<LoginPage> {
   StreamSubscription _connectionChangeStream;
   bool isOnline = false;
 
-  // final nameController = TextEditingController(text : 'eibanez@duperu.com');
-  // final companyController = TextEditingController(text : 'duperu');
- final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
- final companyController = TextEditingController(text : 'factochile');
-  final passwordController = TextEditingController(text : '123');
+//  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
+//     final companyController = TextEditingController(/*text : 'duperu'*/);
+//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
+//  final companyController = TextEditingController(text : 'getkem');
+  final nameController = TextEditingController(text : 'cbarrios@factochile.cl'/**/);
+  final companyController = TextEditingController(text : 'factochile'/**/);
+  final passwordController = TextEditingController(text: '123'/**/);
 
   bool TextViewVisible;
   bool AgregarUser;
@@ -89,6 +94,12 @@ class _LoginPageState extends State<LoginPage> {
     AgregarUser = widget.AgregarUserwidget;
     companyEstable = widget.companyEstablewidget;
     super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -337,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   ValidarDatos_DB(String email, String password, String company) async {
-    
+
     Circuleprogress = true;
     setState(() => Circuleprogress);
 
@@ -498,7 +509,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       }
-    }      
+    }
   }
 
   testApi() async{
@@ -595,7 +606,6 @@ class _LoginPageState extends State<LoginPage> {
       //   customValuesMap: {"18": "test", "20": "valor test"}
       // );
       // var createTaskResponse = await createTask(taskNew, customer, authorization);
-      // var body = createTaskResponse.body;
       // print(createTaskResponse.request);
       // print(createTaskResponse.statusCode);
       // print(createTaskResponse.body);
@@ -701,15 +711,15 @@ class _LoginPageState extends State<LoginPage> {
       //   FormModel formServer = FormModel.fromJson(getFormResponse);
       //   FormModel formLocal = await DatabaseProvider.db.ReadFormById(formServer.id);
       //   if (formLocal != null) {
-          
-      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt); 
+
+      //     DateTime updateDateLocal  = DateTime.parse(formLocal.updatedAt);
       //     DateTime updateDateServer = DateTime.parse(formServer.updatedAt);
       //     int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;
       //     print(diffInMilliseconds);
       //     if ( diffInMilliseconds < 0 ) { // Actualizar Local
       //       await DatabaseProvider.db.UpdateForm(formServer.id, formServer, SyncState.synchronized);
       //     }
-      //   } 
+      //   }
       // }
 
       // var formsResponse = await getAllForms(customer, "");

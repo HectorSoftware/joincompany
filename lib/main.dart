@@ -8,7 +8,6 @@ import 'package:joincompany/pages/app.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-
 import 'Menu/businesList.dart';
 import 'Menu/configCli.dart';
 import 'Menu/contactView.dart';
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget{
         "/Login": (context) =>LoginPage(),
         "/vistap": (context) =>TaskHomePage(),
         "/formularioTareas": (context) =>FormTask(),
-        "/cliente": (context) =>Client(false),
+        "/cliente": (context) =>Client(statusPage: STATUS_PAGE_CLIENT.full),
         "/firma": (context) =>FirmTouch(),
         "/contactos": (context) =>ContactView(STATUS_PAGE.full),
         "/negocios": (context) =>BusinessList(false),

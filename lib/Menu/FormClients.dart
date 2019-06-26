@@ -243,7 +243,7 @@ class _FormClientState extends State<FormClient> {
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.client != null){
-      if(name.text == widget.client.name && code.text == widget.client.code && directionsNews.isEmpty && contactsNew.isEmpty && businessNew.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length ){
+      if(name.text == widget.client.name && note.text == widget.client.details && code.text == widget.client.code && directionsNews.isEmpty && contactsNew.isEmpty && businessNew.isEmpty && directionsOld.length == directionsAll.length && contactsAll.length == contactsOld.length && businessAll.length == businessOld.length ){
         return true;
       }else{
         if(name.text == '' && code.text == ''){
@@ -416,7 +416,12 @@ class _FormClientState extends State<FormClient> {
   }
 
   bool searchOldContacts(ContactModel contact){
-    for(var cont in contactsOld){
+//    for(var cont in contactsOld){
+//      if(cont.id == contact.id){
+//        return true;
+//      }
+//    }
+    for(var cont in contactsNew){
       if(cont.id == contact.id){
         return true;
       }
@@ -839,13 +844,14 @@ class _FormClientState extends State<FormClient> {
                       child:Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("Negocios"),
+                          Text("Negocios",style: TextStyle(color: Colors.grey[350]),),
                           Row(
                             children: <Widget>[
                               IconButton(
-                                  icon: Icon(Icons.add),
+                                  icon: Icon(Icons.add,color: Colors.grey[350],),
                                   onPressed: ()async{
-                                    var resp = await getBusiness();
+                                    //*****************************
+                                    /*var resp = await getBusiness();
                                     if(resp != null){
                                       setState(() {
                                         if(!searchOldBusiness(resp)){
@@ -853,13 +859,16 @@ class _FormClientState extends State<FormClient> {
                                           businessNew.add(resp);
                                         }
                                       });
-                                    }
+                                    }*/
+                                    //******************************
                                   }
                               ),
                               IconButton(
-                                  icon: Icon(Icons.visibility),
+                                  icon: Icon(Icons.visibility,color: Colors.grey[350]),
                                   onPressed: ()async{
-                                    getBusiness();
+                                    //***************
+                                    //getBusiness();
+                                    //***************
                                   }
                               )
                             ],

@@ -1,16 +1,17 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
+import 'package:sentry/sentry.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AddressService.dart';
-import 'dart:io';
-import 'package:sentry/sentry.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -19,18 +20,21 @@ import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
-import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient});
+  FormTask({this.directionClient,this.toBusiness,this.businessAs});
   final CustomerWithAddressModel  directionClient;
+  final bool toBusiness;
+  final BusinessModel businessAs;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -62,6 +66,7 @@ class _FormTaskState extends State<FormTask> {
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
+  String defaultValue = 'NO';
 
 
   @override
@@ -71,6 +76,7 @@ class _FormTaskState extends State<FormTask> {
     initFormsTypes();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     globalContext = context;
@@ -115,6 +121,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
                                     saveTask.customerId = widget.directionClient.id;
+                                    saveTask.businessId = widget.businessAs.id;
 //                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
 //
 //                                      AddressModel AuxAddressModel = new AddressModel(
@@ -150,6 +157,7 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
+
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -158,6 +166,8 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
+
+
                                   await  saveTaskApi();
                                     if(taskEnd == 201){
                                       showDialog(
@@ -168,9 +178,17 @@ class _FormTaskState extends State<FormTask> {
                                             actions: <Widget>[
                                               FlatButton(
 
-                                                child: const Text('Aceptar'),
+                                                child: Text('Aceptar'),
                                                 onPressed: () {
-                                                  Navigator.pushReplacementNamed(context, '/vistap');
+                                                  if(widget.toBusiness != true){
+                                                    Navigator.pushReplacementNamed(context, '/vistap');
+                                                  }else{
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Navigator.of(context).pop();
+
+                                                  }
+
                                                 },
                                               ),
                                             ],
@@ -254,6 +272,7 @@ class _FormTaskState extends State<FormTask> {
         title: Text('Agregar Tareas'),
       ),
       body:  pass? ListView(
+
         children: <Widget>[
 
           Container(
@@ -345,6 +364,8 @@ class _FormTaskState extends State<FormTask> {
                                     taskCU = false;
                                     image2 = null;
                                   });
+
+
                                   Navigator.pop(context);
                                 },
                               );
@@ -1259,7 +1280,7 @@ class _FormTaskState extends State<FormTask> {
                 title: new Text('Lugar' + '  '),
                 onTap: () {
                   Navigator.pop(context);
-                  addDirection();
+                 widget.toBusiness ?  addDirection():  null ;
                 },
               ),
               new ListTile(

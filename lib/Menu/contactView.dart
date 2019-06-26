@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-
+import 'package:flutter/services.dart';
 enum STATUS_PAGE{
   view,
   select,
@@ -47,6 +47,10 @@ class _ContactViewState extends State<ContactView> {
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   void checkConnection(ConnectionStatusSingleton connectionStatus) async {
@@ -145,7 +149,7 @@ class _ContactViewState extends State<ContactView> {
         ],
       ),
       body: listViewContacts(),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.statusPage == STATUS_PAGE.full ? FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           if(widget.statusPage == STATUS_PAGE.view){
@@ -161,7 +165,7 @@ class _ContactViewState extends State<ContactView> {
                     builder: (BuildContext context) => new AddContact(null)));
           }
         },
-      ),
+      ) : null,
     );
   }
 
@@ -177,7 +181,7 @@ class _ContactViewState extends State<ContactView> {
             IconButton(
                 icon: Icon(Icons.call),
                 onPressed:(){
-                  _launchCall(contact.phone);
+                  widget.statusPage == STATUS_PAGE.full ? _launchCall(contact.phone) : null;
                 }
             ),
             IconButton(

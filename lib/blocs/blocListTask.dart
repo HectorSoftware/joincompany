@@ -62,6 +62,8 @@ class BlocListTask {
 
     inListTaksTotal.add(tasks.total);
     inListTaks.add(_listTaskModellocal);
+    _tasksController.close();
+    _tasksTotalController.close();
   }
 
   var _tasksTotalController = StreamController<int>.broadcast();
@@ -71,8 +73,7 @@ class BlocListTask {
 
   @override
   void dispose() {
-    _tasksController.close();
-    _tasksTotalController.close();
+
   }
 
   BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {

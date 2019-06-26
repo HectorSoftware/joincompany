@@ -17,6 +17,7 @@ import 'package:extended_image/extended_image.dart';
 import 'dart:ui' as ui;
 import 'package:sentry/sentry.dart';
 
+import 'package:flutter/services.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
@@ -57,6 +58,10 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     dateActual = widget.dateActualRes;
     _getUserLocation();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override

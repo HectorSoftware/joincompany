@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -43,12 +44,12 @@ class _AddContactState extends State<AddContact> {
   TextEditingController name, code, cargo, phoneF, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
-  Future<CustomerWithAddressModel> getClient() async {
+  Future<CustomerWithAddressModel> getClient(STATUS_PAGE_CLIENT state) async {
     return showDialog<CustomerWithAddressModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return Client(true);
+        return Client(statusPage: state);
       },
     );
   }
@@ -285,6 +286,10 @@ class _AddContactState extends State<AddContact> {
       );
     });
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -511,7 +516,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: ()async{
-                                  var client = await getClient();
+                                  var client = await getClient(STATUS_PAGE_CLIENT.select);
                                   if (client != null){
                                     print(client.toString());
                                     setState(() {
@@ -526,7 +531,7 @@ class _AddContactState extends State<AddContact> {
                               child: IconButton(
                                 icon: Icon(Icons.visibility),
                                 onPressed: (){
-                                  getClient();
+                                  getClient(STATUS_PAGE_CLIENT.view);
                                 },
                               ),
                             ),
