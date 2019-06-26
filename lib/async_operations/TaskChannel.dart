@@ -39,6 +39,38 @@ class TaskChannel {
     });
   }
 
+  static void _updateTaskInBothLocalAndServer(String customer, String authorization) async {
+    // Get all updated tasks from local and update them...
+
+    // Get all tasks from server and local and compare update dates, keep the recent one.
+    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
+    TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
+    
+    if (tasksFromServer.data != null) {
+      await Future.forEach(tasksFromServer.data, (taskFromServerData) async {
+        dynamic taskFromServerRes = await getTaskFromServer(taskFromServerData.id, customer, authorization);
+        TaskModel taskFromServer = TaskModel.fromJson(taskFromServerRes.body);
+        TaskModel taskFromLocal = await DatabaseProvider.db.ReadTaskById(taskFromServer.id);
+
+        if (taskFromLocal != null) {
+          DateTime updateDateFromLocal  = DateTime.parse(taskFromLocal.updatedAt); 
+          DateTime updateDateFromServer = DateTime.parse(taskFromServer.updatedAt);
+          int  diffInMilliseconds = updateDateFromLocal.difference(updateDateFromServer).inMilliseconds;
+        
+          if (diffInMilliseconds > 0) {
+            var updateTaskInServerRes = await updateTaskFromServer(taskFromLocal.id.toString(), taskFromLocal, customer, authorization);
+            if (updateTaskInServerRes.statusCode == 200) {
+              TaskModel updatedTaskFromServer = TaskModel.fromJson(updateTaskInServerRes.body);
+              await DatabaseProvider.db.UpdateTask(updatedTaskFromServer.id, updatedTaskFromServer, SyncState.synchronized);
+            }
+          } else if ( diffInMilliseconds < 0) {
+            await DatabaseProvider.db.UpdateTask(taskFromServer.id, taskFromServer, SyncState.synchronized);
+          }
+        }
+      });
+    }
+  }
+
   static void _deleteTaskInBothLocalAndServer(String customer, String authorization) async {
     print("lol");
     http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
