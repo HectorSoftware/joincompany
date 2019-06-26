@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/async_operations/BusinessChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
@@ -28,10 +27,17 @@ class BusinessList extends StatefulWidget {
 }
 
 class _BusinessListState extends State<BusinessList> {
+
+  //widgets
   ListWidgets ls = ListWidgets();
+
+  //barra busqueda
+  final TextEditingController _filter = new TextEditingController();
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
   String textFilter='';
+
+
   BusinessesModel businessGlobal = BusinessesModel();
   List<BusinessModel> listBusiness = List<BusinessModel>();
 
@@ -95,6 +101,7 @@ class _BusinessListState extends State<BusinessList> {
 
   @override
   void dispose(){
+    _connectionChangeStream.cancel();
     super.dispose();
   }
 
@@ -109,12 +116,6 @@ class _BusinessListState extends State<BusinessList> {
      getData = true;
    });
   }
-
-  //search
-  Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text('Negocios');
-  String textFilter='';
-  final TextEditingController _filter = new TextEditingController();
 
   void _searchPressed() {
     setState(() {
@@ -294,8 +295,6 @@ class _BusinessListState extends State<BusinessList> {
     );
 
   }
-
-
 }
 
 

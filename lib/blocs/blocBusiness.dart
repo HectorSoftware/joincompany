@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/ContactsModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 
@@ -22,9 +23,9 @@ class BusinessBloc{
 
   Future getBusiness() async {
 
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
-    BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var getAllBusinessesResponse = await getAllBusinesses(user.company,user.rememberToken);
+    BusinessesModel busisness = getAllBusinessesResponse.body;
 
     _listbusisness = busisness.data;
 

@@ -17,7 +17,6 @@ import 'package:joincompany/models/TaskModel.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
@@ -169,8 +168,8 @@ class _FormBusinessState extends State<FormBusiness> {
 //      print(widget.dataBusiness.customer);
 //      print(widget.dataBusiness.amount);
 //      print(widget.dataBusiness.id);
-      UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-      var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.token,);
+      UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+      var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.rememberToken,);
       if(getCustomerResponse.statusCode == 200 || getCustomerResponse.statusCode == 201){
         dropdownValueClient = widget.dataBusiness.customer;
         saveBusiness.customerId = widget.dataBusiness.customerId;
@@ -757,14 +756,14 @@ class _FormBusinessState extends State<FormBusiness> {
   }
 
   getDirectionsClients()async{
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.rememberToken);
     List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
     listDirectionsClients = customerAddresses;
   }
   getTaskBusiness() async{
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllTasksResponse = await getAllTasks(user.company, user.token, businessId: saveBusiness.id.toString());
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var getAllTasksResponse = await getAllTasks(user.company, user.rememberToken, businessId: saveBusiness.id.toString());
     TasksModel tasks = TasksModel.fromJson(getAllTasksResponse.body);
      setState(() {
        listTasksBusiness = tasks.data;
@@ -788,8 +787,8 @@ class _FormBusinessState extends State<FormBusiness> {
     }
   }
   updateBusinessApi() async{
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.rememberToken);
 
     if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){
       setState(() {

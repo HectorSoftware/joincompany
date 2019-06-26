@@ -54,10 +54,10 @@ Future<http.Response> createTaskFromServer(TaskModel taskObj, String customer, S
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
-Future<ResponseModel> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page}) async {
+Future<ResponseModel> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String businessId, String perPage, String page}) async {
   ResponseModel response = new ResponseModel();
   if (isOnline) {
-    http.Response getAllTasksFromServerResJSON = await getAllTasksFromServer(customer, authorization, beginDate: beginDate, endDate: endDate, supervisorId: supervisorId, responsibleId: responsibleId, formId: formId, perPage: perPage, page: page);
+    http.Response getAllTasksFromServerResJSON = await getAllTasksFromServer(customer, authorization, beginDate: beginDate, endDate: endDate, supervisorId: supervisorId, responsibleId: responsibleId, formId: formId, businessId: businessId,perPage: perPage, page: page);
     if (getAllTasksFromServerResJSON.statusCode == 200 || getAllTasksFromServerResJSON.statusCode == 201) {
       TasksModel tasksFromServer = TasksModel.fromJson(getAllTasksFromServerResJSON.body);
       response.body = tasksFromServer.data;
@@ -81,7 +81,7 @@ Future<ResponseModel> getAllTasks(String customer, String authorization, {String
   return response;
 }
 
-Future<http.Response> getAllTasksFromServer(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String perPage, String page}) async {
+Future<http.Response> getAllTasksFromServer(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String businessId, String perPage, String page}) async {
 
   String resourcePath = '/tasks2';
 
@@ -105,6 +105,10 @@ Future<http.Response> getAllTasksFromServer(String customer, String authorizatio
 
   if (formId != null && formId!=''){
     params["form_id"]=formId;
+  }
+
+  if (businessId != null && businessId!=''){
+    params["business_id"]=businessId;
   }
 
   if (perPage != null && perPage!=''){
