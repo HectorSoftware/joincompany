@@ -84,7 +84,6 @@ class BusinessChannel {
 
       BusinessModel businessLocal = await DatabaseProvider.db.ReadBusinessById(businessServer.id);
       if (businessLocal != null) {
-        
         DateTime updateDateLocal  = DateTime.parse(businessLocal.updatedAt); 
         DateTime updateDateServer = DateTime.parse(businessServer.updatedAt);
         int  diffInMilliseconds = updateDateLocal.difference(updateDateServer).inMilliseconds;

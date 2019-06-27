@@ -15,6 +15,7 @@ import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
+import 'package:joincompany/async_operations/TaskChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
@@ -257,7 +258,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
-//                testApi();
               },
               child: Center(
                   child: Center(
@@ -445,6 +445,15 @@ class _LoginPageState extends State<LoginPage> {
                 await ContactChannel.syncEverything();
                 await CustomerContactsChannel.syncEverything();
                 await BusinessChannel.syncEverything();
+                // await TaskChannel.syncEverything();
+                // List<TaskModel> listOfTasks = await DatabaseProvider.db.ListTasks();
+                // listOfTasks.forEach((task) {
+                //   print ("/... Task ...\\");
+                //   print (task.id);
+                //   print (task.name);
+                //   print ("/... Task ...\\");
+                // });
+
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
             }
@@ -909,10 +918,9 @@ class _LoginPageState extends State<LoginPage> {
 
       // await CustomerContactsChannel.syncEverything();
 
+    print("---------------------------- Fin test ----------------------------");
 
-
-      print("---------------- Fin test. ----------------------------");
-    }catch(error, stackTrace){
+    } catch(error, stackTrace) {
       print(error);
       print(stackTrace);
     }

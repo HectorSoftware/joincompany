@@ -2,6 +2,7 @@
 // TODO: Verificar que se eliminan las relaciones donde se elimina el objeto padre.
 // TODO: Al devolver los contactos y negocios, incluir el id del customer.
 // TODO: Verificar si devuelvo el date correcto al crear y actualizar tareas
+// TODO: Comparar el ID en las relaciones y no el Id del registro.
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
@@ -989,7 +990,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "responsibles" WHERE id = ${responsible.id}
       '''
     );
@@ -997,7 +998,8 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    CreateResponsible(responsible.supervisor, syncState);
+    if (responsible.supervisor != null)
+      CreateResponsible(responsible.supervisor, syncState);
 
     return await db.rawInsert(
       '''
@@ -2538,6 +2540,7 @@ class DatabaseProvider {
 
   // Operations on tasks
   Future<TaskModel> CreateTask(TaskModel task, SyncState syncState) async {
+    print("Creating task in database");
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -2549,16 +2552,22 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    await Future.forEach(task.customValues, (customValue) async {
-      CreateCustomValue(customValue, syncState);
-    });
+    if (task.customValues != null)
+      await Future.forEach(task.customValues, (customValue) async {
+        CreateCustomValue(customValue, syncState);
+      });
 
     // individual items
-    CreateForm(task.form, syncState);
-    CreateAddress(task.address, syncState);
-    CreateCustomer(task.customer, syncState);
-    CreateResponsible(task.responsible, syncState);
+    if (task.form != null)
+      CreateForm(task.form, syncState);
+    if (task.address != null)
+      CreateAddress(task.address, syncState);
+    if (task.customer != null)
+      CreateCustomer(task.customer, syncState);
+    if (task.responsible != null)
+      CreateResponsible(task.responsible, syncState);
 
+    print("task id before insert " + task.id.toString());
     task.id = await db.rawInsert(
       '''
       INSERT INTO "tasks"(
@@ -2599,6 +2608,7 @@ class DatabaseProvider {
     task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
     task.status], ...paramsBySyncState[syncState]],
     );
+    print("task id after insert " + task.id.toString());
 
     return task;
   }
@@ -2887,7 +2897,6 @@ class DatabaseProvider {
         ResponsibleModel responsible = await ReadResponsibleById(taskRetrieved["responsible_id"]);
 
         List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(taskRetrieved["id"]);
-
         listOfTasks.add(new TaskModel(
           id: taskRetrieved["id"],
           createdAt: taskRetrieved["created_at"],
@@ -3010,8 +3019,9 @@ class DatabaseProvider {
 
   Future<int> DeleteTaskById(int id) async {
     final db = await database;
-    return await db.rawDelete('DELETE FROM "custom_values" WHERE task_id = $id');
-    return await db.rawDelete('DELETE FROM "tasks" WHERE id = $id');
+    await db.rawDelete('DELETE FROM "custom_values" WHERE task_id = $id');
+    var output = await db.rawDelete('DELETE FROM "tasks" WHERE id = $id');
+    return output;
   }
 
   Future<TaskModel> UpdateTaskCheckOut(int id, String longitude, String latitude, String distance, SyncState syncState, {String date}) async {
@@ -3430,7 +3440,7 @@ class DatabaseProvider {
     data = await db.rawQuery('SELECT * FROM "custom_values" WHERE task_id = $id');
 
     List<CustomValueModel> listOfCustomValues = List<CustomValueModel>();
-    // TODO: convert this in order to add a list...
+
     if (data.isNotEmpty) {
       await Future.forEach(data, (data) async {
         FieldModel field = await ReadFieldById(data["field_id"]);

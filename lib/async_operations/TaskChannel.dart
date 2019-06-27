@@ -10,41 +10,75 @@ import 'package:joincompany/services/TaskService.dart';
 import 'package:http/http.dart' as http;
 
 class TaskChannel {
-  static void createTasksInBothLocalAndServer() async {
-    UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
-
+  static void _createTasksInBothLocalAndServer(String customer, String authorization, String userId) async {
+    print("Starting to synchronize task");
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
 
     await Future.forEach(tasksFromLocal, (taskFromLocal) async {
-      var createTaskInServerRes = await createTask(taskFromLocal, lastLoggedUser.company, lastLoggedUser.rememberToken);
+      var createTaskInServerRes = await createTask(taskFromLocal, customer, authorization);
       if (createTaskInServerRes.statusCode == 200) {
         TaskModel createdTask = TaskModel.fromJson(createTaskInServerRes.body);
         await DatabaseProvider.db.UpdateTask(taskFromLocal.id, createdTask, SyncState.synchronized);
       }
     });
 
-    var requestedTasksFromServer = await getAllTasks(lastLoggedUser.company, lastLoggedUser.rememberToken, responsibleId: lastLoggedUser.id.toString());
+    http.Response requestedTasksFromServer = await getAllTasksFromServer(customer, authorization, responsibleId: userId);
     TasksModel tasksFromServer = TasksModel.fromJson(requestedTasksFromServer.body);
-  
+    
     Set<int> idsOfTasksFromServer = new Set<int>();
     tasksFromServer.data.forEach((taskFromServer) {
-      idsOfTasksFromServer.add(taskFromServer.id);}
-    );
+      idsOfTasksFromServer.add(taskFromServer.id);
+    });
 
     Set<int> idsOfTasksFromLocal = new Set<int>.from(await DatabaseProvider.db.RetrieveAllTaskIds());
     Set<int> idsOfTasksToCreate = idsOfTasksFromServer.difference(idsOfTasksFromLocal);
 
     await Future.forEach(tasksFromServer.data, (taskToCreate) async {
       if (idsOfTasksToCreate.contains(taskToCreate.id)) {
-        await DatabaseProvider.db.CreateTask(taskToCreate, SyncState.synchronized);
+        http.Response individualTaskFromServerRes = await getTaskFromServer(taskToCreate.id.toString(), customer, authorization);
+
+        if (individualTaskFromServerRes == null)
+          return;
+
+        TaskModel individualTask = TaskModel.fromJson(individualTaskFromServerRes.body);
+        if (individualTask != null)
+          await DatabaseProvider.db.CreateTask(individualTask, SyncState.synchronized);
       }
     });
   }
 
-  static void deleteTaskInBothLocalAndServer() async {
-    UserModel lastLoggedUser = await DatabaseProvider.db.RetrieveLastLoggedUser();
+  static void _updateTaskInBothLocalAndServer(String customer, String authorization) async {
+    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
+    TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
+    
+    if (tasksFromServer.data != null) {
+      await Future.forEach(tasksFromServer.data, (taskFromServerData) async {
+        dynamic taskFromServerRes = await getTaskFromServer(taskFromServerData.id, customer, authorization);
+        TaskModel taskFromServer = TaskModel.fromJson(taskFromServerRes.body);
+        TaskModel taskFromLocal = await DatabaseProvider.db.ReadTaskById(taskFromServer.id);
 
-    http.Response tasksFromServerRes = await getAllTasksFromServer(lastLoggedUser.company, lastLoggedUser.rememberToken);
+        if (taskFromLocal != null) {
+          DateTime updateDateFromLocal  = DateTime.parse(taskFromLocal.updatedAt); 
+          DateTime updateDateFromServer = DateTime.parse(taskFromServer.updatedAt);
+          int  diffInMilliseconds = updateDateFromLocal.difference(updateDateFromServer).inMilliseconds;
+        
+          if (diffInMilliseconds > 0) {
+            var updateTaskInServerRes = await updateTaskFromServer(taskFromLocal.id.toString(), taskFromLocal, customer, authorization);
+            if (updateTaskInServerRes.statusCode == 200) {
+              TaskModel updatedTaskFromServer = TaskModel.fromJson(updateTaskInServerRes.body);
+              await DatabaseProvider.db.UpdateTask(updatedTaskFromServer.id, updatedTaskFromServer, SyncState.synchronized);
+            }
+          } else if ( diffInMilliseconds < 0) {
+            await DatabaseProvider.db.UpdateTask(taskFromServer.id, taskFromServer, SyncState.synchronized);
+          }
+        }
+      });
+    }
+  }
+
+  static void _deleteTaskInBothLocalAndServer(String customer, String authorization) async {
+    print("lol");
+    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
     TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
 
     List<int> taskIdsFromServer = tasksFromServer.listTasksIds();
@@ -62,11 +96,25 @@ class TaskChannel {
     
     if (tasksToDelete != null) {
       await Future.forEach(tasksToDelete, (taskToDelete) async {
-        http.Response deleteTaskRes = await deleteTaskFromServer(taskToDelete.id.toString(), lastLoggedUser.company, lastLoggedUser.rememberToken);
+        http.Response deleteTaskRes = await deleteTaskFromServer(taskToDelete.id.toString(), customer, authorization);
         if (deleteTaskRes.statusCode == 200 || deleteTaskRes.statusCode != 201) {
           await DatabaseProvider.db.DeleteTaskById(taskToDelete.id);
         }
       });
     }
+  }
+
+  static Future syncEverything() async {
+
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
+    String customer = user.company;
+    String authorization = user.rememberToken;
+    String id = user.id.toString();
+
+    await TaskChannel._createTasksInBothLocalAndServer(customer, authorization, id);
+    print("Tasks created");
+    // await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
+    // await TaskChannel._deleteTaskInBothLocalAndServer(customer, authorization);
   }
 }
