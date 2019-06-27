@@ -8,6 +8,7 @@ import 'package:joincompany/models/ContactModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/pages/LoginPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:flutter/services.dart';
@@ -61,8 +62,7 @@ class _ContactViewState extends State<ContactView> {
   void connectionChanged(dynamic hasConnection) {
 
     if (!isOnline && hasConnection){
-      sync();
-      syncDialog();
+      wrapperSync();
     }
 
     setState(() {
@@ -70,7 +70,21 @@ class _ContactViewState extends State<ContactView> {
     });
   }
 
-  void sync() async{
+  void wrapperSync()async{
+    await syncDialogAll();
+  }
+
+  Future syncDialogAll(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SyncApp();
+      },
+    );
+  }
+
+  void syncContacts() async{
     await ContactChannel.syncEverything();
     await CustomerContactsChannel.syncEverything();
     Navigator.pop(context);
@@ -79,10 +93,10 @@ class _ContactViewState extends State<ContactView> {
   Future<void> syncDialog(){
     return showDialog<void>(
       context: context,
-      barrierDismissible: true, // user must tap button for close dialog!
+      barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text("Sincronizando ... "),
+            title: Text("Sincronizando Contactos..."),
             content:SizedBox(
               height: 100.0,
               width: 100.0,
@@ -127,6 +141,18 @@ class _ContactViewState extends State<ContactView> {
     });
   }
 
+  Future<void> errorDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error de Conexion"),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,6 +172,16 @@ class _ContactViewState extends State<ContactView> {
         title:_appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Busqueda', 30),
+          IconButton(icon: Icon(Icons.update),
+            onPressed: (){
+              if(isOnline){
+                syncContacts();
+                syncDialog();
+              }else{
+                errorDialog();
+              }
+            },
+          ),
         ],
       ),
       body: listViewContacts(),
@@ -170,7 +206,6 @@ class _ContactViewState extends State<ContactView> {
   }
 
   Widget contactCard(ContactModel contact) {
-    //TODO: change String for Contacts
     return Card(
       child: ListTile(
         title: Text(contact.name != null ? contact.name :"", style: TextStyle(fontSize: 16),),

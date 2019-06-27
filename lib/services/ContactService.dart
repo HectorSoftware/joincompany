@@ -13,14 +13,6 @@ String resourcePath = '/contacts';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
 
-bool isOnline = connectionStatus.connectionStatus;
-
-StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
-
-void connectionChanged(dynamic hasConnection) {
-  isOnline = hasConnection;
-}
-
 Future<ResponseModel> getAllContacts(String customer, String authorization, {String perPage, String page} ) async {
   List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactsByUserToken(authorization);
 
@@ -62,7 +54,7 @@ Future<http.Response> getContactFromServer(String id, String customer, String au
 Future<ResponseModel> createContact(ContactModel contactObj, String customer, String authorization) async {
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var createContactResponse = await createContactFromServer(contactObj, customer, authorization);
     if ((createContactResponse.statusCode==200 || createContactResponse.statusCode==201) && createContactResponse.body != 'Contacto ya existe') {
       contactObj = ContactModel.fromJson(createContactResponse.body);
@@ -98,7 +90,7 @@ Future<http.Response> createContactFromServer(ContactModel contactObj, String cu
 Future<ResponseModel> updateContact(String id, ContactModel contactObj, String customer, String authorization) async {
   var syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var updateContactResponse = await updateContactFromServer(contactObj.id.toString(), contactObj, customer, authorization);
     if ((updateContactResponse.statusCode==200 || updateContactResponse.statusCode==201) && updateContactResponse.body != 'Contacto ya existe') {
       contactObj = ContactModel.fromJson(updateContactResponse.body);
@@ -136,7 +128,7 @@ Future<ResponseModel> deleteContact(String id, String customer, String authoriza
 
   bool deletedFromServer = false;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var deleteContactResponse = await deleteContactFromServer(id, customer, authorization);
     if (deleteContactResponse.statusCode==200 || deleteContactResponse.statusCode==201) {
       deletedFromServer = true;

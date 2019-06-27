@@ -13,14 +13,6 @@ String resourcePath = '/businesses';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
 
-bool isOnline = connectionStatus.connectionStatus;
-
-StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
-
-void connectionChanged(dynamic hasConnection) {
-  isOnline = hasConnection;
-}
-
 Future<ResponseModel> getAllBusinesses(String customer, String authorization, {String perPage, String page} ) async {
   List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessesByUserToken(authorization);
 
@@ -62,7 +54,7 @@ Future<http.Response> getBusinessFromServer(String id, String customer, String a
 Future<ResponseModel> createBusiness(BusinessModel businessObj, String customer, String authorization) async {
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var createBusinessResponse = await createBusinessFromServer(businessObj, customer, authorization);
     if (createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) {
       businessObj = BusinessModel.fromJson(createBusinessResponse.body);
@@ -98,7 +90,7 @@ Future<http.Response> createBusinessFromServer(BusinessModel businessObj, String
 Future<ResponseModel> updateBusiness(String id, BusinessModel businessObj, String customer, String authorization) async {
   var syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var updateBusinessResponse = await updateBusinessFromServer(businessObj.id.toString(), businessObj, customer, authorization);
     if (updateBusinessResponse.statusCode==200 || updateBusinessResponse.statusCode==201) {
       businessObj = BusinessModel.fromJson(updateBusinessResponse.body);
@@ -137,7 +129,7 @@ Future<ResponseModel> deleteBusiness(String id, String customer, String authoriz
 
   bool deletedFromServer = false;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var deleteBusinessResponse = await deleteBusinessFromServer(id, customer, authorization);
     if (deleteBusinessResponse.statusCode==200 || deleteBusinessResponse.statusCode==201) {
       deletedFromServer = true;

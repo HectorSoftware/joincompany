@@ -13,14 +13,6 @@ String resourcePath = '/addresses';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
 
-bool isOnline = connectionStatus.connectionStatus;
-
-StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
-
-void connectionChanged(dynamic hasConnection) {
-  isOnline = hasConnection;
-}
-
 Future<ResponseModel> getAllAddresses(String customer, String authorization, {String perPage, String page} ) async{
 
   List<AddressModel> addresses = await DatabaseProvider.db.ListAddresses();
@@ -56,7 +48,7 @@ Future<ResponseModel> createAddress(AddressModel addressObj, String customer, St
 
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var createAddressResponse = await createAddressFromServer(addressObj, customer, authorization);
     if (createAddressResponse.statusCode==200 || createAddressResponse.statusCode==201) {
       addressObj = AddressModel.fromJson(createAddressResponse.body);
