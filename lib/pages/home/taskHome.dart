@@ -169,15 +169,33 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
             },
           ),
           IconButton(
-            icon: Icon(Icons.calendar_today),
+            icon: Icon(Icons.update),
             onPressed:(){
-
+              if(isOnline){
+                syncTask();
+                syncDialog();
+              }else{
+                errorDialog();
+              }
             },
           )
         ],
         bottom: getTabBar(),
       ),
       body: getTabBarView(),
+    );
+  }
+
+
+  Future<void> errorDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error de Conexion"),
+        );
+      },
     );
   }
 
