@@ -48,16 +48,12 @@ class _FormBusinessState extends State<FormBusiness> {
   String value;
   DateTime _date = new DateTime.now();
   BusinessModel businessGet = BusinessModel();
-
-  List<FieldOptionModel> optionsContacts = List<FieldOptionModel>();
   List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
   List<CustomerModel> listCustomers = List<CustomerModel>();
-  List<ContactModel> listContacts = List<ContactModel>();
   List<TaskModel> listTasksBusiness = List<TaskModel>();
   List<AddressModel> listDirectionsClients = List<AddressModel>();
 
   FieldOptionModel auxClient =FieldOptionModel();
-  FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
   List<String> dropdownMenuItemsClients = List<String>();
   List<String> dropdownMenuItemsHeader = List<String>();
@@ -72,14 +68,14 @@ class _FormBusinessState extends State<FormBusiness> {
   TextEditingController amountController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController headerController = TextEditingController();
-  String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
+
   String dateG;
   BusinessModel saveBusiness = BusinessModel();
 
   bool _dateBool = false;
   bool getData = false;
   bool saveBusinessEnd = false;
-
+  bool getClients = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -130,7 +126,8 @@ class _FormBusinessState extends State<FormBusiness> {
 
 
   convertToModelToFieldOption(){
-    for(CustomerModel v in listCustomers)
+    if(getClients == true){
+      for(CustomerModel v in listCustomers)
       {
         auxClient.value = v.id;
         auxClient.name = v.name;
@@ -138,44 +135,29 @@ class _FormBusinessState extends State<FormBusiness> {
         optionsClients.add(auxClient);
         auxClient = FieldOptionModel();
       }
-    for(FieldOptionModel v in optionsClients){
-      dropdownMenuItemsClients.add(v.name);
+      for(FieldOptionModel v in optionsClients){
+        dropdownMenuItemsClients.add(v.name);
+      }
+    }else{
+      dropdownMenuItemsClients.add('Sin Clientes');
     }
-
-//    for(ContactModel v in listContacts)
-//    {
-//      auxContact.value = v.id;
-//      auxContact.name = v.name;
-//      optionsContacts.add(auxContact);
-//      auxContact = FieldOptionModel();
-//    }
 
       dropdownMenuItemsHeader.add('Primer contacto');
       dropdownMenuItemsHeader.add('Presentación');
       dropdownMenuItemsHeader.add('Envío ppta');
       dropdownMenuItemsHeader.add('Ganado');
       dropdownMenuItemsHeader.add('Perdido');
-
-
 }
 
   initTextController() async {
-
     if(widget.dataBusiness != null){
-//      print(widget.dataBusiness.name);
-//      print(widget.dataBusiness.customer);
-//      print(widget.dataBusiness.amount);
-//      print(widget.dataBusiness.id);
       UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
       var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.token,);
       if(getCustomerResponse.statusCode == 200 || getCustomerResponse.statusCode == 201){
         dropdownValueClient = widget.dataBusiness.customer;
         saveBusiness.customerId = widget.dataBusiness.customerId;
       }else if(widget.dataBusiness.customer == null){
-
-
       }
-
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
@@ -188,23 +170,16 @@ class _FormBusinessState extends State<FormBusiness> {
         if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
         }
-
-
       });
 
     }
   }
-
-
   void disposeController(){
     posController.dispose();
     amountController.dispose();
     clientController.dispose();
     dateController.dispose();
-
   }
-
-
   ListView getClientBuilder() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
@@ -248,16 +223,17 @@ class _FormBusinessState extends State<FormBusiness> {
     var getAllCustomersResponse = await getAllCustomers(user.company, user.token);
     CustomersModel customers = CustomersModel.fromJson(getAllCustomersResponse.body);
     listCustomers = customers.data;
+    if(listCustomers != null){
+      getClients = true;
+    }
     setState(() {
       getData = true;
     });
-
     await convertToModelToFieldOption();
   }
   @override
   Widget build(BuildContext context) {
-    getTaskBusiness();
-    getDirectionsClients();
+    getDirTask();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -466,7 +442,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       icon: Icon(Icons.arrow_drop_down),
                       elevation: 10,
                       value: dropdownValueClient,
-                      hint: Text('Clientes'),
+                      hint: getClients ?  Text('Clientes') : Text('Sin clientes'),
                       onChanged: (String newValue) {
                         setState(() {
                           dropdownValueClient = newValue;
@@ -651,7 +627,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                         );
                                     }
                                 );
-                              }else if(!widget.edit){
+                              }else if(widget.edit == true){
                                 return showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -705,7 +681,7 @@ class _FormBusinessState extends State<FormBusiness> {
                               setState(() {
 
                               });
-                              if(widget.edit){
+                              if(widget.edit == true){
                                 return   showDialog(
                                     context: context,
                                     // ignore: deprecated_member_use
@@ -772,6 +748,15 @@ class _FormBusinessState extends State<FormBusiness> {
         }
       ): Center(child: CircularProgressIndicator(),),
     );
+  }
+  getDirTask()async{
+    try{
+      await getDirectionsClients();
+      await getTaskBusiness();
+    }catch(e){
+
+    }
+
   }
 
   getDirectionsClients()async{

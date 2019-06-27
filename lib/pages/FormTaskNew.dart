@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
+import 'package:joincompany/blocs/blocBusiness.dart';
+import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
@@ -43,7 +45,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   SentryClient sentry;
-  Image image ;
+  Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
@@ -221,6 +223,7 @@ class _FormTaskState extends State<FormTask> {
                                                     Navigator.pop(context);
                                                     Navigator.pop(context);
                                                     Navigator.of(context).pop();
+
                                                   }
 
                                                 },
@@ -250,6 +253,7 @@ class _FormTaskState extends State<FormTask> {
                                       );
                                     }
                                   }
+
                                 },
                               )
                             ],
@@ -332,7 +336,9 @@ class _FormTaskState extends State<FormTask> {
                                                                     : Text('Direccion: Sin Asignar')
                                 : Text('Direccion: Sin Asignar')
                       ),
+
                     ),
+
                   ],
                 ),
 
@@ -381,30 +387,7 @@ class _FormTaskState extends State<FormTask> {
                       builder: (BuildContext context) {
                         return  Container(
                           height: MediaQuery.of(context).size.height * 0.3,
-                          child: formType != null ?
-                          new ListView.builder(
-                            itemCount: formType.data.length,
-                            itemBuilder: (BuildContext context, index){
-                              return ListTile(
-                                title: Text('${formType.data[index].name}'),
-                                leading: Icon(Icons.poll),
-                                onTap: () async {
-                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
-                                  await lisC(form);
-                                  setState(() {
-                                    //   dropdownValue = null;
-                                    pass = true;
-                                    image = null;
-                                    dataInfo = new Map();
-                                    taskCU = false;
-                                    image2 = null;
-                                  });
-                                  Navigator.pop(context);
-                                },
-                              );
-                            },
-                          ) :  Center(child: CircularProgressIndicator()),
+                          child: buildListTypeForm(),
                         );
                       }
                   );
@@ -416,6 +399,62 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+
+buildListTypeForm(){
+  FormTypeBloc _bloc = new FormTypeBloc();
+  return StreamBuilder<List<FormModel>>(
+      stream: _bloc.outForm,
+      initialData: <FormModel>[],
+      builder: (context, snapshot) {
+        if(snapshot != null){
+          if (snapshot.data.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.poll),
+                    title: Text('${snapshot.data[index].name.toString()}'),
+                    onTap: () async {
+                      var getFormResponse = await getForm(snapshot.data[index].id.toString(), customer, token);
+                      FormModel form = FormModel.fromJson(getFormResponse.body);
+                      await lisC(form);
+                      setState(() {
+                        //   dropdownValue = null;
+                        pass = true;
+                        image = null;
+                        dataInfo = new Map();
+                        taskCU = false;
+                        image2 = null;
+                      });
+                      Navigator.pop(context);
+
+                    },
+                  );
+
+
+
+                }
+
+            );
+          }else{
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
+            }else{
+              return new Container(
+                child: Center(
+                  child: Text("No hay Formularios"),
+                ),
+              );
+            }
+          }
+        }
+
+      }
+
+  );
+}
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
     data["table"] = new Map();
@@ -605,7 +644,7 @@ class _FormTaskState extends State<FormTask> {
                         saveData(value,listFieldsModels[index].id.toString());
                       },
                       maxLines: 4,
-                      controller: widget.toListTask ? TextEditingController(text: dataInfo[taskOne.customValues[index].field.id.toString()]) : null,
+                      //controller: nameController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: listFieldsModels[index].name,
@@ -1002,8 +1041,7 @@ class _FormTaskState extends State<FormTask> {
                       child: Center(
                           child: Container(
                               child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
-                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,)
-                                                                                                    : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
                     ),
                   ],
                 );
