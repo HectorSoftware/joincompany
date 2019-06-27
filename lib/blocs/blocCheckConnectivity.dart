@@ -49,14 +49,14 @@ class ConnectionStatusSingleton {
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      final result = await InternetAddress.lookup('google.com');
+      final result = await InternetAddress.lookup('8.8.8.8');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         hasConnection = true;
       } else {
         hasConnection = false;
       }
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      final result = await InternetAddress.lookup('google.com');
+      final result = await InternetAddress.lookup('8.8.8.8');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         hasConnection = true;
       } else {

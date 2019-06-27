@@ -68,6 +68,7 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "updated_by_id" INTEGER,
     "deleted_by_id" INTEGER,
     "name" TEXT,
+    "code" TEXT,
     "phone" TEXT,
     "email" TEXT,
     "details" TEXT,

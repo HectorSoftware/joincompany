@@ -64,14 +64,15 @@ Future<ResponseModel> createContact(ContactModel contactObj, String customer, St
 
   if (isOnline) {
     var createContactResponse = await createContactFromServer(contactObj, customer, authorization);
-    if (createContactResponse.statusCode==200 || createContactResponse.statusCode==201) {
+    if ((createContactResponse.statusCode==200 || createContactResponse.statusCode==201) && createContactResponse.body != 'Contacto ya existe') {
       contactObj = ContactModel.fromJson(createContactResponse.body);
       syncState = SyncState.synchronized;
+    } else {
+      return new ResponseModel(statusCode: 500, body: createContactResponse.body);
     }
   }
   
   ContactModel contactCreated = await DatabaseProvider.db.CreateContact(contactObj, syncState);
-  await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, contactCreated.customerId, contactCreated.id, syncState);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: contactCreated);
 
@@ -99,9 +100,11 @@ Future<ResponseModel> updateContact(String id, ContactModel contactObj, String c
 
   if (isOnline) {
     var updateContactResponse = await updateContactFromServer(contactObj.id.toString(), contactObj, customer, authorization);
-    if (updateContactResponse.statusCode==200 || updateContactResponse.statusCode==201) {
+    if ((updateContactResponse.statusCode==200 || updateContactResponse.statusCode==201) && updateContactResponse.body != 'Contacto ya existe') {
       contactObj = ContactModel.fromJson(updateContactResponse.body);
       syncState = SyncState.synchronized;
+    } else {
+      return new ResponseModel(statusCode: 500, body: updateContactResponse.body);
     }
   }
   
@@ -137,6 +140,8 @@ Future<ResponseModel> deleteContact(String id, String customer, String authoriza
     var deleteContactResponse = await deleteContactFromServer(id, customer, authorization);
     if (deleteContactResponse.statusCode==200 || deleteContactResponse.statusCode==201) {
       deletedFromServer = true;
+    } else {
+      return new ResponseModel(statusCode: 500, body: deleteContactResponse.body);
     }
   }
 

@@ -39,13 +39,13 @@ class _AddContactState extends State<AddContact> {
   int lengthNumberTlf = 13;
   int lengthNumberText = 80;
 
-  CustomerWithAddressModel clientAct,clientOld;
+  CustomerModel clientAct,clientOld;
 
   TextEditingController name, code, cargo, phoneF, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
-  Future<CustomerWithAddressModel> getClient(STATUS_PAGE_CLIENT state) async {
-    return showDialog<CustomerWithAddressModel>(
+  Future<CustomerModel> getClient(STATUS_PAGE_CLIENT state) async {
+    return showDialog<CustomerModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
@@ -311,27 +311,12 @@ class _AddContactState extends State<AddContact> {
       });
       return false;
     }
-    if(clientAct == null){
-      return showDialog<bool>(
-          context: context,
-          barrierDismissible: false, // user must tap button for close dialog!
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: ListTile(
-                  leading: Icon(Icons.error),
-                  title: Text('Nesecita seleccionar un cliente'),
-                  onTap: () => Navigator.of(context).pop(false),
-                )
-            );
-          }
-      );
-    }
     return true;
   }
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.contact != null){
-      if (name.text == widget.contact.name && code.text == widget.contact.code && clientAct == clientOld && phoneF.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details) {
+      if (name.text == widget.contact.name && code.text == widget.contact.code && phoneF.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details) {
         return true;
       } else {
         return showDialog<bool>(
@@ -371,12 +356,20 @@ class _AddContactState extends State<AddContact> {
             phone: phoneF.text,
             email: email.text,
             details: note.text,
-            customerId: clientAct.id,
           );
 
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,user.company,user.rememberToken);
           if (resposeUpdateContact.statusCode == 200){
-            return true;
+            if(clientAct != null){
+              var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), widget.contact.id.toString(), user.company,user.rememberToken);
+              if(responseRelateCustomerContact.statusCode == 200){
+                return true;
+              }else{
+                return true;
+              }
+            }else{
+              return true;
+            }
           }else{
             return showDialog(
                 context: context,
@@ -395,11 +388,19 @@ class _AddContactState extends State<AddContact> {
             phone: phoneF.text,
             email: email.text,
             details: note.text,
-            customerId: clientAct.id,//TODO:customerID
           );
           var resposeCreateContact = await createContact(contact,user.company,user.rememberToken);
           if (resposeCreateContact.statusCode == 200){
-            return true;
+            if(clientAct != null){
+              var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeCreateContact.body.id.toString(), user.company,user.rememberToken);
+              if(responseRelateCustomerContact.statusCode == 200){
+                return true;
+              }else{
+                return true;
+              }
+            }else{
+              return true;
+            }
           }else{
             return showDialog(
                 context: context,
@@ -416,6 +417,11 @@ class _AddContactState extends State<AddContact> {
         return false;
       }
     }
+  }
+
+  Future<bool> save() async {
+    var resp = await savedData();
+    return resp != null ? resp : false;
   }
 
   Future<bool> _asyncConfirmDialogDeleteUser() async {
@@ -478,7 +484,7 @@ class _AddContactState extends State<AddContact> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: savedData,
+        onWillPop: save,
         child: Scaffold(
           appBar: AppBar(
             title: Text("Contacto"),
@@ -543,7 +549,7 @@ class _AddContactState extends State<AddContact> {
                 clientAct != null ? ListTile(
                   leading: const Icon(Icons.account_box, size: 25.0),
                   title: Text(clientAct.name!=null ?clientAct.name:" "),
-                  subtitle: Text(clientAct.address!=null ?clientAct.address:" "),
+//                  subtitle: Text(clientAct.address!=null ?clientAct.address:" "),
                   trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
                     setState(() {
                       clientAct = null;

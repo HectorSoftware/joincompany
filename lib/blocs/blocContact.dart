@@ -25,6 +25,9 @@ class ContactBloc{
     var contactsAlls = await getAllContacts(user.company, user.rememberToken);
     ContactsModel contactsList = contactsAlls.body;
     _listContacts = contactsList.data;
+
+    _listContacts.sort((a,b)=>a.name.compareTo(b.name));
+
     if(_listContacts != null){
       _contactcontroller.add(_listContacts);
     }

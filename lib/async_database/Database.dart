@@ -4041,7 +4041,7 @@ class DatabaseProvider {
       WHERE u.remember_token = '$userToken';
       '''
     );
-    
+
     List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (customerWithAddressResponse) async {
@@ -4178,6 +4178,7 @@ class DatabaseProvider {
         updated_by_id,
         deleted_by_id,
         name,
+        code,
         phone,
         email,
         details,
@@ -4186,11 +4187,11 @@ class DatabaseProvider {
         deleted
       )
 
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[contact.id, contact.createdAt, contact.updatedAt,
       contact.deletedAt, contact.createdById, contact.updatedById,
-      contact.deletedById, contact.name, contact.phone,
+      contact.deletedById, contact.name, contact.code, contact.phone,
       contact.email, contact.details], ...paramsBySyncState[syncState]],
     );
 
@@ -4251,10 +4252,10 @@ class DatabaseProvider {
         updated_by_id = ?,
         deleted_by_id = ?,
         name = ?,
+        code = ?,
         phone = ?,
         email = ?,
         details = ?,
-        customer_id = ?,
         in_server = ?,
         updated = ?,
         deleted = ?
@@ -4262,8 +4263,8 @@ class DatabaseProvider {
         ''',
         [...[contact.id, contact.createdAt, contact.updatedAt,
         contact.deletedAt, contact.createdById, contact.updatedById,
-        contact.deletedById, contact.name, contact.phone,
-        contact.email, contact.details, contact.customerId], ...paramsBySyncState[syncState]],
+        contact.deletedById, contact.name, contact.code, contact.phone,
+        contact.email, contact.details], ...paramsBySyncState[syncState]],
       );
     }
       

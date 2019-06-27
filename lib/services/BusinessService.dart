@@ -67,6 +67,8 @@ Future<ResponseModel> createBusiness(BusinessModel businessObj, String customer,
     if (createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) {
       businessObj = BusinessModel.fromJson(createBusinessResponse.body);
       syncState = SyncState.synchronized;
+    } else {
+      return new ResponseModel(statusCode: 500, body: createBusinessResponse.body);
     }
   }
   
@@ -101,6 +103,8 @@ Future<ResponseModel> updateBusiness(String id, BusinessModel businessObj, Strin
     if (updateBusinessResponse.statusCode==200 || updateBusinessResponse.statusCode==201) {
       businessObj = BusinessModel.fromJson(updateBusinessResponse.body);
       syncState = SyncState.synchronized;
+    } else {
+      return new ResponseModel(statusCode: 500, body: updateBusinessResponse.body);
     }
   }
   
@@ -137,6 +141,8 @@ Future<ResponseModel> deleteBusiness(String id, String customer, String authoriz
     var deleteBusinessResponse = await deleteBusinessFromServer(id, customer, authorization);
     if (deleteBusinessResponse.statusCode==200 || deleteBusinessResponse.statusCode==201) {
       deletedFromServer = true;
+    } else {
+      return new ResponseModel(statusCode: 500, body: deleteBusinessResponse.body);
     }
   }
 

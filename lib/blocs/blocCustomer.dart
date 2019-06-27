@@ -25,6 +25,7 @@ class CustomersBloc{
     var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
     CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
     _listCustomersWithAddress = customersWithAddress.data;
+    _listCustomersWithAddress.sort((a,b)=>a.name.compareTo(b.name));
     if(_listCustomersWithAddress != null){
       _customerscontroller.add(_listCustomersWithAddress);
     }
