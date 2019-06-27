@@ -122,6 +122,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void syncTask() async{
     await FormChannel.syncEverything();
+    setState(() {});
     Navigator.pop(context);
   }
 

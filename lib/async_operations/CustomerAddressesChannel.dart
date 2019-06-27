@@ -44,6 +44,10 @@ class CustomerAddressesChannel {
     Set customersAddressesToCreate = customersAddressesServer.difference(customersAddressesLocal);
 
     await Future.forEach(customersAddressesToCreate, (customerAddressToCreate) async {
+      if (customerAddressToCreate.contains("null")){
+        return;
+      }
+
       var customerAddressIds = customerAddressToCreate.split("-");
     	int customerId = int.parse(customerAddressIds[0]);
     	int addressId = int.parse(customerAddressIds[1]);
@@ -79,6 +83,10 @@ class CustomerAddressesChannel {
     Set customersAddressesToDelete = customersAddressesLocal.difference(customersAddressesServer);
 
     await Future.forEach(customersAddressesToDelete, (customerAddressToDelete) async {
+      if (customerAddressToDelete.contains("null")){
+        return;
+      }
+
       var customerAddressIds = customerAddressToDelete.split("-");
     	int customerId = int.parse(customerAddressIds[0]);
     	int addressId = int.parse(customerAddressIds[1]);

@@ -46,6 +46,9 @@ class CustomerContactsChannel {
     Set customersContactsToCreate = customersContactsServer.difference(customersContactsLocal);
 
     await Future.forEach(customersContactsToCreate, (customerContactToCreate) async {
+      if (customersContactsToCreate.contains("null")){
+        return;
+      }
       var customerContactIds = customerContactToCreate.split("-");
     	int customerId = int.parse(customerContactIds[0]);
     	int contactId = int.parse(customerContactIds[1]);
@@ -57,9 +60,9 @@ class CustomerContactsChannel {
   static Future _unrelateCustomerContactsInBothLocalAndServer(String customer, String authorization) async {
 
     //Delete Local To Server
-    List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
-    
-    await Future.forEach(customerAdressesLocal, (customerContactLocal) async {
+    List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
+
+    await Future.forEach(customerContactsLocal, (customerContactLocal) async {
       var unrelateCustomerContactResponseServer = await unrelateCustomerContactFromServer(customerContactLocal["customer_id"], customerContactLocal["contact_id"], customer, authorization);
       if (unrelateCustomerContactResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerContactById(customerContactLocal["customer_id"], customerContactLocal["contact_id"]);
@@ -81,6 +84,10 @@ class CustomerContactsChannel {
     Set customersContactsToDelete = customersContactsLocal.difference(customersContactsServer);
 
     await Future.forEach(customersContactsToDelete, (customerContactToDelete) async {
+      if (customerContactToDelete.contains("null")){
+        return;
+      }
+
       var customerContactIds = customerContactToDelete.split("-");
     	int customerId = int.parse(customerContactIds[0]);
     	int contactId = int.parse(customerContactIds[1]);

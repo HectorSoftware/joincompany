@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
-import 'package:joincompany/models/BusinessModel.dart';
-import 'package:joincompany/models/BusinessesModel.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
-
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/FormService.dart';
 
 
@@ -23,10 +20,10 @@ class FormTypeBloc{
 
   Future getBusiness() async {
 
-    UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
-    var getAllFormsResponse = await getAllForms(user.company , user.token);
+    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    var getAllFormsResponse = await getAllForms(user.company , user.rememberToken);
 
-    FormsModel forms = FormsModel.fromJson(getAllFormsResponse.body);
+    FormsModel forms = getAllFormsResponse.body;
 
     _listforms = forms.data;
 

@@ -447,7 +447,7 @@ class _FormClientState extends State<FormClient> {
         }else{
           var responseCreateAddress = await createAddress(directionAct,user.company,user.rememberToken);
           if(responseStatus(responseCreateAddress.statusCode)){
-            var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+            var directionAdd = responseCreateAddress.body;
             resp = await addAddressCustomer(directionAdd,id);
             statusCreate = responseStatus(resp);
           }

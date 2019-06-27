@@ -77,6 +77,7 @@ class _BusinessListState extends State<BusinessList> {
 
   void sync() async{
     await BusinessChannel.syncEverything();
+    setState(() {});
     Navigator.pop(context);
   }
 

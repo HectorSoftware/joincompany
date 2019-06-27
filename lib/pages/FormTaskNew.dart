@@ -8,9 +8,7 @@ import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/blocs/blocBusiness.dart';
 import 'package:joincompany/blocs/blocTypeForm.dart';
-import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
@@ -27,8 +25,6 @@ import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
-import 'package:http/http.dart' as http;
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
@@ -136,7 +132,7 @@ class _FormTaskState extends State<FormTask> {
                                         );
                                         var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
                                         if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                          var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+                                          var directionAdd = responseCreateAddress.body;
                                           saveTask.addressId = directionAdd.id;
                                         }
                                       } else {
@@ -357,7 +353,7 @@ buildListTypeForm(){
                     title: Text('${snapshot.data[index].name.toString()}'),
                     onTap: () async {
                       var getFormResponse = await getForm(snapshot.data[index].id.toString(), customer, token);
-                      FormModel form = FormModel.fromJson(getFormResponse.body);
+                      FormModel form = getFormResponse.body;
                       await lisC(form);
                       setState(() {
                         //   dropdownValue = null;
@@ -1351,7 +1347,7 @@ buildListTypeForm(){
 //                                    });
 //                                  }
                                   var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  FormModel form = getFormResponse.body;
                                   await lisC(form);
                                   setState(() {
                                     //   dropdownValue = null;

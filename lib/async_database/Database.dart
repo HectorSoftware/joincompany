@@ -4239,9 +4239,9 @@ class DatabaseProvider {
     data = await db.rawQuery('SELECT * FROM "contacts" WHERE id = $id');
 
     if (data.isEmpty)
-      CreateContact(contact, syncState);
+      contact = await CreateContact(contact, syncState);
     else {
-      await db.rawInsert(
+      contact.id = await db.rawUpdate(
         '''
         UPDATE "contacts" SET
         id = ?,
@@ -4267,6 +4267,8 @@ class DatabaseProvider {
         contact.email, contact.details], ...paramsBySyncState[syncState]],
       );
     }
+
+    return contact;
       
   }
 

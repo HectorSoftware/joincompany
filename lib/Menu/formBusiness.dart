@@ -756,11 +756,21 @@ class _FormBusinessState extends State<FormBusiness> {
       ): Center(child: CircularProgressIndicator(),),
     );
   }
+  getDirTask()async{
+    try{
+      await getDirectionsClients();
+      await getTaskBusiness();
+    }catch(e){
+
+    }
+
+  }
 
   getDirectionsClients()async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
     var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.rememberToken);
-    List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+    List<AddressModel> customerAddresses =getCustomerAddressesResponse.body ;
     listDirectionsClients = customerAddresses;
   }
   getTaskBusiness() async{
