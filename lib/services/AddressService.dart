@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'dart:async';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/AddressesModel.dart';
@@ -9,6 +10,16 @@ import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/services/BaseService.dart';
 
 String resourcePath = '/addresses';
+
+ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+
+bool isOnline = connectionStatus.connectionStatus;
+
+StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
+
+void connectionChanged(dynamic hasConnection) {
+  isOnline = hasConnection;
+}
 
 Future<ResponseModel> getAllAddresses(String customer, String authorization, {String perPage, String page} ) async{
 
@@ -41,19 +52,25 @@ Future<http.Response> getAddressFromServer(String id, String customer, String au
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-Future<http.Response> createAddress(AddressModel addressObj, String customer, String authorization) async{
+Future<ResponseModel> createAddress(AddressModel addressObj, String customer, String authorization) async{
 
-  var addressMapAux = addressObj.toMap();
-  var addressMap = new Map<String, dynamic>();
+  var syncState = SyncState.created;
 
-  addressMapAux.forEach((key, value) {
-    if (value != null) {
-      addressMap[key] = value;
+  if (isOnline) {
+    var createAddressResponse = await createAddressFromServer(addressObj, customer, authorization);
+    if (createAddressResponse.statusCode==200 || createAddressResponse.statusCode==201) {
+      addressObj = AddressModel.fromJson(createAddressResponse.body);
+      syncState = SyncState.synchronized;
+    } else {
+      return new ResponseModel(statusCode: 500, body: createAddressResponse.body);
     }
-  });
+  }
 
-  var bodyJson = json.encode(addressMap);
-  return await httpPost(bodyJson, customer, authorization, resourcePath);
+  AddressModel addressCreated = await DatabaseProvider.db.CreateAddress(addressObj, syncState);
+
+  ResponseModel response = new ResponseModel(statusCode: 200, body: addressCreated);
+
+  return response;
 }
 
 Future<http.Response> createAddressFromServer(AddressModel addressObj, String customer, String authorization) async{

@@ -238,9 +238,11 @@ class _ContactViewState extends State<ContactView> {
                   itemBuilder: (BuildContext context, int index) {
                     var name = snapshot.data[index].name != null ? snapshot
                         .data[index].name : "";
+                    var customer = snapshot.data[index].customer != null ? snapshot
+                        .data[index].customer : "";
                     if (textFilter == '') {
                       return contactCard(snapshot.data[index]);
-                    } else if (ls.createState().checkSearchInText(name, textFilter)) {
+                    } else if (ls.createState().checkSearchInText(name, textFilter) || ls.createState().checkSearchInText(customer, textFilter)) {
                       return contactCard(snapshot.data[index]);
                     }
                   }

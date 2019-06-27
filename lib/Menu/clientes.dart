@@ -196,7 +196,10 @@ class _ClientState extends State<Client> {
                         },),
                         onTap:(){
                           if(statusPage == STATUS_PAGE_CLIENT.select){
-                            Navigator.of(context).pop(snapshot.data[index]);
+                            CustomerModel c = CustomerModel();
+                            c.id = snapshot.data[index].id;
+                            c.name = snapshot.data[index].name;
+                            Navigator.of(context).pop(c);
                           }
                           if(statusPage == STATUS_PAGE_CLIENT.full){
                             Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new  FormClient(snapshot.data[index])));
