@@ -43,7 +43,7 @@ class FormTask extends StatefulWidget {
 class _FormTaskState extends State<FormTask> {
 
   SentryClient sentry;
-  Image image;
+  Image image ;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
@@ -67,41 +67,60 @@ class _FormTaskState extends State<FormTask> {
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String defaultValue = 'NO';
-
+  TaskModel taskOne;
 
   @override
   void initState(){
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
-
-    if(widget.taskmodelres != null){
+    if(widget.toListTask){
       listWithTask();
     }
-
     super.initState();
   }
 
   Future listWithTask() async {
-    //await lisC(widget.taskmodelres.form);
-
     await getElements();
+
+    //SOLICITAR TAREA CON DETALLES
+    var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
+    taskOne = TaskModel.fromJson(responseTaskone.body);
+    //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
     FormModel form = FormModel.fromJson(getFormResponse.body);
-
     setState(() {
       _dateTask = DateTime.parse(widget.taskmodelres.planningDate);
     });
 
-    await lisC(form);
     setState(() {
-      //   dropdownValue = null;
       pass = true;
-      image = null;
+      //image = null;
       dataInfo = new Map();
       taskCU = true;
-      image2 = null;
+      //image2 = null;
     });
+
+    for(var sectionform in form.sections){
+      for(var fieldform in sectionform.fields){
+        dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
+        dataInfo[fieldform.id.toString()] = '';
+      }
+    }
+    for(var list in taskOne.customValues){
+      var varValue = '';
+      if(list.field.fieldType == 'Photo'){
+        varValue = list.imageBase64;
+      }
+      if(list.field.fieldType == 'TextArea'){
+        varValue = list.value;
+      }
+      dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
+      dataInfo[list.field.id.toString()] = varValue;
+    }
+
+    await lisC(form);
+
 
   }
 
@@ -171,7 +190,7 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask && directionClientIn==null){
+                                    if(widget.toListTask){
                                       if(widget.taskmodelres.addressId != null){
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
@@ -231,7 +250,6 @@ class _FormTaskState extends State<FormTask> {
                                       );
                                     }
                                   }
-
                                 },
                               )
                             ],
@@ -314,9 +332,7 @@ class _FormTaskState extends State<FormTask> {
                                                                     : Text('Direccion: Sin Asignar')
                                 : Text('Direccion: Sin Asignar')
                       ),
-
                     ),
-
                   ],
                 ),
 
@@ -589,7 +605,7 @@ class _FormTaskState extends State<FormTask> {
                         saveData(value,listFieldsModels[index].id.toString());
                       },
                       maxLines: 4,
-                      //controller: nameController,
+                      controller: widget.toListTask ? TextEditingController(text: dataInfo[taskOne.customValues[index].field.id.toString()]) : null,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: listFieldsModels[index].name,
@@ -804,6 +820,7 @@ class _FormTaskState extends State<FormTask> {
               if(listFieldsModels[index].fieldType == 'Photo'){
                 Uint8List img;
                 String b64;
+
                 return  Container(
 
                   child: Row(
@@ -821,7 +838,6 @@ class _FormTaskState extends State<FormTask> {
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
-
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -873,7 +889,8 @@ class _FormTaskState extends State<FormTask> {
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
                                   child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ?  Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)
+                                                                                                        :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
                             )),
                       ),
                     ],
@@ -985,7 +1002,8 @@ class _FormTaskState extends State<FormTask> {
                       child: Center(
                           child: Container(
                               child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
-                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,height: 200,width:300 ,)
+                                                                                                    : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
                     ),
                   ],
                 );
@@ -1233,7 +1251,6 @@ class _FormTaskState extends State<FormTask> {
     }
     listFieldsModels = listFieldsModelsCopia;
     return true;
-
   }
   pickerImage(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
