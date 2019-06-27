@@ -8,10 +8,11 @@ import 'package:joincompany/services/BusinessService.dart';
 
 
 class BusinessBloc{
+
+  BusinessModel header = BusinessModel();
   List<BusinessModel> _listbusisness = new List<BusinessModel>();
 
   List<BusinessModel> _listbusisnessOrdenada = new List<BusinessModel>();
-
   List<BusinessModel> _listPresentacion = new List<BusinessModel>();
   List<BusinessModel> _listEnvioppta = new List<BusinessModel>();
   List<BusinessModel> _listGanado = new List<BusinessModel>();
@@ -30,11 +31,10 @@ class BusinessBloc{
   }
 
   Future getBusiness() async {
-
+    int c = 0;
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
     BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-
     _listbusisness = busisness.data;
 
 
@@ -44,7 +44,12 @@ class BusinessBloc{
     for(BusinessModel v in _listbusisness){
 
      if(v.stage == 'Presentación'){
+       if(c== 0)
+         {
+         // _listPresentacion.add();
+         }
        _listPresentacion.add(v);
+       c = 1;
      }
      if(v.stage == 'Envío ppta'){
        _listEnvioppta.add(v);

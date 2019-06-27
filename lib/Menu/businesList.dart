@@ -39,7 +39,7 @@ class _BusinessListState extends State<BusinessList> {
     ]);
   }
 
-   @override
+  @override
   void dispose(){
     super.dispose();
   }
@@ -91,7 +91,7 @@ class _BusinessListState extends State<BusinessList> {
                 Navigator.of(context).pop();
               }
             }
-            ),
+        ),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
@@ -100,15 +100,15 @@ class _BusinessListState extends State<BusinessList> {
       ),
       body: Stack(
         children: <Widget>[
-           listViewCustomers(por,padding),
+          listViewCustomers(por,padding),
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed:() {
-          Navigator.pushReplacementNamed(context, '/FormBusiness');
-        }
+          child: Icon(Icons.add),
+          onPressed:() {
+            Navigator.pushReplacementNamed(context, '/FormBusiness');
+          }
       ),
     );
 
@@ -128,93 +128,93 @@ class _BusinessListState extends State<BusinessList> {
                   itemBuilder: (BuildContext context, int index) {
                     var direction = snapshot.data[index].customer != null ? snapshot.data[index].customer : "";
                     var name = snapshot.data[index].name != null ? snapshot.data[index].stage:"";
-                      if(snapshot.data.length == 0){
-                        return Center(
-                          child: Text('No hay Negocios Registrados'),
-                        );
-                      }
-                      if(textFilter == ''){
-                        return Card(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height * por,
-                                color: PrimaryColor,
-                                child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                    fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
-                                    fontSize: 16, color: Colors.white)),
+                    if(snapshot.data.length == 0){
+                      return Center(
+                        child: Text('No hay Negocios Registrados'),
+                      );
+                    }
+                    if(textFilter == ''){
+                      return Card(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * por,
+                              color: PrimaryColor,
+                              child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                  fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
+                                  fontSize: 16, color: Colors.white)),
+                            ),
+                            Card(
+                              child: ListTile(
+                                title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                                subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                    color: Colors.black)): Text('', style: TextStyle(
+                                    color: Colors.black)),
+                                trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                onTap: (){
+                                  if(!widget.vista){
+                                    return showDialog(
+                                      context: context,
+                                      barrierDismissible: false, // user must tap button for close dialog!
+                                      builder: (BuildContext context) {
+                                        return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                      },
+                                    );
+                                  }else{
+                                    Navigator.of(context).pop(snapshot.data[index]);
+                                  }
+                                },
                               ),
-                              Card(
-                                child: ListTile(
-                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
-                                  subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                      color: Colors.black)): Text('', style: TextStyle(
-                                      color: Colors.black)),
-                                  trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
-                                  onTap: (){
-                                    if(!widget.vista){
-                                      return showDialog(
-                                        context: context,
-                                        barrierDismissible: false, // user must tap button for close dialog!
-                                        builder: (BuildContext context) {
-                                          return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                        },
-                                      );
-                                    }else{
-                                      Navigator.of(context).pop(snapshot.data[index]);
-                                    }
-                                  },
-                                ),
-                              ),
+                            ),
 
-                            ],
-                          ),
-                        );
+                          ],
+                        ),
+                      );
 
-                      }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
-                        var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
-                        var name = snapshot.data[index].customer != null ? snapshot.data[index].customer:"";
-                        return Card(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height * por,
-                                color: PrimaryColor,
-                                child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                    fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
-                                    fontSize: 16, color: Colors.white)),
+                    }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
+                      var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
+                      var name = snapshot.data[index].customer != null ? snapshot.data[index].customer:"";
+                      return Card(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * por,
+                              color: PrimaryColor,
+                              child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                  fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
+                                  fontSize: 16, color: Colors.white)),
+                            ),
+                            Card(
+                              child: ListTile(
+                                title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                                subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                    color: Colors.black)): Text('', style: TextStyle(
+                                    color: Colors.black)),
+                                trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                onTap: (){
+                                  if(!widget.vista){
+                                    return showDialog(
+                                      context: context,
+                                      barrierDismissible: false, // user must tap button for close dialog!
+                                      builder: (BuildContext context) {
+                                        return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                      },
+                                    );
+                                  }else{
+                                    Navigator.of(context).pop(snapshot.data[index]);
+                                  }
+                                },
                               ),
-                              Card(
-                                child: ListTile(
-                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
-                                  subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                      color: Colors.black)): Text('', style: TextStyle(
-                                      color: Colors.black)),
-                                  trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
-                                  onTap: (){
-                                    if(!widget.vista){
-                                      return showDialog(
-                                        context: context,
-                                        barrierDismissible: false, // user must tap button for close dialog!
-                                        builder: (BuildContext context) {
-                                          return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                        },
-                                      );
-                                    }else{
-                                      Navigator.of(context).pop(snapshot.data[index]);
-                                    }
-                                  },
-                                ),
-                              ),
+                            ),
 
-                            ],
-                          ),
-                        );
-                      }
+                          ],
+                        ),
+                      );
+                    }
 
                   }
 
@@ -323,21 +323,11 @@ class _BusinessListState extends State<BusinessList> {
                ),
              );
            }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(customer, textFilter)){
-
            }
-
           }
-
-
       ):Center(
         child: CircularProgressIndicator(
-
         ),
-
-
-
-
-
           return Card(
                           child: Column(
                             children: <Widget>[
@@ -372,7 +362,6 @@ class _BusinessListState extends State<BusinessList> {
                                   },
                                 ),
                               ),
-
                             ],
                           ),
                         );
