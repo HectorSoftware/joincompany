@@ -255,7 +255,7 @@ class CustomValueModel {
     fieldId: json["field_id"],
     customizableType: json["customizable_type"],
     customizableId: json["customizable_id"],
-    value: json["value"],
+    value: json["value"] != null ? json["value"].toString() : "",
     imageBase64: json["image_base64"],
     field: json['field'] != null ? FieldModel.fromMap(json["field"]) : null,
   );
