@@ -11,6 +11,7 @@ import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
+import 'package:joincompany/pages/FormTaskNewView.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:sentry/sentry.dart';
@@ -109,7 +110,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,toBusiness: false,)));
+              TaskModel taskk = new TaskModel();
+              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,toBusiness: false,toListTask: false,taskmodelres: taskk)));
               //Navigator.pushNamed(context, '/formularioTareas');
             }),
       ),
@@ -422,8 +424,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     );
   }
 
-  Container listCard(String title, String address, String date,
-      TaskModel listTask, int index) {
+  Container listCard(String title, String address, String date,TaskModel listTask, int index) {
     return Container(
         child: Card(
           child: Column(
@@ -502,6 +503,31 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                         icon: Icon(Icons.delete),
                         onPressed: () {
                           deleteCustomer(listTask.id.toString(), index);
+                        }
+                    ),
+                  ),
+                  Container(
+                    child: IconButton(
+                        icon: Icon(Icons.remove_red_eye,size: 20,),
+                        onPressed: () async {
+                          if(listTask != null){
+                            String idTask = '',idAddress ='',nameAddress='',customerName='';
+                            if(listTask.customerId != null){idTask = listTask.customerId.toString();}
+                            if(listTask.addressId != null){idAddress = listTask.addressId.toString();}
+                            if(listTask.address != null){nameAddress = listTask.address.address.toString();}
+                            if(listTask.customer != null){customerName = listTask.customer.name.toString();}
+
+                            CustomerWithAddressModel custoWandress = new CustomerWithAddressModel();
+                            if(listTask.customerId != null){
+                              custoWandress = new CustomerWithAddressModel(
+                                id: int.parse(idTask),// taskOne.customerId,
+                                addressId: int.parse(idAddress), //taskOne.addressId,
+                                address: nameAddress,//taskOne.address.address,
+                                name: customerName,//taskOne.customer.name,
+                              );
+                            }
+                            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => FormTaskView(taskmodelres: listTask)));
+                          }
                         }
                     ),
                   ),

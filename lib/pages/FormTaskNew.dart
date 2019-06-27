@@ -31,10 +31,12 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness,this.businessAs});
+  FormTask({this.directionClient,this.toBusiness,this.businessAs,this.taskmodelres,this.toListTask});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
   final BusinessModel businessAs;
+  final TaskModel taskmodelres;
+  final bool toListTask;
 
   @override
   _FormTaskState createState() => new _FormTaskState();
@@ -67,14 +69,61 @@ class _FormTaskState extends State<FormTask> {
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String defaultValue = 'NO';
-
+  TaskModel taskOne;
 
   @override
   void initState(){
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
+    if(widget.toListTask){
+      listWithTask();
+    }
     super.initState();
+  }
+
+  Future listWithTask() async {
+    await getElements();
+
+    //SOLICITAR TAREA CON DETALLES
+    var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
+    taskOne = TaskModel.fromJson(responseTaskone.body);
+    //SOLICITAR FORMULARIOS
+    var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
+    FormModel form = FormModel.fromJson(getFormResponse.body);
+    setState(() {
+      _dateTask = DateTime.parse(widget.taskmodelres.planningDate);
+    });
+
+    setState(() {
+      pass = true;
+      //image = null;
+      dataInfo = new Map();
+      taskCU = true;
+      //image2 = null;
+    });
+
+    for(var sectionform in form.sections){
+      for(var fieldform in sectionform.fields){
+        dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
+        dataInfo[fieldform.id.toString()] = '';
+      }
+    }
+    for(var list in taskOne.customValues){
+      var varValue = '';
+      if(list.field.fieldType == 'Photo'){
+        varValue = list.imageBase64;
+      }
+      if(list.field.fieldType == 'TextArea'){
+        varValue = list.value;
+      }
+      dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
+      dataInfo[list.field.id.toString()] = varValue;
+    }
+
+    await lisC(form);
+
+
   }
 
   @override
@@ -142,6 +191,13 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
+                                    //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
+                                    if(widget.toListTask){
+                                      if(widget.taskmodelres.addressId != null){
+                                        saveTask.addressId = widget.taskmodelres.addressId;
+                                      }
+                                    }
+
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -250,7 +306,8 @@ class _FormTaskState extends State<FormTask> {
               )
           )
         ],
-        title: Text('Agregar Tareas'),
+        title: widget.toListTask ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
+                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
       ),
       body:  pass? ListView(
 
@@ -273,7 +330,11 @@ class _FormTaskState extends State<FormTask> {
                       height: MediaQuery.of(context).size.height * 0.05, //0.2
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),):Text('Direccion: Sin Asignar'),
+                        child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),)
+                              : widget.toListTask ?
+                                widget.taskmodelres.address != null ? Text('Direccion:  ${widget.taskmodelres.address.address}',style: TextStyle(fontSize: 15),)
+                                                                    : Text('Direccion: Sin Asignar')
+                                : Text('Direccion: Sin Asignar')
                       ),
 
                     ),
@@ -551,12 +612,8 @@ buildListTypeForm(){
                       width: MediaQuery.of(context).size.width *0.5,
                       height: MediaQuery.of(context).size.height *0.1,
                       child: Card(
-
                       ),
-
                     ),
-
-
                   ],
                 );
               }
@@ -802,6 +859,7 @@ buildListTypeForm(){
               if(listFieldsModels[index].fieldType == 'Photo'){
                 Uint8List img;
                 String b64;
+
                 return  Container(
 
                   child: Row(
@@ -819,7 +877,6 @@ buildListTypeForm(){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
-
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -871,7 +928,8 @@ buildListTypeForm(){
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
                                   child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ?  Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)
+                                                                                                        :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
                             )),
                       ),
                     ],
@@ -1224,16 +1282,13 @@ buildListTypeForm(){
       formGlobal = form;
       listFieldsModels.clear();
     });
-    for(SectionModel section in form.sections)
-    {
-      for(FieldModel fields in section.fields)
-      {
+    for(SectionModel section in form.sections){
+      for(FieldModel fields in section.fields){
         listFieldsModelsCopia.add(fields);
       }
     }
     listFieldsModels = listFieldsModelsCopia;
     return true;
-
   }
   pickerImage(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -1257,8 +1312,7 @@ buildListTypeForm(){
     await getElements();
     http.Response getAllFormsResponse = await getAllForms(customer , token);
     try{
-      if(getAllFormsResponse.statusCode == 200)
-      {
+      if(getAllFormsResponse.statusCode == 200){
         //  print(getAllFormsResponse.headers['content-type']);
         forms = FormsModel.fromJson(getAllFormsResponse.body);
         formType = forms;
@@ -1269,7 +1323,7 @@ buildListTypeForm(){
     }
     return formType;
   }
-  initFormsTypes()async{
+  initFormsTypes() async {
     formType = await getAll();
   }
   getElements()async{
@@ -1313,10 +1367,7 @@ buildListTypeForm(){
         });
   }
    Future<bool> saveTaskApi() async{
-     var createTaskResponse = await createTask(saveTask, customer, token);
-   print(createTaskResponse.statusCode);
-  //  print(createTaskResponse.body);
-
+   var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201){
      setState(() {
        taskEnd = 201;
@@ -1325,7 +1376,6 @@ buildListTypeForm(){
      if(createTaskResponse.statusCode == 500){
        setState(() {
          taskEnd = 500;
-
        });
      }
   return true;
@@ -1336,34 +1386,3 @@ buildListTypeForm(){
     dataInfo[id] = value;
   }
 }
-/* new ListView.builder(
-                            itemCount: formType.data.length,
-                            itemBuilder: (BuildContext context, index){
-                              return ListTile(
-                                title: Text('${formType.data[index].name}'),
-                                leading: Icon(Icons.poll),
-                                onTap: () async {
-//                                  if(directionClientIn.address == null){
-//                                    setState(() {
-//                                      directionClientIn.address = '';
-//                                    });
-//                                  }
-                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
-                                  await lisC(form);
-                                  setState(() {
-                                    //   dropdownValue = null;
-                                    pass = true;
-                                    image = null;
-                                    dataInfo = new Map();
-                                    taskCU = false;
-                                    image2 = null;
-                                  });
-
-
-                                  Navigator.pop(context);
-
-                                },
-                              );
-                            },
-                          ) :  Center(child: CircularProgressIndicator()),*/

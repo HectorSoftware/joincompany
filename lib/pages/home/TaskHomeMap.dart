@@ -274,7 +274,7 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => FormTask(directionClient:mark.customerAddress )));
+                              builder: (context) => FormTask(directionClient:mark.customerAddress,taskmodelres: null,toListTask: false,)));
                     }
                   }
               ),
