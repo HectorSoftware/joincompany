@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
+import 'package:joincompany/blocs/blocBusiness.dart';
+import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
@@ -324,38 +326,7 @@ class _FormTaskState extends State<FormTask> {
                       builder: (BuildContext context) {
                         return  Container(
                           height: MediaQuery.of(context).size.height * 0.3,
-                          child: formType != null ?
-                          new ListView.builder(
-                            itemCount: formType.data.length,
-                            itemBuilder: (BuildContext context, index){
-                              return ListTile(
-                                title: Text('${formType.data[index].name}'),
-                                leading: Icon(Icons.poll),
-                                onTap: () async {
-//                                  if(directionClientIn.address == null){
-//                                    setState(() {
-//                                      directionClientIn.address = '';
-//                                    });
-//                                  }
-                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
-                                  await lisC(form);
-                                  setState(() {
-                                    //   dropdownValue = null;
-                                    pass = true;
-                                    image = null;
-                                    dataInfo = new Map();
-                                    taskCU = false;
-                                    image2 = null;
-                                  });
-
-
-                                  Navigator.pop(context);
-
-                                },
-                              );
-                            },
-                          ) :  Center(child: CircularProgressIndicator()),
+                          child: buildListTypeForm(),
                         );
                       }
                   );
@@ -367,6 +338,62 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+
+buildListTypeForm(){
+  FormTypeBloc _bloc = new FormTypeBloc();
+  return StreamBuilder<List<FormModel>>(
+      stream: _bloc.outForm,
+      initialData: <FormModel>[],
+      builder: (context, snapshot) {
+        if(snapshot != null){
+          if (snapshot.data.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.poll),
+                    title: Text('${snapshot.data[index].name.toString()}'),
+                    onTap: () async {
+                      var getFormResponse = await getForm(snapshot.data[index].id.toString(), customer, token);
+                      FormModel form = FormModel.fromJson(getFormResponse.body);
+                      await lisC(form);
+                      setState(() {
+                        //   dropdownValue = null;
+                        pass = true;
+                        image = null;
+                        dataInfo = new Map();
+                        taskCU = false;
+                        image2 = null;
+                      });
+                      Navigator.pop(context);
+
+                    },
+                  );
+
+
+
+                }
+
+            );
+          }else{
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
+            }else{
+              return new Container(
+                child: Center(
+                  child: Text("No hay Formularios"),
+                ),
+              );
+            }
+          }
+        }
+
+      }
+
+  );
+}
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
     data["table"] = new Map();
@@ -1309,3 +1336,34 @@ class _FormTaskState extends State<FormTask> {
     dataInfo[id] = value;
   }
 }
+/* new ListView.builder(
+                            itemCount: formType.data.length,
+                            itemBuilder: (BuildContext context, index){
+                              return ListTile(
+                                title: Text('${formType.data[index].name}'),
+                                leading: Icon(Icons.poll),
+                                onTap: () async {
+//                                  if(directionClientIn.address == null){
+//                                    setState(() {
+//                                      directionClientIn.address = '';
+//                                    });
+//                                  }
+                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  await lisC(form);
+                                  setState(() {
+                                    //   dropdownValue = null;
+                                    pass = true;
+                                    image = null;
+                                    dataInfo = new Map();
+                                    taskCU = false;
+                                    image2 = null;
+                                  });
+
+
+                                  Navigator.pop(context);
+
+                                },
+                              );
+                            },
+                          ) :  Center(child: CircularProgressIndicator()),*/
