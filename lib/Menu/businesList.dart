@@ -100,7 +100,10 @@ class _BusinessListState extends State<BusinessList> {
       ),
       body: Stack(
         children: <Widget>[
-          listViewCustomers(por,padding),
+          Container(
+            child:listViewCustomers(por,padding),
+
+          ),
         ],
       ),
 
@@ -115,7 +118,7 @@ class _BusinessListState extends State<BusinessList> {
 
   }
 
-  listViewCustomers(double por, padding) {
+  Widget listViewCustomers(double por, padding) {
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,
