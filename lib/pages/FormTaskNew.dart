@@ -1,17 +1,20 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:sentry/sentry.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/blocs/blocBusiness.dart';
+import 'package:joincompany/blocs/blocTypeForm.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
+import 'dart:io';
+import 'package:sentry/sentry.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -20,12 +23,11 @@ import 'package:joincompany/models/FormsModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
+import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
@@ -120,26 +122,11 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
-                                    saveTask.customerId = widget.directionClient.id;
-                                    saveTask.businessId = widget.businessAs.id;
-//                                    if((directionClientIn.id == null) && (directionClientIn.googlePlaceId != null)){
-//
-//                                      AddressModel AuxAddressModel = new AddressModel(
-//                  name                        address: directionClientIn.name ,
-//                                          latitude: directionClientIn.latitude,
-//                                          longitude: directionClientIn.longitude,
-//                                          googlePlaceId: directionClientIn.googlePlaceId
-//                                      );
-//                                      var responseCreateAddress = await createAddress(AuxAddressModel,customer,token);
-//                                      if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-//                                        var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
-//                                        saveTask.addressId = directionAdd.id;
-//                                      }
-//                                    }else{
-//
-//                                    }
+                                    saveTask.customerId = directionClientIn.id;
+                                    if(widget.toBusiness == true ){
+                                      saveTask.businessId = widget.businessAs.id;
+                                    }
                                     if( directionClientIn.googlePlaceId != null) {
-
                                       if(directionClientIn.id == null) {
                                         AddressModel auxAddressModel = new AddressModel(
                                             address: directionClientIn.address ,
@@ -157,7 +144,6 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }
-
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -166,10 +152,8 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
-
-
                                   await  saveTaskApi();
-                                    if(taskEnd == 201){
+                                    if(taskEnd == 201 || taskEnd == 200){
                                       showDialog(
                                         context: context,
                                       builder: (BuildContext context) {
@@ -177,7 +161,6 @@ class _FormTaskState extends State<FormTask> {
                                             title: Text('Tarea Guardada con Exito'),
                                             actions: <Widget>[
                                               FlatButton(
-
                                                 child: Text('Aceptar'),
                                                 onPressed: () {
                                                   if(widget.toBusiness != true){
@@ -345,32 +328,7 @@ class _FormTaskState extends State<FormTask> {
                       builder: (BuildContext context) {
                         return  Container(
                           height: MediaQuery.of(context).size.height * 0.3,
-                          child: formType != null ?
-                          new ListView.builder(
-                            itemCount: formType.data.length,
-                            itemBuilder: (BuildContext context, index){
-                              return ListTile(
-                                title: Text('${formType.data[index].name}'),
-                                leading: Icon(Icons.poll),
-                                onTap: () async {
-                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = getFormResponse.body;
-                                  await lisC(form);
-                                  setState(() {
-                                    //   dropdownValue = null;
-                                    pass = true;
-                                    image = null;
-                                    dataInfo = new Map();
-                                    taskCU = false;
-                                    image2 = null;
-                                  });
-
-
-                                  Navigator.pop(context);
-                                },
-                              );
-                            },
-                          ) :  Center(child: CircularProgressIndicator()),
+                          child: buildListTypeForm(),
                         );
                       }
                   );
@@ -382,6 +340,62 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
+
+buildListTypeForm(){
+  FormTypeBloc _bloc = new FormTypeBloc();
+  return StreamBuilder<List<FormModel>>(
+      stream: _bloc.outForm,
+      initialData: <FormModel>[],
+      builder: (context, snapshot) {
+        if(snapshot != null){
+          if (snapshot.data.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.poll),
+                    title: Text('${snapshot.data[index].name.toString()}'),
+                    onTap: () async {
+                      var getFormResponse = await getForm(snapshot.data[index].id.toString(), customer, token);
+                      FormModel form = FormModel.fromJson(getFormResponse.body);
+                      await lisC(form);
+                      setState(() {
+                        //   dropdownValue = null;
+                        pass = true;
+                        image = null;
+                        dataInfo = new Map();
+                        taskCU = false;
+                        image2 = null;
+                      });
+                      Navigator.pop(context);
+
+                    },
+                  );
+
+
+
+                }
+
+            );
+          }else{
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
+            }else{
+              return new Container(
+                child: Center(
+                  child: Text("No hay Formularios"),
+                ),
+              );
+            }
+          }
+        }
+
+      }
+
+  );
+}
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
     data["table"] = new Map();
@@ -1280,7 +1294,7 @@ class _FormTaskState extends State<FormTask> {
                 title: new Text('Lugar' + '  '),
                 onTap: () {
                   Navigator.pop(context);
-                 widget.toBusiness ?  addDirection():  null ;
+                  addDirection();
                 },
               ),
               new ListTile(
@@ -1302,7 +1316,7 @@ class _FormTaskState extends State<FormTask> {
   }
    Future<bool> saveTaskApi() async{
      var createTaskResponse = await createTask(saveTask, customer, token);
-//    print(createTaskResponse.statusCode);
+   print(createTaskResponse.statusCode);
   //  print(createTaskResponse.body);
 
    if(createTaskResponse.statusCode == 201){
@@ -1324,3 +1338,34 @@ class _FormTaskState extends State<FormTask> {
     dataInfo[id] = value;
   }
 }
+/* new ListView.builder(
+                            itemCount: formType.data.length,
+                            itemBuilder: (BuildContext context, index){
+                              return ListTile(
+                                title: Text('${formType.data[index].name}'),
+                                leading: Icon(Icons.poll),
+                                onTap: () async {
+//                                  if(directionClientIn.address == null){
+//                                    setState(() {
+//                                      directionClientIn.address = '';
+//                                    });
+//                                  }
+                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
+                                  FormModel form = FormModel.fromJson(getFormResponse.body);
+                                  await lisC(form);
+                                  setState(() {
+                                    //   dropdownValue = null;
+                                    pass = true;
+                                    image = null;
+                                    dataInfo = new Map();
+                                    taskCU = false;
+                                    image2 = null;
+                                  });
+
+
+                                  Navigator.pop(context);
+
+                                },
+                              );
+                            },
+                          ) :  Center(child: CircularProgressIndicator()),*/
