@@ -7,7 +7,7 @@ import 'package:joincompany/blocs/blocContact.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Menu/formContac.dart';
+import 'package:joincompany/Menu/formContact.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
@@ -283,6 +283,8 @@ class _ContactViewState extends State<ContactView> {
                       return contactCard(snapshot.data[index]);
                     } else if (ls.createState().checkSearchInText(name, textFilter) || ls.createState().checkSearchInText(customer, textFilter)) {
                       return contactCard(snapshot.data[index]);
+                    }else{
+                      return Container();
                     }
                   }
               );

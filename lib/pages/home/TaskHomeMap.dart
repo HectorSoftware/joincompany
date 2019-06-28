@@ -13,8 +13,6 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'package:extended_image/extended_image.dart';
-import 'dart:ui' as ui;
 import 'package:sentry/sentry.dart';
 
 import 'package:flutter/services.dart';
@@ -66,8 +64,8 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
   @override
   void dispose(){
-    _polyLines;
-    _markers;
+    _polyLines.clear();
+    _markers.clear();
     blocListTaskCalendarResMap.dispose();
     super.dispose();
   }

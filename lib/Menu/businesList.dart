@@ -227,11 +227,10 @@ class _BusinessListState extends State<BusinessList> {
         }
       ) : null,
     );
-
-
   }
 
   Widget listViewCustomers(double por, padding) {
+    stage = "";
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,
@@ -393,7 +392,9 @@ class _BusinessListState extends State<BusinessList> {
                             ),
                           );
                         }
-                    }
+                    }else{
+                        return Container();
+                      }
                   }
               );
             }else{

@@ -427,11 +427,15 @@ class _FormClientState extends State<FormClient> {
   }
 
   bool searchOldContacts(ContactModel contact){
-//    for(var cont in contactsOld){
-//      if(cont.id == contact.id){
-//        return true;
-//      }
-//    }
+    for(var cont in contactsOld){
+      if(cont.id == contact.id){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool searchNewContacts(ContactModel contact){
     for(var cont in contactsNew){
       if(cont.id == contact.id){
         return true;
@@ -804,7 +808,7 @@ class _FormClientState extends State<FormClient> {
                                   onPressed: ()async{
                                     var contact = await getContact(STATUS_PAGE.select);
                                     if (contact != null){
-                                      if(!searchOldContacts(contact)){
+                                      if(!searchOldContacts(contact) && !searchNewContacts(contact)){
                                         setState(() {
                                           contactsNew.add(contact);
                                           contactsAll.add(contact);

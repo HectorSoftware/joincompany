@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:joincompany/Menu/formContac.dart';
+import 'package:joincompany/Menu/formContact.dart';
 import 'package:joincompany/Menu/formBusiness.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';

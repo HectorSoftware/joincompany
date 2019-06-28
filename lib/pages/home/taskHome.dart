@@ -28,7 +28,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   StreamSubscription _connectionChangeStream;
   bool isOnline = true;
-
+  bool syncStatus = false;
   ListWidgets ls = ListWidgets();
 
   TabController _controller;
@@ -80,7 +80,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void connectionChanged(dynamic hasConnection) {
 
-    if (!isOnline && hasConnection){
+    if (!isOnline && hasConnection && !syncStatus){
+      syncStatus=true;
       wrapperSync();
     }
 
@@ -91,6 +92,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void wrapperSync()async{
     await syncDialogAll();
+    syncStatus = false;
   }
 
   Future syncDialogAll(){
@@ -124,6 +126,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   void syncTask() async{
     await FormChannel.syncEverything();
     await TaskChannel.syncEverything();
+    syncStatus = false;
     Navigator.pop(context);
   }
 
@@ -173,7 +176,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           IconButton(
             icon: Icon(Icons.update),
             onPressed:(){
-              if(isOnline){
+              if(isOnline && !syncStatus){
+                syncStatus = true;
                 syncTask();
                 syncDialog();
               }else{

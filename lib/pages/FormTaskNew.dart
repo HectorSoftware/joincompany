@@ -63,6 +63,7 @@ class _FormTaskState extends State<FormTask> {
   bool pass= false;
   int taskEnd;
   bool _value1 = false;
+  bool flag = false;
   CustomerWithAddressModel  directionClient = new  CustomerWithAddressModel();
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
@@ -453,15 +454,19 @@ buildListTypeForm(){
 
   );
 }
+
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
-    data["table"] = new Map();
+    if(!flag){
+      data["table"] = new Map();
 
-    for(FieldOptionModel varV in listOptions)
-    {
-      data["table"][varV.name] = new Map();
-      data["table"][varV.name]["name"] = varV.name;
-      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+      for(FieldOptionModel varV in listOptions)
+      {
+        data["table"][varV.name] = new Map();
+        data["table"][varV.name]["name"] = varV.name;
+        data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+      }
+      flag = true;
     }
 
     Card card(TextEditingController t){
@@ -546,6 +551,7 @@ buildListTypeForm(){
       ),
     );
   }
+
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
       context: context,
@@ -849,9 +855,7 @@ buildListTypeForm(){
                           setState(() {
                             saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                           });
-
                         },
-
                       ),
                     ),
                   ],
