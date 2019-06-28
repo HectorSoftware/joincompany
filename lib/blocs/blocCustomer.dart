@@ -30,10 +30,6 @@ class CustomersBloc{
       _customerscontroller.add(_listCustomersWithAddress);
     }
 
-  }
-
-  @override
-  void dispose() {
     _customerscontroller.close();
   }
 }

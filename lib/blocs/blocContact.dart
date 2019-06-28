@@ -30,11 +30,7 @@ class ContactBloc{
 
     if(_listContacts != null){
       _contactcontroller.add(_listContacts);
+      _contactcontroller.close();
     }
-  }
-
-  @override
-  void dispose() {
-    _contactcontroller.close();
   }
 }

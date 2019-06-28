@@ -822,7 +822,7 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-            //    return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
+               return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
@@ -1334,7 +1334,6 @@ buildListTypeForm(){
     responsibleId = userToken.id;
   }
   void _showModalDateTimeAndDirections() {
-
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -1365,7 +1364,7 @@ buildListTypeForm(){
             ],
           );
         });
-  }
+    }
    Future<bool> saveTaskApi() async{
    var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201){
@@ -1409,4 +1408,4 @@ buildListTypeForm(){
                                     taskCU = false;
                                     image2 = null;
                                   });
-
+*/

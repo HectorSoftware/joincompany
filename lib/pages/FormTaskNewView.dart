@@ -4,12 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
+import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/main.dart';
@@ -22,7 +22,7 @@ class FormTaskView extends StatefulWidget {
 }
 class _FormTaskViewState extends State<FormTaskView> {
 
-  UserDataBase userToken ;
+  UserModel userToken ;
   String token,customer, user;
   int responsibleId;
   TaskModel taskOne;
@@ -158,13 +158,12 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   getElements()async{
-    userToken = await ClientDatabaseProvider.db.getCodeId('1');
+    userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
     setState(() {
-      userToken;
-      token = userToken.token;
+      token = userToken.rememberToken;
       customer = userToken.company;
       user = userToken.name;
-      responsibleId = userToken.idUserCompany;
+      responsibleId = userToken.id;
     });
   }
 

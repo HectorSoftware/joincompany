@@ -367,7 +367,7 @@ class _AddContactState extends State<AddContact> {
           if (resposeUpdateContact.statusCode == 200){
             if(clientAct != null){
               if(clientOld != clientAct){
-                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeUpdateContact.body.id.toString(), user.company,user.rememberToken);
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), user.company,user.rememberToken);
                 if(responseRelateCustomerContact.statusCode == 200){
                   setState(() {loading = false;});
                   return true;
@@ -579,6 +579,7 @@ class _AddContactState extends State<AddContact> {
                       title: Text(clientAct.name!=null ?clientAct.name:" "),
 //                  subtitle: Text(clientAct.address!=null ?clientAct.address:" "),
                       trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
+                        //unrelateCustomerContact(idCustomer, idContact, customer, authorization)
                         setState(() {
                           clientAct = null;
                         });

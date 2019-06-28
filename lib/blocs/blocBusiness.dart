@@ -15,16 +15,6 @@ class BusinessBloc{
   BusinessModel header = BusinessModel();
   List<BusinessModel> _listbusisness = new List<BusinessModel>();
 
-  List<BusinessModel> _listbusisnessOrdenada = new List<BusinessModel>();
-  List<BusinessModel> _listPresentacion = new List<BusinessModel>();
-  List<BusinessModel> _listEnvioppta = new List<BusinessModel>();
-  List<BusinessModel> _listGanado = new List<BusinessModel>();
-  List<BusinessModel> _listPerdido = new List<BusinessModel>();
-  List<BusinessModel> _listPrimerContacto = new List<BusinessModel>();
-
-
-
-
   final _businessBloccontroller = StreamController<List<BusinessModel>>();
   Sink<List<BusinessModel>> get _inContact => _businessBloccontroller.sink;
   Stream<List<BusinessModel>> get outBusiness => _businessBloccontroller.stream;
@@ -44,11 +34,7 @@ class BusinessBloc{
     if(_listbusisness != null){
       _listbusisness.sort((a,b) => a.stage.compareTo(b.stage));
       _businessBloccontroller.add(_listbusisness);
+      _businessBloccontroller.close();
     }
-  }
-
-  @override
-  void dispose() {
-    _businessBloccontroller.close();
   }
 }
