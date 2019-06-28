@@ -228,9 +228,7 @@ class _ClientState extends State<Client> {
                         subtitle: Text(direction, style: TextStyle(fontSize: 12),),
                         trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
                           if(statusPage == STATUS_PAGE_CLIENT.full){
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],)));
+                            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],taskmodelres: null,toListTask:false,)));
                           }
                         },),
                         onTap:(){

@@ -89,7 +89,7 @@ class _BusinessListState extends State<BusinessList> {
       barrierDismissible: true, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text("Sincronizando ... "),
+            title: Text("Sincronizando Negocios..."),
             content:SizedBox(
               height: 100.0,
               width: 100.0,
@@ -194,7 +194,7 @@ class _BusinessListState extends State<BusinessList> {
                 Navigator.of(context).pop();
               }
             }
-            ),
+        ),
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
@@ -213,7 +213,10 @@ class _BusinessListState extends State<BusinessList> {
       ),
       body: Stack(
         children: <Widget>[
-           listViewCustomers(por,padding),
+          Container(
+            child:listViewCustomers(por,padding),
+
+          ),
         ],
       ),
       floatingActionButton: widget.st == STATUS_PAGE.full ?
@@ -228,7 +231,7 @@ class _BusinessListState extends State<BusinessList> {
 
   }
 
-  listViewCustomers(double por, padding) {
+  Widget listViewCustomers(double por, padding) {
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,
@@ -282,9 +285,9 @@ class _BusinessListState extends State<BusinessList> {
                                 ),
                               ),
 
-                            ],
-                          ),
-                        );
+                          ],
+                        ),
+                      );
 
                       }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
                         var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
@@ -324,10 +327,10 @@ class _BusinessListState extends State<BusinessList> {
                                 ),
                               ),
 
-                            ],
-                          ),
-                        );
-                      }
+                          ],
+                        ),
+                      );
+                    }
 
                   }
 

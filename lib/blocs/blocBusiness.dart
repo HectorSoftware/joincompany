@@ -11,10 +11,11 @@ import 'package:joincompany/services/BusinessService.dart';
 
 
 class BusinessBloc{
+
+  BusinessModel header = BusinessModel();
   List<BusinessModel> _listbusisness = new List<BusinessModel>();
 
   List<BusinessModel> _listbusisnessOrdenada = new List<BusinessModel>();
-
   List<BusinessModel> _listPresentacion = new List<BusinessModel>();
   List<BusinessModel> _listEnvioppta = new List<BusinessModel>();
   List<BusinessModel> _listGanado = new List<BusinessModel>();
@@ -40,30 +41,6 @@ class BusinessBloc{
 
     _listbusisness = busisness.data;
 
-
-
-
-
-    for(BusinessModel v in _listbusisness){
-
-     if(v.stage == 'Presentación'){
-       _listPresentacion.add(v);
-     }
-     if(v.stage == 'Envío ppta'){
-       _listEnvioppta.add(v);
-     }
-     if(v.stage == 'Ganado'){
-       _listGanado.add(v);
-     }
-     if(v.stage == 'Perdido'){
-       _listPerdido.add(v);
-     }
-     if(v.stage == 'Primer contacto'){
-       _listPrimerContacto.add(v);
-     }
-
-
-    }
     if(_listbusisness != null){
       _listbusisness.sort((a,b) => a.stage.compareTo(b.stage));
       _businessBloccontroller.add(_listbusisness);
