@@ -239,7 +239,7 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
-    if(field.fieldType == 'Photo'){
+    if(field.fieldType == 'Photo' && field.fieldType != null){
       Uint8List img;
       String b64;
 

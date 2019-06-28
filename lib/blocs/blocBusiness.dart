@@ -44,12 +44,7 @@ class BusinessBloc{
     for(BusinessModel v in _listbusisness){
 
      if(v.stage == 'Presentación'){
-       if(c== 0)
-         {
-         // _listPresentacion.add();
-         }
        _listPresentacion.add(v);
-       c = 1;
      }
      if(v.stage == 'Envío ppta'){
        _listEnvioppta.add(v);
@@ -68,7 +63,7 @@ class BusinessBloc{
     }
     if(_listbusisness != null){
       _listbusisness.sort((a,b) => a.stage.compareTo(b.stage));
-
+        print(_listbusisness.length);
       _businessBloccontroller.add(_listbusisness);
     }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -28,6 +30,13 @@ class _BusinessListState extends State<BusinessList> {
   Widget _appBarTitle = new Text('Negocios');
   String textFilter='';
   BusinessesModel businessGlobal = BusinessesModel();
+
+  List<BusinessModel> _listbusisnessOrdenada = new List<BusinessModel>();
+  List<BusinessModel> _listPresentacion = new List<BusinessModel>();
+  List<BusinessModel> _listEnvioppta = new List<BusinessModel>();
+  List<BusinessModel> _listGanado = new List<BusinessModel>();
+  List<BusinessModel> _listPerdido = new List<BusinessModel>();
+  List<BusinessModel> _listPrimerContacto = new List<BusinessModel>();
 
   bool getData = false;
   @override
@@ -249,8 +258,102 @@ class _BusinessListState extends State<BusinessList> {
 
   }
 
-
 }
+
+
+
+/*Widget listViewCustomers(double por, padding) {
+    BusinessBloc _bloc = new BusinessBloc();
+    BusinessModel aux = BusinessModel(stage: '');
+    int a = 0 ;
+    int b = 0 ;
+    int c = 0 ;
+    int d = 0 ;
+    int e = 0 ;
+      // ignore: cancel_subscriptions
+      StreamSubscription streamSubscriptionList = _bloc.outBusiness
+          .listen((onDataList) =>
+          setState(() {
+            //if(PageTasks == 1){
+            //}
+            print(_listbusisnessOrdenada.length);
+            if (onDataList.length != 0){
+
+              for(BusinessModel v in onDataList){
+
+                if(v.stage == 'Envío ppta' && a == 0 ){
+                  a++;
+                  _listbusisnessOrdenada.add(aux);
+
+                  while(v.stage == 'Envío ppta'){
+                    _listbusisnessOrdenada.add(v);
+                  }
+                }
+                if(v.stage == 'Ganado' && b == 0 ){
+                  b++;
+                  _listbusisnessOrdenada.add(aux);
+
+                  while(v.stage == 'Ganado'){
+                    _listbusisnessOrdenada.add(v);
+                  }
+                }
+                if(v.stage == 'Perdido' && c == 0 ){
+                  c++;
+                  _listbusisnessOrdenada.add(aux);
+
+                  while(v.stage == 'Perdido'){
+                    _listbusisnessOrdenada.add(v);
+                  }
+                }
+                if(v.stage == 'Primer contacto' && d == 0 ){
+                  d++;
+                  _listbusisnessOrdenada.add(aux);
+
+                  while(v.stage == 'Primer contacto'){
+                    _listbusisnessOrdenada.add(v);
+                  }
+                }
+                if(v.stage == 'Presentación' && e == 0 ){
+                  e++;
+                  _listbusisnessOrdenada.add(aux);
+
+                  while(v.stage == 'Presentación'){
+                    _listbusisnessOrdenada.add(v);
+                  }
+                }
+
+              }
+            print(_listbusisnessOrdenada.length);
+            } else {
+              return Text(_listbusisnessOrdenada.length.toString());
+
+            }
+
+            return ListView.builder(
+                itemCount: _listbusisnessOrdenada.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.poll),
+                    title: Text('${_listbusisnessOrdenada[index].stage.toString()}'),
+                    onTap: () async {
+                    },
+                  );
+
+
+
+                }
+
+            );
+          }));
+
+  }
+
+
+}*/
+
+
+
+
 
 
 /*ListView.builder(

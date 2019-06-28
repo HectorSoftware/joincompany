@@ -824,7 +824,7 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
+            //    return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
@@ -845,10 +845,13 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id.toString()]}') : Text('Sin Asignar'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_time.format(context).toString()}') : Text('Sin Asignar'),
                         onPressed: (){
                           selectTime(context);
-                          saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                          setState(() {
+                            saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                          });
+
                         },
 
                       ),
