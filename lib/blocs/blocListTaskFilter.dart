@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 class BlocListTaskFilter {
 
-  var _tasksFilterController = StreamController<String>();
+  var _tasksFilterController = StreamController<String>.broadcast();
   Stream<String> get outTaksFilter => _tasksFilterController.stream;
   Sink<String> get inTaksFilter => _tasksFilterController.sink;
 

@@ -12,6 +12,7 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:flutter/services.dart';
+import 'package:joincompany/pages/LoginPage.dart';
 enum STATUS_PAGE_CLIENT{
   view,
   select,
@@ -72,12 +73,25 @@ class _ClientState extends State<Client> {
     });
 
     if (!isOffline && hasConnection){
-      sync();
-      syncDialog();
+      wrapperSync();
     }
   }
 
-  void sync() async{
+  void wrapperSync()async{
+    await syncDialogAll();
+  }
+
+  Future syncDialogAll(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SyncApp();
+      },
+    );
+  }
+
+  void syncClients() async{
     await AddressChannel.syncEverything();
     await CustomerChannel.syncEverything();
     await CustomerAddressesChannel.syncEverything();
@@ -85,13 +99,25 @@ class _ClientState extends State<Client> {
     Navigator.pop(context);
   }
 
-  Future<void> syncDialog(){
+  Future<void> errorDialog(){
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Sincronizando ... "),
+          title: Text("Error de Conexion"),
+        );
+      },
+    );
+  }
+
+  Future syncDialogLocal(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Sincronizando Clientes..."),
           content:SizedBox(
             height: 100.0,
             width: 100.0,
@@ -118,6 +144,16 @@ class _ClientState extends State<Client> {
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
+          IconButton(icon: Icon(Icons.update),
+            onPressed: (){
+              if(isOffline){
+                syncClients();
+                syncDialogLocal();
+              }else{
+                errorDialog();
+              }
+            },
+          ),
         ],
       ),
       body: Stack(

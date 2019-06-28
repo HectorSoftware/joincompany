@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
 import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
+import 'package:joincompany/async_operations/FormChannel.dart';
+import 'package:joincompany/async_operations/TaskChannel.dart';
+import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
@@ -13,11 +18,16 @@ import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/services/UserService.dart';
 import 'package:flutter/services.dart';
+
+import '../LoginPage.dart';
 class TaskHomePage extends StatefulWidget {
   _MyTaskPageState createState() => _MyTaskPageState();
 }
 
 class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStateMixin{
+
+  StreamSubscription _connectionChangeStream;
+  bool isOnline = true;
 
   ListWidgets ls = ListWidgets();
 
@@ -40,6 +50,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   @override
   void initState() {
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+    checkConnection(connectionStatus);
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(
           () {
@@ -60,6 +73,36 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     ]);
   }
 
+  void checkConnection(ConnectionStatusSingleton connectionStatus) async {
+    isOnline = await connectionStatus.checkConnection();
+    setState(() {});
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+
+    if (!isOnline && hasConnection){
+      wrapperSync();
+    }
+
+    setState(() {
+      isOnline = hasConnection;
+    });
+  }
+
+  void wrapperSync()async{
+    await syncDialogAll();
+  }
+
+  Future syncDialogAll(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SyncApp();
+      },
+    );
+  }
+
   @override
   void dispose(){
     _controller.dispose();
@@ -78,6 +121,30 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     }
   }
 
+  void syncTask() async{
+    await FormChannel.syncEverything();
+    await TaskChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+  Future<void> syncDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text("Sincronizando Tareas..."),
+            content:SizedBox(
+              height: 100.0,
+              width: 100.0,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,10 +170,34 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               }
             },
           ),
+          IconButton(
+            icon: Icon(Icons.update),
+            onPressed:(){
+              if(isOnline){
+                syncTask();
+                syncDialog();
+              }else{
+                errorDialog();
+              }
+            },
+          )
         ],
         bottom: getTabBar(),
       ),
       body: getTabBarView(),
+    );
+  }
+
+
+  Future<void> errorDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error de Conexion"),
+        );
+      },
     );
   }
 

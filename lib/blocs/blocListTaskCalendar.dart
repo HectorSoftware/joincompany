@@ -4,7 +4,7 @@ import 'dart:async';
 
 class BlocListTaskCalendar {
 
-  var _tasksCalendarController = new StreamController<List<DateTime>>();
+  var _tasksCalendarController = new StreamController<List<DateTime>>.broadcast();
   Stream<List<DateTime>> get outTaksCalendar => _tasksCalendarController.stream;
   Sink<List<DateTime>> get inTaksCalendar => _tasksCalendarController.sink;
 
@@ -23,7 +23,7 @@ class BlocListTaskCalendar {
 
 class BlocListTaskCalendarMap {
 
-  var _tasksCalendarControllerMap = new StreamController<DateTime>();
+  var _tasksCalendarControllerMap = new StreamController<DateTime>.broadcast();
   Stream<DateTime> get outTaksCalendarMap => _tasksCalendarControllerMap.stream;
   Sink<DateTime> get inTaksCalendarMap => _tasksCalendarControllerMap.sink;
 

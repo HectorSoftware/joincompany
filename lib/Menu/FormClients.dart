@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/Menu/contactView.dart';
@@ -486,7 +484,7 @@ class _FormClientState extends State<FormClient> {
     return statusCreate;
   }
 
-  Future<bool> setBusiness(int id)async{//todo
+  Future<bool> setBusiness(int id)async{
     bool statusCreate = true;
     int resp;
 
@@ -730,10 +728,16 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
+
+  Future<bool> save() async {
+    var resp = await savedData();
+    return resp != null ? resp : false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: savedData,
+      onWillPop: save,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Cliente'),

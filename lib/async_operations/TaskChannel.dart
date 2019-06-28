@@ -22,7 +22,7 @@ class TaskChannel {
       }
     });
 
-    http.Response requestedTasksFromServer = await getAllTasksFromServer(customer, authorization, responsibleId: userId);
+    http.Response requestedTasksFromServer = await getAllTasksFromServer(customer, authorization, responsibleId: userId, perPage: 100000.toString());
     TasksModel tasksFromServer = TasksModel.fromJson(requestedTasksFromServer.body);
     
     Set<int> idsOfTasksFromServer = new Set<int>();

@@ -139,7 +139,6 @@ class _FormTaskState extends State<FormTask> {
 //
 //                                    }
                                     if( directionClientIn.googlePlaceId != null) {
-
                                       if(directionClientIn.id == null) {
                                         AddressModel auxAddressModel = new AddressModel(
                                             address: directionClientIn.address ,

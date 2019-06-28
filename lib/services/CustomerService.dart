@@ -20,14 +20,6 @@ String resourcePath = '/customers';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
 
-bool isOnline = connectionStatus.connectionStatus;
-
-StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
-
-void connectionChanged(dynamic hasConnection) {
-  isOnline = hasConnection;
-}
-
 Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async {
   
   List<CustomerModel> customers = await DatabaseProvider.db.RetrieveCustomersByUserToken(authorization);
@@ -99,7 +91,7 @@ Future<http.Response> getCustomerFromServer(String id, String customer, String a
 Future<ResponseModel> createCustomer(CustomerModel customerObj, String customer, String authorization) async {
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var createCustomerResponse = await createCustomerFromServer(customerObj, customer, authorization);
     if ((createCustomerResponse.statusCode==200 || createCustomerResponse.statusCode==201) && createCustomerResponse.body != 'Cliente ya existe') {
       customerObj = CustomerModel.fromJson(createCustomerResponse.body);
@@ -129,7 +121,7 @@ Future<ResponseModel> updateCustomer(String id, CustomerModel customerObj, Strin
 
   var syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var updateCustomerResponse = await updateCustomerFromServer(customerObj.id.toString(), customerObj, customer, authorization);
     if ((updateCustomerResponse.statusCode==200 || updateCustomerResponse.statusCode==201) && updateCustomerResponse.body != 'Cliente ya existe') {
       customerObj = CustomerModel.fromJson(updateCustomerResponse.body);
@@ -157,7 +149,7 @@ Future<ResponseModel> deleteCustomer(String id, String customer, String authoriz
 
   bool deletedFromServer = false;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var deleteCustomerResponse = await deleteCustomerFromServer(id, customer, authorization);
     if (deleteCustomerResponse.statusCode==200 || deleteCustomerResponse.statusCode==201) {
       deletedFromServer = true;
@@ -204,7 +196,7 @@ Future<ResponseModel> relateCustomerAddress(String idCustomer, String idAddress,
 
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var relateCustomerAddressResponse = await relateCustomerAddressFromServer(idCustomer, idAddress, customer, authorization);
     if (relateCustomerAddressResponse.statusCode==200 || relateCustomerAddressResponse.statusCode==201) {
       syncState = SyncState.synchronized;
@@ -234,7 +226,7 @@ Future<ResponseModel> unrelateCustomerAddress(String idCustomer, String idAddres
   var syncState = SyncState.deleted;
   bool unrelateFromServer = false;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var unrelateCustomerAddressResponse = await unrelateCustomerAddressFromServer(idCustomer, idAddress, customer, authorization);
     if (unrelateCustomerAddressResponse.statusCode==200 || unrelateCustomerAddressResponse.statusCode==201) {
       unrelateFromServer = true;
@@ -282,7 +274,7 @@ Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact,
 
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var relateCustomerContactResponse = await relateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
     if (relateCustomerContactResponse.statusCode==200 || relateCustomerContactResponse.statusCode==201) {
       syncState = SyncState.synchronized;
@@ -312,7 +304,7 @@ Future<ResponseModel> unrelateCustomerContact(String idCustomer, String idContac
   var syncState = SyncState.deleted;
   bool unrelateFromServer = false;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var unrelateCustomerContactResponse = await unrelateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
     if (unrelateCustomerContactResponse.statusCode==200 || unrelateCustomerContactResponse.statusCode==201) {
       unrelateFromServer = true;
@@ -360,7 +352,7 @@ Future<http.Response> getCustomerBusinessesFromServer(String id, String customer
 Future<ResponseModel> relateCustomerBusiness(String idCustomer, String idBusiness, String customer, String authorization) async {
   var syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     var relateCustomerBusinessResponse = await relateCustomerBusinessFromServer(idCustomer, idBusiness, customer, authorization);
     if (relateCustomerBusinessResponse.statusCode==200 || relateCustomerBusinessResponse.statusCode==201) {
       syncState = SyncState.synchronized;

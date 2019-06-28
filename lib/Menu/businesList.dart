@@ -12,6 +12,7 @@ import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
+import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'formBusiness.dart';
 import 'package:flutter/services.dart';
@@ -66,8 +67,7 @@ class _BusinessListState extends State<BusinessList> {
 
   void connectionChanged(dynamic hasConnection) {
     if (!isOnline && hasConnection){
-      sync();
-      syncDialog();
+      wrapperSync();
     }
 
     setState(() {
@@ -98,6 +98,33 @@ class _BusinessListState extends State<BusinessList> {
       },
     );
   }
+
+  Future<void> errorDialog(){
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error de Conexion"),
+        );
+      },
+    );
+  }
+
+  void wrapperSync()async{
+    await syncDialogAll();
+  }
+
+  Future syncDialogAll(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SyncApp();
+      },
+    );
+  }
+
 
   @override
   void dispose(){
@@ -166,7 +193,17 @@ class _BusinessListState extends State<BusinessList> {
         title: _appBarTitle,
         actions: <Widget>[
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
-
+          IconButton(
+            onPressed: () {
+              if(isOnline){
+                sync();
+                syncDialog();
+              }else{
+                errorDialog();
+              }
+            },
+            icon: Icon(Icons.update),
+          )
         ],
       ),
       body: Stack(

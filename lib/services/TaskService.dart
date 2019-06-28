@@ -6,22 +6,16 @@ import 'package:joincompany/models/ResponseModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/services/BaseService.dart';
-import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 
 String resourcePath = '/tasks';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
-bool isOnline = connectionStatus.connectionStatus;
-StreamSubscription _controller = connectionStatus.connectionChange.listen(connectionChanged);
-void connectionChanged(dynamic hasConnection) {
-  isOnline = !hasConnection;
-}
 
 Future<ResponseModel> createTask(TaskModel task, String customer, String authorization) async {
   SyncState syncState = SyncState.created;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     http.Response createTaskFromServerResponse = await createTaskFromServer(task, customer, authorization);
     if (createTaskFromServerResponse.statusCode == 200 || createTaskFromServerResponse.statusCode == 201) {
       task = TaskModel.fromJson(createTaskFromServerResponse.body);
@@ -56,28 +50,43 @@ Future<http.Response> createTaskFromServer(TaskModel taskObj, String customer, S
 
 Future<ResponseModel> getAllTasks(String customer, String authorization, {String beginDate, String endDate, String supervisorId, String responsibleId, String formId, String businessId, String perPage, String page}) async {
   ResponseModel response = new ResponseModel();
-  if (isOnline) {
-    http.Response getAllTasksFromServerResJSON = await getAllTasksFromServer(customer, authorization, beginDate: beginDate, endDate: endDate, supervisorId: supervisorId, responsibleId: responsibleId, formId: formId, businessId: businessId,perPage: perPage, page: page);
-    if (getAllTasksFromServerResJSON.statusCode == 200 || getAllTasksFromServerResJSON.statusCode == 201) {
-      TasksModel tasksFromServer = TasksModel.fromJson(getAllTasksFromServerResJSON.body);
-      response.body = tasksFromServer.data;
-    }
-    response.statusCode = getAllTasksFromServerResJSON.statusCode;
-  } else {
-    QueryTasks query = new QueryTasks(
-      beginDate: beginDate,
-      endDate: endDate,
-      supervisorId: supervisorId,
-      responsibleId: responsibleId,
-      formId: formId,
-      perPage: perPage,
-      page: page,
-    );
 
-    response.body = await DatabaseProvider.db.QueryTaskForService(query);
-    response.statusCode = 200;
-  }
+  QueryTasks query = new QueryTasks(
+    beginDate: beginDate,
+    endDate: endDate,
+    supervisorId: supervisorId,
+    responsibleId: responsibleId,
+    formId: formId,
+    perPage: perPage,
+    page: page,
+  );
 
+  List<TaskModel> listOfTasks = await DatabaseProvider.db.QueryTaskForService(query);
+
+  listOfTasks.sort((a,b) {
+    var dateA = a.planningDate != null ? a.planningDate : a.createdAt;
+    var dateB = b.planningDate != null ? b.planningDate : b.createdAt;
+
+    return dateB.compareTo(dateA);
+  });
+
+  TasksModel tasks = new TasksModel(
+    currentPage: 1,
+    data: listOfTasks,
+    firstPageUrl: null,
+    from: 1,
+    lastPage: 1,
+    lastPageUrl: null,
+    nextPageUrl: null,
+    path: null,
+    perPage: listOfTasks.length,
+    prevPageUrl: null,
+    to: listOfTasks.length,
+    total: listOfTasks.length,
+  );
+  response.body = tasks;
+  response.statusCode = 200;
+  
   return response;
 }
 
@@ -125,7 +134,7 @@ Future<http.Response> getAllTasksFromServer(String customer, String authorizatio
 
 Future<ResponseModel> getTask(String id, String customer, String authorization) async {
   ResponseModel response = new ResponseModel();
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
     if (getTaskFromServerJSON.statusCode == 200 || getTaskFromServerJSON.statusCode == 201) {
       TaskModel taskFromServer = TaskModel.fromJson(getTaskFromServerJSON.body);
@@ -147,7 +156,7 @@ Future<http.Response> getTaskFromServer(String id, String customer, String autho
 Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, String authorization) async {
   SyncState syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     http.Response updateTaskFromServerResJSON = await updateTaskFromServer(id, taskObj, customer, authorization);
     if (updateTaskFromServerResJSON.statusCode == 200 || updateTaskFromServerResJSON.statusCode == 201) {
       taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
@@ -169,19 +178,20 @@ Future<http.Response> updateTaskFromServer(String id, TaskModel taskObj, String 
 Future<ResponseModel> deleteTask(String id, String customer, String authorization) async {
   bool deletedFromServer = false;
 
-  if (isOnline) {
-    http.Response deleteCustomerResJSON = await deleteTaskFromServer(id, customer, authorization);
-    if (deleteCustomerResJSON.statusCode == 200 || deleteCustomerResJSON.statusCode == 201) {
+  if (await connectionStatus.checkConnection()) {
+    http.Response deleteTaskRes = await deleteTaskFromServer(id, customer, authorization);
+    if (deleteTaskRes.statusCode == 200 || deleteTaskRes.statusCode == 201) {
       deletedFromServer = true;
     }
   }
 
   int deleteFromLocalResponse;
   if (deletedFromServer) {
-    deleteFromLocalResponse = await DatabaseProvider.db.DeleteCustomerById(int.parse(id));
+    deleteFromLocalResponse = await DatabaseProvider.db.DeleteTaskById(int.parse(id));
   } else {
     deleteFromLocalResponse = await DatabaseProvider.db.ChangeSyncStateTask(int.parse(id), SyncState.deleted);
   }
+
   ResponseModel response = new ResponseModel();
   response.body =  deleteFromLocalResponse.toString();
   response.statusCode = 200;
@@ -195,7 +205,7 @@ Future<http.Response> deleteTaskFromServer(String id, String customer, String au
 Future<ResponseModel> checkInTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async {
   SyncState syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     http.Response checkInTaskResJSON = await checkInTaskFromServer(id, customer, authorization, latitude, longitude, distance, date: date);
     if (checkInTaskResJSON.statusCode == 200 || checkInTaskResJSON.statusCode == 201) {
       syncState = SyncState.synchronized;
@@ -230,7 +240,7 @@ Future<http.Response> checkInTaskFromServer(String id, String customer, String a
 Future<ResponseModel> checkOutTask(String id, String customer, String authorization, String latitude, String longitude, String distance, { String date }) async {
   SyncState syncState = SyncState.updated;
 
-  if (isOnline) {
+  if (await connectionStatus.checkConnection()) {
     http.Response checkOutTaskResJSON = await checkOutTaskFromServer(id, customer, authorization, latitude, longitude, distance, date: date);
     if (checkOutTaskResJSON.statusCode == 200 || checkOutTaskResJSON.statusCode == 201) {
       syncState = SyncState.synchronized;

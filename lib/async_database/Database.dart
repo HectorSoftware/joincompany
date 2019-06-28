@@ -2437,7 +2437,7 @@ class DatabaseProvider {
   Future<int> DeleteCustomerById(int id) async {
     final db = await database;
     return await db.rawDelete(
-        '''
+      '''
       DELETE FROM "customers" WHERE id = $id
       '''
     );
@@ -2540,7 +2540,6 @@ class DatabaseProvider {
 
   // Operations on tasks
   Future<TaskModel> CreateTask(TaskModel task, SyncState syncState) async {
-    print("Creating task in database");
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -2567,7 +2566,6 @@ class DatabaseProvider {
     if (task.responsible != null)
       CreateResponsible(task.responsible, syncState);
 
-    print("task id before insert " + task.id.toString());
     task.id = await db.rawInsert(
       '''
       INSERT INTO "tasks"(
@@ -2608,7 +2606,6 @@ class DatabaseProvider {
     task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
     task.status], ...paramsBySyncState[syncState]],
     );
-    print("task id after insert " + task.id.toString());
 
     return task;
   }
@@ -2670,25 +2667,24 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery('SELECT * FROM "tasks"');
-
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
-      bool dated = false;
       await Future.forEach(data, (taskRetrieved) async {
         DateTime date;
-        if (taskRetrieved["planning_date"])
-          date = DateTime.parse(taskRetrieved["planning_date"]);
-        else if (taskRetrieved["created_at"] != null)
-          date = DateTime.parse(taskRetrieved["created_at"]);
 
-        if (dated && query.beginDate != null)
+        if (taskRetrieved["planning_date"] != null)
+          date = DateTime.parse(fixStringDateIfBroken(taskRetrieved["planning_date"]));
+        else if (taskRetrieved["created_at"] != null)
+          date = DateTime.parse(fixStringDateIfBroken(taskRetrieved["created_at"]));
+
+        if (query.beginDate != null)
           if (date != null)
-            if (date.difference(DateTime.parse(query.beginDate)).inMilliseconds > 0)
+            if (date.difference(DateTime.parse(fixStringDateIfBroken(query.beginDate))).inMilliseconds < 0)      
               return;
         
-        if (dated && query.endDate != null)
+        if (query.endDate != null)
           if (date != null)
-            if (date.difference(DateTime.parse(query.endDate)).inMilliseconds < 0)
+            if (date.difference(DateTime.parse(fixStringDateIfBroken(query.endDate))).inMilliseconds > 0)
               return;
 
         if (query.supervisorId != null)
@@ -2696,19 +2692,11 @@ class DatabaseProvider {
             return;
 
         if (query.responsibleId != null)
-          if (taskRetrieved["responsible_id"] != query.responsibleId)
+          if (taskRetrieved["responsible_id"].toString() != query.responsibleId.toString())
             return;
 
         if (query.formId != null)
           if (taskRetrieved["form_id"] != query.formId)
-            return;
-
-        if (query.perPage != null)
-          if (taskRetrieved["per_page"] != query.perPage)
-            return;
-
-        if (query.page != null)
-          if (taskRetrieved["page"] != query.page)
             return;
         
         List<CustomValueModel> listOfCustomValues = await DatabaseProvider.db.ListCustomValuesByTask(taskRetrieved["id"]);
@@ -2749,9 +2737,10 @@ class DatabaseProvider {
           customer: customer,
           responsible: responsible,
         ));
-        
       });
     }
+        
+    return listOfTasks;
   }
 
   Future<List<TaskModel>> QueryTask(TaskModel query) async {
@@ -3036,7 +3025,7 @@ class DatabaseProvider {
       checkout_longitude = ${longitude},
       checkout_latitude = ${latitude},
       checkout_distance = ${distance}
-      ${date != null ? ", checkout_date = ?," : ","}
+      ${date != null ? ", checkout_date = ?" : ""}
       
       WHERE id = $id
       ''',
@@ -3058,7 +3047,7 @@ class DatabaseProvider {
       checkin_longitude = ${longitude},
       checkin_latitude = ${latitude},
       checkin_distance = ${distance}
-      ${date != null ? ", checkin_date = ?," : ","}
+      ${date != null ? ", checkin_date = ?" : ""}
       
       WHERE id = $id
       ''',
@@ -3411,7 +3400,6 @@ class DatabaseProvider {
         id,
         created_at,
         updated_at,
-        deleted_at,
         form_id,
         section_id,
         field_id,
@@ -3425,7 +3413,7 @@ class DatabaseProvider {
         deleted  
       )
         
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
     customValue.formId, customValue.sectionId, customValue.fieldId,
@@ -4813,4 +4801,16 @@ class QueryTasks {
     this.perPage,
     this.page,
   });
+}
+
+String fixStringDateIfBroken(String stringDate) {
+  return stringDate.replaceFirst("-1-", "-01-")
+                    .replaceFirst("-2-", "-02-")
+                    .replaceFirst("-3-", "-03-")
+                    .replaceFirst("-4-", "-04-")
+                    .replaceFirst("-5-", "-05-")
+                    .replaceFirst("-6-", "-06-")
+                    .replaceFirst("-7-", "-07-")
+                    .replaceFirst("-8-", "-08-")
+                    .replaceFirst("-9-", "-09-");
 }

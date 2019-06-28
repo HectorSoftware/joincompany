@@ -63,7 +63,6 @@ class _LoginPageState extends State<LoginPage> {
   //singleton
   StreamSubscription _connectionChangeStream;
   bool isOnline = false;
-
 //  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
 //     final companyController = TextEditingController(/*text : 'duperu'*/);
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
@@ -258,6 +257,7 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
+                // testApi();
               },
               child: Center(
                   child: Center(
@@ -436,24 +436,12 @@ class _LoginPageState extends State<LoginPage> {
                 userFromServer.rememberToken = authFromResponse.accessToken;
                 userFromServer.password = md5.convert(utf8.encode(password)).toString();
                 userFromServer.company = companyLocal;
+                setState(() {
 
+                });
                 await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
-                await AddressChannel.syncEverything();
-                await CustomerChannel.syncEverything();
-                await CustomerAddressesChannel.syncEverything();
-                await FormChannel.syncEverything();
-                await ContactChannel.syncEverything();
-                await CustomerContactsChannel.syncEverything();
-                await BusinessChannel.syncEverything();
-                // await TaskChannel.syncEverything();
-                // List<TaskModel> listOfTasks = await DatabaseProvider.db.ListTasks();
-                // listOfTasks.forEach((task) {
-                //   print ("/... Task ...\\");
-                //   print (task.id);
-                //   print (task.name);
-                //   print ("/... Task ...\\");
-                // });
-
+                setState(()=>Circuleprogress = false);
+                await syncDialog();
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
             }
@@ -519,6 +507,17 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     }
+  }
+
+
+  Future syncDialog(){
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SyncApp();
+      },
+    );
   }
 
   testApi() async{
@@ -927,3 +926,55 @@ class _LoginPageState extends State<LoginPage> {
 
   }
 }
+
+class SyncApp extends StatefulWidget {
+  @override
+  _SyncAppState createState() => _SyncAppState();
+}
+
+class _SyncAppState extends State<SyncApp> {
+
+  Widget title;
+  bool flag = true;
+
+  syncAll() async{
+    // setState((){title = Text("Sincronizando Datos 1/8");});
+    // await AddressChannel.syncEverything();
+    // setState((){title = Text("Sincronizando Datos 2/8");});
+    // await CustomerChannel.syncEverything();
+    // setState((){title = Text("Sincronizando Datos 3/8");});
+    // await CustomerAddressesChannel.syncEverything();
+    // setState((){title = Text("Sincronizando Datos 4/8");});
+    // await ContactChannel.syncEverything();
+    // setState((){title = Text("Sincronizando Datos 5/8");});
+    // await CustomerContactsChannel.syncEverything();
+    // setState((){title = Text("Sincronizando Datos 6/8");});
+    // await BusinessChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 7/8");});
+    await FormChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 8/8");});
+    await TaskChannel.syncEverything();
+    Navigator.pop(context);
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    if (flag) {
+      syncAll();
+      flag = false;
+    }
+
+    return AlertDialog(
+        title: title,
+        content:SizedBox(
+          height: 100.0,
+          width: 100.0,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
+    );;
+  }
+}
+
