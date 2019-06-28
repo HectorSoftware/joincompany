@@ -239,12 +239,22 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
-    if(field.fieldType == 'Photo' && field.fieldType != null){
+    if(field.fieldType == 'Photo'){
       Uint8List img;
       String b64;
-
       String ruta = dataInfo[field.id.toString()];
-      ruta = ruta.substring(23);
+      if(field.fieldType != null){
+        setState(() {
+          ruta = ruta.substring(23);
+        });
+
+      }else
+        {
+          setState(() {
+            ruta;
+          });
+        }
+
 
       return  Container(
         child: Row(
@@ -265,6 +275,28 @@ class _FormTaskViewState extends State<FormTaskView> {
           ],
         ),
       );
+    }
+    if(listFieldsModels[index].fieldType == 'Image'){
+      return Row(
+        children: <Widget>[
+
+          Container(
+            child:Center(
+              child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                  color: PrimaryColor),
+              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+            ),
+          ),
+          Spacer(),
+          Column(
+            children: <Widget>[
+              Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+            ],
+
+          ),
+        ],
+      );
+
     }
 
     if(field.fieldType == 'Text'){

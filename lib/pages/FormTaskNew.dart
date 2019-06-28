@@ -51,7 +51,7 @@ class _FormTaskState extends State<FormTask> {
   DateTime _date = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
-
+  FieldOptionModel options = FieldOptionModel(name: '0',value: 1);
   Map data = new Map();
   Map<String,String> dataInfo = Map<String,String>();
   BuildContext globalContext;
@@ -731,31 +731,46 @@ buildListTypeForm(){
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
                   dropdownMenuItems.add(v.name);
                 }
-                return new  Padding(
-                  padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *0.5,
-                    child: new DropdownButton<String>(
-                      isDense: false,
-                      icon: Icon(Icons.arrow_drop_down),
-                      elevation: 10,
-                      value: dataInfo[listFieldsModels[index].id],
-                      hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+                return Container(
+                  height: 50,
+                  margin: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5
+                        )
+                      ]
+                  ),
+                  child: new  Padding(
+                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      child: new DropdownButton<String>(
+                        isExpanded: true,
+                        underline: Container(),
+                        isDense: false,
+                        icon: Icon(Icons.arrow_drop_down),
+                        elevation: 10,
+                        value: dataInfo[listFieldsModels[index].id],
+                        hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
-                      onChanged: (newValue) {
+                        onChanged: (newValue) {
 
-                        setState(() {
-                          //dropdownValue = newValue;
-                          dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
-                        });
+                          setState(() {
+                            //dropdownValue = newValue;
+                            dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                          });
 
-                      },
-                      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                        return new DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                        },
+                        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                          return new DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 );
@@ -824,13 +839,19 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-            //    return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
+//                if(listFieldsModels[index].fieldOptions == null){
+//
+//                  listFieldsModels[index].fieldOptions.add(options);
+//                }
+             return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
+                saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                 return new Row(
                   children: <Widget>[
                     Column(
+
                       children: <Widget>[
                         Row(
                           children: <Widget>[
