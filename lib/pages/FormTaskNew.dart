@@ -1410,3 +1410,4 @@ buildListTypeForm(){
                                     image2 = null;
                                   });
 
+*/
