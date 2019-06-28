@@ -14,14 +14,15 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:joincompany/services/BusinessService.dart';
+import 'contactView.dart';
 import 'formBusiness.dart';
 import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class BusinessList extends StatefulWidget {
-  bool vista;
-  BusinessList(bool vista){
-    this.vista = vista;
+  STATUS_PAGE st;
+  BusinessList(STATUS_PAGE st){
+    this.st = st;
   }
   @override
   _BusinessListState createState() => _BusinessListState();
@@ -44,7 +45,7 @@ class _BusinessListState extends State<BusinessList> {
 
   StreamSubscription _connectionChangeStream;
   bool isOnline = true;
-
+  bool syncStatus = false;
   bool getData = false;
   @override
 
@@ -66,7 +67,7 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   void connectionChanged(dynamic hasConnection) {
-    if (!isOnline && hasConnection){
+    if (!isOnline && hasConnection && !syncStatus){
       wrapperSync();
     }
 
@@ -75,8 +76,10 @@ class _BusinessListState extends State<BusinessList> {
     });
   }
 
-  void sync() async{
+  void syncBusines() async{
+    setState(() {syncStatus = true;});
     await BusinessChannel.syncEverything();
+    setState(() {syncStatus = false;});
     Navigator.pop(context);
   }
 
@@ -112,7 +115,9 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   void wrapperSync()async{
+    setState(() {syncStatus = true;});
     await syncDialogAll();
+    setState(() {syncStatus = false;});
   }
 
   Future syncDialogAll(){
@@ -183,9 +188,9 @@ class _BusinessListState extends State<BusinessList> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed:(){
-              if(!widget.vista){
+              if(widget.st == STATUS_PAGE.full) {
                 Navigator.pushReplacementNamed(context, '/vistap');
-              }else{
+              }else if (widget.st == STATUS_PAGE.view || widget.st == STATUS_PAGE.select) {
                 Navigator.of(context).pop();
               }
             }
@@ -195,8 +200,8 @@ class _BusinessListState extends State<BusinessList> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
           IconButton(
             onPressed: () {
-              if(isOnline){
-                sync();
+              if(isOnline && !syncStatus){
+                syncBusines();
                 syncDialog();
               }else{
                 errorDialog();
@@ -211,13 +216,13 @@ class _BusinessListState extends State<BusinessList> {
            listViewCustomers(por,padding),
         ],
       ),
-
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.st == STATUS_PAGE.full ?
+       FloatingActionButton(
         child: Icon(Icons.add),
         onPressed:() {
           Navigator.pushReplacementNamed(context, '/FormBusiness');
         }
-      ),
+      ) : null,
     );
 
 
@@ -235,8 +240,7 @@ class _BusinessListState extends State<BusinessList> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     var direction = snapshot.data[index].customer != null ? snapshot.data[index].customer : "";
-                    var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-                    if(textFilter == ''){
+                    var name = snapshot.data[index].name != null ? snapshot.data[index].stage:"";
                       if(snapshot.data.length == 0){
                         return Center(
                           child: Text('No hay Negocios Registrados'),
@@ -263,7 +267,7 @@ class _BusinessListState extends State<BusinessList> {
                                       color: Colors.black)),
                                   trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                   onTap: (){
-                                    if(!widget.vista){
+                                    if(widget.st == STATUS_PAGE.full){
                                       return showDialog(
                                         context: context,
                                         barrierDismissible: false, // user must tap button for close dialog!
@@ -271,38 +275,60 @@ class _BusinessListState extends State<BusinessList> {
                                           return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
                                         },
                                       );
-                                    }else{
+                                    }else if (widget.st == STATUS_PAGE.select){
                                       Navigator.of(context).pop(snapshot.data[index]);
                                     }
                                   },
                                 ),
                               ),
-                             /* Container(
+
+                            ],
+                          ),
+                        );
+
+                      }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
+                        var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
+                        var name = snapshot.data[index].customer != null ? snapshot.data[index].customer:"";
+                        return Card(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
                                 padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
                                 width: MediaQuery.of(context).size.width,
                                 height: MediaQuery.of(context).size.height * por,
                                 color: PrimaryColor,
-                                child: Text("Presentacion", style: TextStyle(
+                                child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                    fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
                                     fontSize: 16, color: Colors.white)),
                               ),
                               Card(
                                 child: ListTile(
-                                  title:  Text(snapshot.data[index].customer),
-                                  subtitle: Text(""),
+                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                                  subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                      color: Colors.black)): Text('', style: TextStyle(
+                                      color: Colors.black)),
                                   trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                  onTap: (){
+                                    if(widget.st == STATUS_PAGE.full){
+                                      return showDialog(
+                                        context: context,
+                                        barrierDismissible: false, // user must tap button for close dialog!
+                                        builder: (BuildContext context) {
+                                          return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                        },
+                                      );
+                                    }else if(widget.st == STATUS_PAGE.select){
+                                      Navigator.of(context).pop(snapshot.data[index]);
+                                    }
+                                  },
                                 ),
-                              ),*/
+                              ),
+
                             ],
                           ),
                         );
-                      }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)){
-                        var direction = snapshot.data[index].customer != null ? snapshot.data[index].customer : "";
-                        var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
-                        return Card(
-
-                        );
                       }
-                    }
+
                   }
 
               );
@@ -418,4 +444,47 @@ class _BusinessListState extends State<BusinessList> {
         child: CircularProgressIndicator(
 
         ),
+
+
+
+
+
+          return Card(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height * por,
+                                color: PrimaryColor,
+                                child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                    fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
+                                    fontSize: 16, color: Colors.white)),
+                              ),
+                              Card(
+                                child: ListTile(
+                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                                  subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                      color: Colors.black)): Text('', style: TextStyle(
+                                      color: Colors.black)),
+                                  trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                  onTap: (){
+                                    if(!widget.vista){
+                                      return showDialog(
+                                        context: context,
+                                        barrierDismissible: false, // user must tap button for close dialog!
+                                        builder: (BuildContext context) {
+                                          return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                        },
+                                      );
+                                    }else{
+                                      Navigator.of(context).pop(snapshot.data[index]);
+                                    }
+                                  },
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        );
       ),*/

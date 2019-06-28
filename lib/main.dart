@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/Menu/formContac.dart';
 import 'package:joincompany/Menu/formBusiness.dart';
 import 'package:joincompany/pages/FirmTouch.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget{
         "/cliente": (context) =>Client(statusPage: STATUS_PAGE_CLIENT.full),
         "/firma": (context) =>FirmTouch(),
         "/contactos": (context) =>ContactView(STATUS_PAGE.full),
-        "/negocios": (context) =>BusinessList(false),
+        "/negocios": (context) =>BusinessList(STATUS_PAGE.full),
         "/configuracion": (context) =>ConfigCli(),
         "/App": (context) =>App(),
         "/addcontact": (context) =>AddContact(null),

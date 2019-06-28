@@ -7,7 +7,7 @@ import 'package:joincompany/blocs/blocContact.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Menu/addContact.dart';
+import 'package:joincompany/Menu/formContac.dart';
 import 'package:joincompany/pages/LoginPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:joincompany/models/WidgetsList.dart';
@@ -33,7 +33,7 @@ class ContactView extends StatefulWidget {
 class _ContactViewState extends State<ContactView> {
 
   ListWidgets ls = ListWidgets();
-
+  bool syncStatus = false;
   StreamSubscription _connectionChangeStream;
   bool isOnline = true;
 
@@ -61,7 +61,7 @@ class _ContactViewState extends State<ContactView> {
 
   void connectionChanged(dynamic hasConnection) {
 
-    if (!isOnline && hasConnection){
+    if (!isOnline && hasConnection && !syncStatus){
       wrapperSync();
     }
 
@@ -71,7 +71,9 @@ class _ContactViewState extends State<ContactView> {
   }
 
   void wrapperSync()async{
+    setState(() {syncStatus = true;});
     await syncDialogAll();
+    setState(() {syncStatus = false;});
   }
 
   Future syncDialogAll(){
@@ -85,8 +87,10 @@ class _ContactViewState extends State<ContactView> {
   }
 
   void syncContacts() async{
+    setState(() {syncStatus = true;});
     await ContactChannel.syncEverything();
     await CustomerContactsChannel.syncEverything();
+    setState(() {syncStatus = false;});
     Navigator.pop(context);
   }
 
@@ -174,7 +178,7 @@ class _ContactViewState extends State<ContactView> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Busqueda', 30),
           IconButton(icon: Icon(Icons.update),
             onPressed: (){
-              if(isOnline){
+              if(isOnline && !syncStatus){
                 syncContacts();
                 syncDialog();
               }else{

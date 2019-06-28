@@ -35,10 +35,10 @@ enum type{
 
 class FormBusiness extends StatefulWidget {
 
-  FormBusiness({this.dataBusiness, this.edit});
+  FormBusiness({this.dataBusiness, this.edit, this.client});
   final BusinessModel dataBusiness;
   final bool edit;
-
+  final CustomerModel client;
 
   @override
   _FormBusinessState createState() => _FormBusinessState();
@@ -50,21 +50,18 @@ class _FormBusinessState extends State<FormBusiness> {
   String value;
   DateTime _date = new DateTime.now();
   BusinessModel businessGet = BusinessModel();
-
-  List<FieldOptionModel> optionsContacts = List<FieldOptionModel>();
   List<FieldOptionModel> optionsClients = List<FieldOptionModel>();
   List<CustomerModel> listCustomers = List<CustomerModel>();
-  List<ContactModel> listContacts = List<ContactModel>();
   List<TaskModel> listTasksBusiness = List<TaskModel>();
   List<AddressModel> listDirectionsClients = List<AddressModel>();
 
   FieldOptionModel auxClient =FieldOptionModel();
-  FieldOptionModel auxContact =FieldOptionModel();
   List<TaskModel> task = List<TaskModel>();
   List<String> dropdownMenuItemsClients = List<String>();
   List<String> dropdownMenuItemsHeader = List<String>();
   String dropdownValueMenuHeader ;
   String dropdownValueClient ;
+  String bodyError;
   int businessId;
   int customerId;
 
@@ -74,14 +71,14 @@ class _FormBusinessState extends State<FormBusiness> {
   TextEditingController amountController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController headerController = TextEditingController();
-  String errorTextFieldName,errorTextFieldCode,errorTextFieldNote;
+
   String dateG;
   BusinessModel saveBusiness = BusinessModel();
 
   bool _dateBool = false;
   bool getData = false;
   bool saveBusinessEnd = false;
-
+  bool getClients = false;
 
   Future<TaskModel> getTask() async{
     return showDialog<TaskModel>(
@@ -132,52 +129,41 @@ class _FormBusinessState extends State<FormBusiness> {
 
 
   convertToModelToFieldOption(){
-    for(CustomerModel v in listCustomers)
-      {
-        auxClient.value = v.id;
-        auxClient.name = v.name;
+    if(widget.client == null){
+      if(getClients == true){
+        for(CustomerModel v in listCustomers)
+        {
+          auxClient.value = v.id;
+          auxClient.name = v.name;
 
-        optionsClients.add(auxClient);
-        auxClient = FieldOptionModel();
+          optionsClients.add(auxClient);
+          auxClient = FieldOptionModel();
+        }
+        for(FieldOptionModel v in optionsClients){
+          dropdownMenuItemsClients.add(v.name);
+        }
+      }else{
+        dropdownMenuItemsClients.add('Sin Clientes');
       }
-    for(FieldOptionModel v in optionsClients){
-      dropdownMenuItemsClients.add(v.name);
     }
 
-//    for(ContactModel v in listContacts)
-//    {
-//      auxContact.value = v.id;
-//      auxContact.name = v.name;
-//      optionsContacts.add(auxContact);
-//      auxContact = FieldOptionModel();
-//    }
 
-      dropdownMenuItemsHeader.add('Primer contacto');
-      dropdownMenuItemsHeader.add('Presentación');
-      dropdownMenuItemsHeader.add('Envío ppta');
-      dropdownMenuItemsHeader.add('Ganado');
-      dropdownMenuItemsHeader.add('Perdido');
-
-
+    dropdownMenuItemsHeader.add('Primer contacto');
+    dropdownMenuItemsHeader.add('Presentación');
+    dropdownMenuItemsHeader.add('Envío ppta');
+    dropdownMenuItemsHeader.add('Ganado');
+    dropdownMenuItemsHeader.add('Perdido');
 }
 
   initTextController() async {
-
     if(widget.dataBusiness != null){
-//      print(widget.dataBusiness.name);
-//      print(widget.dataBusiness.customer);
-//      print(widget.dataBusiness.amount);
-//      print(widget.dataBusiness.id);
       UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
       var  getCustomerResponse = await  getCustomer(widget.dataBusiness.customerId.toString(),user.company, user.rememberToken,);
       if(getCustomerResponse.statusCode == 200 || getCustomerResponse.statusCode == 201){
         dropdownValueClient = widget.dataBusiness.customer;
         saveBusiness.customerId = widget.dataBusiness.customerId;
       }else if(widget.dataBusiness.customer == null){
-
-
       }
-
       setState(() {
         saveBusiness.id = widget.dataBusiness.id;
         posController.text = widget.dataBusiness.name;
@@ -190,22 +176,19 @@ class _FormBusinessState extends State<FormBusiness> {
         if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
         }
-
-
       });
-
+    }
+    if(widget.client != null){
+      customerId = widget.client.id;
     }
   }
-
 
   void disposeController(){
     posController.dispose();
     amountController.dispose();
     clientController.dispose();
     dateController.dispose();
-
   }
-
 
   ListView getClientBuilder() {
     return ListView.builder(
@@ -245,25 +228,33 @@ class _FormBusinessState extends State<FormBusiness> {
     disposeController();
     super.dispose();
   }
+
   getOther()async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     var getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
     ContactsModel contacts = getAllContactsResponse.body;
+    if(widget.client == null){
+      var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken);
+      CustomersModel customers = getAllCustomersResponse.body;
+      listCustomers = customers.data;
+      if(listCustomers != null){
+        getClients = true;
+      }
+    }else{
+      dropdownMenuItemsClients.add(widget.client.name);
+    }
 
-    var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken);
-    CustomersModel customers = getAllCustomersResponse.body;
-    listCustomers = customers.data;
     setState(() {
       getData = true;
     });
 
     await convertToModelToFieldOption();
   }
+
   @override
   Widget build(BuildContext context) {
-    getTaskBusiness();
-    getDirectionsClients();
+    getDirTask();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -276,15 +267,19 @@ class _FormBusinessState extends State<FormBusiness> {
                       width: MediaQuery.of(context).size.width *0.9,
                       child: AlertDialog(
                         title: Text('Guardar'),
-                        content: const Text(
-                            'Desea Guardar'),
+                        content: const Text('Desea Guardar'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
                               FlatButton(
                                 child: const Text('SALIR'),
                                 onPressed: () {
-                                  Navigator.pushReplacementNamed(context, '/negocios');
+                                  if(widget.client != null){
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  }else{
+                                    Navigator.pushReplacementNamed(context, '/negocios');
+                                  }
                                 },
                               ),
                               FlatButton(
@@ -306,9 +301,8 @@ class _FormBusinessState extends State<FormBusiness> {
                                     await updateBusinessApi();
                                   }
                                   else{
-                                    await   saveBusinessApi();
+                                    await saveBusinessApi();
                                   }
-
                                 if(saveBusinessEnd == true){
                                   showDialog(
                                       context: context,
@@ -320,7 +314,14 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                               child: const Text('Aceptar'),
                                               onPressed: () {
-                                                Navigator.pushReplacementNamed(context, '/negocios');
+                                                if(widget.client != null){
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop(saveBusiness);
+                                                }else{
+                                                  Navigator.pushReplacementNamed(context, '/negocios');
+                                                }
+
                                               },
                                             ),
                                           ],
@@ -346,9 +347,9 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                             ],
                                           );
-                                        }else{
+                                        }else if(saveBusinessEnd == false && bodyError == 'Negocio ya existe'){
                                           return   AlertDialog(
-                                            title: Text('A ocurido un Error inesperado '),
+                                            title: Text('El Negocio ya existe.'),
                                             actions: <Widget>[
                                               FlatButton(
                                                 child: const Text('Aceptar'),
@@ -361,6 +362,23 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                             ],
                                           );
+                                        }
+                                        if(saveBusinessEnd == false){
+                                          return   AlertDialog(
+                                            title: Text('Ha ocurrido un error.'),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: const Text('Aceptar'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop();
+
+                                                },
+                                              ),
+
+                                            ],
+                                          );
+
                                         }
 
                                       }
@@ -375,7 +393,6 @@ class _FormBusinessState extends State<FormBusiness> {
                     );
                 }
             )
-
         ),
         title: Text("Negocio"),
         automaticallyImplyLeading: true,
@@ -384,8 +401,33 @@ class _FormBusinessState extends State<FormBusiness> {
               icon: Icon(Icons.delete,
               color: widget.edit == true ? Colors.white : Colors.grey),
               onPressed: () async {
-                UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
-                deleteBusiness(saveBusiness.id.toString(),user.company,user.rememberToken);
+                if(widget.edit == true){
+                  UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return   AlertDialog(
+                          title: Text('Desea Eliminiar Negocio'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: const Text('Volver'),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            FlatButton(
+                              child: const Text('Aceptar'),
+                              onPressed: () async {
+                                await deleteBusiness(saveBusiness.id.toString(),user.company,user.rememberToken);
+                                Navigator.pushReplacementNamed(context, '/negocios');
+                              },
+                            ),
+
+                          ],
+                        );
+                      }
+                  );
+                }
               }
           ),
         ],
@@ -439,23 +481,27 @@ class _FormBusinessState extends State<FormBusiness> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: DropdownButton<String>(
-
                       isExpanded: true,
                       isDense: false,
                       underline: Container(),
                       iconSize: 35,
-                      icon: Icon(Icons.arrow_drop_down),
+                      icon:widget.client == null ? Icon(Icons.arrow_drop_down): null,
                       elevation: 10,
-                      value: dropdownValueClient,
-                      hint: Text('Clientes'),
+                      value: widget.client != null ? widget.client.name : dropdownValueClient,
+                      hint:  widget.client == null ? getClients ?  Text('Clientes') : Text('Sin clientes') : null,
                       onChanged: (String newValue) {
                         setState(() {
-                          dropdownValueClient = newValue;
-                          clientController.text = newValue;
-                          for(FieldOptionModel v in optionsClients){
-                            if(dropdownValueClient == v.name){
-                              customerId = v.value;
+                          if(widget.client == null){
+                            dropdownValueClient = newValue;
+                            clientController.text = newValue;
+                            for(FieldOptionModel v in optionsClients){
+                              if(dropdownValueClient == v.name){
+                                customerId = v.value;
+                              }
                             }
+                          }else{
+                            clientController.text = newValue;
+                            customerId = widget.client.id;
                           }
                         });
                       },
@@ -578,7 +624,7 @@ class _FormBusinessState extends State<FormBusiness> {
                           child: IconButton(
                             icon: Icon(Icons.add),
                               onPressed: () async {
-                              if(widget.edit == true && listDirectionsClients.length > 0){
+                              if(widget.edit == true && listDirectionsClients.length > 0 && widget.client == null){
                                 return showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -632,7 +678,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                         );
                                     }
                                 );
-                              }else if(!widget.edit){
+                              }else if(widget.edit == true && widget.client == null){
                                 return showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -686,7 +732,7 @@ class _FormBusinessState extends State<FormBusiness> {
                               setState(() {
 
                               });
-                              if(widget.edit){
+                              if(widget.edit == true && widget.client == null){
                                 return   showDialog(
                                     context: context,
                                     // ignore: deprecated_member_use
@@ -755,12 +801,24 @@ class _FormBusinessState extends State<FormBusiness> {
     );
   }
 
+  getDirTask()async{
+    try{
+      await getDirectionsClients();
+      await getTaskBusiness();
+    }catch(e){
+
+    }
+
+  }
+
   getDirectionsClients()async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
     var getCustomerAddressesResponse = await getCustomerAddresses( saveBusiness.customerId.toString(), user.company, user.rememberToken);
-    List<AddressModel> customerAddresses = new List<AddressModel>.from(json.decode(getCustomerAddressesResponse.body).map((x) => AddressModel.fromMap(x)));
+    List<AddressModel> customerAddresses =getCustomerAddressesResponse.body ;
     listDirectionsClients = customerAddresses;
   }
+
   getTaskBusiness() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var getAllTasksResponse = await getAllTasks(user.company, user.rememberToken, businessId: saveBusiness.id.toString());
@@ -769,6 +827,7 @@ class _FormBusinessState extends State<FormBusiness> {
        listTasksBusiness = tasks.data;
      });
   }
+
   saveBusinessApi() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.rememberToken);
@@ -777,15 +836,18 @@ class _FormBusinessState extends State<FormBusiness> {
 
     if(createBusinessResponse.statusCode == 201 || createBusinessResponse.statusCode == 200){
       setState(() {
+        saveBusiness = createBusinessResponse.body;
         saveBusinessEnd = true;
       });
     }
-    if(createBusinessResponse.statusCode == 500){
+    if(createBusinessResponse.statusCode == 500 &&  createBusinessResponse.body == 'Negocio ya existe'){
       setState(() {
-      saveBusinessEnd = false;
+        bodyError = 'Negocio ya existe';
+            saveBusinessEnd = false;
       });
     }
   }
+
   updateBusinessApi() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.rememberToken);
@@ -801,4 +863,5 @@ class _FormBusinessState extends State<FormBusiness> {
       });
     }
   }
+
 }

@@ -33,6 +33,7 @@ class AddContact extends StatefulWidget {
 
 class _AddContactState extends State<AddContact> {
   UserModel user;
+  bool loading = false;
 
   Widget popUp;
 
@@ -41,7 +42,7 @@ class _AddContactState extends State<AddContact> {
 
   CustomerModel clientAct,clientOld;
 
-  TextEditingController name, code, cargo, phoneF, phoneM, email, note;
+  TextEditingController name, code, cargo, phone, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
   Future<CustomerModel> getClient(STATUS_PAGE_CLIENT state) async {
@@ -188,7 +189,7 @@ class _AddContactState extends State<AddContact> {
   void initController() {
     name = TextEditingController();
     code = TextEditingController();
-    phoneF = TextEditingController();
+    phone = TextEditingController();
     phoneM = TextEditingController();
     email = TextEditingController();
     note = TextEditingController();
@@ -198,30 +199,33 @@ class _AddContactState extends State<AddContact> {
     user  = await DatabaseProvider.db.RetrieveLastLoggedUser();
     initController();
 
-    if(widget.contact != null){
-      var resp = await getCustomer(widget.contact.customerId.toString(),user.company,user.rememberToken);
-      if(resp.statusCode == 200 || resp.statusCode == 201){
-        clientAct = resp.body;
-        clientOld = clientAct;
-      }
-    }
-
     setState((){
       if(widget.contact != null){
         name.text = widget.contact.name;
         code.text = widget.contact.code;
-        phoneF.text = widget.contact.phone;
+        phone.text = widget.contact.phone;
         phoneM.text = widget.contact.phone;
         email.text = widget.contact.email;
         note.text = widget.contact.details;
       }
     });
+
+    if(widget.contact != null){
+      if(widget.contact.customerId != null){
+        var resp = await getCustomer(widget.contact.customerId.toString(),user.company,user.rememberToken);
+        if(resp.statusCode == 200 || resp.statusCode == 201){
+          clientAct = resp.body;
+          clientOld = clientAct;
+        }
+      }
+    }
+
   }
 
   void disposeController() {
     name.dispose();
     code.dispose();
-    phoneF.dispose();
+    phone.dispose();
     phoneM.dispose();
     email.dispose();
     note.dispose();
@@ -239,7 +243,7 @@ class _AddContactState extends State<AddContact> {
         }
       case type.PHONE_F:
         {
-          return phoneF;
+          return phone;
         }
       case type.PHONE_M:
         {
@@ -316,7 +320,7 @@ class _AddContactState extends State<AddContact> {
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.contact != null){
-      if (name.text == widget.contact.name && code.text == widget.contact.code && phoneF.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details) {
+      if (name.text == widget.contact.name && code.text == widget.contact.code && phone.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details && clientAct == clientOld) {
         return true;
       } else {
         return showDialog<bool>(
@@ -348,12 +352,13 @@ class _AddContactState extends State<AddContact> {
       return resp;
     } else {
       if(await validateData()){
+        setState(() {loading = true;});
         if(widget.contact != null){
           ContactModel contact = ContactModel(
             id: widget.contact.id,
             name: name.text,
             code: code.text,
-            phone: phoneF.text,
+            phone: phone.text,
             email: email.text,
             details: note.text,
           );
@@ -361,16 +366,24 @@ class _AddContactState extends State<AddContact> {
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,user.company,user.rememberToken);
           if (resposeUpdateContact.statusCode == 200){
             if(clientAct != null){
-              var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), widget.contact.id.toString(), user.company,user.rememberToken);
-              if(responseRelateCustomerContact.statusCode == 200){
-                return true;
-              }else{
-                return true;
+              if(clientOld != clientAct){
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeUpdateContact.body.id.toString(), user.company,user.rememberToken);
+                if(responseRelateCustomerContact.statusCode == 200){
+                  setState(() {loading = false;});
+                  return true;
+                }else{
+                  setState(() {loading = false;});
+                  return true;
+                }
               }
+              setState(() {loading = false;});
+              return true;
             }else{
+              setState(() {loading = false;});
               return true;
             }
           }else{
+            setState(() {loading = false;});
             return showDialog(
                 context: context,
                 barrierDismissible: true, // user must tap button for close dialog!
@@ -385,20 +398,27 @@ class _AddContactState extends State<AddContact> {
           ContactModel contact = ContactModel(
             name: name.text,
             code: code.text,
-            phone: phoneF.text,
+            phone: phone.text,
             email: email.text,
             details: note.text,
           );
           var resposeCreateContact = await createContact(contact,user.company,user.rememberToken);
           if (resposeCreateContact.statusCode == 200){
             if(clientAct != null){
-              var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeCreateContact.body.id.toString(), user.company,user.rememberToken);
-              if(responseRelateCustomerContact.statusCode == 200){
-                return true;
-              }else{
-                return true;
+              if(clientOld != clientAct){
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeCreateContact.body.id.toString(), user.company,user.rememberToken);
+                if(responseRelateCustomerContact.statusCode == 200){
+                  setState(() {loading = false;});
+                  return true;
+                }else{
+                  setState(() {loading = false;});
+                  return true;
+                }
               }
+              setState(() {loading = false;});
+              return true;
             }else{
+              setState(() {loading = false;});
               return true;
             }
           }else{
@@ -414,6 +434,7 @@ class _AddContactState extends State<AddContact> {
           }
         }
       }else{
+        setState(() {loading = false;});
         return false;
       }
     }
@@ -457,17 +478,19 @@ class _AddContactState extends State<AddContact> {
 
   void exitDeletedContact() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 300));
+    setState(() {loading = false;});
     Navigator.of(context).pop();
   }
 
   void deleteContactView() async {
     var resp = await _asyncConfirmDialogDeleteUser();
     if (resp) {
-      var responseDelete = await deleteContact(
-          widget.contact.id.toString(), user.company, user.rememberToken);
+      setState(() {loading = true;});
+      var responseDelete = await deleteContact(widget.contact.id.toString(), user.company, user.rememberToken);
       if (responseDelete.statusCode == 200) {
         exitDeletedContact();
       } else {
+        setState(() {loading = false;});
         return showDialog(
             context: context,
             barrierDismissible: true, // user must tap button for close dialog!
@@ -481,10 +504,14 @@ class _AddContactState extends State<AddContact> {
     }
   }
 
+  Future<bool> futureFalse()async{
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: save,
+        onWillPop: loading ? futureFalse : save,
         child: Scaffold(
           appBar: AppBar(
             title: Text("Contacto"),
@@ -499,66 +526,70 @@ class _AddContactState extends State<AddContact> {
               )
             ],
           ),
-          body:SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                customTextField("Nombre / apellido *",type.NAME,1),
-                customTextField("Codigo *",type.CODE,1),
-                //customTextField("Cargo",type.CARGO,1),
-                customTextField("Telefono",type.PHONE_F,1),
-                //customTextField("Telefono movil",type.PHONE_M,1),
-                customTextField("Emails",type.EMAIL,1),
-                customTextField("Notas",type.NOTE,4),
-                Container(
-                    margin: EdgeInsets.all(12.0),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("cliente"),
-                        Row(
+          body:Stack(
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    customTextField("Nombre / apellido *",type.NAME,1),
+                    customTextField("Codigo *",type.CODE,1),
+                    //customTextField("Cargo",type.CARGO,1),
+                    customTextField("Telefono",type.PHONE_F,1),
+                    //customTextField("Telefono movil",type.PHONE_M,1),
+                    customTextField("Emails",type.EMAIL,1),
+                    customTextField("Notas",type.NOTE,4),
+                    Container(
+                        margin: EdgeInsets.all(12.0),
+                        child:Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: ()async{
-                                  var client = await getClient(STATUS_PAGE_CLIENT.select);
-                                  if (client != null){
-                                    print(client.toString());
-                                    setState(() {
-                                      clientAct = client;
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(Icons.visibility),
-                                onPressed: (){
-                                  getClient(STATUS_PAGE_CLIENT.view);
-                                },
-                              ),
-                            ),
+                            Text("cliente"),
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: ()async{
+                                      var client = await getClient(STATUS_PAGE_CLIENT.select);
+                                      if (client != null){
+                                        setState(() {
+                                          clientAct = client;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: IconButton(
+                                    icon: Icon(Icons.visibility),
+                                    onPressed: (){
+                                      getClient(STATUS_PAGE_CLIENT.view);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         )
-                      ],
-                    )
-                ),
-                clientAct != null ? ListTile(
-                  leading: const Icon(Icons.account_box, size: 25.0),
-                  title: Text(clientAct.name!=null ?clientAct.name:" "),
+                    ),
+                    clientAct != null ? ListTile(
+                      leading: const Icon(Icons.account_box, size: 25.0),
+                      title: Text(clientAct.name!=null ?clientAct.name:" "),
 //                  subtitle: Text(clientAct.address!=null ?clientAct.address:" "),
-                  trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
-                    setState(() {
-                      clientAct = null;
-                    });
-                  }),
-                ):Container(),
-              ],
-            ),
-          ),
+                      trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
+                        setState(() {
+                          clientAct = null;
+                        });
+                      }),
+                    ):Container(),
+                  ],
+                ),
+              ),
+              loading ? Center(child: CircularProgressIndicator(),):Container(),
+            ],
+          )
         ),
     );
   }
