@@ -8,6 +8,8 @@ import 'dart:io';
 
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
+import 'package:joincompany/models/CustomersModel.dart';
+import 'package:joincompany/services/CustomerService.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -4329,9 +4331,7 @@ class DatabaseProvider {
       Select c.*, cu.name as customer, cu.id as customer_id
       from "contacts" as c
       left join "customers_contacts" as cc on cc.contact_id = c.id
-      left join "customers" as cu on cc.customer_id = cu.id
-      inner join "users" as u on c.created_by_id = u.id
-      WHERE u.remember_token = '$userToken';
+      left join "customers" as cu on cc.customer_id = cu.id;
       '''
     );
 
@@ -4504,7 +4504,7 @@ class DatabaseProvider {
         amount = ?,
         in_server = ?,
         updated = ?,
-        deleted = ?,
+        deleted = ?
       WHERE id = $businessId
       ''', 
       [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
@@ -4607,14 +4607,11 @@ class DatabaseProvider {
   Future<List<BusinessModel>> RetrieveBusinessesByUserToken(String userToken) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-
     data = await db.rawQuery(
         '''
       Select b.*, cu.name as customer
       from "businesses" as b
-      inner join "customers" as cu on cu.id = b.customer_id
-      inner join "users" as u on b.created_by_id = u.id
-      WHERE u.remember_token = '$userToken';
+      inner join "customers" as cu on cu.id = b.customer_id;
       '''
     );
 

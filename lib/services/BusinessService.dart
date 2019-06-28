@@ -56,11 +56,11 @@ Future<ResponseModel> createBusiness(BusinessModel businessObj, String customer,
 
   if (await connectionStatus.checkConnection()) {
     var createBusinessResponse = await createBusinessFromServer(businessObj, customer, authorization);
-    if (createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) {
+    if ((createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) && createBusinessResponse.body != 'Negocio ya existe') {
       businessObj = BusinessModel.fromJson(createBusinessResponse.body);
       syncState = SyncState.synchronized;
     } else {
-      return new ResponseModel(statusCode: 500, body: createBusinessResponse.body);
+      return new ResponseModel(statusCode: 500, body: createBusinessResponse.body+"9999");
     }
   }
   
@@ -92,7 +92,7 @@ Future<ResponseModel> updateBusiness(String id, BusinessModel businessObj, Strin
 
   if (await connectionStatus.checkConnection()) {
     var updateBusinessResponse = await updateBusinessFromServer(businessObj.id.toString(), businessObj, customer, authorization);
-    if (updateBusinessResponse.statusCode==200 || updateBusinessResponse.statusCode==201) {
+    if ((updateBusinessResponse.statusCode==200 || updateBusinessResponse.statusCode==201) && updateBusinessResponse.body != 'Negocio ya existe') {
       businessObj = BusinessModel.fromJson(updateBusinessResponse.body);
       syncState = SyncState.synchronized;
     } else {

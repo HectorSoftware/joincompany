@@ -383,6 +383,7 @@ class _AddContactState extends State<AddContact> {
               return true;
             }
           }else{
+            setState(() {loading = false;});
             return showDialog(
                 context: context,
                 barrierDismissible: true, // user must tap button for close dialog!

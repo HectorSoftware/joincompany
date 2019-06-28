@@ -37,7 +37,7 @@ class _ClientState extends State<Client> {
   Widget _appBarTitle = new Text('Clientes');
   String textFilter='';
   STATUS_PAGE_CLIENT statusPage;
-
+  bool syncStatus = false;
   final TextEditingController _filter = new TextEditingController();
 
   @override
@@ -72,13 +72,15 @@ class _ClientState extends State<Client> {
       isOffline = !hasConnection;
     });
 
-    if (!isOffline && hasConnection){
+    if (!isOffline && hasConnection && !syncStatus){
       wrapperSync();
     }
   }
 
   void wrapperSync()async{
+    setState(() {syncStatus = true;});
     await syncDialogAll();
+    setState(() {syncStatus = false;});
   }
 
   Future syncDialogAll(){
@@ -95,7 +97,7 @@ class _ClientState extends State<Client> {
     await AddressChannel.syncEverything();
     await CustomerChannel.syncEverything();
     await CustomerAddressesChannel.syncEverything();
-    setState(() {});
+    setState(() {syncStatus = false;});
     Navigator.pop(context);
   }
 
@@ -146,7 +148,8 @@ class _ClientState extends State<Client> {
           ls.createState().searchButtonAppbar(_searchIcon, _searchPressed, 'Eliminar Tarea', 30),
           IconButton(icon: Icon(Icons.update),
             onPressed: (){
-              if(isOffline){
+              if(!isOffline && !syncStatus){
+                setState(() {syncStatus = true;});
                 syncClients();
                 syncDialogLocal();
               }else{

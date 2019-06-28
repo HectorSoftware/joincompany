@@ -16,6 +16,7 @@ import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 
 import 'businesList.dart';
+import 'formBusiness.dart';
 
 enum type{NAME,CODE,NOTE}
 
@@ -170,7 +171,6 @@ class _FormClientState extends State<FormClient> {
         code.text = widget.client.code;
         note.text = widget.client.details;
       }
-      loading = true;
     });
 
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
@@ -198,6 +198,7 @@ class _FormClientState extends State<FormClient> {
       if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
         BusinessesModel customerbusiness = getCustomerBusinessesResponse.body;
         businessOld = customerbusiness.data;
+        businessOld.sort((a,b)=> a.name.compareTo(b.name));
         for(BusinessModel buss in businessOld){
           businessAll.add(buss);
         }
@@ -281,6 +282,7 @@ class _FormClientState extends State<FormClient> {
       return resp;
     }else{
       if(validateData()){
+          setState(() {loading = true;});
           if(widget.client != null){
             CustomerModel client = CustomerModel(
               id: widget.client.id,
@@ -290,45 +292,50 @@ class _FormClientState extends State<FormClient> {
             );
 
             var response = await updateCustomer(client.id.toString(), client, user.company, user.rememberToken);
-            bool saveContact = await setContacts(client.id);
-            if(!saveContact){
-              return showDialog(
-                  context: context,
-                  barrierDismissible: true, // user must tap button for close dialog!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                        title: Text('Ha ocurrido un error guardando los contactos')
-                    );
-                  }
-              );
-            }
-            bool saveDirections = await setDirections(client.id);
-            if(!saveDirections){
-              return showDialog(
-                  context: context,
-                  barrierDismissible: true, // user must tap button for close dialog!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                        title: Text('Ha ocurrido un error guardando las direcciones')
-                    );
-                  }
-              );
-            }
-            bool saveBussines = await setBusiness(client.id);
-            if(!saveBussines){
-              return showDialog(
-                  context: context,
-                  barrierDismissible: true, // user must tap button for close dialog!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                        title: Text('Ha ocurrido un error guardando los negocios.')
-                    );
-                  }
-              );
-            }
             if(response.statusCode == 200){
-                return true;
+              bool saveContact = await setContacts(client.id);
+              if(!saveContact){
+                setState(() {loading = false;});
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error guardando los contactos')
+                      );
+                    }
+                );
+              }
+              bool saveDirections = await setDirections(client.id);
+              if(!saveDirections){
+                setState(() {loading = false;});
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error guardando las direcciones')
+                      );
+                    }
+                );
+              }
+              bool saveBussines = await setBusiness(client.id);
+              if(!saveBussines){
+                setState(() {loading = false;});
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ha ocurrido un error guardando los negocios.')
+                      );
+                    }
+                );
+              }
+              setState(() {loading = false;});
+              return true;
             }else{
+              setState(() {loading = false;});
               return showDialog(
                   context: context,
                   barrierDismissible: true, // user must tap button for close dialog!
@@ -351,6 +358,7 @@ class _FormClientState extends State<FormClient> {
               var cli = response.body;
               bool saveContact = await setContacts(cli.id);
               if(!saveContact){
+                setState(() {loading = false;});
                 return showDialog(
                     context: context,
                     barrierDismissible: true, // user must tap button for close dialog!
@@ -363,6 +371,7 @@ class _FormClientState extends State<FormClient> {
               }
               bool saveDirections = await setDirections(cli.id);
               if(!saveDirections){
+                setState(() {loading = false;});
                 return showDialog(
                     context: context,
                     barrierDismissible: true, // user must tap button for close dialog!
@@ -375,6 +384,7 @@ class _FormClientState extends State<FormClient> {
               }
               bool saveBussines = await setBusiness(cli.id);
               if(!saveBussines){
+                setState(() {loading = false;});
                 return showDialog(
                     context: context,
                     barrierDismissible: true, // user must tap button for close dialog!
@@ -385,8 +395,10 @@ class _FormClientState extends State<FormClient> {
                     }
                 );
               }
+              setState(() {loading = false;});
               return true;
             }else{
+              setState(() {loading = false;});
               return showDialog(
                   context: context,
                   barrierDismissible: true, // user must tap button for close dialog!
@@ -399,6 +411,7 @@ class _FormClientState extends State<FormClient> {
             }
         }
       }else{
+        setState(() {loading = false;});
         return false;
       }
     }
@@ -518,7 +531,7 @@ class _FormClientState extends State<FormClient> {
     return false;
   }
 
-  bool oldToEliminatedDirection(CustomerWithAddressModel direction){
+  bool oldToEliminatedDirection(AddressModel direction){
     for(var dir in directionsAll){
       if(dir == direction){
         return false;
@@ -625,28 +638,41 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
-  Future<BusinessModel> getBusiness() async{
+  Future<BusinessModel> createBusiness() async{
     return showDialog<BusinessModel>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
-        return BusinessList(true);
+        return FormBusiness(client:CustomerModel(id: widget.client.id,name: widget.client.name,code: widget.client.code,details: widget.client.details,));
+      },
+    );
+  }
+
+  Future showBusiness() async{
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return BusinessList(STATUS_PAGE.view);
       },
     );
   }
 
   void exitDeletedClient()async{
     await Future.delayed(Duration(seconds: 0, milliseconds: 300));
+    setState(() {loading = false;});
     Navigator.of(context).pop();
   }
 
   void deleteCli()async{
     var resp = await  _asyncConfirmDialogDeleteUser();
     if(resp){
+      setState(() {loading = true;});
       var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
       if(responseDelete.statusCode == 200){
         exitDeletedClient();
       }else{
+        setState(() {loading = false;});
         return showDialog(
             context: context,
             barrierDismissible: true, // user must tap button for close dialog!
@@ -715,7 +741,7 @@ class _FormClientState extends State<FormClient> {
             child: ListTile(
               leading: const Icon(Icons.business,
                   size: 25.0),
-              title: Text('${businessAll[index].name}-${businessAll[index].customer}'),
+              title: Text('${businessAll[index].name} - ${businessAll[index].stage}'),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
                 setState(() {
                   businessNew.remove(businessAll[index]);
@@ -728,16 +754,19 @@ class _FormClientState extends State<FormClient> {
     );
   }
 
-
   Future<bool> save() async {
     var resp = await savedData();
     return resp != null ? resp : false;
   }
 
+  Future<bool> futureFalse()async{
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: save,
+      onWillPop: loading ? futureFalse : save,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Cliente'),
@@ -749,7 +778,7 @@ class _FormClientState extends State<FormClient> {
               tooltip: 'Eliminar Cliente',
               color: Colors.white,
               iconSize: 25,
-              onPressed: widget.client != null ? deleteCli:null,
+              onPressed: widget.client != null && !loading ? deleteCli:null,
             )
           ],
         ),
@@ -848,31 +877,34 @@ class _FormClientState extends State<FormClient> {
                       child:Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("Negocios",style: TextStyle(color: Colors.grey[350]),),
+                          Text("Negocios",/*style: TextStyle(color: Colors.grey[350]),*/),
                           Row(
                             children: <Widget>[
                               IconButton(
-                                  icon: Icon(Icons.add,color: Colors.grey[350],),
+                                  icon: Icon(Icons.add),
                                   onPressed: ()async{
-                                    //*****************************
-                                    var resp = await getBusiness();
-                                    if(resp != null){
-                                      setState(() {
-                                        if(!searchOldBusiness(resp)){
-                                          businessAll.add(resp);
-                                          businessNew.add(resp);
+                                    if(widget.client != null){
+                                      var business = await createBusiness();
+                                      if(business != null){
+                                        var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),user.company,user.rememberToken);
+                                        if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
+                                          BusinessesModel customerbusiness = getCustomerBusinessesResponse.body;
+                                          businessAll = List<BusinessModel>();
+                                          businessOld = customerbusiness.data;
+                                          businessOld.sort((a,b)=> a.name.compareTo(b.name));
+                                          for(BusinessModel buss in businessOld){
+                                            businessAll.add(buss);
+                                            setState(() {});
+                                          }
                                         }
-                                      });
+                                      }
                                     }
-                                    //******************************
                                   }
                               ),
                               IconButton(
-                                  icon: Icon(Icons.visibility,color: Colors.grey[350]),
+                                  icon: Icon(Icons.visibility,/*color: Colors.grey[350]*/),
                                   onPressed: ()async{
-                                    //***************
-                                    //getBusiness();
-                                    //***************
+                                    showBusiness();
                                   }
                               )
                             ],
