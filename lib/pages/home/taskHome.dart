@@ -188,22 +188,22 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           ),
           Container(
             child: new ListTile(
-              title: new Text("Contactos",style: TextStyle(color: Colors.grey[500]),),
-              trailing: new Icon(Icons.contacts,color: Colors.white10,),
+              title: new Text("Contactos"),
+              trailing: new Icon(Icons.contacts),
               onTap: () {
-               // Navigator.pop(context);
-              //  Navigator.pushReplacementNamed(context, '/contactos');
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/contactos');
               },
             ),
           ),
           Container(
             //color: Colors.grey[400],
             child: new ListTile(
-              title: new Text("Negocios",style: TextStyle(color: Colors.grey[500]),),
-              trailing: new Icon(Icons.account_balance,color: Colors.white10,),
+              title: new Text("Negocios"),
+              trailing: new Icon(Icons.account_balance),
               onTap: () {
-               // Navigator.pop(context);
-               // Navigator.pushReplacementNamed(context, '/negocios');
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/negocios');
               },
             ),
           ),

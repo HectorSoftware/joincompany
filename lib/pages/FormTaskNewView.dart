@@ -239,7 +239,7 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
-    if(field.fieldType == 'Photo'){
+ /*   if(field.fieldType == 'Photo'){
       Uint8List img;
       String b64;
       String ruta = dataInfo[field.id.toString()];
@@ -275,7 +275,7 @@ class _FormTaskViewState extends State<FormTaskView> {
           ],
         ),
       );
-    }
+    }*/
     if(listFieldsModels[index].fieldType == 'Image'){
       return Row(
         children: <Widget>[

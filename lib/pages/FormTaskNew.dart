@@ -237,7 +237,7 @@ class _FormTaskState extends State<FormTask> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
-                                              title: Text('A ocurido un Error al crear la tarea'),
+                                              title: Text('Ha ocurido un Error al crear la tarea'),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
