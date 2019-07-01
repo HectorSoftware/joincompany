@@ -76,7 +76,7 @@ class _FormTaskState extends State<FormTask> {
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
-    if(widget.toListTask){
+    if(widget.toListTask == true){
       listWithTask();
     }
     super.initState();
@@ -192,7 +192,7 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask){
+                                    if(widget.toListTask == true){
                                       if(widget.taskmodelres.addressId != null){
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
@@ -306,7 +306,7 @@ class _FormTaskState extends State<FormTask> {
               )
           )
         ],
-        title: widget.toListTask ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
+        title: widget.toListTask == true ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
                                  : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
       ),
       body:  pass? ListView(

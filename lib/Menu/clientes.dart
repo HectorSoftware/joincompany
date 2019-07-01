@@ -197,6 +197,8 @@ class _ClientState extends State<Client> {
                         },
                       ),
                     );
+                  }else{
+                    return Container();
                   }
                 }
             );

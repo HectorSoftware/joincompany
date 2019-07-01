@@ -118,10 +118,12 @@ class _ContactViewState extends State<ContactView> {
 
   Widget contactCard(ContactModel contact) {
     //TODO: change String for Contacts
+    print(contact.customer);
     return Card(
       child: ListTile(
         title: Text(contact.name, style: TextStyle(fontSize: 16),),
-        subtitle: Text(contact.customer, style: TextStyle(fontSize: 14),),
+        subtitle:  contact.customer != null ? Text(contact.customer.toString()) : Container(),
+        //subtitle: Text(contact.customer =! null ? contact.customer : "" , style: TextStyle(fontSize: 14),),,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -187,6 +189,8 @@ class _ContactViewState extends State<ContactView> {
                       return contactCard(snapshot.data[index]);
                     } else if (ls.createState().checkSearchInText(name, textFilter)) {
                       return contactCard(snapshot.data[index]);
+                    }else{
+                      return Container();
                     }
                   }
               );

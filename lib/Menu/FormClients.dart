@@ -839,14 +839,14 @@ class _FormClientState extends State<FormClient> {
                       child:Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("Negocios",style: TextStyle(color: Colors.grey[350]),),
+                          Text("Negocios"),
                           Row(
                             children: <Widget>[
                               IconButton(
-                                  icon: Icon(Icons.add,color: Colors.grey[350],),
+                                  icon: Icon(Icons.add),
                                   onPressed: ()async{
-                                    //*****************************
-                                    /*var resp = await getBusiness();
+
+                                    var resp = await getBusiness();
                                     if(resp != null){
                                       setState(() {
                                         if(!searchOldBusiness(resp)){
@@ -854,16 +854,16 @@ class _FormClientState extends State<FormClient> {
                                           businessNew.add(resp);
                                         }
                                       });
-                                    }*/
-                                    //******************************
+                                    }
+
                                   }
                               ),
                               IconButton(
-                                  icon: Icon(Icons.visibility,color: Colors.grey[350]),
+                                  icon: Icon(Icons.visibility),
                                   onPressed: ()async{
-                                    //***************
-                                    //getBusiness();
-                                    //***************
+
+                                    getBusiness();
+
                                   }
                               )
                             ],

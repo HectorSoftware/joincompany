@@ -1,16 +1,12 @@
-import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/blocs/blocBusiness.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
-import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/models/WidgetsList.dart';
-import 'package:joincompany/services/BusinessService.dart';
 import 'formBusiness.dart';
 import 'package:flutter/services.dart';
 
@@ -29,6 +25,7 @@ class _BusinessListState extends State<BusinessList> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
   String textFilter='';
+  String stage;
   BusinessesModel businessGlobal = BusinessesModel();
 
   List<BusinessModel> _listbusisnessOrdenada = new List<BusinessModel>();
@@ -128,6 +125,7 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   Widget listViewCustomers(double por, padding) {
+    stage = '';
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,
@@ -146,6 +144,9 @@ class _BusinessListState extends State<BusinessList> {
                       );
                     }
                     if(textFilter == ''){
+                      if(stage == snapshot.data[index].stage){
+                        stage = snapshot.data[index].stage;
+
                       return Card(
                         child: Column(
                           children: <Widget>[
@@ -184,7 +185,31 @@ class _BusinessListState extends State<BusinessList> {
                           ],
                         ),
                       );
+                    }else{
+                        return Card(
+                        child: ListTile(
+                          title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                          subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                              color: Colors.black)): Text('', style: TextStyle(
+                              color: Colors.black)),
+                          trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                          onTap: (){
+                            if(!widget.vista){
+                              return showDialog(
+                                context: context,
+                                barrierDismissible: false, // user must tap button for close dialog!
+                                builder: (BuildContext context) {
+                                  return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                },
+                              );
+                            }else{
+                              Navigator.of(context).pop(snapshot.data[index]);
+                            }
+                          },
+                        ),
+                      );
 
+                      }
                     }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
                       var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
                       var name = snapshot.data[index].customer != null ? snapshot.data[index].customer:"";
@@ -226,6 +251,8 @@ class _BusinessListState extends State<BusinessList> {
                           ],
                         ),
                       );
+                    }else{
+                      return Container();
                     }
 
                   }
