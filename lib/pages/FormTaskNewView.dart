@@ -695,16 +695,18 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     data["table"] = new Map();
 
-    for(FieldOptionModel varV in listOptions)
+    for(FieldOptionModel dataTab in listOptions)
     {
-      data["table"][varV.name] = new Map();
-      data["table"][varV.name]["name"] = varV.name;
-      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+      data["table"][dataTab.name] = new Map();
+      data["table"][dataTab.name]["name"] = dataTab.name;
+      data["table"][dataTab.name][dataTab.value.toString()] =new TextEditingController();
+      data["table"][dataTab.name][dataTab.value.toString()].text = dataTab.value.toString();
     }
 
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          enabled: false,
           decoration: InputDecoration(
             hintText: '',
           ),
@@ -757,6 +759,32 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
+
+    //LISTA DE COLUMNAS
+    List<Widget> listColuma = new List<Widget>();
+    Map column = data["table"];
+    bool colorcolum = false;
+    for(var key in column.keys)
+    {
+      if(colorcolum){colorcolum = false;}else{colorcolum = true;}
+      listColuma.add(columna(column[key],colorcolum));
+    }
+
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(10),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.3,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: listColuma.length,
+          itemBuilder: (context,index){
+            return listColuma[index];
+          },
+          // This next line does the trick.
+        ) ,
+      ),
+    );
   }
 
 }
