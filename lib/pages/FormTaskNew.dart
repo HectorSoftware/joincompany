@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
-import 'package:joincompany/blocs/blocBusiness.dart';
 import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
@@ -307,7 +306,7 @@ class _FormTaskState extends State<FormTask> {
           )
         ],
         title: widget.toListTask == true ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
-                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
+                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 20),),
       ),
       body:  pass? ListView(
 
@@ -331,7 +330,7 @@ class _FormTaskState extends State<FormTask> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),)
-                              : widget.toListTask ?
+                              : widget.toListTask == true ?
                                 widget.taskmodelres.address != null ? Text('Direccion:  ${widget.taskmodelres.address.address}',style: TextStyle(fontSize: 15),)
                                                                     : Text('Direccion: Sin Asignar')
                                 : Text('Direccion: Sin Asignar')
@@ -1392,9 +1391,9 @@ buildListTypeForm(){
   }
    Future<bool> saveTaskApi() async{
    var createTaskResponse = await createTask(saveTask, customer, token);
-   if(createTaskResponse.statusCode == 201){
+   if(createTaskResponse.statusCode == 201 || createTaskResponse.statusCode == 200){
      setState(() {
-       taskEnd = 201;
+       taskEnd = createTaskResponse.statusCode;
      });
    }
      if(createTaskResponse.statusCode == 500){
