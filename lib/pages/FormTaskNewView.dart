@@ -450,9 +450,23 @@ class _FormTaskViewState extends State<FormTaskView> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1,left: 16),
-                    child: Text(dataInfo[field.id.toString()]),
+                  Container(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    margin: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10,left: 10),
+                      child: Text(dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),),
+                    ),
                   ),
                 ],
               ),
