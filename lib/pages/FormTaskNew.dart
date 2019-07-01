@@ -640,6 +640,7 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
                         saveData(value,listFieldsModels[index].id.toString());
                       },
@@ -676,6 +677,7 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
                         saveData(value,listFieldsModels[index].id.toString());
                       },
@@ -711,8 +713,9 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
-                        saveData(value,index.toString());
+                        saveData(value,listFieldsModels[index].id.toString());
                       },
                       keyboardType: TextInputType.number,
                       maxLines: 1,
@@ -1174,12 +1177,13 @@ buildListTypeForm(){
                             ]
                         ),
                         child: TextField(
+                          controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
+                          onChanged: (value){
+                            saveData(value,listFieldsModels[index].id.toString());
+                          },
                           maxLines: 1,
-                          //  controller: nameController,
                           decoration: InputDecoration(
-
                             border: InputBorder.none,
-
                             hintText: listFieldsModels[index].name,
                           ),
                         ),
@@ -1191,12 +1195,9 @@ buildListTypeForm(){
                       iconSize: 20,
                       onPressed: (){},
                     ),
-
                   ],
                 );
               }
-
-
             }
         ),
 
@@ -1384,5 +1385,6 @@ buildListTypeForm(){
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
+    print('ver');
   }
 }

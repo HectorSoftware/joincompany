@@ -145,6 +145,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       }
       if(list.field.fieldType == 'TextArea' ||
           list.field.fieldType == 'Text' ||
+          list.field.fieldType == 'Label' ||
           list.field.fieldType == 'Date' ||
           list.field.fieldType == 'Combo' ||
           list.field.fieldType == 'Number' ||
