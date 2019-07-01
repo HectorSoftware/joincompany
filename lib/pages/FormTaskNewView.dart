@@ -452,7 +452,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(top: 1,left: 16),
-                    child: Text(field.name),
+                    child: Text(dataInfo[field.id.toString()]),
                   ),
                 ],
               ),
