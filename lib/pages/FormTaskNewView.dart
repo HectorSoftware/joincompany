@@ -443,6 +443,36 @@ class _FormTaskViewState extends State<FormTaskView> {
         ],
       );
     }
+    if(field.fieldType == 'Combo'){
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(field.name),
+                  ),
+                ],
+              ),
+
+            ],
+
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[field.id.toString()] != null ? Text('${field.name}') : Text('Sin Asignar'),
+              onPressed: (){
+//                selectDate(context);
+//                saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
+              },
+            ),
+          ),
+        ],
+      );
+    }
 
     return Text('Sin datos');
   }
