@@ -36,7 +36,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   @override
   void initState(){
 
-    _dateTask = DateTime.parse(widget.taskmodelres.planningDate);
+    _dateTask = DateTime.parse(fixStringDateIfBroken(widget.taskmodelres.planningDate));
     listWithTask();
     super.initState();
   }
@@ -125,12 +125,12 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
-    taskOne = TaskModel.fromJson(responseTaskone.body);
+    taskOne = responseTaskone.body;
 
 
     //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
-    FormModel form = FormModel.fromJson(getFormResponse.body);
+    FormModel form = getFormResponse.body;
     formGlobal = form;
     for(var sectionform in form.sections){
       for(var fieldform in sectionform.fields){

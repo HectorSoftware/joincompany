@@ -11,11 +11,17 @@ import 'package:http/http.dart' as http;
 
 class TaskChannel {
   static void _createTasksInBothLocalAndServer(String customer, String authorization, String userId) async {
-    print("Starting to synchronize task");
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
 
     await Future.forEach(tasksFromLocal, (taskFromLocal) async {
-      var createTaskInServerRes = await createTask(taskFromLocal, customer, authorization);
+      taskFromLocal.customSections = null;
+      Map<String,String> map = Map<String,String>();
+      taskFromLocal.customValues.forEach ((c){
+        map[c.id.toString()] = (c.imageBase64 == null || c.imageBase64 == "") ? c.value.toString() : c.imageBase64;
+      });
+      taskFromLocal.customValuesMap = map;
+      taskFromLocal.customValues = null;
+      var createTaskInServerRes = await createTaskFromServer(taskFromLocal, customer, authorization);
       if (createTaskInServerRes.statusCode == 200) {
         TaskModel createdTask = TaskModel.fromJson(createTaskInServerRes.body);
         await DatabaseProvider.db.UpdateTask(taskFromLocal.id, createdTask, SyncState.synchronized);
@@ -77,7 +83,6 @@ class TaskChannel {
   }
 
   static void _deleteTaskInBothLocalAndServer(String customer, String authorization) async {
-    print("lol");
     http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
     TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
 
@@ -113,8 +118,7 @@ class TaskChannel {
     String id = user.id.toString();
 
     await TaskChannel._createTasksInBothLocalAndServer(customer, authorization, id);
-    print("Tasks created");
-    // await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
     // await TaskChannel._deleteTaskInBothLocalAndServer(customer, authorization);
+    // await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
   }
 }

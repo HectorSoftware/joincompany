@@ -62,14 +62,14 @@ Future<ResponseModel> getAllTasks(String customer, String authorization, {String
   );
 
   List<TaskModel> listOfTasks = await DatabaseProvider.db.QueryTaskForService(query);
-
+  
   listOfTasks.sort((a,b) {
     var dateA = a.planningDate != null ? a.planningDate : a.createdAt;
     var dateB = b.planningDate != null ? b.planningDate : b.createdAt;
 
     return dateB.compareTo(dateA);
   });
-
+  
   TasksModel tasks = new TasksModel(
     currentPage: 1,
     data: listOfTasks,
@@ -86,7 +86,7 @@ Future<ResponseModel> getAllTasks(String customer, String authorization, {String
   );
   response.body = tasks;
   response.statusCode = 200;
-  
+
   return response;
 }
 
