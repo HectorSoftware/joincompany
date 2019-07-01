@@ -290,9 +290,7 @@ class _FormTaskViewState extends State<FormTaskView> {
           ),
         ],
       );
-
     }
-
 
     if(field.fieldType == 'Text'){
       //TEXT
