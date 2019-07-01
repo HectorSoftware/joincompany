@@ -118,6 +118,7 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   Widget listViewCustomers(double por, padding) {
+    stage = '';
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,
