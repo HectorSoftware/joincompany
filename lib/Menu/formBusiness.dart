@@ -97,7 +97,7 @@ class _FormBusinessState extends State<FormBusiness> {
             name:dropdownValueClient ,
             id: addressClient.id,
             city: addressClient.city,
-            addressId: 1,
+            addressId: addressClient.id,
             createdById:addressClient.createdById,
             customerId: customerId,
             longitude: addressClient.longitude,
