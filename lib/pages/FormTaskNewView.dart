@@ -460,16 +460,6 @@ class _FormTaskViewState extends State<FormTaskView> {
             ],
 
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: RaisedButton(
-              child: dataInfo[field.id.toString()] != null ? Text('${field.name}') : Text('Sin Asignar'),
-              onPressed: (){
-//                selectDate(context);
-//                saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
-              },
-            ),
-          ),
         ],
       );
     }
