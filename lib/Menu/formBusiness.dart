@@ -99,7 +99,7 @@ class _FormBusinessState extends State<FormBusiness> {
             city: addressClient.city,
             addressId: 1,
             createdById:addressClient.createdById,
-            customerId: 1,
+            customerId: customerId,
             longitude: addressClient.longitude,
             latitude: addressClient.latitude,
             googlePlaceId: addressClient.googlePlaceId,
@@ -137,7 +137,6 @@ class _FormBusinessState extends State<FormBusiness> {
     }else{
       dropdownMenuItemsClients.add('Sin Clientes');
     }
-
       dropdownMenuItemsHeader.add('Primer contacto');
       dropdownMenuItemsHeader.add('Presentación');
       dropdownMenuItemsHeader.add('Envío ppta');

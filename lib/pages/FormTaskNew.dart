@@ -1162,6 +1162,7 @@ buildListTypeForm(){
                           children: <Widget>[
                             Switch(value: switchOn, onChanged:(valuenew){ setState(() {
                               switchOn = valuenew;
+                              saveData(valuenew.toString(), listFieldsModels[index].id.toString());
                             });},activeColor: PrimaryColor,)
                           ],
                         )
@@ -1197,10 +1198,12 @@ buildListTypeForm(){
                             ]
                         ),
                         child: TextField(
+                          onChanged: (value){
+                            saveData(value,index.toString());
+                          },
                           maxLines: 1,
                           //  controller: nameController,
                           decoration: InputDecoration(
-
                             border: InputBorder.none,
 
                             hintText: listFieldsModels[index].name,
@@ -1401,6 +1404,7 @@ buildListTypeForm(){
          taskEnd = 500;
        });
      }
+     print(createTaskResponse.statusCode);
   return true;
   }
   void saveData(String dataController, String id) {

@@ -151,6 +151,10 @@ class _FormTaskViewState extends State<FormTaskView> {
           list.field.fieldType == 'Time' ){
         varValue = list.value;
       }
+      if(list.field.fieldType == 'Number'){
+        varValue = list.value.toString();
+
+      }
       //dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
       dataInfo[list.field.id.toString()] = varValue;
     }

@@ -25,7 +25,7 @@ class _BusinessListState extends State<BusinessList> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
   String textFilter='';
-  String stage;
+  String stage = '';
   BusinessesModel businessGlobal = BusinessesModel();
 
   bool getData = false;
@@ -176,8 +176,6 @@ class _BusinessListState extends State<BusinessList> {
                       );
 
                     }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
-                      var direction = snapshot.data[index].stage != null ? snapshot.data[index].stage : "";
-                      var name = snapshot.data[index].customer != null ? snapshot.data[index].customer:"";
                       return Card(
                         child: Column(
                           children: <Widget>[
