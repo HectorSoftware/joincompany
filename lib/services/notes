@@ -1,0 +1,12 @@
+X      | online | off-line
+----------------------------
+delete | yes    | yes
+----------------------------
+create | yes    | no
+----------------------------
+read   | yes    | no
+
+The custom values aren't related to its tasks.
+
+Para esa tarea no se tiene un customValue, para algunas si...
+Esa tarea fue creada

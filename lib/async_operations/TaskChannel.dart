@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 class TaskChannel {
   static void _createTasksInBothLocalAndServer(String customer, String authorization, String userId) async {
+    print("Creating tasks");
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
 
     await Future.forEach(tasksFromLocal, (taskFromLocal) async {
@@ -21,8 +22,10 @@ class TaskChannel {
       });
       taskFromLocal.customValuesMap = map;
       taskFromLocal.customValues = null;
+      print("Creating task " + taskFromLocal.id.toString() + " in server\n");
       var createTaskInServerRes = await createTaskFromServer(taskFromLocal, customer, authorization);
       if (createTaskInServerRes.statusCode == 200) {
+        print("Created task\n");
         TaskModel createdTask = TaskModel.fromJson(createTaskInServerRes.body);
         await DatabaseProvider.db.UpdateTask(taskFromLocal.id, createdTask, SyncState.synchronized);
       }
@@ -48,7 +51,9 @@ class TaskChannel {
 
         TaskModel individualTask = TaskModel.fromJson(individualTaskFromServerRes.body);
         if (individualTask != null)
+          print("Creating task " + individualTask.id.toString() + " in local\n");
           await DatabaseProvider.db.CreateTask(individualTask, SyncState.synchronized);
+        print("Created task in local\n");
       }
     });
   }
@@ -103,7 +108,9 @@ class TaskChannel {
       await Future.forEach(tasksToDelete, (taskToDelete) async {
         http.Response deleteTaskRes = await deleteTaskFromServer(taskToDelete.id.toString(), customer, authorization);
         if (deleteTaskRes.statusCode == 200 || deleteTaskRes.statusCode != 201) {
+          print("Deleting " + taskToDelete.id.toString());
           await DatabaseProvider.db.DeleteTaskById(taskToDelete.id);
+          print("Deleted");
         }
       });
     }
@@ -118,7 +125,7 @@ class TaskChannel {
     String id = user.id.toString();
 
     await TaskChannel._createTasksInBothLocalAndServer(customer, authorization, id);
-    // await TaskChannel._deleteTaskInBothLocalAndServer(customer, authorization);
+    await TaskChannel._deleteTaskInBothLocalAndServer(customer, authorization);
     // await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
   }
 }
