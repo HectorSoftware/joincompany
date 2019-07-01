@@ -104,33 +104,33 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       child: Center(
         child: CircularProgressIndicator(),
       ),) :
-    Card(
-      margin: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Stack(
-        children: <Widget>[
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * por,
-            child: GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: onMapCreated,
-              myLocationEnabled: true,
-              compassEnabled: true,
-              zoomGesturesEnabled: true,
-              onCameraMove: _onCameraMove,
-              markers: _markers,
-              polylines: _polyLines,
+      Card(
+        margin: const EdgeInsets.symmetric(vertical: 2.0),
+        child: Stack(
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * por,
+              child: GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: onMapCreated,
+                myLocationEnabled: true,
+                compassEnabled: true,
+                zoomGesturesEnabled: true,
+                onCameraMove: _onCameraMove,
+                markers: _markers,
+                polylines: _polyLines,
+              ),
             ),
-          ),
-          Positioned(
-            right: 15.0,
-            bottom: 10.0,
-            child: buttonListClient(),
-          ),
-        ],
-      )
-    );
+            Positioned(
+              right: 15.0,
+              bottom: 10.0,
+              child: buttonListClient(),
+            ),
+          ],
+        )
+      );
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -147,7 +147,9 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
   Future _getUserLocation() async{
     try{
       Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      _initialPosition = LatLng(position.latitude, position.longitude);
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
     }catch(error, stackTrace) {
       await sentry.captureException(
         exception: error,
@@ -239,7 +241,6 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
     }
     for(int x = newPl.length; x > 0; x--){
       if(!init){
-        //await createRoute(newPl[x-1],_initialPosition);
         init = !init;
         oldPlace = newPl[x-1];
       }else{

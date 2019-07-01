@@ -244,7 +244,9 @@ class _FormTaskViewState extends State<FormTaskView> {
       String b64;
 
       String ruta = dataInfo[field.id.toString()];
-      ruta = ruta.substring(23);
+      if(ruta.isNotEmpty){
+        ruta = ruta.substring(23);
+      }
 
       return  Container(
         child: Row(
