@@ -241,9 +241,6 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
     if(field.fieldType == 'Photo'){
-      Uint8List img;
-      String b64;
-
       String ruta = dataInfo[field.id.toString()];
       if(ruta.isNotEmpty){
         ruta = ruta.substring(23);

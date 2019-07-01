@@ -47,7 +47,9 @@ class _FormTaskState extends State<FormTask> {
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
+  TimeOfDay _timeDT = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
+  DateTime _dateDT = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
   FieldOptionModel options = FieldOptionModel(name: '0',value: 1);
@@ -68,6 +70,7 @@ class _FormTaskState extends State<FormTask> {
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String defaultValue = 'NO';
+  String valuesTable = '';
   TaskModel taskOne;
 
   @override
@@ -145,7 +148,7 @@ class _FormTaskState extends State<FormTask> {
                       child: AlertDialog(
                         title: Text('Guardar'),
                         content: const Text(
-                            'Desea Guardar Tarea'),
+                            'Desea guardar tarea'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
@@ -196,7 +199,6 @@ class _FormTaskState extends State<FormTask> {
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
                                     }
-
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -231,12 +233,31 @@ class _FormTaskState extends State<FormTask> {
                                           );
                                       }
                                       );
+                                    }else if(taskEnd == 422){
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return   AlertDialog(
+                                              title: Text('Error al procesar la tarea por el Servidor'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: const Text('Aceptar'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+
+                                              ],
+                                            );
+                                          }
+                                      );
                                     }else{
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
-                                              title: Text('Ha ocurido un Error al crear la tarea'),
+                                              title: Text('Ha ocurrido un error al crear la tarea'),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
@@ -454,22 +475,49 @@ buildListTypeForm(){
 
   );
 }
+
+  bool findKeys(String key){
+    for(var k in data.keys){
+      if(k == key){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void initDataTable(List<FieldOptionModel> listOptions){
+    if(!findKeys('table')){
+      data["table"] = new Map();
+
+      for(FieldOptionModel varV in listOptions)
+      {
+        data["table"][varV.name] = new Map();
+        data["table"][varV.name]["name"] = varV.name;
+        data["table"][varV.name][varV.value.toString()] = new TextEditingController();
+      }
+    }
+  }
+conC(String value){
+    if(value != null){
+    }
+
+}
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
-    data["table"] = new Map();
-
-    for(FieldOptionModel varV in listOptions)
-    {
-      data["table"][varV.name] = new Map();
-      data["table"][varV.name]["name"] = varV.name;
-      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
-    }
+    initDataTable(listOptions);
 
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          onChanged: (value){
+
+
+           print(t.text);
+            conC(t.text);
+          },
           decoration: InputDecoration(
             hintText: '',
+
           ),
           controller: t,
         ),
@@ -834,11 +882,11 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_date.toString().substring(0,10)}' + ' ' +'${_time.format(context) }'),
+                        child: Text('${_dateDT.toString().substring(0,10)}' + ' ' +'${_timeDT.format(context) }'),
                         onPressed: (){
-                          selectTime(context);
-                          selectDate(context);
-                          var dateCo = _date.toString().substring(0,10) + ' ' +_time.format(context).toString();
+                          selectTimeDatetime(context);
+                          selectDateDateTime(context);
+                          var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                         },
                       ),
@@ -847,7 +895,7 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
+                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString(),);
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
@@ -1292,6 +1340,32 @@ buildListTypeForm(){
         _time = picked;
       });
     }
+  }
+  Future<Null> selectTimeDatetime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeDT,
+    );
+    if (picked != null && picked != _timeDT){
+      setState(() {
+        _timeDT = picked;
+      });
+    }
+  }
+  Future<Null> selectDateDateTime(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateDT,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _dateDT){
+      setState(() {
+        _dateDT = picked;
+      });
+
+    }
+
   }
   Future<CustomerWithAddressModel> getDirections() async{
     return showDialog<CustomerWithAddressModel>(
