@@ -270,6 +270,30 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
+    if(listFieldsModels[index].fieldType == 'Image'){
+      return Row(
+        children: <Widget>[
+
+          Container(
+            child:Center(
+              child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                  color: PrimaryColor),
+              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+            ),
+          ),
+          Spacer(),
+          Column(
+            children: <Widget>[
+              Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+            ],
+
+          ),
+        ],
+      );
+
+    }
+
+
     if(field.fieldType == 'Text'){
       //TEXT
       return  Padding(
@@ -410,6 +434,40 @@ class _FormTaskViewState extends State<FormTaskView> {
 //                saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
               },
             ),
+          ),
+        ],
+      );
+    }
+    if(field.fieldType == 'Combo'){
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    margin: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10,left: 10),
+                      child: Text(dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),),
+                    ),
+                  ),
+                ],
+              ),
+
+            ],
+
           ),
         ],
       );

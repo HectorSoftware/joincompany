@@ -25,6 +25,7 @@ class ContactBloc{
     ContactsModel contactsList = ContactsModel.fromJson(contactsAlls.body);
     _listContacts = contactsList.data;
     if(_listContacts != null){
+      _listContacts.sort((a,b)=>a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       _contactcontroller.add(_listContacts);
     }
   }

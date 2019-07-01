@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
-import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -17,7 +14,6 @@ import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserDataBase.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:flutter/services.dart';
@@ -103,7 +99,7 @@ class _FormBusinessState extends State<FormBusiness> {
             city: addressClient.city,
             addressId: 1,
             createdById:addressClient.createdById,
-            customerId: 1,
+            customerId: customerId,
             longitude: addressClient.longitude,
             latitude: addressClient.latitude,
             googlePlaceId: addressClient.googlePlaceId,
@@ -141,7 +137,6 @@ class _FormBusinessState extends State<FormBusiness> {
     }else{
       dropdownMenuItemsClients.add('Sin Clientes');
     }
-
       dropdownMenuItemsHeader.add('Primer contacto');
       dropdownMenuItemsHeader.add('Presentación');
       dropdownMenuItemsHeader.add('Envío ppta');

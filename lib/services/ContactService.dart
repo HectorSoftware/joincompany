@@ -39,6 +39,7 @@ Future<http.Response> createContact(ContactModel contactObj, String customer, St
   });
 
   var bodyJson = json.encode(contactMap);
+  print(bodyJson);
   return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 

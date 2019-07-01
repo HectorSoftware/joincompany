@@ -29,6 +29,7 @@ class CustomersBloc{
 
 
     if(_listCustomersWithAddress != null){
+      _listCustomersWithAddress.sort((a,b)=>a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       _customerscontroller.add(_listCustomersWithAddress);
     }
 

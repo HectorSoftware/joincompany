@@ -8,6 +8,8 @@ import 'package:joincompany/services/BusinessService.dart';
 
 
 class BusinessBloc{
+
+  BusinessModel header = BusinessModel();
   List<BusinessModel> _listbusisness = new List<BusinessModel>();
 
   final _businessBloccontroller = StreamController<List<BusinessModel>>();
@@ -19,16 +21,18 @@ class BusinessBloc{
   }
 
   Future getBusiness() async {
-
     UserDataBase user = await ClientDatabaseProvider.db.getCodeId('1');
     var getAllBusinessesResponse = await getAllBusinesses(user.company,user.token);
     BusinessesModel busisness = BusinessesModel.fromJson(getAllBusinessesResponse.body);
-
     _listbusisness = busisness.data;
 
     if(_listbusisness != null){
+
+    //  _listbusisness.sort((a,b) => a.stage.compareTo(b.stage));
       _businessBloccontroller.add(_listbusisness);
     }
+
+
   }
 
   @override

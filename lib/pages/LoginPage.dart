@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +10,6 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
 import 'package:joincompany/services/UserService.dart';
 
-import 'package:http/http.dart' as http;
-import 'dart:async';
 //import 'package:joincompany/models/ValidatorSms.dart';
 
 

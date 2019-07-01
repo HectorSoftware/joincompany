@@ -35,6 +35,8 @@ class _AddContactState extends State<AddContact> {
 
   UserDataBase userAct;
 
+  bool loading = false;
+
   Widget popUp;
 
   int lengthNumberTlf = 13;
@@ -42,7 +44,7 @@ class _AddContactState extends State<AddContact> {
 
   CustomerWithAddressModel clientAct,clientOld;
 
-  TextEditingController name, code, cargo, phoneF, phoneM, email, note;
+  TextEditingController name, code, cargo, phone, phoneM, email, note;
   String errorTextFieldName, errorTextFieldCode, errorTextFieldNote;
 
   Future<CustomerWithAddressModel> getClient(STATUS_PAGE_CLIENT state) async {
@@ -189,7 +191,7 @@ class _AddContactState extends State<AddContact> {
   void initController() {
     name = TextEditingController();
     code = TextEditingController();
-    phoneF = TextEditingController();
+    phone = TextEditingController();
     phoneM = TextEditingController();
     email = TextEditingController();
     note = TextEditingController();
@@ -211,7 +213,7 @@ class _AddContactState extends State<AddContact> {
       if(widget.contact != null){
         name.text = widget.contact.name;
         code.text = widget.contact.code;
-        phoneF.text = widget.contact.phone;
+        phone.text = widget.contact.phone;
         phoneM.text = widget.contact.phone;
         email.text = widget.contact.email;
         note.text = widget.contact.details;
@@ -222,7 +224,7 @@ class _AddContactState extends State<AddContact> {
   void disposeController() {
     name.dispose();
     code.dispose();
-    phoneF.dispose();
+    phone.dispose();
     phoneM.dispose();
     email.dispose();
     note.dispose();
@@ -240,7 +242,7 @@ class _AddContactState extends State<AddContact> {
         }
       case type.PHONE_F:
         {
-          return phoneF;
+          return phone;
         }
       case type.PHONE_M:
         {
@@ -312,27 +314,12 @@ class _AddContactState extends State<AddContact> {
       });
       return false;
     }
-    if(clientAct == null){
-      return showDialog<bool>(
-          context: context,
-          barrierDismissible: false, // user must tap button for close dialog!
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: ListTile(
-                  leading: Icon(Icons.error),
-                  title: Text('Nesecita seleccionar un cliente'),
-                  onTap: () => Navigator.of(context).pop(false),
-                )
-            );
-          }
-      );
-    }
     return true;
   }
 
   Future<bool> _asyncConfirmDialog() async {
     if(widget.contact != null){
-      if (name.text == widget.contact.name && code.text == widget.contact.code && clientAct == clientOld && phoneF.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details) {
+      if (name.text == widget.contact.name && code.text == widget.contact.code && phone.text == widget.contact.phone && email.text == widget.contact.email && note.text == widget.contact.details && clientOld == clientAct) {
         return true;
       } else {
         return showDialog<bool>(
@@ -364,21 +351,80 @@ class _AddContactState extends State<AddContact> {
       return resp;
     } else {
       if(await validateData()){
+        setState(() {loading = true;});
         if(widget.contact != null){
           ContactModel contact = ContactModel(
             id: widget.contact.id,
             name: name.text,
             code: code.text,
-            phone: phoneF.text,
+            phone: phone.text,
             email: email.text,
             details: note.text,
-            customerId: clientAct.id,
           );
-
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,userAct.company,userAct.token);
           if (resposeUpdateContact.statusCode == 200){
-            return true;
+            if(clientAct != null){
+              if(clientOld == null){
+                contact = ContactModel.fromJson(resposeUpdateContact.body);
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), userAct.company,userAct.token);
+                if(responseRelateCustomerContact.statusCode == 200){
+                  setState(() {loading = false;});
+                  return true;
+                }else{
+                  setState(() {loading = false;});
+                  return showDialog(
+                      context: context,
+                      barrierDismissible: true, // user must tap button for close dialog!
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: Text('Ya existe un contacto con ese cliente')
+                        );
+                      }
+                  );
+                }
+              }else if(clientOld.id != clientAct.id){
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(),userAct.company,userAct.token);
+                if(responseRelateCustomerContact.statusCode == 200){
+                  setState(() {loading = false;});
+                  return true;
+                }else{
+                  setState(() {loading = false;});
+                  return showDialog(
+                      context: context,
+                      barrierDismissible: true, // user must tap button for close dialog!
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: Text('Ya existe un contacto con ese cliente')
+                        );
+                      }
+                  );
+                }
+              }else{
+                setState(() {loading = false;});
+                return true;
+              }
+            }else{
+              if(clientOld != null){
+                var responseUnRelateCustomerContact = await unrelateCustomerContact(clientOld.id.toString(), contact.id.toString(), userAct.company,userAct.token);
+                if(responseUnRelateCustomerContact.statusCode == 200){
+                  setState(() {loading = false;});
+                  return true;
+                }else{
+                  setState(() {loading = false;});
+                  return showDialog(
+                      context: context,
+                      barrierDismissible: true, // user must tap button for close dialog!
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: Text('Ha ocurrido un error desasociando el cliente')
+                        );
+                      }
+                  );
+                }
+              }
+            }
           }else{
+            setState(() {loading = false;});
             return showDialog(
                 context: context,
                 barrierDismissible: true, // user must tap button for close dialog!
@@ -393,15 +439,36 @@ class _AddContactState extends State<AddContact> {
           ContactModel contact = ContactModel(
             name: name.text,
             code: code.text,
-            phone: phoneF.text,
+            phone: phone.text,
             email: email.text,
             details: note.text,
-            customerId: clientAct.id,//TODO:customerID
           );
-          var resposeCreateContact = await createContact(contact,userAct.company,userAct.token);
-          if (resposeCreateContact.statusCode == 200){
-            return true;
+          var responseCreateContact = await createContact(contact,userAct.company,userAct.token);
+          if (responseCreateContact.statusCode == 200){
+            if(clientAct != null){
+              contact = ContactModel.fromJson(responseCreateContact.body);
+              var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), userAct.company,userAct.token);
+              if(responseRelateCustomerContact.statusCode == 200){
+                setState(() {loading = false;});
+                return true;
+              }else{
+                setState(() {loading = false;});
+                return showDialog(
+                    context: context,
+                    barrierDismissible: true, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Ya existe un contacto con ese cliente')
+                      );
+                    }
+                );
+              }
+            }else{
+              setState(() {loading = false;});
+              return true;
+            }
           }else{
+            setState(() {loading = false;});
             return showDialog(
                 context: context,
                 barrierDismissible: true, // user must tap button for close dialog!
@@ -414,6 +481,7 @@ class _AddContactState extends State<AddContact> {
           }
         }
       }else{
+        setState(() {loading = false;});
         return false;
       }
     }
@@ -476,10 +544,19 @@ class _AddContactState extends State<AddContact> {
     }
   }
 
+  Future<bool> save() async {
+    var resp = await savedData();
+    return resp != null ? resp : false;
+  }
+
+  Future<bool> futureFalse()async{
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: savedData,
+        onWillPop: loading ? futureFalse : save,
         child: Scaffold(
           appBar: AppBar(
             title: Text("Contacto"),
