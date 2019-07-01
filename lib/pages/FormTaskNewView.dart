@@ -32,6 +32,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   List<FieldModel> listFieldsModels = List<FieldModel>();
   DateTime _date = new DateTime.now();
   Image image2;
+  TimeOfDay _time = new TimeOfDay.now();
 
   @override
   void initState(){
@@ -149,9 +150,15 @@ class _FormTaskViewState extends State<FormTaskView> {
           list.field.fieldType == 'Date' ||
           list.field.fieldType == 'Combo' ||
           list.field.fieldType == 'Number' ||
+          list.field.fieldType == 'DateTime' ||
+          list.field.fieldType == 'Boolean' ||
+          list.field.fieldType == 'ComboSearch' ||
+          list.field.fieldType == 'Button' ||
+          list.field.fieldType == 'Table' ||
           list.field.fieldType == 'Time' ){
         varValue = list.value;
       }
+
       //dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
       dataInfo[list.field.id.toString()] = varValue;
     }
@@ -202,7 +209,8 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   widgetCrate(FieldModel field, int index,BuildContext context){
-    if(field.fieldType == 'TextArea' ||  field.fieldType == 'Textarea'||  field.fieldType == "TextArea"){
+
+    if(field.fieldType == 'TextArea' ||  field.fieldType == 'Textarea'||  field.fieldType == "TextArea") {
       //TEXTAREA
       return Padding(
         padding: const EdgeInsets.all(15.0),
@@ -244,10 +252,13 @@ class _FormTaskViewState extends State<FormTaskView> {
       Uint8List img;
       String b64;
 
-      String ruta = dataInfo[field.id.toString()];
-      if(ruta.isNotEmpty){
-        ruta = ruta.substring(23);
-      }
+      String ruta = '';
+      try{
+        ruta = dataInfo[field.id.toString()];
+        if(ruta.isNotEmpty){
+          ruta = ruta.substring(21);
+        }
+      }catch(e){}
 
       return  Container(
         child: Row(
@@ -471,6 +482,193 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
+    if(field.fieldType == 'CanvanImage'){
+      String b64;
+
+      String ruta = '';
+      try{
+        ruta = dataInfo[field.id.toString()];
+        if(ruta.isNotEmpty){
+          ruta = ruta.substring(22);
+        }
+      }catch(e){}
+
+      return  Row(
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width* 0.5,
+            child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                          child:  dataInfo[field.id.toString()] != '' ? Image(image: imageFromBase64String(ruta).image,)
+                                                                      : Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),
+                          )
+                  ),
+                )),
+          ),
+        ],
+      );
+    }
+
+    if(field.fieldType == 'CanvanSignature'){
+      String b64;
+
+      String ruta = '';
+      try{
+        ruta = dataInfo[field.id.toString()];
+        if(ruta.isNotEmpty){
+          ruta = ruta.substring(22);
+        }
+      }catch(e){}
+
+      return  Row(
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width* 0.5,
+            child: Center(
+                child: Container(
+                    child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
+                        child:  dataInfo[field.id.toString()] != null ? Image(image: imageFromBase64String(ruta).image,height: 200,width:300 ,)
+                                                                      :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+          ),
+        ],
+      );
+    }
+
+    if(field.fieldType == 'DateTime'){
+      String fecha = 'Sin Asignar';
+      if(dataInfo[field.id.toString()] != ''){
+        fecha = dataInfo[field.id.toString()];
+      }
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(field.name),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: Text(fecha),
+              onPressed: (){},
+            ),
+          ),
+        ],
+      );
+    }
+
+    if(field.fieldType == 'Boolean'){
+      //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
+      return Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width * 0.7,
+        margin: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: Row(
+          children: <Widget>[
+            Text(field.name),
+            dataInfo[field.id.toString()] == '' ? Text('Sin valor') : Text('Verdadero'),
+          ],
+
+        ),
+      );
+    }
+
+    if(field.fieldType == 'ComboSearch')
+    {
+
+      return Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width*0.5,
+              height: 40,
+              padding: EdgeInsets.only(
+                  top: 4,left: 16, right: 16, bottom: 4
+              ),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(10)
+                  ),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5
+                    )
+                  ]
+              ),
+              child: TextField(
+                controller: new TextEditingController(text: dataInfo[field.id.toString()]),
+                enabled: false,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: field.name,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            tooltip: 'Busqueda',
+            iconSize: 20,
+            onPressed: (){},
+          ),
+
+        ],
+      );
+    }
+
+    if(field.fieldType == 'Button'|| field.fieldType == "button"){
+      return Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 70),
+            child: Container(
+                child: new Checkbox(
+                    value: true,
+                )
+            ),
+          ),
+          Spacer(),
+          Container(
+            width: MediaQuery.of(context).size.width *0.5,
+            height: MediaQuery.of(context).size.height *0.1,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 60, top: 10),
+                child: Text('${field.name}',style: TextStyle(fontSize: 20),)
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if(field.fieldType =='Table'){
+      return generatedTable(field.fieldOptions, field.id.toString());
+    }
+
     return Text('Sin datos');
   }
 
@@ -491,6 +689,74 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
   Uint8List dataFromBase64String(String base64String) {
     return base64Decode(base64String);
+  }
+  Map data = new Map();
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
+
+    data["table"] = new Map();
+
+    for(FieldOptionModel varV in listOptions)
+    {
+      data["table"][varV.name] = new Map();
+      data["table"][varV.name]["name"] = varV.name;
+      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+    }
+
+    Card card(TextEditingController t){
+      return Card(
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: '',
+          ),
+          controller: t,
+        ),
+      );
+    }
+
+    //COLUMNAS
+    Container columna(Map column, bool colorcolum){
+      List<Widget> listCard = new List<Widget>();
+      for(var key in column.keys){
+        if(key != 'name'){
+          listCard.add(card(column[key]));
+        }
+      }
+
+      return Container(
+        width: MediaQuery.of(context).size.width * 0.5,
+        height: MediaQuery.of(context).size.height *(listCard.length*0.1),
+        color: colorcolum ? Colors.blue[50] : Colors.grey[200],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height *(listCard.length*0.05),
+              child: Card(
+                child: Center(
+                    child: Text(column["name"])
+                ),
+              ),
+            ),
+
+            Divider(
+              height: 20,
+              color: Colors.black,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height *(listCard.length*0.1),
+              child: ListView.builder(
+                itemCount: listCard.length,
+                itemBuilder: (context,index){
+                  return listCard[index];
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
   }
 
 }
