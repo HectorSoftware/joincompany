@@ -593,7 +593,7 @@ buildListTypeForm(){
               {
                 return Center(child: Text('Sin datos'),);
               }
-              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
+              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
               {
                 return Row(
                   children: <Widget>[
@@ -611,6 +611,12 @@ buildListTypeForm(){
                       width: MediaQuery.of(context).size.width *0.5,
                       height: MediaQuery.of(context).size.height *0.1,
                       child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 60, top: 10),
+                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+                          : Text(''),
+                        ),
+
                       ),
                     ),
                   ],
@@ -710,9 +716,9 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
-                      onChanged: (value){
-                        saveData(value,index.toString());
-                      },
+                        onChanged: (value){
+                          saveData(value,listFieldsModels[index].id.toString());
+                        },
                       keyboardType: TextInputType.number,
                       maxLines: 1,
                       // controller: nameController,
@@ -1199,7 +1205,7 @@ buildListTypeForm(){
                         ),
                         child: TextField(
                           onChanged: (value){
-                            saveData(value,index.toString());
+                            saveData(value,listFieldsModels[index].id.toString());
                           },
                           maxLines: 1,
                           //  controller: nameController,
