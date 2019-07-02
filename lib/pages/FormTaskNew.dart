@@ -976,35 +976,6 @@ conC(String value){
                               ),
                             ],
                           ),
-                       /*   Container(
-                            width: MediaQuery.of(globalContext).size.width*0.50,
-                            height: 40,
-                            padding: EdgeInsets.only(
-                                top: 20,left: 20, right: 16, bottom: 4
-                            ),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(10)
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5
-                                  )
-                                ]
-                            ),
-                            child: TextField(
-                              onChanged: (value){
-                              },
-                              maxLines: 1,
-                              //controller: nameController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Comentario ',
-                              ),
-                            ),
-                          ),*/
                         ],
                       ),
                       Spacer(
@@ -1089,36 +1060,6 @@ conC(String value){
                             ],
                           ),
                         ),
-
-                    /*    Container(
-                          width: MediaQuery.of(globalContext).size.width*0.50,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 20,left: 20, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                            },
-                            maxLines: 1,
-                            //controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Comentario ',
-                            ),
-                          ),
-                        ),*/
                       ],
 
                     ),
@@ -1148,7 +1089,6 @@ conC(String value){
                                 padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
-                                    //File img = await ImagePicker.pickImage(source: ImageSource.camera);
                                     var bytes = await getImgNetWork(listFieldsModels[index].fieldDefaultValue);
                                     Image img = Image.memory(bytes);
                                     if (img != null) {
