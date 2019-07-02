@@ -27,6 +27,7 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
+import 'dart:io';
 
 class FormTask extends StatefulWidget {
 
@@ -232,7 +233,7 @@ class _FormTaskState extends State<FormTask> {
                                           );
                                       }
                                       );
-                                    }
+                                    }else
                                     if(taskEnd == 422  || taskEnd == 413){
                                       showDialog(
                                           context: context,
@@ -673,7 +674,7 @@ conC(String value){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index].fieldCollection}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
@@ -1224,14 +1225,9 @@ conC(String value){
                         width: MediaQuery.of(context).size.width*0.5,
                         child:Row(
                           children: <Widget>[
-                            Switch(value: switchOn, onChanged:(valuenew){ setState(() {
-                              switchOn = valuenew;
-                              saveData(valuenew.toString(), listFieldsModels[index].id.toString());
-                            });},activeColor: PrimaryColor,)
                           ],
                         )
                     ),
-                    Center(child:switchOn?  Text(listFieldsModels[index].name):Text('')),
                   ],
 
                 );
@@ -1292,7 +1288,7 @@ conC(String value){
     );
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
-  bool switchOn = false;
+
 
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
@@ -1496,6 +1492,7 @@ conC(String value){
        taskEnd = createTaskResponse.statusCode;
      });
    }
+   print(taskEnd);
   return true;
   }
   void saveData(String dataController, String id) {
@@ -1503,4 +1500,5 @@ conC(String value){
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
   }
+
 }
