@@ -33,7 +33,6 @@ class _PickerImgState extends State<PickerImg> {
       builder: (BuildContext context) {
         if(img != null){
           return CanvasImg(Image.file(img));
-
         }else{
           return CanvasImg(null);
         }

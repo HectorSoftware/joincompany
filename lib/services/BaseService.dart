@@ -15,7 +15,6 @@ Future<http.Response> httpGet(String customer, String authorization, String reso
 
     return response;
   }on Exception{
-
     return http.Response("{}", 500);
   }
 

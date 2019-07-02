@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
+import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
 import 'package:joincompany/async_operations/CustomerChannel.dart';
+import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/blocs/blocCustomer.dart';
 import 'package:joincompany/main.dart';
 import 'package:joincompany/Menu/FormClients.dart';
@@ -101,6 +103,8 @@ class _ClientState extends State<Client> {
     await AddressChannel.syncEverything();
     await CustomerChannel.syncEverything();
     await CustomerAddressesChannel.syncEverything();
+    await ContactChannel.syncEverything();
+    await CustomerContactsChannel.syncEverything();
     setState(() {syncStatus = false;});
     Navigator.pop(context);
   }

@@ -227,7 +227,11 @@ class _BusinessListState extends State<BusinessList> {
        FloatingActionButton(
         child: Icon(Icons.add),
         onPressed:() {
-          Navigator.pushReplacementNamed(context, '/FormBusiness');
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) => new FormBusiness()));
+//          Navigator.pushReplacementNamed(context, '/FormBusiness');
         }
       ) : null,
     );

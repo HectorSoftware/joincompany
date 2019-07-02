@@ -4339,32 +4339,36 @@ class DatabaseProvider {
 
     if (data.isNotEmpty) {
       await Future.forEach(data, (contact) async {
-//        bool flag = true;
-//        int idCustomer = contact["customer_id"];
-//
-//        if(idCustomer == null){
-//          Map buscado = new Map();
-//          buscado["id"] = contact["id"];
-//          data.toList().firstWhere((c) => c["id"] == );
-//
-//        }
+        bool flag = true;
+        int idCustomer = contact["customer_id"];
+        int idContact = contact["id"];
 
-        listOfContacts.add(new ContactModel(
-          id: contact["id"],
-          createdAt: contact["created_at"],
-          updatedAt: contact["updated_at"],
-          deletedAt: contact["deleted_at"],
-          createdById: contact["created_by_id"],
-          updatedById: contact["updated_by_id"],
-          deletedById: contact["deleted_by_id"],
-          customerId: contact["customer_id"],
-          customer: contact["customer"],
-          code: contact["code"],
-          name: contact["name"],
-          phone: contact["phone"],
-          email: contact["email"],
-          details: contact["details"],
-        ));
+        if(idCustomer == null) {
+          data.toList().forEach((c){
+            if(c["id"]==idContact && c["customer_id"] != null){
+              flag = false;
+            }
+          });
+        }
+
+        if (flag) {
+          listOfContacts.add(new ContactModel(
+            id: contact["id"],
+            createdAt: contact["created_at"],
+            updatedAt: contact["updated_at"],
+            deletedAt: contact["deleted_at"],
+            createdById: contact["created_by_id"],
+            updatedById: contact["updated_by_id"],
+            deletedById: contact["deleted_by_id"],
+            customerId: contact["customer_id"],
+            customer: contact["customer"],
+            code: contact["code"],
+            name: contact["name"],
+            phone: contact["phone"],
+            email: contact["email"],
+            details: contact["details"],
+          ));
+        }
       });
     }
 
@@ -4480,7 +4484,7 @@ class DatabaseProvider {
       )
 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ''', 
+      ''',
       [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
       business.deletedAt, business.createdById, business.updatedById, business.deletedById,
       business.customerId, business.name, business.stage, business.date,

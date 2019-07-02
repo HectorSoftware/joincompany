@@ -276,7 +276,6 @@ Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact,
 
   if (await connectionStatus.checkConnection()) {
     var relateCustomerContactResponse = await relateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
-    var e = relateCustomerContactResponse.body;
     if ((relateCustomerContactResponse.statusCode==200 || relateCustomerContactResponse.statusCode==201) && relateCustomerContactResponse.body != 'Cliente ya tiene el contacto asociado') {
       syncState = SyncState.synchronized;
     } else {

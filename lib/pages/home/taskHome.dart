@@ -11,6 +11,7 @@ import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
@@ -20,7 +21,13 @@ import 'package:joincompany/services/UserService.dart';
 import 'package:flutter/services.dart';
 
 import '../LoginPage.dart';
+
 class TaskHomePage extends StatefulWidget {
+
+  TaskHomePage({this.business});
+
+  final BusinessModel business;
+
   _MyTaskPageState createState() => _MyTaskPageState();
 }
 
@@ -117,8 +124,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     blocListTaskCalendarResMap.dispose();
     blocListTaskResFilter.dispose();
     super.dispose();
-
-
   }
 
   @override
@@ -157,8 +162,14 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: buildDrawer(),
+      drawer: widget.business == null ? buildDrawer() : null,
       appBar: new AppBar(
+        leading: widget.business == null ? null : IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed:(){
+              Navigator.pop(context);
+            }
+        ),
         backgroundColor: PrimaryColor,
         title: _appBarTitle,
         actions: <Widget>[
@@ -196,7 +207,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       body: getTabBarView(),
     );
   }
-
 
   Future<void> errorDialog(){
     return showDialog<void>(
@@ -240,8 +250,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
     return TabBarView(
       children: <Widget>[
-        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,),
-        new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap, dateActualRes: _date,),
+        widget.business == null ?
+        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,) :
+        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,business: widget.business,),
+        widget.business == null ?
+        new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap, dateActualRes: _date,):
+        new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap, dateActualRes: _date, business: widget.business,),
       ],
       controller: _controller,
       physics: _controller.index == 0
@@ -395,7 +409,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   }
 
-
   String textFilter = '';
   void _searchPressed() {
     if (this.mounted){
@@ -440,5 +453,4 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       });
     }
   }
-
 }

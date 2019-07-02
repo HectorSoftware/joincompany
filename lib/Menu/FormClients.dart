@@ -14,7 +14,7 @@ import 'package:joincompany/pages/BuscarRuta/searchAddress.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/CustomerService.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'businesList.dart';
 import 'formBusiness.dart';
 
@@ -145,7 +145,7 @@ class _FormClientState extends State<FormClient> {
       popUp =  AlertDialog(
         title: Text('¿Guardar?'),
         content: const Text(
-            '¿estas seguro que desea guardar estos datos?'),
+            '¿Desea guardar estos datos?.'),
         actions: <Widget>[
           FlatButton(
             child: const Text('SALIR'),
@@ -289,6 +289,11 @@ class _FormClientState extends State<FormClient> {
               name: name.text,
               code: code.text,
               details: note.text,
+              createdAt: widget.client.createdAt,
+              updatedAt: DateTime.now().toIso8601String(),
+              createdById: widget.client.createdById,
+              updatedById: widget.client.updatedById,
+              deletedById: widget.client.createdById
             );
 
             var response = await updateCustomer(client.id.toString(), client, user.company, user.rememberToken);
@@ -333,6 +338,7 @@ class _FormClientState extends State<FormClient> {
                 );
               }
               setState(() {loading = false;});
+              showToast('Cliente Modificado');
               return true;
             }else{
               setState(() {loading = false;});
@@ -354,7 +360,7 @@ class _FormClientState extends State<FormClient> {
             );
             var response = await createCustomer(client, user.company, user.rememberToken);
             if((response.statusCode == 200 || response.statusCode ==  201) && response.body != "Cliente ya existe"){
-
+              showToast('Cliente Creado');
               var cli = response.body;
               bool saveContact = await setContacts(cli.id);
               if(!saveContact){
@@ -674,6 +680,7 @@ class _FormClientState extends State<FormClient> {
       setState(() {loading = true;});
       var responseDelete = await deleteCustomer( widget.client.id.toString(), user.company, user.rememberToken);
       if(responseDelete.statusCode == 200){
+        showToast('Cliente eliminado');
         exitDeletedClient();
       }else{
         setState(() {loading = false;});
@@ -692,6 +699,18 @@ class _FormClientState extends State<FormClient> {
     }
   }
 
+  void showToast(String text){
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 15,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 14.0
+    );
+  }
+
   ListView getDirectionsBuilder() {
     return ListView.builder(
         scrollDirection: Axis.vertical,
@@ -703,10 +722,9 @@ class _FormClientState extends State<FormClient> {
                   size: 25.0),
               title: Text(directionsAll[index].address),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
-                setState(() {
-                  directionsNews.remove(directionsAll[index]);
-                  directionsAll.remove(directionsAll[index]);
-                });
+                directionsNews.remove(directionsAll[index]);
+                directionsAll.remove(directionsAll[index]);
+                setState((){});
               }),
             ),
           );
@@ -725,10 +743,9 @@ class _FormClientState extends State<FormClient> {
                   size: 25.0),
               title: Text(contactsAll[index].name),
               trailing: IconButton(icon: Icon(Icons.delete), onPressed: (){
-                setState(() {
-                  contactsAll.remove(contactsAll[index]);
-                  contactsNew.remove(contactsAll[index]);
-                });
+                contactsNew.remove(contactsAll[index]);
+                contactsAll.remove(contactsAll[index]);
+                setState(() {});
               }),
             ),
           );

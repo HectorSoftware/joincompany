@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/CustomerModel.dart';
@@ -356,15 +357,13 @@ class _AddContactState extends State<AddContact> {
       if(await validateData()){
         setState(() {loading = true;});
         if(widget.contact != null){
-          ContactModel contact = ContactModel(
-            id: widget.contact.id,
-            name: name.text,
-            code: code.text,
-            phone: phone.text,
-            email: email.text,
-            details: note.text,
-            updatedAt: widget.contact.updatedAt,
-          );
+          ContactModel contact = widget.contact;
+          contact.name = name.text;
+          contact.code = code.text;
+          contact.phone = phone.text;
+          contact.email = email.text;
+          contact.details = note.text;
+          contact.updatedAt = DateTime.now().toIso8601String();
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,user.company,user.rememberToken);
           if (resposeUpdateContact.statusCode == 200){
             if(clientAct != null){
@@ -372,6 +371,7 @@ class _AddContactState extends State<AddContact> {
                 var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), user.company,user.rememberToken);
                 if(responseRelateCustomerContact.statusCode == 200){
                   setState(() {loading = false;});
+                  showToast('Contacto Actualizado.');
                   return true;
                 }else{
                   setState(() {loading = false;});
@@ -391,6 +391,7 @@ class _AddContactState extends State<AddContact> {
                   var responseUnRelateCustomerContact = await unrelateCustomerContact(clientOld.id.toString(), contact.id.toString(), user.company,user.rememberToken);
                   if(responseUnRelateCustomerContact.statusCode == 200){
                     setState(() {loading = false;});
+                    showToast('Contacto Actualizado.');
                     return true;
                   }else{
                     setState(() {loading = false;});
@@ -417,6 +418,7 @@ class _AddContactState extends State<AddContact> {
                   );
                 }
               }else{
+                showToast('Contacto Actualizado.');
                 setState(() {loading = false;});
                 return true;
               }
@@ -425,6 +427,7 @@ class _AddContactState extends State<AddContact> {
                 var responseUnRelateCustomerContact = await unrelateCustomerContact(clientOld.id.toString(), contact.id.toString(), user.company,user.rememberToken);
                 if(responseUnRelateCustomerContact.statusCode == 200){
                   setState(() {loading = false;});
+                  showToast('Contacto Actualizado.');
                   return true;
                 }else{
                   setState(() {loading = false;});
@@ -454,6 +457,12 @@ class _AddContactState extends State<AddContact> {
           }
         }else{
           ContactModel contact = ContactModel(
+            createdById: user.id,
+            updatedById: user.id,
+            deletedById: user.id,
+            createdAt: DateTime.now().toIso8601String(),
+            updatedAt: DateTime.now().toIso8601String(),
+            deletedAt: DateTime.now().toIso8601String(),
             name: name.text,
             code: code.text,
             phone: phone.text,
@@ -466,6 +475,7 @@ class _AddContactState extends State<AddContact> {
               var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), responseCreateContact.body.id.toString(), user.company,user.rememberToken);
               if(responseRelateCustomerContact.statusCode == 200){
                 setState(() {loading = false;});
+                showToast('Contacto Creado.');
                 return true;
               }else{
                 setState(() {loading = false;});
@@ -517,7 +527,7 @@ class _AddContactState extends State<AddContact> {
           return AlertDialog(
             title: Text('ELIMINIAR'),
             content: const Text(
-                '¿estas seguro que desea eliminar este Contacto?'),
+                '¿Estas seguro que desea eliminar este Contacto?.'),
             actions: <Widget>[
               FlatButton(
                 child: const Text('CANCELAR'),
@@ -545,12 +555,25 @@ class _AddContactState extends State<AddContact> {
     Navigator.of(context).pop();
   }
 
+  void showToast(String text){
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 15,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 14.0
+    );
+  }
+
   void deleteContactView() async {
     var resp = await _asyncConfirmDialogDeleteUser();
     if (resp) {
       setState(() {loading = true;});
       var responseDelete = await deleteContact(widget.contact.id.toString(), user.company, user.rememberToken);
       if (responseDelete.statusCode == 200) {
+        showToast('Contacto Eliminado.');
         exitDeletedContact();
       } else {
         setState(() {loading = false;});

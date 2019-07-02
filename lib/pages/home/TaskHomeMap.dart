@@ -6,6 +6,7 @@ import 'package:joincompany/api/rutahttp.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';
@@ -19,8 +20,8 @@ import 'package:flutter/services.dart';
 class TaskHomeMap extends StatefulWidget {
   _MytaskPageMapState createState() => _MytaskPageMapState();
 
-  TaskHomeMap({this.blocListTaskCalendarResMapwidget,this.dateActualRes});
-
+  TaskHomeMap({this.blocListTaskCalendarResMapwidget,this.dateActualRes,this.business});
+  final BusinessModel business;
   final BlocListTaskCalendarMap blocListTaskCalendarResMapwidget;
   final DateTime dateActualRes;
 }
@@ -174,19 +175,38 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
         Place marker;
         String valadde = 'N/A';
         DateTime dateTask;
-        if(tasks.data[i].planningDate != null){
-          dateTask = DateTime.parse(tasks.data[i].planningDate);
-        }else{
-          dateTask = DateTime.parse(tasks.data[i].createdAt);
-        }
+        if(widget.business == null){
+          if(tasks.data[i].planningDate != null){
+            dateTask = DateTime.parse(tasks.data[i].planningDate);
+          }else{
+            dateTask = DateTime.parse(tasks.data[i].createdAt);
+          }
 
-        if(tasks.data[i].address != null && ((dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
-        )){
-          valadde = tasks.data[i].address.address;
-          if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
-          if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
-          marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
-          _listMarker.add(marker);
+          if(tasks.data[i].address != null && ((dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
+          )){
+            valadde = tasks.data[i].address.address;
+            if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
+            if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
+            marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
+            _listMarker.add(marker);
+          }
+        }else{
+          if(widget.business.id == tasks.data[i].businessId){
+            if(tasks.data[i].planningDate != null){
+              dateTask = DateTime.parse(tasks.data[i].planningDate);
+            }else{
+              dateTask = DateTime.parse(tasks.data[i].createdAt);
+            }
+
+            if(tasks.data[i].address != null && ((dateTask.day == hasta.day)&&(dateTask.month == hasta.month)&&(dateTask.year == hasta.year)
+            )){
+              valadde = tasks.data[i].address.address;
+              if(tasks.data[i].status == 'done'){sendStatus = status.culminada;}
+              if(tasks.data[i].status == 'working' || tasks.data[i].status == 'pending'){sendStatus = status.planificado;}
+              marker = Place(id: tasks.data[i].id, customer: tasks.data[i].name, address: valadde,latitude: tasks.data[i].address.latitude,longitude: tasks.data[i].address.longitude, statusTask: sendStatus, customerAddress: null);
+              _listMarker.add(marker);
+            }
+          }
         }
       }
       var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);

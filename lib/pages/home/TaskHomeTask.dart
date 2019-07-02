@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocListTask.dart';
 import 'package:joincompany/blocs/blocListTaskCalendar.dart';
 import 'package:joincompany/blocs/blocListTaskFilter.dart';
+import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserModel.dart';
@@ -21,8 +23,8 @@ import '../../main.dart';
 import 'package:flutter/services.dart';
 class TaskHomeTask extends StatefulWidget {
 
-  TaskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes});
-
+  TaskHomeTask({this.blocListTaskFilterReswidget,this.blocListTaskCalendarReswidget,this.listCalendarRes, this.business});
+  final BusinessModel business;
   final BlocListTaskFilter blocListTaskFilterReswidget;
   final BlocListTaskCalendar blocListTaskCalendarReswidget;
   final List<DateTime> listCalendarRes;
@@ -105,13 +107,13 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             listViewTasks(),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: widget.business == null ? FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
               TaskModel taskk = new TaskModel();
               Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: directionClient,toBusiness: false,toListTask: false,taskmodelres: taskk)));
               //Navigator.pushNamed(context, '/formularioTareas');
-            }),
+            }): null,
       ),
     );
   }
@@ -146,7 +148,18 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               .listen((onDataList) =>
               setState(() {
                 //if(PageTasks == 1){
-                listTaskModellocal = onDataList;
+                if(widget.business != null){
+                  listTaskModellocal.clear();
+                  for(var data in onDataList){
+                    if(data.businessId == widget.business.id){
+                      listTaskModellocal.add(data);
+                    }
+                  }
+                }else{
+                  listTaskModellocal = onDataList;
+                }
+
+
                 //}
                 if (onDataList.length != 0) {
                   chanceCircule = true;
@@ -198,7 +211,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         onRefresh: _refresh,
       ),
     )
-    //listando()
         : chanceCircule
         ? Center(child: CircularProgressIndicator(),)
         : Container(
@@ -298,10 +310,11 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   listTaskModellocal[positionActual].address.address;
             }
           }
+          if(widget.business != null){
 
+          }
           if (filterText == '') {
             bool res = false;
-
             if ((positionActual != listTaskModellocal.length - 1)) {
               if (listTaskModellocal[positionActual].id ==
                   listTaskModellocal[positionActual + 1].id) {
@@ -422,6 +435,18 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     );
   }
 
+  void showToast(String text){
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 10,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 14.0
+    );
+  }
+
   Container listCard(String title, String address, String date,TaskModel listTask, int index) {
     return Container(
         child: Card(
@@ -497,7 +522,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   Container(
                     child: IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: () {
+                        onPressed: () async {
+                          showToast('Tarea Eliminada');
                           deleteCustomer(listTask.id.toString(), index);
                         }
                     ),

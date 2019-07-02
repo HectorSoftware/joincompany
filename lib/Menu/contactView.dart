@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:joincompany/async_operations/AddressChannel.dart';
 import 'package:joincompany/async_operations/ContactChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocContact.dart';
@@ -90,6 +93,9 @@ class _ContactViewState extends State<ContactView> {
 
   void syncContacts() async{
     setState(() {syncStatus = true;});
+    await AddressChannel.syncEverything();
+    await CustomerChannel.syncEverything();
+    await CustomerAddressesChannel.syncEverything();
     await ContactChannel.syncEverything();
     await CustomerContactsChannel.syncEverything();
     setState(() {syncStatus = false;});

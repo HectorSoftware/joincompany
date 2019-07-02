@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -18,6 +19,7 @@ import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
+import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/services/BusinessService.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
@@ -89,6 +91,7 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
+
   Future<TaskModel> createTaskBusiness(AddressModel addressClient) async{
     return showDialog<TaskModel>(
       context: context,
@@ -126,6 +129,7 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
+
   convertToModelToFieldOption(){
     if(widget.client == null){
       if(getClients == true){
@@ -255,6 +259,18 @@ class _FormBusinessState extends State<FormBusiness> {
     await convertToModelToFieldOption();
   }
 
+  void showToast(String text){
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 15,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 14.0
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     getDirTask();
@@ -277,12 +293,8 @@ class _FormBusinessState extends State<FormBusiness> {
                               FlatButton(
                                 child: const Text('SALIR'),
                                 onPressed: () {
-                                  if(widget.client != null){
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  }else{
-                                    Navigator.pushReplacementNamed(context, '/negocios');
-                                  }
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
@@ -317,13 +329,10 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                               child: const Text('Aceptar'),
                                               onPressed: () {
-                                                if(widget.client != null){
-                                                  Navigator.of(context).pop();
-                                                  Navigator.of(context).pop();
-                                                  Navigator.of(context).pop(saveBusiness);
-                                                }else{
-                                                  Navigator.pushReplacementNamed(context, '/negocios');
-                                                }
+                                                showToast('Negocio Creado.');
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
 
                                               },
                                             ),
@@ -421,8 +430,13 @@ class _FormBusinessState extends State<FormBusiness> {
                             FlatButton(
                               child: const Text('Aceptar'),
                               onPressed: () async {
-                                await deleteBusiness(saveBusiness.id.toString(),user.company,user.rememberToken);
-                                Navigator.pushReplacementNamed(context, '/negocios');
+                                var del = await deleteBusiness(saveBusiness.id.toString(),user.company,user.rememberToken);
+                                if(del.statusCode == 200 || del.statusCode == 201){
+                                  showToast('Negocio Eliminado');
+                                  Navigator.pushReplacementNamed(context, '/negocios');
+                                }else{
+                                  showToast('Error Inesperado');
+                                }
                               },
                             ),
 
@@ -731,57 +745,56 @@ class _FormBusinessState extends State<FormBusiness> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.visibility),
-                            onPressed: () {
-                              setState(() {
-
-                              });
-                              if(widget.edit == true && widget.client == null){
-                                return   showDialog(
-                                    context: context,
-                                    // ignore: deprecated_member_use
-                                    child: SimpleDialog(
-                                        title: Text('Tareas:'),
-                                        children: <Widget>[
-                                          Column(
-                                            children: <Widget>[
-                                              Container(
-                                                width: MediaQuery.of(context).size.width ,
-                                                height: MediaQuery.of(context).size.height * (0.1 *listTasksBusiness.length) +50,
-                                                child: listTasksBusiness.length != 0 ? ListView.builder(
-                                                  itemCount: listTasksBusiness.length,
-                                                  itemBuilder: (context, index) {
-                                                    return Container(
-                                                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                                                          color: Colors.white,
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                                color: Colors.black12,
-                                                                blurRadius: 5
-                                                            )
-                                                          ]
-                                                      ),
-                                                      child: ListTile(
-                                                        title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-                                                        subtitle:listTasksBusiness[index].id != null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
-                                                        leading: Icon(Icons.message),
-                                                        onTap: (){
-
-                                                        },
-                                                      ),
-                                                    );
-                                                  },
-                                                ): Center(child: Text('No hay tareas asociadas'),),
-
-                                              ),
-                                            ],
-                                          )
-                                        ]
-                                    )
-                                );
-                              }else{
-
+                            onPressed: () async {
+//                              if(widget.edit == true && widget.client == null){
+//                                return   showDialog(
+//                                    context: context,
+//                                    // ignore: deprecated_member_use
+//                                    child: SimpleDialog(
+//                                        title: Text('Tareas:'),
+//                                        children: <Widget>[
+//                                          Column(
+//                                            children: <Widget>[
+//                                              Container(
+//                                                width: MediaQuery.of(context).size.width ,
+//                                                height: MediaQuery.of(context).size.height * (0.1 *listTasksBusiness.length) +50,
+//                                                child: listTasksBusiness.length != 0 ? ListView.builder(
+//                                                  itemCount: listTasksBusiness.length,
+//                                                  itemBuilder: (context, index) {
+//                                                    return Container(
+//                                                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+//                                                          color: Colors.white,
+//                                                          boxShadow: [
+//                                                            BoxShadow(
+//                                                                color: Colors.black12,
+//                                                                blurRadius: 5
+//                                                            )
+//                                                          ]
+//                                                      ),
+//                                                      child: ListTile(
+//                                                        title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
+//                                                        subtitle:listTasksBusiness[index].id != null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
+//                                                        leading: Icon(Icons.message),
+//                                                        onTap: (){
+//
+//                                                        },
+//                                                      ),
+//                                                    );
+//                                                  },
+//                                                ): Center(child: Text('No hay tareas asociadas'),),
+//
+//                                              ),
+//                                            ],
+//                                          )
+//                                        ]
+//                                    )
+//                                );
+//                              }else{
+//
+//                              }
+                              if(widget.dataBusiness != null){
+                                await showTask();
                               }
-
                             }
 
                           ),
@@ -866,6 +879,16 @@ class _FormBusinessState extends State<FormBusiness> {
         saveBusinessEnd = false;
       });
     }
+  }
+
+  Future showTask() async{
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return TaskHomePage(business: widget.dataBusiness,);
+      },
+    );
   }
 
 }

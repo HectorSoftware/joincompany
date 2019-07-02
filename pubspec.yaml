@@ -47,11 +47,15 @@ dependencies:
   flutter_colorpicker: any
   extended_image: ^0.3.8
   image_picker_saver: ^0.3.0
+
   #CONECTIVITY
   connectivity: any
 
   #CALL
   url_launcher: ^5.0.3
+
+  #TOAST
+  fluttertoast: ^3.1.0
 
 dev_dependencies:
   flutter_test:

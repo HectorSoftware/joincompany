@@ -57,11 +57,11 @@ Future<ResponseModel> createBusiness(BusinessModel businessObj, String customer,
 
   if (await connectionStatus.checkConnection()) {
     var createBusinessResponse = await createBusinessFromServer(businessObj, customer, authorization);
-    if ((createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) && createBusinessResponse.body != 'Negocio ya existe') {
+    if ((createBusinessResponse.statusCode==200 || createBusinessResponse.statusCode==201) && createBusinessResponse.body != 'Negocio ya existe' && createBusinessResponse.body != 'Cliente no existe'){
       businessObj = BusinessModel.fromJson(createBusinessResponse.body);
       syncState = SyncState.synchronized;
     } else {
-      return new ResponseModel(statusCode: 500, body: createBusinessResponse.body+"9999");
+      return new ResponseModel(statusCode: 500, body: createBusinessResponse.body);
     }
   }
   

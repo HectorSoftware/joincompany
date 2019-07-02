@@ -975,8 +975,8 @@ class _SyncAppState extends State<SyncApp> {
      await BusinessChannel.syncEverything();
     setState((){title = Text("Sincronizando Datos 7/8");});
     await FormChannel.syncEverything();
-    //setState((){title = Text("Sincronizando Datos 8/8");});
-    //await TaskChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 8/8");});
+//    await TaskChannel.syncEverything();
     Navigator.pop(context);
   }
 
