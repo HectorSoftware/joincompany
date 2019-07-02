@@ -167,6 +167,7 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('ACEPTAR'),
                                 onPressed: () async {
+                                  print(valuesTable);
                                   if(dataInfo.isNotEmpty) {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
@@ -239,6 +240,7 @@ class _FormTaskState extends State<FormTask> {
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
                                               title: Text('Error al procesar la tarea por el Servidor'),
+                                                content: Text('Calidad de imagen muy alta'),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
@@ -450,11 +452,7 @@ buildListTypeForm(){
 
                     },
                   );
-
-
-
                 }
-
             );
           }else{
             if(snapshot.connectionState == ConnectionState.waiting){
@@ -500,26 +498,42 @@ buildListTypeForm(){
 conC(String value){
     if(value != null){
     }
-
 }
+  String savedDataTablet(){
+    String dat="";
+    var keys = data.keys;
+    if(!keys.contains("table")){
+      return dat;
+    }else{
+      var titules = data["table"].keys;
+      for(String titule in titules){
+        dat = dat + titule + "," ;
+      }
+      for(String titule in titules){
+        Map dataColumn = data["table"][titule];
+        for (var key in dataColumn.keys){
+          if(key != "name"){
+            dat = dat +  data["table"][titule][key].text;
+          }
+        }
+        dat = dat + "*";
+      }
+    }
+    return dat;
+  }
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
-
     initDataTable(listOptions);
-
+    valuesTable = savedDataTablet();
+    saveData(valuesTable,id);
     Card card(TextEditingController t){
       return Card(
         child: TextField(
           onChanged: (value){
-
-
-           print(t.text);
-            conC(t.text);
           },
+          controller: t,
           decoration: InputDecoration(
             hintText: '',
-
           ),
-          controller: t,
         ),
       );
     }
@@ -594,6 +608,7 @@ conC(String value){
         ) ,
       ),
     );
+
   }
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
