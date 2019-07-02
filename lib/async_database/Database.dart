@@ -4,6 +4,7 @@
 // TODO: Verificar si devuelvo el date correcto al crear y actualizar tareas
 // TODO: Comparar el ID en las relaciones y no el Id del registro.
 // TODO: Agregar a todos los recursos (contactos, clientes...) los datos iniciales que se tengan (fecha de creacion, etc, etc...).
+// TODO: Agregar unique a los campos code en clientes y en contactos.
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
@@ -2602,26 +2603,41 @@ class DatabaseProvider {
     if (task.customValues == null)
       task.customValues = new List<CustomValueModel>();
 
+    bool isCustomValueComingFromServer;
     if (task.customValues.length > task.customValuesMap.length) {
+      isCustomValueComingFromServer = true;
       task.customValuesMap = new Map<String, String>();
       // for each custom value, create an entry in the map
       task.customValues.forEach((customValue) {
         task.customValuesMap[customValue.id.toString()] = customValue.value;
       });
     } else {
+      isCustomValueComingFromServer = false;
       task.customValuesMap.forEach((key, value) {
         task.customValues.add(new CustomValueModel(
-          id: int.parse(key.toString()),
+          fieldId: int.parse(key.toString()),
           value: value,
-          formId: task.formId,
-          taskId: task.id,
-          customizableId: task.id,
-          customizableType: "Task",
         ));
       });
     }
 
+    FormModel formForCustomValue = await DatabaseProvider.db.ReadFormById(task.formId);
     await Future.forEach(task.customValues, (customValue) async {
+      if (!isCustomValueComingFromServer) {
+        SectionModel foundSection = formForCustomValue.getSectionByFieldId(customValue.fieldId);
+        customValue.formId = task.formId;
+        customValue.sectionId = foundSection.id;
+        customValue.customizableType = "Task";
+        customValue.taskId = task.id;
+        customValue.customizableId = task.id;
+
+        FieldModel foundField = foundSection.findFieldById(customValue.fieldId);
+        if (foundField.fieldType == "Photo") {
+          customValue.imageBase64 = customValue.value;
+          customValue.value = "/tmp/";
+        }
+      }
+      
       await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
 
@@ -2683,6 +2699,7 @@ class DatabaseProvider {
         form: form,
         responsible: responsible,
         customValues: listOfCustomValues,
+        customValuesMap: customValuesFromListToMap(listOfCustomValues),
         customSections: null,
       );
     }
@@ -2975,29 +2992,38 @@ class DatabaseProvider {
 
     // individual items
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
-    if (data.isNotEmpty)
-      UpdateForm(task.form.id, task.form, syncState);
-    else
-      CreateForm(task.form, syncState);
 
-    data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
-    if (data.isNotEmpty)
-      UpdateAddress(task.address.id, task.address, syncState);
-    else
-      CreateAddress(task.address, syncState);
+    if (task.form != null) {
+      data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
+      if (data.isNotEmpty)
+        UpdateForm(task.form.id, task.form, syncState);
+      else
+        CreateForm(task.form, syncState);  
+    }
 
-    data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
-    if (data.isNotEmpty)
-      UpdateCustomer(task.customer.id, task.customer, syncState);
-    else
-      CreateCustomer(task.customer, syncState);
+    if (task.address != null) {
+      data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
+      if (data.isNotEmpty)
+        UpdateAddress(task.address.id, task.address, syncState);
+      else
+        CreateAddress(task.address, syncState);
+    }
 
-    data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
-    if (data.isNotEmpty)
-      UpdateResponsible(task.responsible.id, task.responsible, syncState);
-    else
-      CreateResponsible(task.responsible, syncState);
+    if (task.customer != null) {
+      data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
+      if (data.isNotEmpty)
+        UpdateCustomer(task.customer.id, task.customer, syncState);
+      else
+        CreateCustomer(task.customer, syncState);
+    }
+
+    if (task.responsible != null) {
+      data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
+      if (data.isNotEmpty)
+        UpdateResponsible(task.responsible.id, task.responsible, syncState);
+      else
+        CreateResponsible(task.responsible, syncState);
+    }
 
     task.id = await db.rawUpdate(
       '''
@@ -3043,7 +3069,6 @@ class DatabaseProvider {
   }
 
   Future<int> DeleteTaskById(int id) async {
-    print("deleting task " + id.toString() + "\n");
     final db = await database;
     await db.rawDelete('DELETE FROM "custom_values" WHERE task_id = $id');
     var output = await db.rawDelete('DELETE FROM "tasks" WHERE id = $id');
@@ -3095,7 +3120,6 @@ class DatabaseProvider {
   }
 
   Future<int> ChangeSyncStateTask(int id, SyncState syncState) async {
-    print("changing task sync state " + id.toString() + "\n");
     final db = await database;
     await db.rawUpdate(
       '''
@@ -3403,7 +3427,7 @@ class DatabaseProvider {
 
     if (data.isNotEmpty)
       return null;
-
+    
     if (customValue.field != null) {
       await CreateField(new FieldModel(
         id: customValue.field.id,
@@ -3452,10 +3476,11 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
-    customValue.formId, customValue.sectionId, customValue.fieldId,
-    customValue.customizableType, customValue.customizableId,
-    customValue.value, customValue.imageBase64, customValue.taskId], ...paramsBySyncState[syncState]],
+      [...[customValue.id, customValue.createdAt == null ? DateTime.now().toString() : customValue.createdAt, 
+      customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
+      customValue.formId, customValue.sectionId, customValue.fieldId,
+      customValue.customizableType, customValue.customizableId,
+      customValue.value, customValue.imageBase64, customValue.taskId == null ? customValue.customizableId : customValue.taskId], ...paramsBySyncState[syncState]],
     );
 
     return customValueCreated;

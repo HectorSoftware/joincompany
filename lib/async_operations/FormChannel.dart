@@ -38,6 +38,7 @@ class FormChannel {
 
   static Future _deleteFormsInLocal(String customer, String authorization) async {
     dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization);
+
     FormsModel formsFromServer = FormsModel.fromJson(jsonFormsFromServer.body);
 
     List<int> formsIdsFromServer = formsFromServer.listFormIds();

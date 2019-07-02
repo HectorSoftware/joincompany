@@ -11,22 +11,33 @@ import 'package:http/http.dart' as http;
 
 class TaskChannel {
   static void _createTasksInBothLocalAndServer(String customer, String authorization, String userId) async {
-    print("Creating tasks");
     List<TaskModel> tasksFromLocal = await DatabaseProvider.db.ReadTasksBySyncState(SyncState.created);
 
     await Future.forEach(tasksFromLocal, (taskFromLocal) async {
       taskFromLocal.customSections = null;
       Map<String,String> map = Map<String,String>();
       taskFromLocal.customValues.forEach ((c){
-        map[c.id.toString()] = (c.imageBase64 == null || c.imageBase64 == "") ? c.value.toString() : c.imageBase64;
+        map[c.fieldId.toString()] = (c.imageBase64 == null || c.imageBase64 == "") ? c.value.toString() : c.imageBase64;
       });
       taskFromLocal.customValuesMap = map;
       taskFromLocal.customValues = null;
-      print("Creating task " + taskFromLocal.id.toString() + " in server\n");
+      // taskFromLocal.id = null; 
+      // taskFromLocal.createdAt = null;
+      // taskFromLocal.updatedAt = null;
+      // taskFromLocal.deletedAt = null;
+      // taskFromLocal.createdById = null;
+      // taskFromLocal.updatedById = null;
+      // taskFromLocal.deletedById = null;
+      
+      taskFromLocal.form = null;
+      taskFromLocal.address = null;
+      taskFromLocal.customer = null;
+      taskFromLocal.responsible = null;
+
+      taskFromLocal.status = null;
       var createTaskInServerRes = await createTaskFromServer(taskFromLocal, customer, authorization);
       if (createTaskInServerRes.statusCode == 200) {
-        print("Created task\n");
-        TaskModel createdTask = TaskModel.fromJson(createTaskInServerRes.body);
+        TaskModel createdTask = TaskModel.fromJson(treatBodyRes(createTaskInServerRes.body));
         await DatabaseProvider.db.UpdateTask(taskFromLocal.id, createdTask, SyncState.synchronized);
       }
     });
@@ -51,9 +62,7 @@ class TaskChannel {
 
         TaskModel individualTask = TaskModel.fromJson(individualTaskFromServerRes.body);
         if (individualTask != null)
-          print("Creating task " + individualTask.id.toString() + " in local\n");
           await DatabaseProvider.db.CreateTask(individualTask, SyncState.synchronized);
-        print("Created task in local\n");
       }
     });
   }
@@ -108,9 +117,7 @@ class TaskChannel {
       await Future.forEach(tasksToDelete, (taskToDelete) async {
         http.Response deleteTaskRes = await deleteTaskFromServer(taskToDelete.id.toString(), customer, authorization);
         if (deleteTaskRes.statusCode == 200 || deleteTaskRes.statusCode != 201) {
-          print("Deleting " + taskToDelete.id.toString());
           await DatabaseProvider.db.DeleteTaskById(taskToDelete.id);
-          print("Deleted");
         }
       });
     }

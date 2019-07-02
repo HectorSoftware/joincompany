@@ -1313,7 +1313,6 @@ buildListTypeForm(){
     var getAllFormsResponse = await getAllForms(customer , token);
     try{
       if(getAllFormsResponse.statusCode == 200){
-        //  print(getAllFormsResponse.headers['content-type']);
         forms = getAllFormsResponse.body;
         formType = forms;
 

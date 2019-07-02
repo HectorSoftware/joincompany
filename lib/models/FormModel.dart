@@ -82,4 +82,19 @@ class FormModel {
 
     return listOfSectionIds;
   }
+
+  SectionModel getSectionByFieldId(int fieldId) {
+    SectionModel foundSection;
+    if (sections != null)
+      sections.forEach((section) {
+        if (foundSection == null)
+          section.fields.forEach((field) {
+            if (foundSection == null)
+              if (field.id == fieldId)
+                foundSection = section;
+          });
+      });
+      
+    return foundSection;
+  }
 }

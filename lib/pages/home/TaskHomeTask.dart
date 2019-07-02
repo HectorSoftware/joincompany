@@ -558,8 +558,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           });
         }
       } catch (error, stackTrace) {
-        print(error);
-        print(stackTrace);
         await sentry.captureException(
           exception: error,
           stackTrace: stackTrace,

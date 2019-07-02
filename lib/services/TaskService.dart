@@ -12,13 +12,28 @@ String resourcePath = '/tasks';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
 
+String treatBodyRes(String body) {
+  var test = body;
+  if (body[0] == "[" && body[body.length - 1] == "]") {
+   test = body.substring(1, (body.length - 1));
+  }
+
+  return test;
+}
+
 Future<ResponseModel> createTask(TaskModel task, String customer, String authorization) async {
   SyncState syncState = SyncState.created;
 
   if (await connectionStatus.checkConnection()) {
     http.Response createTaskFromServerResponse = await createTaskFromServer(task, customer, authorization);
     if (createTaskFromServerResponse.statusCode == 200 || createTaskFromServerResponse.statusCode == 201) {
-      task = TaskModel.fromJson(createTaskFromServerResponse.body);
+
+      // task = TaskModel.fromJson(createTaskFromServerResponse.body);
+      task = TaskModel.fromJson(treatBodyRes(createTaskFromServerResponse.body));
+      http.Response taskWithInfoFromServerRes = await getTaskFromServer(task.id.toString(), customer, authorization);
+      if (createTaskFromServerResponse.statusCode == 200 || createTaskFromServerResponse.statusCode == 201) {
+        task = TaskModel.fromJson(taskWithInfoFromServerRes.body);
+      }
       syncState = SyncState.synchronized;
     }
   }

@@ -1,12 +1,49 @@
-X      | online | off-line
-----------------------------
-delete | yes    | yes
-----------------------------
-create | yes    | no
-----------------------------
-read   | yes    | no
+       | online | off-line | from server | from local |
+-------------------------------------------------------
+delete | yes    | yes      |             |
+-------------------------------------------------------
+create | yes    | no       |             |
+-------------------------------------------------------
+read   | yes    | yes      | yes         | no
+
 
 The custom values aren't related to its tasks.
 
-Para esa tarea no se tiene un customValue, para algunas si...
 Esa tarea fue creada
+
+La tarea tiene el id del formulario asociado, cada tarea
+tiene un id de un formulario que se usa para mostrar lo que sea que se va a crear
+(el formulario)...
+
+Un formulario tiene una lista de secciones
+
+Cada seccion tiene una lista de campos.
+
+Cuando creas una tarea y pasas los customValues usas esas claves para sacar 
+toda la informacion desde el section, en el formulario, en la tarea, tienes que sacar
+el formulario para llenar los campos de
+
+[
+       {"id":421,
+       "created_at":"2019-07-02 13:09:28",
+       "updated_at":"2019-07-02 13:09:28",
+       "deleted_at":null,"created_by_id":3,
+       "updated_by_id":3,"deleted_by_id":null,
+       "form_id":2,
+       "responsible_id":3,
+       "customer_id":null,
+       "address_id":null,
+       "business_id":1,
+       "name":"Formulario de prueba",
+       "planning_date":"2019-07-02 13:09:00",
+       "checkin_date":null,
+       "checkin_latitude":null,
+       "checkin_longitude":null,
+       "checkin_distance":null,
+       "checkout_date":null,
+       "checkout_latitude":null,
+       "checkout_longitude":null,
+       "checkout_distance":null,
+       "status":"pending",
+       "custom_values":[{"id":661,"created_at":"2019-07-02 13:09:28","updated_at":"2019-07-02 13:09:28","form_id":2,"section_id":4,"field_id":5,"customizable_type":"Task","customizable_id":421,"value":"eee","image_base64":null,"field":{"id":5,"created_at":null,"updated_at":null,"deleted_at":null,"created_by_id":null,"updated_by_id":null,"deleted_by_id":null,"section_id":4,"entity_type":"Form","entity_id":2,"type":"field","name":"Textarea","code":"FIELD_5","subtitle":null,"position":5,"field_default_value":null,"field_type":"TextArea","field_placeholder":null,"field_options":[],"field_collection":null,"field_required":false,"field_width":3}}]}
+]
