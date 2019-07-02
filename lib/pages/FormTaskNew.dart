@@ -674,7 +674,7 @@ conC(String value){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].type}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index]}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
@@ -965,6 +965,7 @@ conC(String value){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
+
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -1205,7 +1206,6 @@ conC(String value){
               }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
-
                 return Row(
                   children: <Widget>[
                     Padding(
