@@ -27,7 +27,6 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'dart:io';
 
 class FormTask extends StatefulWidget {
 
@@ -964,6 +963,9 @@ conC(String value){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
+
+
+                                        //image2 = ima.copyResize(image, 120);
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }

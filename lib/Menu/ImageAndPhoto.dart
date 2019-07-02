@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class TomarImage extends StatefulWidget {
   @override
@@ -41,18 +41,20 @@ class _TomarImageState extends State<TomarImage> {
           child: Text('CAMARA'),
           onPressed: () async {
             img = await ImagePicker.pickImage(source: ImageSource.camera);
-            setState(() {
-              img;
-            });
+            File compressedFile = await FlutterNativeImage.compressImage(img.path,
+                quality: 50, percentage: 50);
+            img = compressedFile;
+            setState(() {});
           },
         ),
         FlatButton(
           child: Text('GALERIA'),
           onPressed: () async {
             img = await ImagePicker.pickImage(source: ImageSource.gallery);
-            setState(() {
-              img;
-            });
+            File compressedFile = await FlutterNativeImage.compressImage(img.path,
+                quality: 50, percentage: 50);
+            img = compressedFile;
+            setState(() {});
           },
         ),
         FlatButton(
