@@ -281,28 +281,6 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
-    if(listFieldsModels[index].fieldType == 'Image'){
-      return Row(
-        children: <Widget>[
-
-          Container(
-            child:Center(
-              child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
-                  color: PrimaryColor),
-              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
-            ),
-          ),
-          Spacer(),
-          Column(
-            children: <Widget>[
-              Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
-            ],
-
-          ),
-        ],
-      );
-    }
-
     if(field.fieldType == 'Text'){
       //TEXT
       return  Padding(
@@ -379,106 +357,43 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
     if(field.fieldType == 'Label'){
-      return Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Text(field.name,style: TextStyle(
-          fontSize: 20,
-        ),
-        ),
+      return Container(
+        padding: EdgeInsets.only(top: 10),
+        height: MediaQuery.of(context).size.height * 0.08,
+        child: Text(field.name,style: TextStyle(fontSize: 20,),textAlign: TextAlign.center,),
       );
 
-    }
-    if(field.fieldType == 'Time'){
-      TimeOfDay _time = new TimeOfDay.now();
-      return new Row(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1,left: 16),
-                    child: Text(field.name),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: RaisedButton(
-              child: dataInfo[field.id.toString()] != null ? Text('${dataInfo[field.id.toString()]}') : Text('Sin Asignar'),
-              onPressed: (){
-                //saveData(_time.format(context).toString(), field.id.toString()) ;
-              },
-
-            ),
-          ),
-        ],
-      );
     }
     if(field.fieldType == 'Date'){
-      return Row(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1,left: 16),
-                    child: Text(field.name),
-                  ),
-                ],
-              ),
+      DateTime fecha = DateTime.parse(_date.toString().substring(0,10));
 
-            ],
-
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: RaisedButton(
-              child: dataInfo[field.id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
-              onPressed: (){
-//                selectDate(context);
-//                saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
-              },
-            ),
-          ),
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(child: Container(),),
+            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
+            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${fecha.day.toString() + '-' + fecha.month.toString() + '-' + fecha.year.toString()}',style: TextStyle(fontSize: 20),)
+                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
+            Expanded(child: Container(),),
+          ],
+        ),
       );
     }
-    if(field.fieldType == 'Combo'){
-      return Row(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    height: 40,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    margin: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10,left: 10),
-                      child: Text(dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),),
-                    ),
-                  ),
-                ],
-              ),
-
-            ],
-
-          ),
-        ],
+    if(field.fieldType == 'Time'){
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: new Row(
+          children: <Widget>[
+            Expanded(child: Container(),),
+            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
+            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${dataInfo[field.id.toString()]}',style: TextStyle(fontSize: 20),)
+                : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
+            Expanded(child: Container(),),
+          ],
+        ),
       );
     }
 
@@ -494,19 +409,18 @@ class _FormTaskViewState extends State<FormTaskView> {
       }catch(e){}
 
       return  Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
-            child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                          child:  dataInfo[field.id.toString()] != '' ? Image(image: imageFromBase64String(ruta).image,)
-                                                                      : Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),
-                          )
-                  ),
-                )),
+            child: Container(
+                child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                    child:  dataInfo[field.id.toString()] != '' ? Image(image: imageFromBase64String(ruta).image,)
+                                                                : Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),
+                    )
+            ),
           ),
         ],
       );
@@ -524,14 +438,19 @@ class _FormTaskViewState extends State<FormTaskView> {
       }catch(e){}
 
       return  Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
             child: Center(
                 child: Container(
-                    child: Card(color: Colors.white,child: SizedBox(height: 200,width: 250,
-                        child:  dataInfo[field.id.toString()] != null ? Image(image: imageFromBase64String(ruta).image,height: 200,width:300 ,)
-                                                                      :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+                    child: Card(
+                      color: Colors.white,
+                      child: SizedBox(height: 200,width: 250,
+                                      child: ruta != '' ? Image(image: imageFromBase64String(ruta).image,height: 200,width:300 ,)
+                                                                                  : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
           ),
         ],
       );
@@ -542,60 +461,62 @@ class _FormTaskViewState extends State<FormTaskView> {
       if(dataInfo[field.id.toString()] != ''){
         fecha = dataInfo[field.id.toString()];
       }
+      return Padding(
+        padding: const EdgeInsets.only(top: 20,bottom: 20),
+        child: Row(
+          children: <Widget>[
+            Expanded(child: textDialogstyle(field.name + ' ' + fecha),),
+            //textDialogstyle(fecha),
+            /*Expanded(child: Container(),),
+            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
+            Expanded(child: Text(fecha,style: TextStyle(fontSize: 20),),),
+            Expanded(child: Container(),),*/
+          ],
+        ),
+      );
+    }
+
+    if(field.fieldType == 'Combo'){
+      return textDialogstyle(dataInfo[field.id.toString()]);
+    }
+
+    if(field.fieldType == 'Boolean'){
+
+      String texto = 'Sin Asignar';
+
+      if(dataInfo[field.id.toString()] == '' ){
+        texto = 'Verdadero';
+      }
+
+      return textDialogstyle((field.name + ' : ' + texto));
+    }
+
+
+    if(listFieldsModels[index].fieldType == 'Image'){
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Container(
+            child:Center(
+              child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                  color: PrimaryColor),
+              ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+            ),
+          ),
           Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1,left: 16),
-                    child: Text(field.name),
-                  ),
-                ],
-              ),
+              Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
             ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: RaisedButton(
-              child: Text(fecha),
-              onPressed: (){},
-            ),
           ),
         ],
       );
     }
 
-    if(field.fieldType == 'Boolean'){
-      //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
-      return Container(
-        height: 40,
-        width: MediaQuery.of(context).size.width * 0.7,
-        margin: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        child: Row(
-          children: <Widget>[
-            Text(field.name),
-            dataInfo[field.id.toString()] == '' ? Text('Sin valor') : Text('Verdadero'),
-          ],
-
-        ),
-      );
-    }
-
-    if(field.fieldType == 'ComboSearch')
-    {
-
+    if(field.fieldType == 'ComboSearch'){
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -666,7 +587,44 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType =='Table'){
-      return generatedTable(field.fieldOptions, field.id.toString());
+      List<String>  listColumns = new List<String>();
+      List<String>  listRows = new List<String>();
+      String value = dataInfo[field.id.toString()];
+      bool filas = false;
+      String aux = '';
+      String v = '';
+      for( int x = 0 ; x < value.length ; x++ ){
+          v = value[x];
+          if(v == '*' || v == ';'){
+            if(filas){
+              //columnas
+              if(aux.isNotEmpty){listRows.add(aux);}
+            }else{
+              //filas
+              listColumns.add(aux);
+            }
+            if(v == ';'){filas = true;}
+            aux = '';
+          }else{
+            aux = aux + v;
+          }
+      }
+
+      List<FieldOptionModel> listOption = new List<FieldOptionModel>();
+      FieldOptionModel model;
+      for(int y = 0; y < listRows.length ; y++){
+        int val = 0;
+        try{
+          val = int.parse(listRows[y]);
+        }catch(e){}
+        model = new FieldOptionModel(value: val,name: listColumns[y]);
+        listOption.add(model);
+      }
+
+      print('');
+
+
+      return generatedTable(listOption, field.id.toString());
     }
 
     return Text('Sin datos');
@@ -695,16 +653,18 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     data["table"] = new Map();
 
-    for(FieldOptionModel varV in listOptions)
+    for(FieldOptionModel dataTab in listOptions)
     {
-      data["table"][varV.name] = new Map();
-      data["table"][varV.name]["name"] = varV.name;
-      data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+      data["table"][dataTab.name] = new Map();
+      data["table"][dataTab.name]["name"] = dataTab.name;
+      data["table"][dataTab.name][dataTab.value.toString()] =new TextEditingController();
+      data["table"][dataTab.name][dataTab.value.toString()].text = dataTab.value.toString();
     }
 
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          enabled: false,
           decoration: InputDecoration(
             hintText: '',
           ),
@@ -757,6 +717,81 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
+
+    //LISTA DE COLUMNAS
+    List<Widget> listColuma = new List<Widget>();
+    Map column = data["table"];
+    bool colorcolum = false;
+    for(var key in column.keys)
+    {
+      if(colorcolum){colorcolum = false;}else{colorcolum = true;}
+      listColuma.add(columna(column[key],colorcolum));
+    }
+
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(10),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.3,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: listColuma.length,
+          itemBuilder: (context,index){
+            return listColuma[index];
+          },
+          // This next line does the trick.
+        ) ,
+      ),
+    );
+  }
+
+  Future ChekDialog(String mensaje){
+    return showDialog(
+        context: context,
+        barrierDismissible: true, // user must tap button for close dialog!
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text(mensaje)
+          );
+        }
+    );
+  }
+
+  Row textDialogstyle(String mensaje){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  margin: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5
+                        )
+                      ]
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10,left: 10),
+                    child: Text(mensaje,style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
+                  ),
+                ),
+              ],
+            ),
+
+          ],
+
+        ),
+      ],
+    );
   }
 
 }
