@@ -110,9 +110,9 @@ class BusinessChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    await BusinessChannel._deleteBusinessesInBothLocalAndServer(customer, authorization);
-    await BusinessChannel._updateBusinessesInBothLocalAndServer(customer, authorization);
     await BusinessChannel._createBusinessesInBothLocalAndServer(customer, authorization);
+    await BusinessChannel._updateBusinessesInBothLocalAndServer(customer, authorization);
+    await BusinessChannel._deleteBusinessesInBothLocalAndServer(customer, authorization);
   }
 
 }

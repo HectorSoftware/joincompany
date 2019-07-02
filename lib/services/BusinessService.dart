@@ -13,8 +13,9 @@ String resourcePath = '/businesses';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
 
-Future<ResponseModel> getAllBusinesses(String customer, String authorization, {String perPage, String page} ) async {
-  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessesByUserToken(authorization);
+Future<ResponseModel> getAllBusinesses(String customer, String authorization, {String perPage, String page, bool excludeDeleted = false} ) async {
+
+  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessesByUserToken(authorization, excludeDeleted);
 
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
 

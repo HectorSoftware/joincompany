@@ -47,10 +47,12 @@ class _BusinessListState extends State<BusinessList> {
   bool isOnline = true;
   bool syncStatus = false;
   bool getData = false;
+  bool visible = true;
   @override
 
   void initState() {
     getAll();
+    visible = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
@@ -67,7 +69,8 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   void connectionChanged(dynamic hasConnection) {
-    if (!isOnline && hasConnection && !syncStatus){
+    if (!isOnline && hasConnection && !syncStatus && visible){
+      print("sincronizando negocios");
       wrapperSync();
     }
 
@@ -133,6 +136,7 @@ class _BusinessListState extends State<BusinessList> {
 
   @override
   void dispose(){
+    visible = false;
     _connectionChangeStream.cancel();
     super.dispose();
   }

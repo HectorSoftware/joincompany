@@ -102,8 +102,9 @@ class CustomerContactsChannel {
 
     String customer = user.company;
     String authorization = user.rememberToken;
-    
-    await CustomerContactsChannel._unrelateCustomerContactsInBothLocalAndServer(customer, authorization);
+
     await CustomerContactsChannel._relateCustomerContactsInBothLocalAndServer(customer, authorization);
+    await CustomerContactsChannel._unrelateCustomerContactsInBothLocalAndServer(customer, authorization);
+
   }
 }

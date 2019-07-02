@@ -113,9 +113,9 @@ class AddressChannel {
 
     String customer = user.company;
     String authorization = user.rememberToken;
-    
-    await AddressChannel._deleteAddressesInBothLocalAndServer(customer, authorization);
-    await AddressChannel._updateAddressesInBothLocalAndServer(customer, authorization);
+
     await AddressChannel._createAddressesInBothLocalAndServer(customer, authorization);
+    await AddressChannel._updateAddressesInBothLocalAndServer(customer, authorization);
+    await AddressChannel._deleteAddressesInBothLocalAndServer(customer, authorization);
   }
 }

@@ -22,7 +22,7 @@ class CustomersBloc{
     // var customersResponse = await getAllCustomers(user.company, user.rememberToken);
     // CustomersModel customers = customersResponse.body;
 
-    var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken);
+    var customersWithAddressResponse = await getAllCustomersWithAddress(user.company, user.rememberToken,excludeDeleted: true);
     CustomersWithAddressModel customersWithAddress = customersWithAddressResponse.body;
     _listCustomersWithAddress = customersWithAddress.data;
     _listCustomersWithAddress.sort((a,b)=>a.name.compareTo(b.name));

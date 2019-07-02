@@ -22,7 +22,7 @@ class ContactBloc{
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-    var contactsAlls = await getAllContacts(user.company, user.rememberToken);
+    var contactsAlls = await getAllContacts(user.company, user.rememberToken,excludeDeleted: true);
     ContactsModel contactsList = contactsAlls.body;
     _listContacts = contactsList.data;
 

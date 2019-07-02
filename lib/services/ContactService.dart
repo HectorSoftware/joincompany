@@ -13,8 +13,8 @@ String resourcePath = '/contacts';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
 
-Future<ResponseModel> getAllContacts(String customer, String authorization, {String perPage, String page} ) async {
-  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactsByUserToken(authorization);
+Future<ResponseModel> getAllContacts(String customer, String authorization, {String perPage, String page, bool excludeDeleted = false} ) async {
+  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactsByUserToken(authorization, excludeDeleted);
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 

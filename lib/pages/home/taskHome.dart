@@ -29,6 +29,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   StreamSubscription _connectionChangeStream;
   bool isOnline = true;
   bool syncStatus = false;
+  bool visible = true;
   ListWidgets ls = ListWidgets();
 
   TabController _controller;
@@ -50,6 +51,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   @override
   void initState() {
+    visible = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
@@ -80,7 +82,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void connectionChanged(dynamic hasConnection) {
 
-    if (!isOnline && hasConnection && !syncStatus){
+    if (!isOnline && hasConnection && !syncStatus && visible){
+      print("sincronizando tareas");
       syncStatus=true;
       wrapperSync();
     }
@@ -107,7 +110,9 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   @override
   void dispose(){
+    visible = false;
     _controller.dispose();
+    _connectionChangeStream.cancel();
     blocListTaskCalendarRes.dispose();
     blocListTaskCalendarResMap.dispose();
     blocListTaskResFilter.dispose();
@@ -125,7 +130,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void syncTask() async{
     await FormChannel.syncEverything();
-    await TaskChannel.syncEverything();
+//    await TaskChannel.syncEverything();
     syncStatus = false;
     Navigator.pop(context);
   }

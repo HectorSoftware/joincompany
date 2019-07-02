@@ -126,8 +126,6 @@ class _FormBusinessState extends State<FormBusiness> {
       },
     );
   }//
-
-
   convertToModelToFieldOption(){
     if(widget.client == null){
       if(getClients == true){
@@ -171,7 +169,7 @@ class _FormBusinessState extends State<FormBusiness> {
         headerController.text = widget.dataBusiness.stage;
         businessId = widget.dataBusiness.id;
         saveBusiness.date = widget.dataBusiness.date.toString();
-        dateG = widget.dataBusiness.date.toString().substring(0,10);
+        dateG = widget.dataBusiness.date != null ?  widget.dataBusiness.date.toString().substring(0,10) : "" ;
         _dateBool =true;
         if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
@@ -214,6 +212,11 @@ class _FormBusinessState extends State<FormBusiness> {
   @override
   void initState() {
     initTextController();
+    if(widget.dataBusiness != null){
+      saveBusiness = widget.dataBusiness;
+      customerId = widget.dataBusiness.customerId;
+      clientController.text = widget.dataBusiness.customer;
+    }
     getOther();
     businessGet = widget.dataBusiness;
     super.initState();
@@ -850,6 +853,7 @@ class _FormBusinessState extends State<FormBusiness> {
 
   updateBusinessApi() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+
     var updateBusinessResponse = await updateBusiness(saveBusiness.id.toString(),saveBusiness,user.company, user.rememberToken);
 
     if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){

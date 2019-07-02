@@ -101,8 +101,8 @@ class CustomerAddressesChannel {
 
     String customer = user.company;
     String authorization = user.rememberToken;
-    
-    await CustomerAddressesChannel._unrelateCustomerAddressesInBothLocalAndServer(customer, authorization);
+
     await CustomerAddressesChannel._relateCustomerAddressesInBothLocalAndServer(customer, authorization);
+    await CustomerAddressesChannel._unrelateCustomerAddressesInBothLocalAndServer(customer, authorization);
   }
 }

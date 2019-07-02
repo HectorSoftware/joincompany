@@ -112,9 +112,9 @@ class ContactChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    await ContactChannel._deleteContactsInBothLocalAndServer(customer, authorization);
-    await ContactChannel._updateContactsInBothLocalAndServer(customer, authorization);
     await ContactChannel._createContactsInBothLocalAndServer(customer, authorization);
+    await ContactChannel._updateContactsInBothLocalAndServer(customer, authorization);
+    await ContactChannel._deleteContactsInBothLocalAndServer(customer, authorization);
   }
 
 }

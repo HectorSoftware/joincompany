@@ -114,9 +114,9 @@ class CustomerChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
-    await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
     await CustomerChannel._createCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._updateCustomersInBothLocalAndServer(customer, authorization);
+    await CustomerChannel._deleteCustomersInBothLocalAndServer(customer, authorization);
   }
 
 }

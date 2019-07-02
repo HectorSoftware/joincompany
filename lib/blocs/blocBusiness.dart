@@ -26,7 +26,7 @@ class BusinessBloc{
   Future getBusiness() async {
 
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
-    var getAllBusinessesResponse = await getAllBusinesses(user.company,user.rememberToken);
+    var getAllBusinessesResponse = await getAllBusinesses(user.company,user.rememberToken,excludeDeleted: true);
     BusinessesModel busisness = getAllBusinessesResponse.body;
 
     _listbusisness = busisness.data;

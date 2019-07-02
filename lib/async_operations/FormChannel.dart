@@ -140,9 +140,10 @@ class FormChannel {
     String customer = user.company;
     String authorization = user.rememberToken;
 
-    await FormChannel._deleteFormsInLocal(customer, authorization);
-    await FormChannel._updateFormsInLocal(customer, authorization);
     // await FormChannel._createFormsInLocal(customer, authorization);
+    await FormChannel._updateFormsInLocal(customer, authorization);
+    await FormChannel._deleteFormsInLocal(customer, authorization);
+
   }
 
 }

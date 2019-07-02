@@ -257,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
-                // testApi();
+//                 testApi();
               },
               child: Center(
                   child: Center(
@@ -364,8 +364,8 @@ class _LoginPageState extends State<LoginPage> {
       if (EvalValidations()) {
         // Query by email:
         UserModel query = UserModel(email: email);
-        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(
-            query);
+        List<UserModel> usersFromDatabaseByEmail = await DatabaseProvider.db.QueryUser(query);
+        UserModel lastUserLogged = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
         // If there is any user with that email in the db request login from server.
         if (usersFromDatabaseByEmail.isNotEmpty) {
@@ -387,11 +387,18 @@ class _LoginPageState extends State<LoginPage> {
               user.rememberToken = authFromResponse.accessToken;
               user.password = md5.convert(utf8.encode(password)).toString();
               user.company = companyLocal;
+              user.loggedAt = DateTime.now().toString();
+
               await DatabaseProvider.db.UpdateUser(
                   user.id,
                   user,
                   SyncState.synchronized
               );
+
+              if(user.id != lastUserLogged.id){
+                setState(()=>Circuleprogress = false);
+                await syncDialog();
+              }
 
               Navigator.pushReplacementNamed(context, '/vistap');
             }
@@ -440,6 +447,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 });
                 await DatabaseProvider.db.CreateUser(userFromServer, SyncState.synchronized);
+
                 setState(()=>Circuleprogress = false);
                 await syncDialog();
                 Navigator.pushReplacementNamed(context, '/vistap');
@@ -491,10 +499,23 @@ class _LoginPageState extends State<LoginPage> {
             ErrorTextFieldEmail;
             ErrorTextFieldTextemail;
           });
+        } else if (usersFromDatabaseByEmail.first.id != (await DatabaseProvider.db.RetrieveLastLoggedUser()).id) {
+          ErrorTextFieldEmail = true;
+          ErrorTextFieldTextemail = "Se necesita conexión a internet para sincronizar los datos de este usuario.";
+          setState(() {
+            ErrorTextFieldEmail;
+            ErrorTextFieldTextemail;
+          });
         } else {
           UserModel user = usersFromDatabaseByEmail.first;
           password = md5.convert(utf8.encode(password)).toString();
           if (user.password == password) {
+            user.loggedAt = DateTime.now().toString();
+            await DatabaseProvider.db.UpdateUser(
+                user.id,
+                user,
+                SyncState.synchronized
+            );
             Navigator.pushReplacementNamed(context, '/vistap');
           } else {
             ErrorTextFieldpsd = true;
@@ -903,7 +924,7 @@ class _LoginPageState extends State<LoginPage> {
       // await ContactChannel.syncEverything();
       // await CustomerContactsChannel.syncEverything();
 
-      // UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+       UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
       // ResponseModel getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
       // ContactsModel contacts = getAllContactsResponse.body;
@@ -916,6 +937,8 @@ class _LoginPageState extends State<LoginPage> {
       // print(businesses.data.length);
 
       // await CustomerContactsChannel.syncEverything();
+
+      // jcurihual@factochile.cl
 
     print("---------------------------- Fin test ----------------------------");
 
@@ -952,8 +975,8 @@ class _SyncAppState extends State<SyncApp> {
      await BusinessChannel.syncEverything();
     setState((){title = Text("Sincronizando Datos 7/8");});
     await FormChannel.syncEverything();
-    setState((){title = Text("Sincronizando Datos 8/8");});
-    await TaskChannel.syncEverything();
+    //setState((){title = Text("Sincronizando Datos 8/8");});
+    //await TaskChannel.syncEverything();
     Navigator.pop(context);
   }
 

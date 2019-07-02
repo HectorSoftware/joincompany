@@ -20,9 +20,9 @@ String resourcePath = '/customers';
 
 ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance(); 
 
-Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page } ) async {
+Future<ResponseModel> getAllCustomers(String customer, String authorization, { String perPage, String page, bool excludeDeleted = false} ) async {
   
-  List<CustomerModel> customers = await DatabaseProvider.db.RetrieveCustomersByUserToken(authorization);
+  List<CustomerModel> customers = await DatabaseProvider.db.RetrieveCustomersByUserToken(authorization, excludeDeleted);
 
   CustomersModel customersObj = new CustomersModel(data: customers, perPage: 0);
 
@@ -46,9 +46,9 @@ Future<http.Response> getAllCustomersFromServer(String customer, String authoriz
   return await httpGet(customer, authorization, resourcePath, params: params);
 }
 
-Future<ResponseModel> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page } ) async {
+Future<ResponseModel> getAllCustomersWithAddress(String customer, String authorization, { String perPage, String page, bool excludeDeleted = false } ) async {
   
-  List<CustomerWithAddressModel> customers = await DatabaseProvider.db.RetrieveCustomersWithAddressByUserToken(authorization);
+  List<CustomerWithAddressModel> customers = await DatabaseProvider.db.RetrieveCustomersWithAddressByUserToken(authorization, excludeDeleted);
 
   CustomersWithAddressModel customersObj = new CustomersWithAddressModel(data: customers, perPage: 0);
 
@@ -276,6 +276,7 @@ Future<ResponseModel> relateCustomerContact(String idCustomer, String idContact,
 
   if (await connectionStatus.checkConnection()) {
     var relateCustomerContactResponse = await relateCustomerContactFromServer(idCustomer, idContact, customer, authorization);
+    var e = relateCustomerContactResponse.body;
     if ((relateCustomerContactResponse.statusCode==200 || relateCustomerContactResponse.statusCode==201) && relateCustomerContactResponse.body != 'Cliente ya tiene el contacto asociado') {
       syncState = SyncState.synchronized;
     } else {

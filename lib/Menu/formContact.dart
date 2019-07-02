@@ -363,28 +363,12 @@ class _AddContactState extends State<AddContact> {
             phone: phone.text,
             email: email.text,
             details: note.text,
+            updatedAt: widget.contact.updatedAt,
           );
           var resposeUpdateContact = await updateContact(contact.id.toString(),contact,user.company,user.rememberToken);
           if (resposeUpdateContact.statusCode == 200){
             if(clientAct != null){
               if(clientOld == null){
-                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), resposeUpdateContact.body.id.toString(), user.company,user.rememberToken);
-                if(responseRelateCustomerContact.statusCode == 200){
-                  setState(() {loading = false;});
-                  return true;
-                }else{
-                  setState(() {loading = false;});
-                  return showDialog(
-                      context: context,
-                      barrierDismissible: true, // user must tap button for close dialog!
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                            title: Text('Ya existe un contacto con ese cliente')
-                        );
-                      }
-                  );
-                }
-              }else if(clientOld.id != clientAct.id){
                 var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), user.company,user.rememberToken);
                 if(responseRelateCustomerContact.statusCode == 200){
                   setState(() {loading = false;});
@@ -396,7 +380,38 @@ class _AddContactState extends State<AddContact> {
                       barrierDismissible: true, // user must tap button for close dialog!
                       builder: (BuildContext context) {
                         return AlertDialog(
-                            title: Text('Ya existe un contacto con ese cliente')
+                            title: Text(responseRelateCustomerContact.body == 'Cliente ya tiene el contacto asociado' ? 'Cliente ya tiene el contacto asociado' : 'Ha ocurrido un error')
+                        );
+                      }
+                  );
+                }
+              }else if(clientOld.id != clientAct.id){
+                var responseRelateCustomerContact = await relateCustomerContact(clientAct.id.toString(), contact.id.toString(), user.company,user.rememberToken);
+                if(responseRelateCustomerContact.statusCode == 200){
+                  var responseUnRelateCustomerContact = await unrelateCustomerContact(clientOld.id.toString(), contact.id.toString(), user.company,user.rememberToken);
+                  if(responseUnRelateCustomerContact.statusCode == 200){
+                    setState(() {loading = false;});
+                    return true;
+                  }else{
+                    setState(() {loading = false;});
+                    return showDialog(
+                        context: context,
+                        barrierDismissible: true, // user must tap button for close dialog!
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              title: Text('Ha ocurrido un error desasociando el cliente')
+                          );
+                        }
+                    );
+                  }
+                }else{
+                  setState(() {loading = false;});
+                  return showDialog(
+                      context: context,
+                      barrierDismissible: true, // user must tap button for close dialog!
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: Text(responseRelateCustomerContact.body == 'Cliente ya tiene el contacto asociado' ? 'Cliente ya tiene el contacto asociado' : 'Ha ocurrido un error')
                         );
                       }
                   );

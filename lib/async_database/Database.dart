@@ -2506,7 +2506,7 @@ class DatabaseProvider {
     return ids;
   }
 
-  Future<List<CustomerModel>> RetrieveCustomersByUserToken(String userToken) async {
+  Future<List<CustomerModel>> RetrieveCustomersByUserToken(String userToken, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -2515,8 +2515,8 @@ class DatabaseProvider {
       from "customers" as c
       inner join "customers_users" as cu on cu.customer_id = c.id
       inner join "users" as u on cu.user_id = u.id
-      WHERE u.remember_token = '$userToken';
-      '''
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
     );
 
     List<CustomerModel> listOfCustomers = new List<CustomerModel>();
@@ -4026,20 +4026,20 @@ class DatabaseProvider {
     return relations;
   }
 
-  Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken) async {
+  Future<List<CustomerWithAddressModel>> RetrieveCustomersWithAddressByUserToken(String userToken, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
 
     data = await db.rawQuery(
       '''
-      Select c.*, a.address, a.reference, a.longitude, a.latitude, a.locality_id, a.google_place_id, a.country, a.state, a.city, a.contact_phone, a.contact_mobile, a.contact_email, ca.address_id, ca.approved, ca.customer_id
+      SELECT DISTINCT c.*, a.address, a.reference, a.longitude, a.latitude, a.locality_id, a.google_place_id, a.country, a.state, a.city, a.contact_phone, a.contact_mobile, a.contact_email, ca.address_id, ca.approved, ca.customer_id
       from customers as c
       inner join customers_users as cu on cu.customer_id = c.id
       inner join users as u on cu.user_id = u.id
       left join customers_addresses as ca on ca.customer_id = c.id
       left join addresses as a on a.id = ca.address_id
-      WHERE u.remember_token = '$userToken';
-      '''
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
     );
 
     List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
@@ -4320,22 +4320,35 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<ContactModel>> RetrieveContactsByUserToken (String userToken) async {
+  Future<List<ContactModel>> RetrieveContactsByUserToken (String userToken, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
 
     data = await db.rawQuery(
         '''
-      Select c.*, cu.name as customer, cu.id as customer_id
+      SELECT DISTINCT c.*, cu.name as customer, cu.id as customer_id
       from "contacts" as c
       left join "customers_contacts" as cc on cc.contact_id = c.id
-      left join "customers" as cu on cc.customer_id = cu.id;
-      '''
+      left join "customers" as cu on cc.customer_id = cu.id
+      inner join "users" as u on c.created_by_id = u.id
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
     );
 
     List<ContactModel> listOfContacts = new List<ContactModel>();
+
     if (data.isNotEmpty) {
       await Future.forEach(data, (contact) async {
+//        bool flag = true;
+//        int idCustomer = contact["customer_id"];
+//
+//        if(idCustomer == null){
+//          Map buscado = new Map();
+//          buscado["id"] = contact["id"];
+//          data.toList().firstWhere((c) => c["id"] == );
+//
+//        }
+
         listOfContacts.add(new ContactModel(
           id: contact["id"],
           createdAt: contact["created_at"],
@@ -4602,15 +4615,18 @@ class DatabaseProvider {
       return null;
   }
 
-  Future<List<BusinessModel>> RetrieveBusinessesByUserToken(String userToken) async {
+  Future<List<BusinessModel>> RetrieveBusinessesByUserToken(String userToken, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
+
     data = await db.rawQuery(
         '''
-      Select b.*, cu.name as customer
+      SELECT DISTINCT b.*, cu.name as customer, cu.id as customer_id
       from "businesses" as b
-      inner join "customers" as cu on cu.id = b.customer_id;
-      '''
+      inner join "customers" as cu on cu.id = b.customer_id
+      inner join "users" as u on b.created_by_id = u.id
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND b.deleted = 0;" : ';')
     );
 
 

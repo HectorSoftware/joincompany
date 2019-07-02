@@ -38,11 +38,13 @@ class _ClientState extends State<Client> {
   String textFilter='';
   STATUS_PAGE_CLIENT statusPage;
   bool syncStatus = false;
+  bool active = true;
   final TextEditingController _filter = new TextEditingController();
 
   @override
   void initState() {
     statusPage = widget.statusPage;
+    active = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
@@ -55,6 +57,7 @@ class _ClientState extends State<Client> {
 
   @override
   void dispose(){
+    active = false;
     _connectionChangeStream.cancel();
     _filter.dispose();
     super.dispose();
@@ -72,7 +75,8 @@ class _ClientState extends State<Client> {
       isOffline = !hasConnection;
     });
 
-    if (!isOffline && hasConnection && !syncStatus){
+    if (!isOffline && hasConnection && !syncStatus && active){
+      print("sincronizando clientes");
       wrapperSync();
     }
   }

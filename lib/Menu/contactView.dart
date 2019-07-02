@@ -36,7 +36,7 @@ class _ContactViewState extends State<ContactView> {
   bool syncStatus = false;
   StreamSubscription _connectionChangeStream;
   bool isOnline = true;
-
+  bool visible = true;
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Contactos');
   String textFilter='';
@@ -44,6 +44,7 @@ class _ContactViewState extends State<ContactView> {
 
   @override
   void initState() {
+    visible = true;
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
     checkConnection(connectionStatus);
@@ -61,7 +62,8 @@ class _ContactViewState extends State<ContactView> {
 
   void connectionChanged(dynamic hasConnection) {
 
-    if (!isOnline && hasConnection && !syncStatus){
+    if (!isOnline && hasConnection && !syncStatus && visible){
+      print("sincronizando contactos");
       wrapperSync();
     }
 
@@ -115,6 +117,8 @@ class _ContactViewState extends State<ContactView> {
 
   @override
   void dispose(){
+    _connectionChangeStream.cancel();
+    visible = false;
     super.dispose();
   }
 
