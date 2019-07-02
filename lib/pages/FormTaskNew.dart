@@ -1216,25 +1216,24 @@ conC(String value){
                 );
 
               }
-              if(listFieldsModels[index].fieldType == 'Boolean')
-              {
-              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
-                return Row(
-                  children: <Widget>[
-                    Container(
-                        width: MediaQuery.of(context).size.width*0.5,
-                        child:Row(
-                          children: <Widget>[
-                          ],
-                        )
-                    ),
-                  ],
-
-                );
-              }
+//              if(listFieldsModels[index].fieldType == 'Boolean')
+//              {
+//              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
+//                return Row(
+//                  children: <Widget>[
+//                    Container(
+//                        width: MediaQuery.of(context).size.width*0.5,
+//                        child:Row(
+//                          children: <Widget>[
+//                          ],
+//                        )
+//                    ),
+//                  ],
+//
+//                );
+//              }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
-
                 return Row(
                   children: <Widget>[
                     Padding(
