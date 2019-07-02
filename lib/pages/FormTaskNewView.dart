@@ -613,13 +613,18 @@ class _FormTaskViewState extends State<FormTaskView> {
       List<FieldOptionModel> listOption = new List<FieldOptionModel>();
       FieldOptionModel model;
       for(int y = 0; y < listRows.length ; y++){
-       // model = new FieldOptionModel(int.)
+        int val = 0;
+        try{
+          val = int.parse(listRows[y]);
+        }catch(e){}
+        model = new FieldOptionModel(value: val,name: listColumns[y]);
+        listOption.add(model);
       }
 
       print('');
 
 
-      return generatedTable(field.fieldOptions, field.id.toString());
+      return generatedTable(listOption, field.id.toString());
     }
 
     return Text('Sin datos');

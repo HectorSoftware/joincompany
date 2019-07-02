@@ -166,7 +166,6 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('ACEPTAR'),
                                 onPressed: () async {
-                                  print(valuesTable);
                                   if(dataInfo.isNotEmpty) {
                                     saveTask.formId = formGlobal.id;
                                     saveTask.responsibleId = responsibleId;
@@ -1463,7 +1462,6 @@ conC(String value){
        taskEnd = createTaskResponse.statusCode;
      });
    }
-   print(taskEnd);
   return true;
   }
   void saveData(String dataController, String id) {
