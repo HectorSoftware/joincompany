@@ -232,13 +232,14 @@ class _FormTaskState extends State<FormTask> {
                                           );
                                       }
                                       );
-                                    }else if(taskEnd == 422){
+                                    }
+                                    if(taskEnd == 422  || taskEnd == 413){
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
                                               title: Text('Error al procesar la tarea por el Servidor'),
-                                                content: Text('Calidad de imagen elevada '),
+                                                content: Text('Calidad de imagen elevada. Considere enviar una imagen de menor calidad '),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
@@ -1490,7 +1491,11 @@ conC(String value){
          taskEnd = 500;
        });
      }
-     print(createTaskResponse.statusCode);
+   if(createTaskResponse.statusCode == 413 || createTaskResponse.statusCode == 422 ){
+     setState(() {
+       taskEnd = createTaskResponse.statusCode;
+     });
+   }
   return true;
   }
   void saveData(String dataController, String id) {
