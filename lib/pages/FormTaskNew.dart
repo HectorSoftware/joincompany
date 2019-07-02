@@ -674,7 +674,7 @@ conC(String value){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].fieldCollection}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index].type}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
@@ -1166,35 +1166,6 @@ conC(String value){
                             ],
                           ),
                         ),
-                    /*    Container(
-                          width: MediaQuery.of(globalContext).size.width*0.50,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 20,left: 20, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                            },
-                            maxLines: 1,
-                            //controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Comentario ',
-                            ),
-                          ),
-                        ),*/
 
                       ],
                     ),
@@ -1216,24 +1187,25 @@ conC(String value){
                 );
 
               }
-//              if(listFieldsModels[index].fieldType == 'Boolean')
-//              {
-//              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
-//                return Row(
-//                  children: <Widget>[
-//                    Container(
-//                        width: MediaQuery.of(context).size.width*0.5,
-//                        child:Row(
-//                          children: <Widget>[
-//                          ],
-//                        )
-//                    ),
-//                  ],
-//
-//                );
-//              }
+              if(listFieldsModels[index].fieldType == 'Boolean')
+              {
+              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
+                return Row(
+                  children: <Widget>[
+                    Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        child:Row(
+                          children: <Widget>[
+                          ],
+                        )
+                    ),
+                  ],
+
+                );
+              }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
+
                 return Row(
                   children: <Widget>[
                     Padding(
