@@ -137,7 +137,7 @@ class _FormTaskState extends State<FormTask> {
         backgroundColor: PrimaryColor,
         leading:  IconButton(
             icon: Icon(Icons.arrow_back,size: 25,),
-            tooltip: 'Guardar Tarea',
+            tooltip: 'Guardar tarea',
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
@@ -146,9 +146,7 @@ class _FormTaskState extends State<FormTask> {
                     Container(
                       width: MediaQuery.of(context).size.width *0.9,
                       child: AlertDialog(
-                        title: Text('Guardar'),
-                        content: const Text(
-                            'Desea guardar tarea'),
+                        title: Text('Desea guardar tarea'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
@@ -214,10 +212,10 @@ class _FormTaskState extends State<FormTask> {
                                         context: context,
                                       builder: (BuildContext context) {
                                           return   AlertDialog(
-                                            title: Text('Tarea Guardada con Exito'),
+                                            title: Text('Tarea guardada con exito'),
                                             actions: <Widget>[
                                               FlatButton(
-                                                child: Text('Aceptar'),
+                                                child: Text('ACEPTAR'),
                                                 onPressed: () {
                                                   if(widget.toBusiness != true){
                                                     Navigator.pushReplacementNamed(context, '/vistap');
@@ -240,7 +238,7 @@ class _FormTaskState extends State<FormTask> {
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
                                               title: Text('Error al procesar la tarea por el Servidor'),
-                                                content: Text('Calidad de imagen muy alta'),
+                                                content: Text('Calidad de imagen elevada '),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
@@ -296,9 +294,7 @@ class _FormTaskState extends State<FormTask> {
                   builder: (BuildContext context) {
                     return
                       AlertDialog(
-                        title: Text('Descartar'),
-                        content: const Text(
-                            'Desea descartar Formulario'),
+                        title: Text('Desea descartar Formulario'),
                         actions: <Widget>[
                           FlatButton(
                             child: const Text('CANCELAR'),
@@ -463,8 +459,7 @@ buildListTypeForm(){
               return new Container(
                 child: Center(
                   child: Text("No hay Formularios"),
-                ),
-              );
+                ),);
             }
           }
         }
@@ -507,8 +502,9 @@ conC(String value){
     }else{
       var titules = data["table"].keys;
       for(String titule in titules){
-        dat = dat + titule + "," ;
+        dat = dat + titule + "*" ;
       }
+      dat = dat + ';';
       for(String titule in titules){
         Map dataColumn = data["table"][titule];
         for (var key in dataColumn.keys){
@@ -1494,6 +1490,7 @@ conC(String value){
          taskEnd = 500;
        });
      }
+     print(createTaskResponse.statusCode);
   return true;
   }
   void saveData(String dataController, String id) {
