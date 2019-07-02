@@ -240,26 +240,24 @@ class _FormBusinessState extends State<FormBusiness> {
                     Container(
                       width: MediaQuery.of(context).size.width *0.9,
                       child: AlertDialog(
-                        title: Text('Guardar'),
-                        content: const Text(
-                            'Desea Guardar'),
+                        title: Text('Desea guardar'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
                               FlatButton(
-                                child: const Text('SALIR'),
+                                child: const Text('Salir'),
                                 onPressed: () {
                                   Navigator.pushReplacementNamed(context, '/negocios');
                                 },
                               ),
                               FlatButton(
-                                child: const Text('CANCELAR'),
+                                child: const Text('Cancelar'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
-                                child: const Text('ACEPTAR'),
+                                child: const Text('Aceptar'),
                                 onPressed: () async {
                                   saveBusiness.customer = clientController.text;
                                   saveBusiness.amount = amountController.text;
@@ -279,7 +277,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return   AlertDialog(
-                                          title: Text('Guardado con Exito'),
+                                          title: Text('Guardado con exito'),
                                           actions: <Widget>[
                                             FlatButton(
 
@@ -355,7 +353,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       context: context,
                       builder: (BuildContext context) {
                         return   AlertDialog(
-                          title: Text('Desea Eliminiar Negocio'),
+                          title: Text('Desea eliminiar negocio'),
                           actions: <Widget>[
                             FlatButton(
                               child: const Text('Volver'),

@@ -1,4 +1,6 @@
 
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -137,44 +139,72 @@ class _BusinessListState extends State<BusinessList> {
                       );
                     }
                     if(textFilter == ''){
-                      return Card(
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height * por,
-                              color: PrimaryColor,
-                              child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                  fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
-                                  fontSize: 16, color: Colors.white)),
-                            ),
-                            Card(
-                              child: ListTile(
-                                title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
-                                subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
-                                    color: Colors.black)): Text('', style: TextStyle(
-                                    color: Colors.black)),
-                                trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
-                                onTap: (){
-                                  if(!widget.vista){
-                                    return showDialog(
-                                      context: context,
-                                      barrierDismissible: false, // user must tap button for close dialog!
-                                      builder: (BuildContext context) {
-                                        return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                      },
-                                    );
-                                  }else{
-                                    Navigator.of(context).pop(snapshot.data[index]);
-                                  }
-                                },
+                      if(stage != snapshot.data[index].stage){
+                        stage =  snapshot.data[index].stage;
+                        return Card(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(left: padding,right: 0,top: padding, bottom: 0),
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height * por,
+                                color: PrimaryColor,
+                                child:snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                    fontSize: 16, color: Colors.white)): Text('Sin presentación', style: TextStyle(
+                                    fontSize: 16, color: Colors.white)),
                               ),
-                            ),
+                              Card(
+                                child: ListTile(
+                                  title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                                  subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                      color: Colors.black)): Text('', style: TextStyle(
+                                      color: Colors.black)),
+                                  trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                  onTap: (){
+                                    if(!widget.vista){
+                                      return showDialog(
+                                        context: context,
+                                        barrierDismissible: false, // user must tap button for close dialog!
+                                        builder: (BuildContext context) {
+                                          return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                        },
+                                      );
+                                    }else{
+                                      Navigator.of(context).pop(snapshot.data[index]);
+                                    }
+                                  },
+                                ),
+                              ),
 
-                          ],
-                        ),
-                      );
+                            ],
+                          ),
+                        );
+                      }else{
+                     return   Card(
+                          child: ListTile(
+                            title: Text(snapshot.data[index].name.toString() + '  -  ' + snapshot.data[index].customer),
+                            subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
+                                color: Colors.black)): Text('', style: TextStyle(
+                                color: Colors.black)),
+                            trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                            onTap: (){
+                              if(!widget.vista){
+                                return showDialog(
+                                  context: context,
+                                  barrierDismissible: false, // user must tap button for close dialog!
+                                  builder: (BuildContext context) {
+                                    return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
+                                  },
+                                );
+                              }else{
+                                Navigator.of(context).pop(snapshot.data[index]);
+                              }
+                            },
+                          ),
+                        );
+
+                      }
+
 
                     }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
                       return Card(
