@@ -673,7 +673,7 @@ conC(String value){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index]}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
