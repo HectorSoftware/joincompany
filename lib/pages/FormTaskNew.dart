@@ -1170,6 +1170,7 @@ conC(String value){
                         child: TextField(
                           controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                           onChanged: (value){
+                            
                             saveData(value,listFieldsModels[index].id.toString());
                           },
                           maxLines: 1,
@@ -1199,7 +1200,13 @@ conC(String value){
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
 
+  capturePosition(){
+    if(_value1 == true)
+      {
 
+      }
+
+  }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
