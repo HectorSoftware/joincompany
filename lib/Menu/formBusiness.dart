@@ -481,7 +481,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       icon: Icon(Icons.arrow_drop_down),
                       elevation: 10,
                       value: dropdownValueMenuHeader,
-                      hint: Text('Negocio'),
+                      hint: Text('Etapa'),
                       onChanged: (String newValue) {
                         setState(() {
                           dropdownValueMenuHeader = newValue;
@@ -511,7 +511,7 @@ class _FormBusinessState extends State<FormBusiness> {
                     ]
                 ),
                 child: ListTile(
-                  title: _dateBool ?Text(dateG): Text("Fecha" ,style: TextStyle(color: Colors.grey[600]),),
+                  title: _dateBool ?Text(dateG): Text("Fecha de Cierre" ,style: TextStyle(color: Colors.grey[600]),),
                   trailing: Icon(Icons.calendar_today),
                   onTap: ()async{
                     final DateTime picked = await showDatePicker(
