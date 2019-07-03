@@ -1,10 +1,6 @@
-// TODO: Activar llave foranea para que se actualize automaticamente
-// TODO: Verificar que se eliminan las relaciones donde se elimina el objeto padre.
-// TODO: Al devolver los contactos y negocios, incluir el id del customer.
-// TODO: Verificar si devuelvo el date correcto al crear y actualizar tareas
 // TODO: Comparar el ID en las relaciones y no el Id del registro.
 // TODO: Agregar a todos los recursos (contactos, clientes...) los datos iniciales que se tengan (fecha de creacion, etc, etc...).
-// TODO: Agregar unique a los campos code en clientes y en contactos.
+
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
@@ -402,11 +398,8 @@ class DatabaseProvider {
 
   Future<int> DeleteUserById(int id) async {
     final db = await database;
-    return await db.rawDelete(
-      '''
-      DELETE FROM "users" WHERE id = $id
-      '''
-    );
+    await db.rawDelete('DELETE FROM "customers_users" WHERE user_id = $id');
+    return await db.rawDelete('DELETE FROM "users" WHERE id = $id');
   }
 
   Future<List<UserModel>> ListUsers() async {
@@ -940,7 +933,7 @@ class DatabaseProvider {
   Future<int> DeleteLocalityById(int id) async {
     final db = await database;
     return await db.rawDelete(
-        '''
+      '''
       DELETE FROM "localities" WHERE id = $id
       '''
     );
@@ -2166,6 +2159,7 @@ class DatabaseProvider {
 
   Future<int> DeleteAddressById(int id) async {
     final db = await database;
+    await db.rawDelete('DELETE FROM "customers_addresses" WHERE address_id = $id');
     return await db.rawDelete(
         '''
       DELETE FROM "addresses" WHERE id = $id
@@ -2440,6 +2434,9 @@ class DatabaseProvider {
 
   Future<int> DeleteCustomerById(int id) async {
     final db = await database;
+    await db.rawDelete('DELETE FROM "customers_users" WHERE customer_id = $id');
+    await db.rawDelete('DELETE FROM "customers_contacts" WHERE customer_id = $id');
+    await db.rawDelete('DELETE FROM "customers_addresses" WHERE customer_id = $id');
     return await db.rawDelete(
       '''
       DELETE FROM "customers" WHERE id = $id
@@ -2638,7 +2635,7 @@ class DatabaseProvider {
           customValue.value = "/tmp/";
         }
       }
-      
+
       await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
 
@@ -2992,7 +2989,7 @@ class DatabaseProvider {
       );
 
       customValue.taskId = taskId;
-      if (data.isNotEmpty) 
+      if (data.isNotEmpty)
         DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
       else
         DatabaseProvider.db.CreateCustomValue(customValue, syncState);
@@ -3006,7 +3003,7 @@ class DatabaseProvider {
       if (data.isNotEmpty)
         UpdateForm(task.form.id, task.form, syncState);
       else
-        CreateForm(task.form, syncState);  
+        CreateForm(task.form, syncState);
     }
 
     if (task.address != null) {
@@ -3065,7 +3062,7 @@ class DatabaseProvider {
       WHERE id = ${taskId}
       ''',
         [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt, task.createdById,
-    task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, 
+    task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById,
     task.deletedById, task.formId, task.responsibleId,
     task.customerId, task.addressId, task.businessId, task.name, task.planningDate,
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
@@ -3425,7 +3422,7 @@ class DatabaseProvider {
 
     if (data.isNotEmpty)
       return null;
-    
+
     if (customValue.field != null) {
       await CreateField(new FieldModel(
         id: customValue.field.id,
@@ -3474,7 +3471,7 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customValue.id, customValue.createdAt == null ? DateTime.now().toString() : customValue.createdAt, 
+      [...[customValue.id, customValue.createdAt == null ? DateTime.now().toString() : customValue.createdAt,
       customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
       customValue.formId, customValue.sectionId, customValue.fieldId,
       customValue.customizableType, customValue.customizableId,
@@ -4337,6 +4334,7 @@ class DatabaseProvider {
 
   Future<int> DeleteContactById (int id) async {
     final db = await database;
+    await db.rawDelete('DELETE FROM "customers_contacts" WHERE contact_id = $id');
     return await db.rawDelete(
       '''
       DELETE FROM "contacts" WHERE id = $id
