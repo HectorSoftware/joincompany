@@ -256,7 +256,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       try{
         ruta = dataInfo[field.id.toString()];
         if(ruta.isNotEmpty){
-          ruta = ruta.substring(21);
+          ruta = ruta.substring(23);
         }
       }catch(e){}
 

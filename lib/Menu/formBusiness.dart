@@ -401,7 +401,7 @@ class _FormBusinessState extends State<FormBusiness> {
                     controller: posController,
                    // maxLines: maxLines,
                     decoration: InputDecoration(
-                      hintText: 'Posicionamiento',
+                      hintText: 'Negocio',
                       border: InputBorder.none,
                      // errorText: getErrorText(t),
                       contentPadding: EdgeInsets.all(15.0),
