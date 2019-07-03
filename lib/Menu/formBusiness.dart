@@ -845,8 +845,6 @@ class _FormBusinessState extends State<FormBusiness> {
   saveBusinessApi() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.rememberToken);
-//    print(createBusinessResponse.statusCode);
-//      print(createBusinessResponse.body);
 
     if(createBusinessResponse.statusCode == 201 || createBusinessResponse.statusCode == 200){
       setState(() {

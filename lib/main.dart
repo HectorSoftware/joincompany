@@ -24,7 +24,6 @@ const hostApi = 'webapp.getkem.com';
 const versionApi = '/api/v1';
 const kGoogleApiKey = "AIzaSyAiN5XM-jcaGfIeqXRweANSdhvaZluolbI";
 
-
 class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {

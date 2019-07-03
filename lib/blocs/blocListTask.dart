@@ -58,7 +58,7 @@ class BlocListTask {
           }
         }
       }
-    }catch(e){}
+    } catch(e) {}
 
     inListTaksTotal.add(tasks !=null ? tasks.total : 0);
     inListTaks.add(_listTaskModellocal);

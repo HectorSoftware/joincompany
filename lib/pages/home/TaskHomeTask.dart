@@ -166,8 +166,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   for (int cantlistTaskModellocal = 0; cantlistTaskModellocal <
                       onDataList.length; cantlistTaskModellocal++) {
                     listTaskModellocalbool.add(
-                        onDataList[cantlistTaskModellocal].status.contains(
-                            'done'));
+                        onDataList[cantlistTaskModellocal].status.contains('done'));
                   }
                 } else {
                   LastCircule();

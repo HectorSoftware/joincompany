@@ -3,6 +3,8 @@
 // TODO: Al devolver los contactos y negocios, incluir el id del customer.
 // TODO: Verificar si devuelvo el date correcto al crear y actualizar tareas
 // TODO: Comparar el ID en las relaciones y no el Id del registro.
+// TODO: Agregar a todos los recursos (contactos, clientes...) los datos iniciales que se tengan (fecha de creacion, etc, etc...).
+// TODO: Agregar unique a los campos code en clientes y en contactos.
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
@@ -2553,21 +2555,6 @@ class DatabaseProvider {
     if (data.isNotEmpty)
       return null;
 
-    if (task.customValues != null)
-      await Future.forEach(task.customValues, (customValue) async {
-        CreateCustomValue(customValue, syncState);
-      });
-
-    // individual items
-    if (task.form != null)
-      CreateForm(task.form, syncState);
-    if (task.address != null)
-      CreateAddress(task.address, syncState);
-    if (task.customer != null)
-      CreateCustomer(task.customer, syncState);
-    if (task.responsible != null)
-      CreateResponsible(task.responsible, syncState);
-
     task.id = await db.rawInsert(
       '''
       INSERT INTO "tasks"(
@@ -2600,14 +2587,69 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-        [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt,
-    task.createdById, task.updatedById, task.deletedById, task.formId,
-    task.responsibleId, task.customerId, task.addressId, task.name,
-    task.planningDate, task.checkinDate, task.checkinLatitude,
-    task.checkinLongitude, task.checkinDistance, task.checkoutDate,
-    task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
-    task.status], ...paramsBySyncState[syncState]],
+      [...[task.id, task.createdAt == null ? DateTime.now().toString() : task.createdAt,
+      task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt,
+      task.createdById == null ? (await RetrieveLastLoggedUser()).id : task.createdById,
+      task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, task.deletedById, task.formId,
+      task.responsibleId, task.customerId, task.addressId, task.name,
+      task.planningDate, task.checkinDate, task.checkinLatitude,
+      task.checkinLongitude, task.checkinDistance, task.checkoutDate,
+      task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
+      task.status == null ? "pending" : task.status], ...paramsBySyncState[syncState]],
     );
+
+    if (task.customValuesMap == null)
+      task.customValuesMap = new Map<String, String>();
+    if (task.customValues == null)
+      task.customValues = new List<CustomValueModel>();
+
+    bool isCustomValueComingFromServer;
+    if (task.customValues.length > task.customValuesMap.length) {
+      isCustomValueComingFromServer = true;
+      task.customValuesMap = new Map<String, String>();
+      // for each custom value, create an entry in the map
+      task.customValues.forEach((customValue) {
+        task.customValuesMap[customValue.id.toString()] = customValue.value;
+      });
+    } else {
+      isCustomValueComingFromServer = false;
+      task.customValuesMap.forEach((key, value) {
+        task.customValues.add(new CustomValueModel(
+          fieldId: int.parse(key.toString()),
+          value: value,
+        ));
+      });
+    }
+
+    FormModel formForCustomValue = await DatabaseProvider.db.ReadFormById(task.formId);
+    await Future.forEach(task.customValues, (customValue) async {
+      if (!isCustomValueComingFromServer) {
+        SectionModel foundSection = formForCustomValue.getSectionByFieldId(customValue.fieldId);
+        customValue.formId = task.formId;
+        customValue.sectionId = foundSection.id;
+        customValue.customizableType = "Task";
+        customValue.taskId = task.id;
+        customValue.customizableId = task.id;
+
+        FieldModel foundField = foundSection.findFieldById(customValue.fieldId);
+        if (foundField.fieldType == "Photo") {
+          customValue.imageBase64 = customValue.value;
+          customValue.value = "/tmp/";
+        }
+      }
+      
+      await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
+    });
+
+    // individual items
+    if (task.form != null)
+      CreateForm(task.form, syncState);
+    if (task.address != null)
+      CreateAddress(task.address, syncState);
+    if (task.customer != null)
+      CreateCustomer(task.customer, syncState);
+    if (task.responsible != null)
+      CreateResponsible(task.responsible, syncState);
 
     return task;
   }
@@ -2657,6 +2699,7 @@ class DatabaseProvider {
         form: form,
         responsible: responsible,
         customValues: listOfCustomValues,
+        customValuesMap: customValuesFromListToMap(listOfCustomValues),
         customSections: null,
       );
     }
@@ -2668,7 +2711,12 @@ class DatabaseProvider {
   Future<List<TaskModel>> QueryTaskForService(QueryTasks query) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery('SELECT * FROM "tasks"');
+    data = await db.rawQuery(
+      '''
+      SELECT * FROM "tasks" WHERE deleted <> 1
+      ''',
+    );
+
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {
@@ -2733,7 +2781,7 @@ class DatabaseProvider {
           status: taskRetrieved["status"],
           customSections: new List<CustomSectionModel>(),
           customValues: listOfCustomValues,
-          customValuesMap: new Map<String,String>(),
+          customValuesMap: customValuesFromListToMap(listOfCustomValues),
           form: form,
           address: address,
           customer: customer,
@@ -2741,7 +2789,7 @@ class DatabaseProvider {
         ));
       });
     }
-        
+
     return listOfTasks;
   }
 
@@ -2916,6 +2964,7 @@ class DatabaseProvider {
           form: form,
           responsible: responsible,
           customValues: listOfCustomValues,
+          customValuesMap: customValuesFromListToMap(listOfCustomValues),
           customSections: null,
         ));
       });
@@ -2929,42 +2978,52 @@ class DatabaseProvider {
     await Future.forEach(task.customValues, (customValue) async {
       List<Map<String, dynamic>> data;
       data = await db.rawQuery(
-          '''
+        '''
       SELECT * FROM "custom_values" WHERE id = ${customValue.id}
       '''
       );
 
-      if (data.isNotEmpty)
-        UpdateCustomValue(customValue.id, customValue, syncState);
+      customValue.taskId = taskId;
+      if (data.isNotEmpty) 
+        DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
       else
-        CreateCustomValue(customValue, syncState);
+        DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
 
     // individual items
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
-    if (data.isNotEmpty)
-      UpdateForm(task.form.id, task.form, syncState);
-    else
-      CreateForm(task.form, syncState);
 
-    data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
-    if (data.isNotEmpty)
-      UpdateAddress(task.address.id, task.address, syncState);
-    else
-      CreateAddress(task.address, syncState);
+    if (task.form != null) {
+      data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
+      if (data.isNotEmpty)
+        UpdateForm(task.form.id, task.form, syncState);
+      else
+        CreateForm(task.form, syncState);  
+    }
 
-    data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
-    if (data.isNotEmpty)
-      UpdateCustomer(task.customer.id, task.customer, syncState);
-    else
-      CreateCustomer(task.customer, syncState);
+    if (task.address != null) {
+      data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
+      if (data.isNotEmpty)
+        UpdateAddress(task.address.id, task.address, syncState);
+      else
+        CreateAddress(task.address, syncState);
+    }
 
-    data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
-    if (data.isNotEmpty)
-      UpdateResponsible(task.responsible.id, task.responsible, syncState);
-    else
-      CreateResponsible(task.responsible, syncState);
+    if (task.customer != null) {
+      data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
+      if (data.isNotEmpty)
+        UpdateCustomer(task.customer.id, task.customer, syncState);
+      else
+        CreateCustomer(task.customer, syncState);
+    }
+
+    if (task.responsible != null) {
+      data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
+      if (data.isNotEmpty)
+        UpdateResponsible(task.responsible.id, task.responsible, syncState);
+      else
+        CreateResponsible(task.responsible, syncState);
+    }
 
     task.id = await db.rawUpdate(
       '''
@@ -2997,7 +3056,8 @@ class DatabaseProvider {
       WHERE id = ${taskId}
       ''',
         [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt, task.createdById,
-    task.updatedById, task.deletedById, task.formId, task.responsibleId,
+    task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, 
+    task.deletedById, task.formId, task.responsibleId,
     task.customerId, task.addressId, task.name, task.planningDate,
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
     task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
@@ -3076,11 +3136,7 @@ class DatabaseProvider {
   Future<List<TaskModel>> ListTasks() async {
     final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-      '''
-      SELECT * FROM "tasks"
-      '''
-    );
+    data = await db.rawQuery('SELECT * from "tasks"');
 
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
@@ -3122,6 +3178,7 @@ class DatabaseProvider {
           form: form,
           responsible: responsible,
           customValues: customValues,
+          customValuesMap: customValuesFromListToMap(customValues),
           customSections: null,
         ));
       });
@@ -3370,33 +3427,35 @@ class DatabaseProvider {
 
     if (data.isNotEmpty)
       return null;
+    
+    if (customValue.field != null) {
+      await CreateField(new FieldModel(
+        id: customValue.field.id,
+        createdAt: customValue.field.createdAt,
+        entityId: customValue.field.entityId,
+        sectionId: customValue.field.sectionId,
+        name: customValue.field.name,
+        deletedById: customValue.field.deletedById,
+        updatedById: customValue.field.updatedById,
+        createdById: customValue.field.createdById,
+        deletedAt: customValue.field.deletedAt,
+        code: customValue.field.code,
+        entityType: customValue.field.entityType,
+        fieldCollection: customValue.field.fieldCollection,
+        fieldDefaultValue: customValue.field.fieldDefaultValue,
+        fieldOptions: customValue.field.fieldOptions,
+        fieldPlaceholder: customValue.field.fieldPlaceholder,
+        fieldRequired: customValue.field.fieldRequired,
+        fieldType: customValue.field.fieldType,
+        fieldWidth: customValue.field.fieldWidth,
+        position: customValue.field.position,
+        subtitle: customValue.field.subtitle,
+        type: customValue.field.type,
+        updatedAt: customValue.field.updatedAt,
+      ), syncState);
+    }
 
-    CreateField(new FieldModel(
-      id: customValue.field.id,
-      createdAt: customValue.field.createdAt,
-      entityId: customValue.field.entityId,
-      sectionId: customValue.field.sectionId,
-      name: customValue.field.name,
-      deletedById: customValue.field.deletedById,
-      updatedById: customValue.field.updatedById,
-      createdById: customValue.field.createdById,
-      deletedAt: customValue.field.deletedAt,
-      code: customValue.field.code,
-      entityType: customValue.field.entityType,
-      fieldCollection: customValue.field.fieldCollection,
-      fieldDefaultValue: customValue.field.fieldDefaultValue,
-      fieldOptions: customValue.field.fieldOptions,
-      fieldPlaceholder: customValue.field.fieldPlaceholder,
-      fieldRequired: customValue.field.fieldRequired,
-      fieldType: customValue.field.fieldType,
-      fieldWidth: customValue.field.fieldWidth,
-      position: customValue.field.position,
-      subtitle: customValue.field.subtitle,
-      type: customValue.field.type,
-      updatedAt: customValue.field.updatedAt,
-    ), syncState);
-
-    return await db.rawInsert(
+    var customValueCreated = await db.rawInsert(
       '''
       INSERT INTO "custom_values"(
         id,
@@ -3417,35 +3476,39 @@ class DatabaseProvider {
         
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
-    customValue.formId, customValue.sectionId, customValue.fieldId,
-    customValue.customizableType, customValue.customizableId,
-    customValue.value, customValue.imageBase64, customValue.taskId], ...paramsBySyncState[syncState]],
+      [...[customValue.id, customValue.createdAt == null ? DateTime.now().toString() : customValue.createdAt, 
+      customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt,
+      customValue.formId, customValue.sectionId, customValue.fieldId,
+      customValue.customizableType, customValue.customizableId,
+      customValue.value, customValue.imageBase64, customValue.taskId == null ? customValue.customizableId : customValue.taskId], ...paramsBySyncState[syncState]],
     );
+
+    return customValueCreated;
   }
 
   Future<List<CustomValueModel>> ListCustomValuesByTask(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
+
     data = await db.rawQuery('SELECT * FROM "custom_values" WHERE task_id = $id');
 
     List<CustomValueModel> listOfCustomValues = List<CustomValueModel>();
 
     if (data.isNotEmpty) {
-      await Future.forEach(data, (data) async {
-        FieldModel field = await ReadFieldById(data["field_id"]);
+      await Future.forEach(data, (customValue) async {
+        FieldModel field = await ReadFieldById(customValue["field_id"]);
 
         listOfCustomValues.add(new CustomValueModel(
-          id: data["id"],
-          createdAt: data["created_at"],
-          updatedAt: data["updated_at"],
-          formId: data["form_id"],
-          sectionId: data["section_id"],
-          fieldId: data["field_id"],
-          customizableType: data["customizable_type"],
-          customizableId: data["customizable_id"],
-          value: data["value"],
-          imageBase64: data["image_base64"],
+          id: customValue["id"],
+          createdAt: customValue["created_at"],
+          updatedAt: customValue["updated_at"],
+          formId: customValue["form_id"],
+          sectionId: customValue["section_id"],
+          fieldId: customValue["field_id"],
+          customizableType: customValue["customizable_type"],
+          customizableId: customValue["customizable_id"],
+          value: customValue["value"],
+          imageBase64: customValue["image_base64"],
           field: field,
         ));
       });
@@ -3461,7 +3524,6 @@ class DatabaseProvider {
 
     List<int> listOfCustomValueIds = List<int>();
     if (data.isNotEmpty) {
-      // TODO: FIELD FIELD, there were a field and I deleted it!
       data.forEach((data) {
         listOfCustomValueIds.add(data["id"]);
       });
@@ -3750,7 +3812,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
-        '''
+      '''
       SELECT * FROM "custom_values"
       '''
     );
@@ -4831,5 +4893,40 @@ String fixStringDateIfBroken(String stringDate) {
                     .replaceFirst("-6-", "-06-")
                     .replaceFirst("-7-", "-07-")
                     .replaceFirst("-8-", "-08-")
-                    .replaceFirst("-9-", "-09-");
+                    .replaceFirst("-9-", "-09-")
+                    .replaceFirst("-1 ", "-01 ")
+                    .replaceFirst("-2 ", "-02 ")
+                    .replaceFirst("-3 ", "-03 ")
+                    .replaceFirst("-4 ", "-04 ")
+                    .replaceFirst("-5 ", "-05 ")
+                    .replaceFirst("-6 ", "-06 ")
+                    .replaceFirst("-7 ", "-07 ")
+                    .replaceFirst("-8 ", "-08 ")
+                    .replaceFirst("-9 ", "-09 ")
+                    .replaceFirst(" 1:", " 01:")
+                    .replaceFirst(" 2:", " 02:")
+                    .replaceFirst(" 3:", " 03:")
+                    .replaceFirst(" 4:", " 04:")
+                    .replaceFirst(" 5:", " 05:")
+                    .replaceFirst(" 6:", " 06:")
+                    .replaceFirst(" 7:", " 07:")
+                    .replaceFirst(" 8:", " 08:")
+                    .replaceFirst(" 9:", " 09:")
+                    .replaceFirst(":1:", ":01:")
+                    .replaceFirst(":2:", ":02:")
+                    .replaceFirst(":3:", ":03:")
+                    .replaceFirst(":4:", ":04:")
+                    .replaceFirst(":5:", ":05:")
+                    .replaceFirst(":6:", ":06:")
+                    .replaceFirst(":7:", ":07:")
+                    .replaceFirst(":8:", ":08:")
+                    .replaceFirst(":9:", ":09:");
+}
+
+Map<String, String> customValuesFromListToMap(List<CustomValueModel> listOfCustomValues) {
+  Map<String, String> mapOfCustomValues = Map<String, String>();
+  listOfCustomValues.forEach((customValue) {
+    mapOfCustomValues[customValue.id.toString()] = customValue.value;
+  });
+  return mapOfCustomValues;
 }

@@ -257,7 +257,6 @@ class _LoginPageState extends State<LoginPage> {
 
               onPressed: () async {
                 ValidarDatos_DB(nameController.text,passwordController.text,companyController.text);
-//                 testApi();
               },
               child: Center(
                   child: Center(
@@ -924,7 +923,7 @@ class _LoginPageState extends State<LoginPage> {
       // await ContactChannel.syncEverything();
       // await CustomerContactsChannel.syncEverything();
 
-       UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+      // UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
       // ResponseModel getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
       // ContactsModel contacts = getAllContactsResponse.body;
@@ -961,22 +960,22 @@ class _SyncAppState extends State<SyncApp> {
   bool flag = true;
 
   syncAll() async{
-     setState((){title = Text("Sincronizando Datos 1/8");});
-     await AddressChannel.syncEverything();
-     setState((){title = Text("Sincronizando Datos 2/8");});
-     await CustomerChannel.syncEverything();
-     setState((){title = Text("Sincronizando Datos 3/8");});
-     await CustomerAddressesChannel.syncEverything();
-     setState((){title = Text("Sincronizando Datos 4/8");});
-     await ContactChannel.syncEverything();
-     setState((){title = Text("Sincronizando Datos 5/8");});
-     await CustomerContactsChannel.syncEverything();
-     setState((){title = Text("Sincronizando Datos 6/8");});
-     await BusinessChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 1/8");});
+    await AddressChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 2/8");});
+    await CustomerChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 3/8");});
+    await CustomerAddressesChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 4/8");});
+    await ContactChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 5/8");});
+    await CustomerContactsChannel.syncEverything();
+    setState((){title = Text("Sincronizando Datos 6/8");});
+    await BusinessChannel.syncEverything();
     setState((){title = Text("Sincronizando Datos 7/8");});
     await FormChannel.syncEverything();
     setState((){title = Text("Sincronizando Datos 8/8");});
-//    await TaskChannel.syncEverything();
+    await TaskChannel.syncEverything();
     Navigator.pop(context);
   }
 

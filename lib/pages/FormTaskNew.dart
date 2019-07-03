@@ -182,7 +182,7 @@ class _FormTaskState extends State<FormTask> {
                                         );
                                         var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
                                         if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                          var directionAdd = AddressModel.fromJson(responseCreateAddress.body);
+                                          var directionAdd = responseCreateAddress.body;
                                           saveTask.addressId = directionAdd.id;
                                         }
                                       } else {
@@ -191,7 +191,7 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask == true){
+                                    if(widget.toListTask){
                                       if(widget.taskmodelres.addressId != null){
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
@@ -305,7 +305,7 @@ class _FormTaskState extends State<FormTask> {
               )
           )
         ],
-        title: widget.toListTask == true ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
+        title: widget.toListTask ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
                                  : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
       ),
       body:  pass? ListView(
@@ -330,7 +330,7 @@ class _FormTaskState extends State<FormTask> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),)
-                              : widget.toListTask == true ?
+                              : widget.toListTask ?
                                 widget.taskmodelres.address != null ? Text('Direccion:  ${widget.taskmodelres.address.address}',style: TextStyle(fontSize: 15),)
                                                                     : Text('Direccion: Sin Asignar')
                                 : Text('Direccion: Sin Asignar')
@@ -1316,7 +1316,6 @@ buildListTypeForm(){
     var getAllFormsResponse = await getAllForms(customer , token);
     try{
       if(getAllFormsResponse.statusCode == 200){
-        //  print(getAllFormsResponse.headers['content-type']);
         forms = getAllFormsResponse.body;
         formType = forms;
 
