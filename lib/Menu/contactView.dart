@@ -229,22 +229,13 @@ class _ContactViewState extends State<ContactView> {
             IconButton(
                 icon: Icon(Icons.call),
                 onPressed:(){
-                  widget.statusPage == STATUS_PAGE.full ? _launchCall(contact.phone) : null;
+                  widget.statusPage == STATUS_PAGE.full ? _launchCall('tel:${contact.phone}') : null;
                 }
             ),
             IconButton(
                 icon: Icon(Icons.mail),
                 onPressed:(){
-                  return showDialog(
-                      context: context,
-                      barrierDismissible: true, // user must tap button for close dialog!
-                      builder: (BuildContext context) {
-                        var email = contact.email != null ? contact.email :"";
-                        return AlertDialog(
-                            title: Text('Correo : $email')
-                        );
-                      }
-                  );
+                  _launchCall('mailto:${contact.email}');
                 }
             )
           ],
@@ -264,12 +255,11 @@ class _ContactViewState extends State<ContactView> {
     );
   }
 
-  _launchCall(String phone) async {
-    var command = 'tel:$phone';
+  _launchCall(String command) async {
     if (await canLaunch(command)) {
       await launch(command);
     } else {
-      throw 'Could not launch $phone';
+      throw 'Could not launch $command';
     }
   }
 

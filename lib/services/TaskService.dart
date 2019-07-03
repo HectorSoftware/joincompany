@@ -26,8 +26,9 @@ Future<ResponseModel> createTask(TaskModel task, String customer, String authori
 
   if (await connectionStatus.checkConnection()) {
     http.Response createTaskFromServerResponse = await createTaskFromServer(task, customer, authorization);
+    var a = createTaskFromServerResponse.body;
     if (createTaskFromServerResponse.statusCode == 200 || createTaskFromServerResponse.statusCode == 201) {
-
+      var a = createTaskFromServerResponse.body;
       // task = TaskModel.fromJson(createTaskFromServerResponse.body);
       task = TaskModel.fromJson(treatBodyRes(createTaskFromServerResponse.body));
       http.Response taskWithInfoFromServerRes = await getTaskFromServer(task.id.toString(), customer, authorization);
@@ -47,7 +48,6 @@ Future<ResponseModel> createTask(TaskModel task, String customer, String authori
 Future<http.Response> createTaskFromServer(TaskModel taskObj, String customer, String authorization) async {
   String resourcePath = '/tasks2_';
 
-  taskObj.businessId = 1;
   // TODO: Check if the problem of the maps relies here.
   var taskMapAux = taskObj.toMap();
   var taskMap = new Map<String, dynamic>();

@@ -175,6 +175,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.customerId = directionClientIn.id;
                                     if(widget.toBusiness == true ){
                                       saveTask.businessId = widget.businessAs.id;
+                                      saveTask.customerId = widget.businessAs.customerId;
                                     }
                                     if( directionClientIn.googlePlaceId != null) {
                                       if(directionClientIn.id == null) {
@@ -190,7 +191,6 @@ class _FormTaskState extends State<FormTask> {
                                           saveTask.addressId = directionAdd.id;
                                         }
                                       } else {
-                                        saveTask.customerId = directionClientIn.id;
                                         saveTask.addressId = directionClientIn.addressId;
                                       }
                                     }

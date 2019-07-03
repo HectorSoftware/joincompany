@@ -89,7 +89,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void connectionChanged(dynamic hasConnection) {
     if (!isOnline && hasConnection && !syncStatus && visible){
-      print("sincronizando tareas");
       syncStatus=true;
       wrapperSync();
     }

@@ -18,11 +18,9 @@ class CustomerContactsChannel {
     List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.created);
     
     await Future.forEach(customerContactsLocal, (customerContactLocal) async {
-      var relateCustomerContactResponseServer = await relateCustomerContactFromServer(customerContactLocal["customer_id"], customerContactLocal["contact_id"], customer, authorization);
+      var relateCustomerContactResponseServer = await relateCustomerContactFromServer(customerContactLocal["customer_id"].toString(), customerContactLocal["contact_id"].toString(), customer, authorization);
       if (relateCustomerContactResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerContactResponseServer.body);
-        // Cambiar el SyncState Local
-        // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
         await DatabaseProvider.db.UpdateCustomerContact(customerContactLocal["id"], null, null, null, customerContactLocal["customer_id"], customerContactLocal["contact_id"], SyncState.synchronized);
       }
     });

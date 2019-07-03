@@ -2123,7 +2123,7 @@ class DatabaseProvider {
         CreateLocality(address.locality, syncState);
     }
 
-    address.id = await db.rawUpdate(
+    await db.rawUpdate(
       '''
       UPDATE "addresses" SET
       id = ?,
@@ -2411,7 +2411,7 @@ class DatabaseProvider {
 
   Future<CustomerModel> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
     final db = await database;
-    customer.id = await db.rawUpdate(
+    await db.rawUpdate(
       '''
       UPDATE "customers" SET
       id = ?,
@@ -2569,6 +2569,7 @@ class DatabaseProvider {
         responsible_id,
         customer_id,
         address_id,
+        business_id,
         name,
         planning_date,
         checkin_date,
@@ -2585,13 +2586,13 @@ class DatabaseProvider {
         deleted
       )
         
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[task.id, task.createdAt == null ? DateTime.now().toString() : task.createdAt,
       task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt,
       task.createdById == null ? (await RetrieveLastLoggedUser()).id : task.createdById,
       task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, task.deletedById, task.formId,
-      task.responsibleId, task.customerId, task.addressId, task.name,
+      task.responsibleId, task.customerId, task.addressId, task.businessId, task.name,
       task.planningDate, task.checkinDate, task.checkinLatitude,
       task.checkinLongitude, task.checkinDistance, task.checkoutDate,
       task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
@@ -2683,6 +2684,7 @@ class DatabaseProvider {
         responsibleId: data.first["responsible_id"],
         customerId: data.first["customer_id"],
         addressId: data.first["address_id"],
+        businessId: data.first["business_id"],
         name: data.first["name"],
         planningDate: data.first["planning_date"],
         checkinDate: data.first["checkin_date"],
@@ -2768,6 +2770,7 @@ class DatabaseProvider {
           responsibleId: taskRetrieved["responsible_id"],
           customerId: taskRetrieved["customer_id"],
           addressId: taskRetrieved["address_id"],
+          businessId: taskRetrieved["business_id"],
           name: taskRetrieved["name"],
           planningDate: taskRetrieved["planning_date"],
           checkinDate: taskRetrieved["checkin_date"],
@@ -2838,6 +2841,9 @@ class DatabaseProvider {
         if (query.addressId != null)
           if (query.addressId != taskRetrieved["address_id"])
             return;
+        if (query.businessId != null)
+          if (query.businessId != taskRetrieved["business_id"])
+            return;
         if (query.name != null)
           if (query.name != taskRetrieved["name"])
             return;
@@ -2891,6 +2897,7 @@ class DatabaseProvider {
           responsibleId: taskRetrieved["responsible_id"],
           customerId: taskRetrieved["customer_id"],
           addressId: taskRetrieved["address_id"],
+          businessId: taskRetrieved["business_id"],
           name: taskRetrieved["name"],
           planningDate: taskRetrieved["planning_date"],
           checkinDate: taskRetrieved["checkin_date"],
@@ -2948,6 +2955,7 @@ class DatabaseProvider {
           responsibleId: taskRetrieved["responsible_id"],
           customerId: taskRetrieved["customer_id"],
           addressId: taskRetrieved["address_id"],
+          businessId: taskRetrieved["business_id"],
           name: taskRetrieved["name"],
           planningDate: taskRetrieved["planning_date"],
           checkinDate: taskRetrieved["checkin_date"],
@@ -3025,7 +3033,7 @@ class DatabaseProvider {
         CreateResponsible(task.responsible, syncState);
     }
 
-    task.id = await db.rawUpdate(
+    await db.rawUpdate(
       '''
       UPDATE "tasks" SET
       id = ?,
@@ -3039,6 +3047,7 @@ class DatabaseProvider {
       responsible_id = ?,
       customer_id = ?,
       address_id = ?,
+      business_id = ?,
       name = ?,
       planning_date = ?,
       checkin_date = ?,
@@ -3058,7 +3067,7 @@ class DatabaseProvider {
         [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt, task.createdById,
     task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, 
     task.deletedById, task.formId, task.responsibleId,
-    task.customerId, task.addressId, task.name, task.planningDate,
+    task.customerId, task.addressId, task.businessId, task.name, task.planningDate,
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
     task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
     task.checkoutLongitude, task.checkoutDistance, task.status],
@@ -3162,6 +3171,7 @@ class DatabaseProvider {
           responsibleId: taskRetrieved["responsible_id"],
           customerId: taskRetrieved["customer_id"],
           addressId: taskRetrieved["address_id"],
+          businessId: taskRetrieved["business_id"],
           name: taskRetrieved["name"],
           planningDate: taskRetrieved["planning_date"],
           checkinDate: taskRetrieved["checkin_date"],
@@ -3347,20 +3357,8 @@ class DatabaseProvider {
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
-      created_by_id = ?,
-      updated_by_id = ?,
-      deleted_by_id = ?,
-      supervisor_id = ?,
-      name = ?,
-      code = ?,
-      email = ?,
-      phone = ?,
-      mobile = ?,
-      title = ?,
-      details = ?,
-      profile = ?,
-      password = ?,
-      remember_token = ?,
+      customer_id = ?,
+      user_id = ?,
       in_server = ?,
       updated = ?,
       deleted = ?
@@ -3998,20 +3996,9 @@ class DatabaseProvider {
       created_at = ?,
       updated_at = ?,
       deleted_at = ?,
-      created_by_id = ?,
-      updated_by_id = ?,
-      deleted_by_id = ?,
-      supervisor_id = ?,
-      name = ?,
-      code = ?,
-      email = ?,
-      phone = ?,
-      mobile = ?,
-      title = ?,
-      details = ?,
-      profile = ?,
-      password = ?,
-      remember_token = ?,
+      customer_id = ?,
+      address_id = ?,
+      approved = ?,
       in_server = ?,
       updated = ?,
       deleted = ?
@@ -4303,7 +4290,7 @@ class DatabaseProvider {
     if (data.isEmpty)
       contact = await CreateContact(contact, syncState);
     else {
-      contact.id = await db.rawUpdate(
+      await db.rawUpdate(
         '''
         UPDATE "contacts" SET
         id = ?,
@@ -4564,7 +4551,7 @@ class DatabaseProvider {
     if (data.isEmpty)
       return CreateBusiness(business, syncState);
     else {
-      business.id = await db.rawUpdate(
+      await db.rawUpdate(
       '''
       UPDATE "businesses" SET
         id = ?,

@@ -16,7 +16,7 @@ class CustomerAddressesChannel {
     List<Map> customerAddressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.created);
 
     await Future.forEach(customerAddressesLocal, (customerAddressLocal) async {
-      var relateCustomerAddressResponseServer = await relateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
+      var relateCustomerAddressResponseServer = await relateCustomerAddressFromServer(customerAddressLocal["customer_id"].toString(), customerAddressLocal["address_id"].toString(), customer, authorization);
       if (relateCustomerAddressResponseServer.statusCode==200) {
         Map<String, dynamic> jsonResponse = json.decode(relateCustomerAddressResponseServer.body);
         // Cambiar el SyncState Local

@@ -32,8 +32,6 @@ class _FormTaskViewState extends State<FormTaskView> {
   List<FieldModel> listFieldsModels = List<FieldModel>();
   DateTime _date = new DateTime.now();
   Image image2;
-  TimeOfDay _time = new TimeOfDay.now();
-
   @override
   void initState(){
 
@@ -248,9 +246,6 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
     if(field.fieldType == 'Photo'){
-      Uint8List img;
-      String b64;
-
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
@@ -397,8 +392,6 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanImage'){
-      String b64;
-
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
@@ -426,8 +419,6 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanSignature'){
-      String b64;
-
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
@@ -566,7 +557,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             padding: const EdgeInsets.only(left: 70),
             child: Container(
                 child: new Checkbox(
-                    value: true,
+                    value: true, onChanged: (bool value) {},
                 )
             ),
           ),
@@ -740,7 +731,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     );
   }
 
-  Future ChekDialog(String mensaje){
+  Future checkDialog(String mensaje){
     return showDialog(
         context: context,
         barrierDismissible: true, // user must tap button for close dialog!
