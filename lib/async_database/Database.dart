@@ -4882,7 +4882,25 @@ String fixStringDateIfBroken(String stringDate) {
                     .replaceFirst("-6 ", "-06 ")
                     .replaceFirst("-7 ", "-07 ")
                     .replaceFirst("-8 ", "-08 ")
-                    .replaceFirst("-9 ", "-09 ");
+                    .replaceFirst("-9 ", "-09 ")
+                    .replaceFirst(" 1:", " 01:")
+                    .replaceFirst(" 2:", " 02:")
+                    .replaceFirst(" 3:", " 03:")
+                    .replaceFirst(" 4:", " 04:")
+                    .replaceFirst(" 5:", " 05:")
+                    .replaceFirst(" 6:", " 06:")
+                    .replaceFirst(" 7:", " 07:")
+                    .replaceFirst(" 8:", " 08:")
+                    .replaceFirst(" 9:", " 09:")
+                    .replaceFirst(":1:", ":01:")
+                    .replaceFirst(":2:", ":02:")
+                    .replaceFirst(":3:", ":03:")
+                    .replaceFirst(":4:", ":04:")
+                    .replaceFirst(":5:", ":05:")
+                    .replaceFirst(":6:", ":06:")
+                    .replaceFirst(":7:", ":07:")
+                    .replaceFirst(":8:", ":08:")
+                    .replaceFirst(":9:", ":09:");
 }
 
 Map<String, String> customValuesFromListToMap(List<CustomValueModel> listOfCustomValues) {
