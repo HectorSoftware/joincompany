@@ -329,7 +329,6 @@ class _FormBusinessState extends State<FormBusiness> {
 
                                               child: const Text('Aceptar'),
                                               onPressed: () {
-                                                showToast('Negocio Creado.');
                                                 Navigator.of(context).pop();
                                                 Navigator.of(context).pop();
                                                 Navigator.of(context).pop(saveBusiness);
@@ -853,6 +852,7 @@ class _FormBusinessState extends State<FormBusiness> {
       setState(() {
         saveBusiness = createBusinessResponse.body;
         saveBusinessEnd = true;
+        showToast('Negocio Creado.');
       });
     }
     if(createBusinessResponse.statusCode == 500 &&  createBusinessResponse.body == 'Negocio ya existe'){
@@ -871,6 +871,7 @@ class _FormBusinessState extends State<FormBusiness> {
     if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){
       setState(() {
         saveBusinessEnd = true;
+        showToast('Negocio Actualizado.');
       });
     }
     if(updateBusinessResponse.statusCode == 500){
