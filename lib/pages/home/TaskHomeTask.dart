@@ -190,7 +190,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       if (this.mounted) {
         setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal) => setState(() {filterText = newVal;}));
+          StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal) => setState(() {
+            filterText = newVal;
+          }));
         });
       }
     } catch (e) {}
@@ -295,8 +297,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           if (listTaskModellocal[positionActual].name == null) {
             title = voidFieldMessage;
           } else {
-            title = listTaskModellocal[positionActual]
-                .name + ' - ' + listTaskModellocal[positionActual].id.toString();
+            title = listTaskModellocal[positionActual].name;
           }
 
           if (listTaskModellocal[positionActual].address == null) {
