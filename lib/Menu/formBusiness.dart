@@ -499,6 +499,7 @@ class _FormBusinessState extends State<FormBusiness> {
                 ),
               ),//Negocio
               Container(
+
                 height: 50,
                 margin: EdgeInsets.all(10.0),
                 decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
