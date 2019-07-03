@@ -88,7 +88,6 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   }
 
   void connectionChanged(dynamic hasConnection) {
-
     if (!isOnline && hasConnection && !syncStatus && visible){
       print("sincronizando tareas");
       syncStatus=true;
@@ -135,7 +134,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void syncTask() async{
     await FormChannel.syncEverything();
-//    await TaskChannel.syncEverything();
+    await TaskChannel.syncEverything();
     syncStatus = false;
     Navigator.pop(context);
   }

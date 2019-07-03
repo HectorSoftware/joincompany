@@ -4783,7 +4783,7 @@ class DatabaseProvider {
       customer_id = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,
+      deleted = ?
       WHERE id = $businessId
       ''', 
       [...[customerId], ...paramsBySyncState[syncState]],
