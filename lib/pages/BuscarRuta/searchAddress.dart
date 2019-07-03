@@ -186,7 +186,7 @@ class _SearchAddressState extends State<SearchAddress> {
 
           //BUSCAR DIRECCIONES DE MAPA
           try{
-            _listAddressGoogle = await SearchDirectionGooogle(text);
+            _listAddressGoogle = await searchDirectionGooogle(text);
           }catch(e){ }
 
           if (_listAddressGoogle.length != 0 || _listAddressBD.length != 0) {
@@ -210,7 +210,7 @@ class _SearchAddressState extends State<SearchAddress> {
   }
 
   int conteo = 0;
-  Future<List<AddressModel>> SearchDirectionGooogle(String text) async {
+  Future<List<AddressModel>> searchDirectionGooogle(String text) async {
     List<AddressModel> _listAddressGoogle= new List<AddressModel>();
     GoogleMapsSearchPlace _googleMapsServices = GoogleMapsSearchPlace();
     direct.DirectionsModel directions = new direct.DirectionsModel();

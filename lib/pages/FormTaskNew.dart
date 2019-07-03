@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/blocs/blocTypeForm.dart';
@@ -46,10 +47,12 @@ class _FormTaskState extends State<FormTask> {
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
+  TimeOfDay _timeDT = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
+  DateTime _dateDT = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
-
+  FieldOptionModel options = FieldOptionModel(name: '0',value: 1);
   Map data = new Map();
   Map<String,String> dataInfo = Map<String,String>();
   BuildContext globalContext;
@@ -68,6 +71,7 @@ class _FormTaskState extends State<FormTask> {
   TaskModel saveTask = new TaskModel();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String defaultValue = 'NO';
+  String valuesTable = '';
   TaskModel taskOne;
 
   @override
@@ -134,7 +138,7 @@ class _FormTaskState extends State<FormTask> {
         backgroundColor: PrimaryColor,
         leading:  IconButton(
             icon: Icon(Icons.arrow_back,size: 25,),
-            tooltip: 'Guardar Tarea',
+            tooltip: 'Guardar tarea',
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
@@ -143,9 +147,7 @@ class _FormTaskState extends State<FormTask> {
                     Container(
                       width: MediaQuery.of(context).size.width *0.9,
                       child: AlertDialog(
-                        title: Text('Guardar'),
-                        content: const Text(
-                            'Desea Guardar Tarea'),
+                        title: Text('Desea guardar tarea'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
@@ -191,12 +193,11 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask){
+                                    if(widget.toListTask == true){
                                       if(widget.taskmodelres.addressId != null){
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
                                     }
-
                                     String minute;
                                     if(_timeTask.minute.toString().length < 2){
                                       minute = '0'+ _timeTask.minute.toString();
@@ -211,10 +212,10 @@ class _FormTaskState extends State<FormTask> {
                                         context: context,
                                       builder: (BuildContext context) {
                                           return   AlertDialog(
-                                            title: Text('Tarea Guardada con Exito'),
+                                            title: Text('Tarea guardada con exito'),
                                             actions: <Widget>[
                                               FlatButton(
-                                                child: Text('Aceptar'),
+                                                child: Text('ACEPTAR'),
                                                 onPressed: () {
                                                   if(widget.toBusiness != true){
                                                     Navigator.pushReplacementNamed(context, '/vistap');
@@ -231,12 +232,33 @@ class _FormTaskState extends State<FormTask> {
                                           );
                                       }
                                       );
+                                    }else
+                                    if(taskEnd == 422  || taskEnd == 413){
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return   AlertDialog(
+                                              title: Text('Error al procesar la tarea por el Servidor'),
+                                                content: Text('Calidad de imagen elevada. Considere enviar una imagen de menor calidad '),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: const Text('Aceptar'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                  },
+                                                ),
+
+                                              ],
+                                            );
+                                          }
+                                      );
                                     }else{
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return   AlertDialog(
-                                              title: Text('A ocurido un Error al crear la tarea'),
+                                              title: Text('Ha ocurrido un error al crear la tarea'),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: const Text('Aceptar'),
@@ -273,9 +295,7 @@ class _FormTaskState extends State<FormTask> {
                   builder: (BuildContext context) {
                     return
                       AlertDialog(
-                        title: Text('Descartar'),
-                        content: const Text(
-                            'Desea descartar Formulario'),
+                        title: Text('Desea descartar Formulario'),
                         actions: <Widget>[
                           FlatButton(
                             child: const Text('CANCELAR'),
@@ -305,8 +325,8 @@ class _FormTaskState extends State<FormTask> {
               )
           )
         ],
-        title: widget.toListTask ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
-                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 15),),
+        title: widget.toListTask == true ? Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),)
+                                 : Text('Agregar Tareas', style: TextStyle(fontSize: 20),),
       ),
       body:  pass? ListView(
 
@@ -330,7 +350,7 @@ class _FormTaskState extends State<FormTask> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: directionClientIn.address != null ? Text('Direccion:  ${directionClientIn.address}',style: TextStyle(fontSize: 15),)
-                              : widget.toListTask ?
+                              : widget.toListTask == true ?
                                 widget.taskmodelres.address != null ? Text('Direccion:  ${widget.taskmodelres.address.address}',style: TextStyle(fontSize: 15),)
                                                                     : Text('Direccion: Sin Asignar')
                                 : Text('Direccion: Sin Asignar')
@@ -429,11 +449,7 @@ buildListTypeForm(){
 
                     },
                   );
-
-
-
                 }
-
             );
           }else{
             if(snapshot.connectionState == ConnectionState.waiting){
@@ -444,8 +460,7 @@ buildListTypeForm(){
               return new Container(
                 child: Center(
                   child: Text("No hay Formularios"),
-                ),
-              );
+                ),);
             }
           }
         }
@@ -454,24 +469,66 @@ buildListTypeForm(){
 
   );
 }
-
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
-    if(!flag){
+  bool findKeys(String key){
+    for(var k in data.keys){
+      if(k == key){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void initDataTable(List<FieldOptionModel> listOptions){
+    if(!findKeys('table')){
       data["table"] = new Map();
 
       for(FieldOptionModel varV in listOptions)
       {
         data["table"][varV.name] = new Map();
         data["table"][varV.name]["name"] = varV.name;
-        data["table"][varV.name][varV.value.toString()] =new TextEditingController();
+        data["table"][varV.name][varV.value.toString()] = new TextEditingController();
       }
-      flag = true;
     }
-
+  }
+conC(String value){
+    if(value != null){
+    }
+}
+  String savedDataTablet(){
+    String dat="";
+    var keys = data.keys;
+    if(!keys.contains("table")){
+      return dat;
+    }else{
+      var titules = data["table"].keys;
+      for(String titule in titules){
+        dat = dat + titule + "*" ;
+      }
+      dat = dat + ';';
+      for(String titule in titules){
+        Map dataColumn = data["table"][titule];
+        for (var key in dataColumn.keys){
+          if(key != "name"){
+            dat = dat +  data["table"][titule][key].text;
+          }
+        }
+        dat = dat + "*";
+      }
+    }
+    return dat;
+  }
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
+    initDataTable(listOptions);
+    valuesTable = savedDataTablet();
+    saveData(valuesTable,id);
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          onChanged: (value){
+          },
+          controller: t,
           decoration: InputDecoration(
             hintText: '',
           ),
@@ -550,6 +607,7 @@ buildListTypeForm(){
         ) ,
       ),
     );
+
   }
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
@@ -597,7 +655,7 @@ buildListTypeForm(){
               {
                 return Center(child: Text('Sin datos'),);
               }
-              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "Button")
+              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
               {
                 return Row(
                   children: <Widget>[
@@ -615,6 +673,12 @@ buildListTypeForm(){
                       width: MediaQuery.of(context).size.width *0.5,
                       height: MediaQuery.of(context).size.height *0.1,
                       child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 60, top: 10),
+                          child: _value1 == true ? Text('${listFieldsModels[index].type}',style: TextStyle(fontSize: 20),)
+                          : Text(''),
+                        ),
+
                       ),
                     ),
                   ],
@@ -643,6 +707,7 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
                         saveData(value,listFieldsModels[index].id.toString());
                       },
@@ -679,6 +744,7 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
                         saveData(value,listFieldsModels[index].id.toString());
                       },
@@ -714,8 +780,9 @@ buildListTypeForm(){
                         ]
                     ),
                     child: TextField(
+                      controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                       onChanged: (value){
-                        saveData(value,index.toString());
+                        saveData(value,listFieldsModels[index].id.toString());
                       },
                       keyboardType: TextInputType.number,
                       maxLines: 1,
@@ -734,31 +801,46 @@ buildListTypeForm(){
                 for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
                   dropdownMenuItems.add(v.name);
                 }
-                return new  Padding(
-                  padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *0.5,
-                    child: new DropdownButton<String>(
-                      isDense: false,
-                      icon: Icon(Icons.arrow_drop_down),
-                      elevation: 10,
-                      value: dataInfo[listFieldsModels[index].id],
-                      hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+                return Container(
+                  height: 50,
+                  margin: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5
+                        )
+                      ]
+                  ),
+                  child: new  Padding(
+                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      child: new DropdownButton<String>(
+                        isExpanded: true,
+                        underline: Container(),
+                        isDense: false,
+                        icon: Icon(Icons.arrow_drop_down),
+                        elevation: 10,
+                        value: dataInfo[listFieldsModels[index].id],
+                        hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
 
-                      onChanged: (newValue) {
+                        onChanged: (newValue) {
 
-                        setState(() {
-                          //dropdownValue = newValue;
-                          dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
-                        });
+                          setState(() {
+                            //dropdownValue = newValue;
+                            dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                          });
 
-                      },
-                      items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                        return new DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                        },
+                        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                          return new DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 );
@@ -814,11 +896,11 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_date.toString().substring(0,10)}' + ' ' +'${_time.format(context) }'),
+                        child: Text('${_dateDT.toString().substring(0,10)}' + ' ' +'${_timeDT.format(context) }'),
                         onPressed: (){
-                          selectTime(context);
-                          selectDate(context);
-                          var dateCo = _date.toString().substring(0,10) + ' ' +_time.format(context).toString();
+                          selectTimeDatetime(context);
+                          selectDateDateTime(context);
+                          var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
                         },
                       ),
@@ -827,10 +909,11 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType =='Table'){
-               return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString());
+                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString(),);
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
+                saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                 return new Row(
                   children: <Widget>[
                     Column(
@@ -880,6 +963,9 @@ buildListTypeForm(){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
+
+
+                                        //image2 = ima.copyResize(image, 120);
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -1081,35 +1167,6 @@ buildListTypeForm(){
                             ],
                           ),
                         ),
-                    /*    Container(
-                          width: MediaQuery.of(globalContext).size.width*0.50,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 20,left: 20, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                            },
-                            maxLines: 1,
-                            //controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Comentario ',
-                            ),
-                          ),
-                        ),*/
 
                       ],
                     ),
@@ -1140,13 +1197,9 @@ buildListTypeForm(){
                         width: MediaQuery.of(context).size.width*0.5,
                         child:Row(
                           children: <Widget>[
-                            Switch(value: switchOn, onChanged:(valuenew){ setState(() {
-                              switchOn = valuenew;
-                            });},activeColor: PrimaryColor,)
                           ],
                         )
                     ),
-                    Center(child:switchOn?  Text(listFieldsModels[index].name):Text('')),
                   ],
 
                 );
@@ -1177,12 +1230,13 @@ buildListTypeForm(){
                             ]
                         ),
                         child: TextField(
+                          controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
+                          onChanged: (value){
+                            saveData(value,listFieldsModels[index].id.toString());
+                          },
                           maxLines: 1,
-                          //  controller: nameController,
                           decoration: InputDecoration(
-
                             border: InputBorder.none,
-
                             hintText: listFieldsModels[index].name,
                           ),
                         ),
@@ -1198,8 +1252,6 @@ buildListTypeForm(){
                   ],
                 );
               }
-
-
             }
         ),
 
@@ -1208,7 +1260,7 @@ buildListTypeForm(){
     );
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
-  bool switchOn = false;
+
 
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
@@ -1268,6 +1320,32 @@ buildListTypeForm(){
         _time = picked;
       });
     }
+  }
+  Future<Null> selectTimeDatetime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeDT,
+    );
+    if (picked != null && picked != _timeDT){
+      setState(() {
+        _timeDT = picked;
+      });
+    }
+  }
+  Future<Null> selectDateDateTime(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateDT,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _dateDT){
+      setState(() {
+        _dateDT = picked;
+      });
+
+    }
+
   }
   Future<CustomerWithAddressModel> getDirections() async{
     return showDialog<CustomerWithAddressModel>(
@@ -1371,7 +1449,7 @@ buildListTypeForm(){
    var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201 || createTaskResponse.statusCode == 200){
      setState(() {
-       taskEnd = 201;
+       taskEnd = createTaskResponse.statusCode;
      });
    }
      if(createTaskResponse.statusCode == 500){
@@ -1379,6 +1457,11 @@ buildListTypeForm(){
          taskEnd = 500;
        });
      }
+   if(createTaskResponse.statusCode == 413 || createTaskResponse.statusCode == 422 ){
+     setState(() {
+       taskEnd = createTaskResponse.statusCode;
+     });
+   }
   return true;
   }
   void saveData(String dataController, String id) {
@@ -1387,27 +1470,3 @@ buildListTypeForm(){
     dataInfo[id] = value;
   }
 }
-/* new ListView.builder(
-                            itemCount: formType.data.length,
-                            itemBuilder: (BuildContext context, index){
-                              return ListTile(
-                                title: Text('${formType.data[index].name}'),
-                                leading: Icon(Icons.poll),
-                                onTap: () async {
-//                                  if(directionClientIn.address == null){
-//                                    setState(() {
-//                                      directionClientIn.address = '';
-//                                    });
-//                                  }
-                                  var getFormResponse = await getForm(formType.data[index].id.toString(), customer, token);
-                                  FormModel form = FormModel.fromJson(getFormResponse.body);
-                                  await lisC(form);
-                                  setState(() {
-                                    //   dropdownValue = null;
-                                    pass = true;
-                                    image = null;
-                                    dataInfo = new Map();
-                                    taskCU = false;
-                                    image2 = null;
-                                  });
-*/

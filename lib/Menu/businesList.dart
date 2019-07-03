@@ -38,9 +38,8 @@ class _BusinessListState extends State<BusinessList> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Negocios');
   String textFilter='';
-
-
   BusinessesModel businessGlobal = BusinessesModel();
+
   List<BusinessModel> listBusiness = List<BusinessModel>();
   String stage="";
   StreamSubscription _connectionChangeStream;
@@ -238,7 +237,7 @@ class _BusinessListState extends State<BusinessList> {
   }
 
   Widget listViewCustomers(double por, padding) {
-    stage = "";
+    stage = '';
     BusinessBloc _bloc = new BusinessBloc();
     return StreamBuilder<List<BusinessModel>>(
         stream: _bloc.outBusiness,

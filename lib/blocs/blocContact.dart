@@ -29,6 +29,7 @@ class ContactBloc{
     _listContacts.sort((a,b)=>a.name.compareTo(b.name));
 
     if(_listContacts != null){
+      _listContacts.sort((a,b)=>a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       _contactcontroller.add(_listContacts);
       _contactcontroller.close();
     }

@@ -32,6 +32,7 @@ class BusinessBloc{
     _listbusisness = busisness.data;
 
     if(_listbusisness != null){
+
       _listbusisness.sort((a,b) => a.stage.compareTo(b.stage));
       _businessBloccontroller.add(_listbusisness);
       _businessBloccontroller.close();

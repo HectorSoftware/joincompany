@@ -7,10 +7,7 @@ import 'package:joincompany/Menu/clientes.dart';
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/BusinessModel.dart';
-import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -21,7 +18,6 @@ import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/pages/home/taskHome.dart';
 import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:flutter/services.dart';
@@ -107,9 +103,9 @@ class _FormBusinessState extends State<FormBusiness> {
             name:dropdownValueClient ,
             id: addressClient.id,
             city: addressClient.city,
-            addressId: 1,
+            addressId: addressClient.id,
             createdById:addressClient.createdById,
-            customerId: 1,
+            customerId: customerId,
             longitude: addressClient.longitude,
             latitude: addressClient.latitude,
             googlePlaceId: addressClient.googlePlaceId,
@@ -235,7 +231,6 @@ class _FormBusinessState extends State<FormBusiness> {
     disposeController();
     super.dispose();
   }
-
   getOther()async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
@@ -251,11 +246,9 @@ class _FormBusinessState extends State<FormBusiness> {
     }else{
       dropdownMenuItemsClients.add(widget.client.name);
     }
-
     setState(() {
       getData = true;
     });
-
     await convertToModelToFieldOption();
   }
 
@@ -285,13 +278,12 @@ class _FormBusinessState extends State<FormBusiness> {
                     Container(
                       width: MediaQuery.of(context).size.width *0.9,
                       child: AlertDialog(
-                        title: Text('Guardar'),
-                        content: const Text('Desea Guardar'),
+                        title: Text('Desea guardar'),
                         actions: <Widget>[
                           Row(
                             children: <Widget>[
                               FlatButton(
-                                child: const Text('SALIR'),
+                                child: const Text('Salir'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
@@ -323,7 +315,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return   AlertDialog(
-                                          title: Text('Guardado con Exito'),
+                                          title: Text('Guardado con exito'),
                                           actions: <Widget>[
                                             FlatButton(
 
@@ -417,7 +409,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       context: context,
                       builder: (BuildContext context) {
                         return   AlertDialog(
-                          title: Text('Desea Eliminiar Negocio'),
+                          title: Text('Desea eliminiar negocio'),
                           actions: <Widget>[
                             FlatButton(
                               child: const Text('Volver'),
@@ -470,7 +462,7 @@ class _FormBusinessState extends State<FormBusiness> {
                     controller: posController,
                    // maxLines: maxLines,
                     decoration: InputDecoration(
-                      hintText: 'Posicionamiento',
+                      hintText: 'Negocio',
                       border: InputBorder.none,
                      // errorText: getErrorText(t),
                       contentPadding: EdgeInsets.all(15.0),
@@ -496,6 +488,7 @@ class _FormBusinessState extends State<FormBusiness> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: DropdownButton<String>(
+
                       isExpanded: true,
                       isDense: false,
                       underline: Container(),
@@ -554,7 +547,7 @@ class _FormBusinessState extends State<FormBusiness> {
                       icon: Icon(Icons.arrow_drop_down),
                       elevation: 10,
                       value: dropdownValueMenuHeader,
-                      hint: Text('Negocio'),
+                      hint: Text('Etapa'),
                       onChanged: (String newValue) {
                         setState(() {
                           dropdownValueMenuHeader = newValue;
@@ -584,7 +577,7 @@ class _FormBusinessState extends State<FormBusiness> {
                     ]
                 ),
                 child: ListTile(
-                  title: _dateBool ?Text(dateG): Text("Fecha" ,style: TextStyle(color: Colors.grey[600]),),
+                  title: _dateBool ?Text(dateG): Text("Fecha de Cierre" ,style: TextStyle(color: Colors.grey[600]),),
                   trailing: Icon(Icons.calendar_today),
                   onTap: ()async{
                     final DateTime picked = await showDatePicker(
