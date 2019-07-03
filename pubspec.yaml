@@ -40,6 +40,8 @@ dependencies:
   datetime_picker_formfield: ^0.1.8
 
   #IMAGEN
+  flutter_native_image:
+    git: https://github.com/btastic/flutter_native_image.git
   image_cropper: ^1.0.1
   image_picker: ^0.6.0+3
   painter2: any

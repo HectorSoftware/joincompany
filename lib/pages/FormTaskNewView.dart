@@ -256,7 +256,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       try{
         ruta = dataInfo[field.id.toString()];
         if(ruta.isNotEmpty){
-          ruta = ruta.substring(23);
+          ruta = ruta.substring(searchComa(ruta));
         }
       }catch(e){}
 
@@ -272,8 +272,8 @@ class _FormTaskViewState extends State<FormTaskView> {
                         child: Card(
                           color: Colors.white,
                           child: SizedBox(height: MediaQuery.of(context).size.height * 0.5,width: 300,
-                            child:  dataInfo[field.id.toString()] != null ?  Image(image: imageFromBase64String(ruta).image,)
-                                :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                            child:  dataInfo[field.id.toString()] != null ? Image(image: imageFromBase64String(ruta).image,)
+                                                                          : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
                   )),
             ),
           ],
@@ -404,7 +404,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       try{
         ruta = dataInfo[field.id.toString()];
         if(ruta.isNotEmpty){
-          ruta = ruta.substring(22);
+          ruta = ruta.substring(searchComa(ruta));
         }
       }catch(e){}
 
@@ -433,7 +433,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       try{
         ruta = dataInfo[field.id.toString()];
         if(ruta.isNotEmpty){
-          ruta = ruta.substring(22);
+          ruta = ruta.substring(searchComa(ruta));
         }
       }catch(e){}
 
@@ -620,10 +620,6 @@ class _FormTaskViewState extends State<FormTaskView> {
         model = new FieldOptionModel(value: val,name: listColumns[y]);
         listOption.add(model);
       }
-
-      print('');
-
-
       return generatedTable(listOption, field.id.toString());
     }
 
@@ -792,6 +788,16 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       ],
     );
+  }
+
+  int searchComa(String texto){
+    int pos = 23;
+    for(int x = 0 ; x < texto.length ; x++){
+      if(texto[x] == ','){
+        pos = x + 1;
+      }
+    }
+    return pos;
   }
 
 }

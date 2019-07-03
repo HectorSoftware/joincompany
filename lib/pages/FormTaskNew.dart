@@ -27,7 +27,6 @@ import 'package:joincompany/services/FormService.dart';
 import 'package:http/http.dart' as http;
 import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'dart:io';
 
 class FormTask extends StatefulWidget {
 
@@ -73,7 +72,6 @@ class _FormTaskState extends State<FormTask> {
   String defaultValue = 'NO';
   String valuesTable = '';
   TaskModel taskOne;
-  int longitudeList = 0;
 
   @override
   void initState(){
@@ -674,7 +672,7 @@ conC(String value){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index]}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index].type}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
@@ -966,6 +964,8 @@ conC(String value){
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
 
+
+                                        //image2 = ima.copyResize(image, 120);
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -976,6 +976,35 @@ conC(String value){
                               ),
                             ],
                           ),
+                       /*   Container(
+                            width: MediaQuery.of(globalContext).size.width*0.50,
+                            height: 40,
+                            padding: EdgeInsets.only(
+                                top: 20,left: 20, right: 16, bottom: 4
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(10)
+                                ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5
+                                  )
+                                ]
+                            ),
+                            child: TextField(
+                              onChanged: (value){
+                              },
+                              maxLines: 1,
+                              //controller: nameController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Comentario ',
+                              ),
+                            ),
+                          ),*/
                         ],
                       ),
                       Spacer(
@@ -1060,6 +1089,36 @@ conC(String value){
                             ],
                           ),
                         ),
+
+                    /*    Container(
+                          width: MediaQuery.of(globalContext).size.width*0.50,
+                          height: 40,
+                          padding: EdgeInsets.only(
+                              top: 20,left: 20, right: 16, bottom: 4
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: TextField(
+                            onChanged: (value){
+                            },
+                            maxLines: 1,
+                            //controller: nameController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Comentario ',
+                            ),
+                          ),
+                        ),*/
                       ],
 
                     ),
@@ -1089,6 +1148,7 @@ conC(String value){
                                 padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
                                 child: RaisedButton(
                                   onPressed: () async{
+                                    //File img = await ImagePicker.pickImage(source: ImageSource.camera);
                                     var bytes = await getImgNetWork(listFieldsModels[index].fieldDefaultValue);
                                     Image img = Image.memory(bytes);
                                     if (img != null) {
@@ -1146,6 +1206,7 @@ conC(String value){
               }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
+
                 return Row(
                   children: <Widget>[
                     Padding(
@@ -1171,7 +1232,6 @@ conC(String value){
                         child: TextField(
                           controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
                           onChanged: (value){
-                            
                             saveData(value,listFieldsModels[index].id.toString());
                           },
                           maxLines: 1,
@@ -1201,13 +1261,7 @@ conC(String value){
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
 
-  capturePosition(){
-    if(_value1 == true)
-      {
 
-      }
-
-  }
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
