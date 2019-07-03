@@ -78,7 +78,6 @@ class _ClientState extends State<Client> {
     });
 
     if (!isOffline && hasConnection && !syncStatus && active){
-      print("sincronizando clientes");
       wrapperSync();
     }
   }

@@ -66,7 +66,6 @@ class _ContactViewState extends State<ContactView> {
   void connectionChanged(dynamic hasConnection) {
 
     if (!isOnline && hasConnection && !syncStatus && visible){
-      print("sincronizando contactos");
       wrapperSync();
     }
 

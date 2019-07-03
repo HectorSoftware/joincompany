@@ -43,7 +43,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   @override
-  void Dispose(){
+  void dispose(){
     super.dispose();
   }
 
@@ -110,7 +110,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             height: MediaQuery.of(context).size.height * 0.6,
             width: MediaQuery.of(context).size.width * 0.8,
             child: listFieldsModels.length != 0 ?
-                            ListBuider_ListView(context)
+                            listBuiderListView(context)
                             : Center(
                               child: Text('Cargando . . .'),
                             ),
@@ -192,7 +192,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     return true;
   }
 
-  ListBuider_ListView(BuildContext context){
+  listBuiderListView(BuildContext context){
     return  ListView.builder(
         itemCount: listFieldsModels.length,
         itemBuilder: (BuildContext context, index){

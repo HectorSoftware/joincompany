@@ -69,7 +69,6 @@ class _BusinessListState extends State<BusinessList> {
 
   void connectionChanged(dynamic hasConnection) {
     if (!isOnline && hasConnection && !syncStatus && visible){
-      print("sincronizando negocios");
       wrapperSync();
     }
 

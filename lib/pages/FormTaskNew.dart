@@ -9,7 +9,6 @@ import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/AddressModel.dart';
 import 'package:joincompany/models/UserModel.dart';
-import 'package:joincompany/blocs/blocTypeForm.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/services/AddressService.dart';
 import 'dart:io';
@@ -26,6 +25,8 @@ import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
+import 'package:http/http.dart' as http;
+import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
@@ -154,7 +155,8 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('SALIR'),
                                 onPressed: () {
-                                  Navigator.pushReplacementNamed(context, '/vistap');
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
                                 },
                               ),
                               FlatButton(
@@ -218,7 +220,9 @@ class _FormTaskState extends State<FormTask> {
                                                 child: Text('ACEPTAR'),
                                                 onPressed: () {
                                                   if(widget.toBusiness != true){
-                                                    Navigator.pushReplacementNamed(context, '/vistap');
+                                                    Navigator.of(context).pop();
+                                                    Navigator.of(context).pop();
+                                                    Navigator.of(context).pop();
                                                   }else{
                                                     Navigator.pop(context);
                                                     Navigator.pop(context);
@@ -469,7 +473,6 @@ buildListTypeForm(){
 
   );
 }
-  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
   bool findKeys(String key){
     for(var k in data.keys){
@@ -492,10 +495,7 @@ buildListTypeForm(){
       }
     }
   }
-conC(String value){
-    if(value != null){
-    }
-}
+
   String savedDataTablet(){
     String dat="";
     var keys = data.keys;
@@ -519,6 +519,7 @@ conC(String value){
     }
     return dat;
   }
+
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
     initDataTable(listOptions);
     valuesTable = savedDataTablet();
@@ -532,7 +533,6 @@ conC(String value){
           decoration: InputDecoration(
             hintText: '',
           ),
-          controller: t,
         ),
       );
     }

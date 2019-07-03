@@ -3775,7 +3775,7 @@ class DatabaseProvider {
       task_id = ?,
       in_server = ?,
       updated = ?,
-      deleted = ?,  
+      deleted = ? 
       WHERE id = ${customValueId}
       ''',
       [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt, customValue.formId,
