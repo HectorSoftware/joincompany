@@ -82,12 +82,12 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     super.dispose();
   }
 
-  @override
+  /*@override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
     }
-  }
+  }*/
 
 
   @override
@@ -325,8 +325,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[positionActual].createdAt)
                   .month.toString()] + ' ' + DateTime.parse(listTaskModellocal[positionActual].createdAt).year.toString();
             }else{
-              dateTitulo = DateTime
-                  .parse(listTaskModellocal[positionActual].planningDate)
+              dateTitulo = DateTime.parse(listTaskModellocal[positionActual].planningDate)
                   .day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[positionActual].planningDate).month.toString()] + ' ' + DateTime.parse(listTaskModellocal[positionActual].planningDate).year.toString();
             }
 
@@ -398,9 +397,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   por = 0.07;
                 }
 
-                if ((DateTime.now().day == DateSearch.day) &&
-                    (DateTime.now().month == DateSearch.month) &&
-                    (DateTime.now().year == DateSearch.year)) {
+                if ((DateTime.now().day == DateSearch.day) &&(DateTime.now().month == DateSearch.month) &&(DateTime.now().year == DateSearch.year)) {
                   dateTitulo = 'Hoy, ' + dateTitulo;
                 }
                 return Container(
@@ -463,39 +460,24 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
                       if (value) {
-                        if (this.mounted) {
-                          setState(() {
-                            listTaskModellocal[index].status = 'working';
-                          });
-                        }
                         var checkInTaskResponse = await checkOutTask(
                             listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
-                        if (checkInTaskResponse.statusCode != 200) {
-                          if (this.mounted) {
-                            setState(() {
-                              listTaskModellocal[index].status = 'done';
-                            });
-                          }
-                        }
+
+                        setState(() {
+                          //BLOCK LISTA
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+                         });
                       } else {
-                        if (this.mounted) {
-                          setState(() {
-                            listTaskModellocal[index].status = 'done';
-                          });
-                        }
                         var checkInTaskResponse = await checkInTask(
                             listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
-                        if (checkInTaskResponse.statusCode != 200) {
-                          if (this.mounted) {
-                            setState(() {
-                              listTaskModellocal[index].status = 'working';
-                            });
-                          }
-                        }
+                        setState(() {
+                          //BLOCK LISTA
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+                        });
                       }
                     },
                   ),
@@ -521,7 +503,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () async {
-                          showToast('Tarea Eliminada');
                           deleteCustomer(listTask.id.toString(), index);
                         }
                     ),
@@ -561,7 +542,15 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    await deleteTask(taskID, user.company, user.rememberToken);
+    var res = await deleteTask(taskID, user.company, user.rememberToken);
+    if(res.statusCode == 200){
+      showToast('Tarea Eliminada');
+      //BLOCK LISTA
+      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+      setState(() {});
+    }else{
+      showToast('Error Al Eliminar Tarea');
+    }
   }
 
   void _getUserLocation() async {
