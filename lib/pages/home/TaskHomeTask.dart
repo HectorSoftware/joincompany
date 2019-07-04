@@ -156,20 +156,19 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                       listTaskModellocal.add(data);
                     }
                   }
+                  LastCircule();
                 }else{
                   listTaskModellocal = onDataList;
+                  if (onDataList.length != 0) {
+                    chanceCircule = true;
+                    for (int cantlistTaskModellocal = 0; cantlistTaskModellocal < onDataList.length; cantlistTaskModellocal++) {
+                      listTaskModellocalbool.add(onDataList[cantlistTaskModellocal].status.contains('done'));
+                    }
+                  } else {
+                    LastCircule();
+                  }
                 }
 
-                if (onDataList.length != 0) {
-                  chanceCircule = true;
-                  for (int cantlistTaskModellocal = 0; cantlistTaskModellocal <
-                      onDataList.length; cantlistTaskModellocal++) {
-                    listTaskModellocalbool.add(
-                        onDataList[cantlistTaskModellocal].status.contains('done'));
-                  }
-                } else {
-                  LastCircule();
-                }
               }));
         });
       }
@@ -226,7 +225,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   bool chanceCircule = true;
 
   LastCircule() async {
-    await Future.delayed(Duration(seconds: 6, milliseconds: 0));
+    await Future.delayed(Duration(seconds: 3, milliseconds: 0));
     if (this.mounted){
       setState(() {
         chanceCircule = false;
