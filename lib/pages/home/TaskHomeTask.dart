@@ -202,7 +202,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     Container(
       child: RefreshIndicator(
         child: LoadMore(
-          isFinish: countTaskList >= taskTotals,
+          isFinish: widget.business == null ? countTaskList >= taskTotals : true,
           onLoadMore: _loadMore,
           child: listando(),
           whenEmptyLoad: false,
@@ -250,6 +250,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
     if (this.mounted) {
       setState(() {
         pageTasks = 1;
