@@ -16,7 +16,7 @@ class CustomerChannel {
 
     await Future.forEach(customersLocal, (customerLocal) async {
       var createCustomerResponseServer = await createCustomerFromServer(customerLocal, customer, authorization);
-      if (createCustomerResponseServer.statusCode==200) {
+      if ((createCustomerResponseServer.statusCode==200 || createCustomerResponseServer.statusCode == 201) && createCustomerResponseServer.body != 'Cliente ya existe') {
         CustomerModel customerServer = CustomerModel.fromJson(createCustomerResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor

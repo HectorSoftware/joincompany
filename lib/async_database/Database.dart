@@ -4755,19 +4755,12 @@ class DatabaseProvider {
 
     data = await db.rawQuery(
         '''
-      SELECT DISTINCT b.*
-      from "businesses" as b;
-      '''
-    );
-
-    data = await db.rawQuery(
-        '''
       SELECT DISTINCT b.*, cu.name as customer, cu.id as customer_id
       from "businesses" as b
       inner join "customers" as cu on cu.id = b.customer_id
       inner join "users" as u on b.created_by_id = u.id
       WHERE u.remember_token = '$userToken'
-      ''' + (excludeDeleted ? " AND b.deleted = 0;" : ';')
+      ''' + (excludeDeleted ? " AND b.deleted = 0 AND cu.deleted = 0;" : ';')
     );
 
 

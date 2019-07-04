@@ -41,9 +41,11 @@ class _TomarImageState extends State<TomarImage> {
           child: Text('CAMARA'),
           onPressed: () async {
             img = await ImagePicker.pickImage(source: ImageSource.camera);
-            File compressedFile = await FlutterNativeImage.compressImage(img.path,
-                quality: 50, percentage: 50);
-            img = compressedFile;
+            if(img != null){
+              File compressedFile = await FlutterNativeImage.compressImage(img.path,
+                  quality: 50, percentage: 50);
+              img = compressedFile;
+            }
             setState(() {});
           },
         ),
@@ -51,9 +53,11 @@ class _TomarImageState extends State<TomarImage> {
           child: Text('GALERIA'),
           onPressed: () async {
             img = await ImagePicker.pickImage(source: ImageSource.gallery);
-            File compressedFile = await FlutterNativeImage.compressImage(img.path,
-                quality: 50, percentage: 50);
-            img = compressedFile;
+            if(img != null){
+              File compressedFile = await FlutterNativeImage.compressImage(img.path,
+                  quality: 50, percentage: 50);
+              img = compressedFile;
+            }
             setState(() {});
           },
         ),

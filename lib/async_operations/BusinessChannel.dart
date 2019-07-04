@@ -16,7 +16,7 @@ class BusinessChannel {
 
     await Future.forEach(businessesLocal, (businessLocal) async {
       var createBusinessResponseServer = await createBusinessFromServer(businessLocal, customer, authorization);
-      if (createBusinessResponseServer.statusCode==200) {
+      if ((createBusinessResponseServer.statusCode==200 || createBusinessResponseServer.statusCode==201) && createBusinessResponseServer.body!='Cliente no existe') {
         BusinessModel businessServer = BusinessModel.fromJson(createBusinessResponseServer.body);
         // Cambiar el SyncState Local
         // Actualizar el id local o usar otro campo para guardar el id del recurso en el servidor
