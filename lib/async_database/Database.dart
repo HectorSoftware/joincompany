@@ -2630,7 +2630,7 @@ class DatabaseProvider {
         customValue.customizableId = task.id;
 
         FieldModel foundField = foundSection.findFieldById(customValue.fieldId);
-        if (foundField.fieldType == "Photo") {
+        if (foundField.fieldType == "Photo" || foundField.fieldType == "CanvanImage" || foundField.fieldType == "CanvanSignature") {
           customValue.imageBase64 = customValue.value;
           customValue.value = "/tmp/";
         }
