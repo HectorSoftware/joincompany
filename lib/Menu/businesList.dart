@@ -247,8 +247,8 @@ class _BusinessListState extends State<BusinessList> {
               return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
-                    var direction = snapshot.data[index].customer != null ? snapshot.data[index].customer : "";
-                    var name = snapshot.data[index].name != null ? snapshot.data[index].stage:"";
+                    var custommer = snapshot.data[index].customer != null ? snapshot.data[index].customer : "";
+                    var name = snapshot.data[index].name != null ? snapshot.data[index].name:"";
                       if(snapshot.data.length == 0){
                         return Center(
                           child: Text('No hay Negocios Registrados'),
@@ -278,13 +278,7 @@ class _BusinessListState extends State<BusinessList> {
                                     trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
-                                        return showDialog(
-                                          context: context,
-                                          barrierDismissible: false, // user must tap button for close dialog!
-                                          builder: (BuildContext context) {
-                                            return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                          },
-                                        );
+                                        Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
                                       }else if (widget.st == STATUS_PAGE.select){
                                         Navigator.of(context).pop(snapshot.data[index]);
                                       }
@@ -308,13 +302,7 @@ class _BusinessListState extends State<BusinessList> {
                                     trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
-                                        return showDialog(
-                                          context: context,
-                                          barrierDismissible: false, // user must tap button for close dialog!
-                                          builder: (BuildContext context) {
-                                            return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                          },
-                                        );
+                                        Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
                                       }else if (widget.st == STATUS_PAGE.select){
                                         Navigator.of(context).pop(snapshot.data[index]);
                                       }
@@ -326,7 +314,7 @@ class _BusinessListState extends State<BusinessList> {
                             ),
                           );
                         }
-                      }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(direction, textFilter)) {
+                      }else if(ls.createState().checkSearchInText(name, textFilter)||ls.createState().checkSearchInText(custommer, textFilter)) {
                         if(snapshot.data[index].stage != stage){
                           stage = snapshot.data[index].stage;
                           return Card(
@@ -350,13 +338,7 @@ class _BusinessListState extends State<BusinessList> {
                                     trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
-                                        return showDialog(
-                                          context: context,
-                                          barrierDismissible: false, // user must tap button for close dialog!
-                                          builder: (BuildContext context) {
-                                            return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                          },
-                                        );
+                                        Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
                                       }else if(widget.st == STATUS_PAGE.select){
                                         Navigator.of(context).pop(snapshot.data[index]);
                                       }
@@ -380,13 +362,7 @@ class _BusinessListState extends State<BusinessList> {
                                     trailing:snapshot.data[index].date != null ?Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
-                                        return showDialog(
-                                          context: context,
-                                          barrierDismissible: false, // user must tap button for close dialog!
-                                          builder: (BuildContext context) {
-                                            return FormBusiness(dataBusiness: snapshot.data[index],edit: true,);
-                                          },
-                                        );
+                                        Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
                                       }else if(widget.st == STATUS_PAGE.select){
                                         Navigator.of(context).pop(snapshot.data[index]);
                                       }

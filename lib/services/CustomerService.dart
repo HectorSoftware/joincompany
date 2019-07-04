@@ -177,8 +177,8 @@ Future<http.Response> deleteCustomerFromServer(String id, String customer, Strin
   return await httpDelete(id, customer, authorization, resourcePath, false);
 }
 
-Future<ResponseModel> getCustomerAddresses(String id, String customer, String authorization ) async {
-  List<AddressModel> addresses = await DatabaseProvider.db.RetrieveAddressModelByCustomerId(int.parse(id));
+Future<ResponseModel> getCustomerAddresses(String id, String customer, String authorization, { bool excludeDeleted = false} ) async {
+  List<AddressModel> addresses = await DatabaseProvider.db.RetrieveAddressModelByCustomerId(int.parse(id), excludeDeleted);
 
   ResponseModel response = new ResponseModel(statusCode: 200, body: addresses);
 
@@ -253,8 +253,8 @@ Future<http.Response> unrelateCustomerAddressFromServer(String idCustomer, Strin
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization ) async {
-  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id));
+Future<ResponseModel> getCustomerContacts(String id, String customer, String authorization, { bool excludeDeleted = false} ) async {
+  List<ContactModel> contacts = await DatabaseProvider.db.RetrieveContactModelByCustomerId(int.parse(id), excludeDeleted);
 
   ContactsModel contactsObj = new ContactsModel(data: contacts, perPage: 0);
 
@@ -333,8 +333,8 @@ Future<http.Response> unrelateCustomerContactFromServer(String idCustomer, Strin
   return await httpGet(customer, authorization, resourcePath, id: id);
 }
 
-Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization ) async {
-  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id));
+Future<ResponseModel> getCustomerBusinesses(String id, String customer, String authorization, { bool excludeDeleted = false} ) async {
+  List<BusinessModel> businesses = await DatabaseProvider.db.RetrieveBusinessModelByCustomerId(int.parse(id), excludeDeleted);
   
   BusinessesModel businessesObj = new BusinessesModel(data: businesses, perPage: 0);
   

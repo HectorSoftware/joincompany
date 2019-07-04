@@ -57,13 +57,10 @@ class _SearchAddressState extends State<SearchAddressWithClient> {
 
   void checkConnection(ConnectionStatusSingleton connectionStatus) async {
     isOnline = await connectionStatus.checkConnection();
-    setState(() {});
   }
 
   void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOnline = hasConnection;
-    });
+    isOnline = hasConnection;
   }
 
   @override

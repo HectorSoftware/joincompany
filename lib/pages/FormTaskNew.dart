@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -130,6 +131,18 @@ class _FormTaskState extends State<FormTask> {
 
   }
 
+  void showToast(String text){
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 15,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 14.0
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     globalContext = context;
@@ -208,34 +221,11 @@ class _FormTaskState extends State<FormTask> {
                                     }
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
-                                  await  saveTaskApi();
+                                    await  saveTaskApi();
                                     if(taskEnd == 201 || taskEnd == 200){
-                                      showDialog(
-                                        context: context,
-                                      builder: (BuildContext context) {
-                                          return   AlertDialog(
-                                            title: Text('Tarea guardada con exito'),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                child: Text('ACEPTAR'),
-                                                onPressed: () {
-                                                  if(widget.toBusiness != true){
-                                                    Navigator.of(context).pop();
-                                                    Navigator.of(context).pop();
-                                                    Navigator.of(context).pop();
-                                                  }else{
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
-                                                    Navigator.of(context).pop();
-
-                                                  }
-
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                      }
-                                      );
+                                      showToast('Tarea Creada');
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
                                     }else
                                     if(taskEnd == 422  || taskEnd == 413){
                                       showDialog(

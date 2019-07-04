@@ -176,7 +176,7 @@ class _FormClientState extends State<FormClient> {
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     if(widget.client != null){
-      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),user.company,user.rememberToken);
+      var getCustomerAddressesResponse = await getCustomerAddresses(widget.client.id.toString(),user.company,user.rememberToken, excludeDeleted: true);
       if(getCustomerAddressesResponse.statusCode == 200 || getCustomerAddressesResponse.statusCode == 201){
         directionsOld =  getCustomerAddressesResponse.body;
 
@@ -185,7 +185,7 @@ class _FormClientState extends State<FormClient> {
         }
       }
 
-      var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),user.company,user.rememberToken);
+      var getCustomerContactsResponse = await getCustomerContacts(widget.client.id.toString(),user.company,user.rememberToken, excludeDeleted: true);
       if(getCustomerContactsResponse.statusCode == 200 || getCustomerContactsResponse.statusCode == 201){
         ContactsModel customerContacts = getCustomerContactsResponse.body;
         contactsOld = customerContacts.data;
@@ -194,7 +194,7 @@ class _FormClientState extends State<FormClient> {
         }
       }
 
-      var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),user.company,user.rememberToken);
+      var getCustomerBusinessesResponse = await getCustomerBusinesses(widget.client.id.toString(),user.company,user.rememberToken, excludeDeleted: true);
       if(getCustomerBusinessesResponse.statusCode == 200 || getCustomerBusinessesResponse.statusCode == 201){
         BusinessesModel customerbusiness = getCustomerBusinessesResponse.body;
         businessOld = customerbusiness.data;

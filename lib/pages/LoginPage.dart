@@ -64,9 +64,9 @@ class _LoginPageState extends State<LoginPage> {
 //     final companyController = TextEditingController(/*text : 'duperu'*/);
 //  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
 //  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController();
-  final companyController = TextEditingController();
-  final passwordController = TextEditingController();
+  final nameController = TextEditingController(text: 'cbarrios@factochile.cl');
+  final companyController = TextEditingController(text: 'factochile');
+  final passwordController = TextEditingController(text: '123');
 
   bool TextViewVisible;
   bool AgregarUser;

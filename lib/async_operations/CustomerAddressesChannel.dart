@@ -62,7 +62,7 @@ class CustomerAddressesChannel {
     List<Map> customerAdressesLocal = await DatabaseProvider.db.ReadCustomerAddressesBySyncState(SyncState.deleted);
 
     await Future.forEach(customerAdressesLocal, (customerAddressLocal) async {
-      var unrelateCustomerAddressResponseServer = await unrelateCustomerAddressFromServer(customerAddressLocal["customer_id"], customerAddressLocal["address_id"], customer, authorization);
+      var unrelateCustomerAddressResponseServer = await unrelateCustomerAddressFromServer(customerAddressLocal["customer_id"].toString(), customerAddressLocal["address_id"].toString(), customer, authorization);
       if (unrelateCustomerAddressResponseServer.statusCode==200) {
         await DatabaseProvider.db.DeleteCustomerAddressById(customerAddressLocal["customer_id"], customerAddressLocal["address_id"]);
       }

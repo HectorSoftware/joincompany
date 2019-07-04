@@ -4020,9 +4020,9 @@ class DatabaseProvider {
     return await db.rawUpdate(
       '''
       UPDATE "customers_addresses" SET
-      in_server = ? AND
-      updated = ? AND
-      deleted = ? AND
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE customer_id = $customerId AND address_id = $addressId
       ''',
       paramsBySyncState[syncState],
@@ -4085,7 +4085,7 @@ class DatabaseProvider {
       left join customers_addresses as ca on ca.customer_id = c.id
       left join addresses as a on a.id = ca.address_id
       WHERE u.remember_token = '$userToken'
-      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
+      ''' + (excludeDeleted ? " AND c.deleted = 0 AND ca.deleted = 0;" : ';')
     );
 
     List<CustomerWithAddressModel> listOfCustomersWithAddresses = new List<CustomerWithAddressModel>();
@@ -4122,10 +4122,49 @@ class DatabaseProvider {
         ));
       });
     }
+
+    data = await db.rawQuery(
+        '''
+      SELECT DISTINCT c.*
+      from customers as c
+      inner join customers_users as cu on cu.customer_id = c.id
+      inner join users as u on cu.user_id = u.id
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
+    );
+
+    data.toList().forEach((customerWithAddressResponse){
+      bool flag = true;
+
+      listOfCustomersWithAddresses.forEach((customer){
+        if(customerWithAddressResponse['id'] == customer.id){
+          flag = false;
+        }
+      });
+
+      if (flag) {
+        listOfCustomersWithAddresses.add(new CustomerWithAddressModel(
+          id: customerWithAddressResponse["id"],
+          createdAt: customerWithAddressResponse["created_at"],
+          updatedAt: customerWithAddressResponse["updated_at"],
+          deletedAt: customerWithAddressResponse["deleted_at"],
+          createdById: customerWithAddressResponse["created_by_id"],
+          updatedById: customerWithAddressResponse["updated_by_id"],
+          deletedById: customerWithAddressResponse["deleted_by_id"],
+          name: customerWithAddressResponse["name"],
+          code: customerWithAddressResponse["code"],
+          contactName: customerWithAddressResponse["contact_name"],
+          details: customerWithAddressResponse["details"],
+        ));
+      }
+
+    });
+
+
     return listOfCustomersWithAddresses;
   }
 
-  Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId) async {
+  Future<List<AddressModel>> RetrieveAddressModelByCustomerId(int customerId, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -4133,8 +4172,8 @@ class DatabaseProvider {
       SELECT a.*
       from "addresses" as a
       inner join "customers_addresses" as ca on ca.address_id = a.id
-      WHERE ca.customer_id = $customerId;
-      '''
+      WHERE ca.customer_id = $customerId
+      ''' + (excludeDeleted ? " AND ca.deleted = 0;" : ';')
     );
 
     List<AddressModel> listOfAddressModels = new List<AddressModel>();
@@ -4169,7 +4208,7 @@ class DatabaseProvider {
     return listOfAddressModels;
   }
 
-  Future<List<ContactModel>> RetrieveContactModelByCustomerId (int customerId) async {
+  Future<List<ContactModel>> RetrieveContactModelByCustomerId (int customerId, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
@@ -4177,8 +4216,8 @@ class DatabaseProvider {
       SELECT co.*
       from "contacts" as co
       inner join "customers_contacts" as cc on cc.contact_id = co.id
-      WHERE cc.customer_id = $customerId;
-      '''
+      WHERE cc.customer_id = $customerId
+      ''' + (excludeDeleted ? " AND cc.deleted = 0;" : ';')
     );
 
     List<ContactModel> listOfContacts = new List<ContactModel>();
@@ -4373,13 +4412,13 @@ class DatabaseProvider {
 
     data = await db.rawQuery(
         '''
-      SELECT DISTINCT c.*, cu.name as customer, cu.id as customer_id
+      SELECT DISTINCT c.*, cu.name as customer, cu.id as customer_id, cc.deleted as customer_contact_deleted
       from "contacts" as c
       left join "customers_contacts" as cc on cc.contact_id = c.id
       left join "customers" as cu on cc.customer_id = cu.id
       inner join "users" as u on c.created_by_id = u.id
       WHERE u.remember_token = '$userToken'
-      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
+      ''' + (excludeDeleted ? " AND c.deleted = 0 AND cu.deleted = 0 AND cc.deleted = 0;" : ';')
     );
 
     List<ContactModel> listOfContacts = new List<ContactModel>();
@@ -4418,6 +4457,46 @@ class DatabaseProvider {
         }
       });
     }
+
+    data = await db.rawQuery(
+        '''
+      SELECT DISTINCT c.*
+      from "contacts" as c
+      inner join "users" as u on c.created_by_id = u.id
+      WHERE u.remember_token = '$userToken'
+      ''' + (excludeDeleted ? " AND c.deleted = 0;" : ';')
+    );
+
+    data.toList().forEach((contactOutList){
+      bool flag = true;
+
+      listOfContacts.forEach((contactInList){
+        if (contactOutList['id']==contactInList.id){
+          flag = false;
+        }
+      });
+
+      if (flag) {
+        listOfContacts.add(new ContactModel(
+          id: contactOutList["id"],
+          createdAt: contactOutList["created_at"],
+          updatedAt: contactOutList["updated_at"],
+          deletedAt: contactOutList["deleted_at"],
+          createdById: contactOutList["created_by_id"],
+          updatedById: contactOutList["updated_by_id"],
+          deletedById: contactOutList["deleted_by_id"],
+          customerId: contactOutList["customer_id"],
+          customer: contactOutList["customer"],
+          code: contactOutList["code"],
+          name: contactOutList["name"],
+          phone: contactOutList["phone"],
+          email: contactOutList["email"],
+          details: contactOutList["details"],
+        ));
+      }
+
+
+    });
 
     return listOfContacts;
   }
@@ -4532,7 +4611,7 @@ class DatabaseProvider {
 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
-      [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
+      [...[business.id, business.createdAt == null ? DateTime.now().toString() : business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt,
       business.deletedAt, business.createdById, business.updatedById, business.deletedById,
       business.customerId, business.name, business.stage, business.date,
       business.amount, ...paramsBySyncState[syncState]]],
@@ -4672,6 +4751,13 @@ class DatabaseProvider {
 
     data = await db.rawQuery(
         '''
+      SELECT DISTINCT b.*
+      from "businesses" as b;
+      '''
+    );
+
+    data = await db.rawQuery(
+        '''
       SELECT DISTINCT b.*, cu.name as customer, cu.id as customer_id
       from "businesses" as b
       inner join "customers" as cu on cu.id = b.customer_id
@@ -4719,13 +4805,15 @@ class DatabaseProvider {
     );
   }
 
-  Future<List<BusinessModel>> RetrieveBusinessModelByCustomerId(int customerId) async {
+  Future<List<BusinessModel>> RetrieveBusinessModelByCustomerId(int customerId, bool excludeDeleted) async {
     final db = await database;
     List<Map<String, dynamic>> data;
     data = await db.rawQuery(
       '''
-      SELECT * FROM "businesses" WHERE customer_id = $customerId
-      '''
+      SELECT * 
+      FROM "businesses" 
+      WHERE customer_id = $customerId
+      ''' + (excludeDeleted ? " AND deleted = 0;" : ';')
     );
 
     List<BusinessModel> listOfBusinesses = new List<BusinessModel>();

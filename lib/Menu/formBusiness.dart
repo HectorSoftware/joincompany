@@ -237,7 +237,7 @@ class _FormBusinessState extends State<FormBusiness> {
     var getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
     ContactsModel contacts = getAllContactsResponse.body;
     if(widget.client == null){
-      var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken);
+      var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken, excludeDeleted: true);
       CustomersModel customers = getAllCustomersResponse.body;
       listCustomers = customers.data;
       if(listCustomers != null){
@@ -311,25 +311,8 @@ class _FormBusinessState extends State<FormBusiness> {
                                     await saveBusinessApi();
                                   }
                                 if(saveBusinessEnd == true){
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return   AlertDialog(
-                                          title: Text('Guardado con exito'),
-                                          actions: <Widget>[
-                                            FlatButton(
-
-                                              child: const Text('Aceptar'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop(saveBusiness);
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                  );
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop(saveBusiness);
                                 }else{
                                   showDialog(
                                       context: context,
@@ -633,59 +616,7 @@ class _FormBusinessState extends State<FormBusiness> {
                             icon: Icon(Icons.add),
                               onPressed: () async {
                               if(widget.edit == true && listDirectionsClients.length > 0 && widget.client == null){
-                                return showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return
-                                        Container(
-                                            width: MediaQuery.of(context).size.width,
-                                            height: MediaQuery.of(context).size.height *(1.0 *listDirectionsClients.length ),
-                                            child: SimpleDialog(
-                                                title: Text('Escoja una direccion para crear una tarea:'),
-                                                children: <Widget>[
-                                                  Column(
-                                                    children: <Widget>[
-                                                      Container(
-                                                        width: MediaQuery.of(context).size.width ,
-                                                        height: MediaQuery.of(context).size.height *(0.1 *listDirectionsClients.length ),
-                                                        child: listDirectionsClients.length != 0 ? ListView.builder(
-                                                          itemCount: listDirectionsClients.length,
-                                                          itemBuilder: (context, index) {
-                                                            return Container(
-                                                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                                                                  color: Colors.white,
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                        color: Colors.black12,
-                                                                        blurRadius: 5
-                                                                    )
-                                                                  ]
-                                                              ),
-                                                              child: ListTile(
-                                                                title: Text(listDirectionsClients[index].address,style: TextStyle(fontSize: 18),),
-                                                                subtitle:dropdownValueClient!= null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text(''),
-                                                                leading: Icon(Icons.location_on),
-                                                                onTap: () async {
-                                                                  var t = await createTaskBusiness(listDirectionsClients[index]);
-                                                                  if (t != null){
-                                                                    setState(() {
-                                                                      task.add(t);
-                                                                    });
-                                                                  }
-                                                                },
-                                                              ),
-                                                            );
-                                                          },
-                                                        ): Center(child: Text('Cliente sin direcciones'),),
-
-                                                      ),
-                                                    ],
-                                                  )
-                                                ]
-                                            )
-                                        );
-                                    }
-                                );
+                                await addTask();
                               }else if(widget.edit == true && widget.client == null){
                                 return showDialog(
                                     context: context,
@@ -737,52 +668,6 @@ class _FormBusinessState extends State<FormBusiness> {
                           child: IconButton(
                             icon: Icon(Icons.visibility),
                             onPressed: () async {
-//                              if(widget.edit == true && widget.client == null){
-//                                return   showDialog(
-//                                    context: context,
-//                                    // ignore: deprecated_member_use
-//                                    child: SimpleDialog(
-//                                        title: Text('Tareas:'),
-//                                        children: <Widget>[
-//                                          Column(
-//                                            children: <Widget>[
-//                                              Container(
-//                                                width: MediaQuery.of(context).size.width ,
-//                                                height: MediaQuery.of(context).size.height * (0.1 *listTasksBusiness.length) +50,
-//                                                child: listTasksBusiness.length != 0 ? ListView.builder(
-//                                                  itemCount: listTasksBusiness.length,
-//                                                  itemBuilder: (context, index) {
-//                                                    return Container(
-//                                                      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-//                                                          color: Colors.white,
-//                                                          boxShadow: [
-//                                                            BoxShadow(
-//                                                                color: Colors.black12,
-//                                                                blurRadius: 5
-//                                                            )
-//                                                          ]
-//                                                      ),
-//                                                      child: ListTile(
-//                                                        title: Text(listTasksBusiness[index].name,style: TextStyle(fontSize: 18),),
-//                                                        subtitle:listTasksBusiness[index].id != null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text('Sin Cliente Asociado'),
-//                                                        leading: Icon(Icons.message),
-//                                                        onTap: (){
-//
-//                                                        },
-//                                                      ),
-//                                                    );
-//                                                  },
-//                                                ): Center(child: Text('No hay tareas asociadas'),),
-//
-//                                              ),
-//                                            ],
-//                                          )
-//                                        ]
-//                                    )
-//                                );
-//                              }else{
-//
-//                              }
                               if(widget.dataBusiness != null){
                                 await showTask();
                               }
@@ -815,7 +700,63 @@ class _FormBusinessState extends State<FormBusiness> {
     }catch(e){
 
     }
+  }
 
+  Future addTask(){
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return
+            Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height *(1.0 *listDirectionsClients.length ),
+                child: SimpleDialog(
+                    title: Text('Escoja una direccion para crear una tarea:'),
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width ,
+                            height: MediaQuery.of(context).size.height *(0.1 *listDirectionsClients.length ),
+                            child: listDirectionsClients.length != 0 ? ListView.builder(
+                              itemCount: listDirectionsClients.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5
+                                        )
+                                      ]
+                                  ),
+                                  child: ListTile(
+                                    title: Text(listDirectionsClients[index].address,style: TextStyle(fontSize: 18),),
+                                    subtitle:dropdownValueClient!= null ? Text(dropdownValueClient,style: TextStyle(fontSize: 16),):Text(''),
+                                    leading: Icon(Icons.location_on),
+                                    onTap: () async {
+                                      var t = await createTaskBusiness(listDirectionsClients[index]);
+                                      if (t != null){
+                                        setState(() {
+                                          task.add(t);
+                                        });
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                );
+                              },
+                            ): Center(child: Text('Cliente sin direcciones'),),
+
+                          ),
+                        ],
+                      )
+                    ]
+                )
+            );
+        }
+    );
   }
 
   getDirectionsClients()async{
@@ -837,6 +778,8 @@ class _FormBusinessState extends State<FormBusiness> {
 
   saveBusinessApi() async{
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    saveBusiness.createdById = user.id;
+    saveBusiness.updatedById = user.id;
     var createBusinessResponse = await createBusiness(saveBusiness, user.company, user.rememberToken);
 
     if(createBusinessResponse.statusCode == 201 || createBusinessResponse.statusCode == 200){
@@ -862,7 +805,7 @@ class _FormBusinessState extends State<FormBusiness> {
     if(updateBusinessResponse.statusCode == 201 || updateBusinessResponse.statusCode == 200){
       setState(() {
         saveBusinessEnd = true;
-        showToast('Negocio Actualizado.');
+        showToast('Negocio Modificado.');
       });
     }
     if(updateBusinessResponse.statusCode == 500){
