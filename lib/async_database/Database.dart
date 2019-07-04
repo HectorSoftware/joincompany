@@ -2586,12 +2586,17 @@ class DatabaseProvider {
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [...[task.id, task.createdAt == null ? DateTime.now().toString() : task.createdAt,
-      task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt,
+      task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, 
+      task.deletedAt == null ? task.deletedAt : fixStringDateIfBroken(task.deletedAt),
       task.createdById == null ? (await RetrieveLastLoggedUser()).id : task.createdById,
-      task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, task.deletedById, task.formId,
-      task.responsibleId, task.customerId, task.addressId, task.businessId, task.name,
-      task.planningDate, task.checkinDate, task.checkinLatitude,
-      task.checkinLongitude, task.checkinDistance, task.checkoutDate,
+      task.updatedById == null ? (await RetrieveLastLoggedUser()).id : task.updatedById, 
+      task.deletedById, task.formId, task.responsibleId, task.customerId, 
+      task.addressId, task.businessId, task.name,
+      task.planningDate == null ? task.planningDate : fixStringDateIfBroken(task.planningDate), 
+      task.checkinDate == null ? task.checkinDate : fixStringDateIfBroken(task.checkinDate), 
+      task.checkinLatitude,
+      task.checkinLongitude, task.checkinDistance, 
+      task.checkoutDate == null ? task.checkoutDate : fixStringDateIfBroken(task.checkoutDate),
       task.checkoutLatitude, task.checkoutLongitude, task.checkoutDistance,
       task.status == null ? "pending" : task.status], ...paramsBySyncState[syncState]],
     );
@@ -2631,7 +2636,7 @@ class DatabaseProvider {
 
         FieldModel foundField = foundSection.findFieldById(customValue.fieldId);
         if (foundField.fieldType == "Photo" || foundField.fieldType == "CanvanImage" || foundField.fieldType == "CanvanSignature") {
-          customValue.imageBase64 = customValue.value;
+          customValue.imageBase64 = "data:image/jpeg;base64," + customValue.value;
           customValue.value = "/tmp/";
         }
       }
@@ -2722,9 +2727,9 @@ class DatabaseProvider {
         DateTime date;
 
         if (taskRetrieved["planning_date"] != null)
-          date = DateTime.parse(fixStringDateIfBroken(taskRetrieved["planning_date"]));
+          date = DateTime.parse(taskRetrieved["planning_date"]);
         else if (taskRetrieved["created_at"] != null)
-          date = DateTime.parse(fixStringDateIfBroken(taskRetrieved["created_at"]));
+          date = DateTime.parse(taskRetrieved["created_at"]);
 
         if (query.beginDate != null)
           if (date != null)
