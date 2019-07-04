@@ -61,12 +61,12 @@ class _LoginPageState extends State<LoginPage> {
   StreamSubscription _connectionChangeStream;
   bool isOnline = false;
 //  final nameController = TextEditingController(/*text : 'eibanez@duperu.com'*/);
-//     final companyController = TextEditingController(/*text : 'duperu'*/);
-//  final nameController = TextEditingController(text : 'jgarcia@getkem.com');
-//  final companyController = TextEditingController(text : 'getkem');
-  final nameController = TextEditingController();
-  final companyController = TextEditingController();
-  final passwordController = TextEditingController();
+     final companyController = TextEditingController(text : 'factochile');
+  final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
+  final passwordController = TextEditingController(text: '123');
+//  final nameController = TextEditingController();
+//  final companyController = TextEditingController();
+//  final passwordController = TextEditingController();
 
   bool TextViewVisible;
   bool AgregarUser;

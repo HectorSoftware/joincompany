@@ -2715,7 +2715,7 @@ class DatabaseProvider {
       SELECT * FROM "tasks" WHERE deleted <> 1
       ''',
     );
-
+    print('****************************');
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {

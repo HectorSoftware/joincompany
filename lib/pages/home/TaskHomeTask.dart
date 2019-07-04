@@ -56,6 +56,10 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     listTaskModellocalbool = new List<bool>();
     listCalendar = widget.listCalendarRes;
     actualizarusuario();
+
+    //BLOCK LISTA
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -67,10 +71,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     listCalender = widget.listCalendarRes;
     pageTasks = 1;
-    //getdatalist(listCalendar[1],listCalendar[0],1);
-    setState(() {
-      user;listCalender;
-    });
+    setState(() {});
   }
 
   @override
@@ -132,14 +133,15 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 listTaskModellocalbool.clear();
                 pageTasks = 1;
                 listCalendar = onData;
-                //getdatalist(onData[1],onData[0],1);
               }));
+
         });
       }
     } catch (e) {}
 
+    blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks);
     //BLOCK LISTA
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+    //blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
     try {
       if (this.mounted) {
         setState(() {
@@ -147,7 +149,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           StreamSubscription streamSubscriptionList = blocList.outListTaks
               .listen((onDataList) =>
               setState(() {
-                //if(PageTasks == 1){
                 if(widget.business != null){
                   listTaskModellocal.clear();
                   for(var data in onDataList){
@@ -159,8 +160,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   listTaskModellocal = onDataList;
                 }
 
-
-                //}
                 if (onDataList.length != 0) {
                   chanceCircule = true;
                   for (int cantlistTaskModellocal = 0; cantlistTaskModellocal <
@@ -179,7 +178,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       if (this.mounted) {
         setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() { taskTotals = onDataListTotal; }));
+          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() {
+            taskTotals = onDataListTotal;
+          }));
         });
       }
     } catch (e) {}
@@ -244,9 +245,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         pageTasks++;
       });
     }
-
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
-    //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
   }
 
@@ -259,7 +258,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         listTaskModellocal.clear();
       });
     }
-    //getdatalist(listCalendar[1],listCalendar[0],1);
   }
 
   int pageTasks = 1;
