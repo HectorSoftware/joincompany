@@ -606,7 +606,7 @@ class _FormClientState extends State<FormClient> {
           return AlertDialog(
             title: Text('ELIMINIAR'),
             content: const Text(
-                '¿estas seguro que desea eliminar este cliente?'),
+                '¿Estás seguro que desea eliminar este cliente?'),
             actions: <Widget>[
               FlatButton(
                 child: const Text('CANCELAR'),

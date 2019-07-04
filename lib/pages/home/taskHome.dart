@@ -426,7 +426,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 if (this.mounted){
                   setState((){
                     textFilter = value.toString();
-                    blocListTaskResFilter;
+                    blocListTaskResFilter.inTaksFilter.add(textFilter);
                   });
                 }
               },

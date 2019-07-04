@@ -275,7 +275,7 @@ class _AddContactState extends State<AddContact> {
       popUp = AlertDialog(
         title: Text('¿Guardar?'),
         content: const Text(
-            '¿estas seguro que desea guardar estos datos?'),
+            '¿Estás seguro que desea guardar estos datos?'),
         actions: <Widget>[
           FlatButton(
             child: const Text('SALIR'),
@@ -527,7 +527,7 @@ class _AddContactState extends State<AddContact> {
           return AlertDialog(
             title: Text('ELIMINIAR'),
             content: const Text(
-                '¿Estas seguro que desea eliminar este Contacto?.'),
+                '¿Estás seguro que desea eliminar este Contacto?.'),
             actions: <Widget>[
               FlatButton(
                 child: const Text('CANCELAR'),
