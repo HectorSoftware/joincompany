@@ -56,6 +56,10 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     listTaskModellocalbool = new List<bool>();
     listCalendar = widget.listCalendarRes;
     actualizarusuario();
+
+    //BLOCK LISTA
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -67,10 +71,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
     listCalender = widget.listCalendarRes;
     pageTasks = 1;
-    //getdatalist(listCalendar[1],listCalendar[0],1);
-    setState(() {
-      user;listCalender;
-    });
+    setState(() {});
   }
 
   @override
@@ -81,12 +82,12 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     super.dispose();
   }
 
-  @override
+  /*@override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
     }
-  }
+  }*/
 
 
   @override
@@ -132,14 +133,15 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 listTaskModellocalbool.clear();
                 pageTasks = 1;
                 listCalendar = onData;
-                //getdatalist(onData[1],onData[0],1);
               }));
+
         });
       }
     } catch (e) {}
 
+    blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks);
     //BLOCK LISTA
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+    //blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
     try {
       if (this.mounted) {
         setState(() {
@@ -147,7 +149,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           StreamSubscription streamSubscriptionList = blocList.outListTaks
               .listen((onDataList) =>
               setState(() {
-                //if(PageTasks == 1){
                 if(widget.business != null){
                   listTaskModellocal.clear();
                   for(var data in onDataList){
@@ -159,8 +160,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   listTaskModellocal = onDataList;
                 }
 
-
-                //}
                 if (onDataList.length != 0) {
                   chanceCircule = true;
                   for (int cantlistTaskModellocal = 0; cantlistTaskModellocal <
@@ -179,7 +178,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       if (this.mounted) {
         setState(() {
           // ignore: cancel_subscriptions
-          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() { taskTotals = onDataListTotal; }));
+          StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() {
+            taskTotals = onDataListTotal;
+          }));
         });
       }
     } catch (e) {}
@@ -244,9 +245,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         pageTasks++;
       });
     }
-
     await Future.delayed(Duration(seconds: 0, milliseconds: 5000));
-    //getdatalist(listCalendar[1],listCalendar[0],PageTasks);
     return true;
   }
 
@@ -259,7 +258,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         listTaskModellocal.clear();
       });
     }
-    //getdatalist(listCalendar[1],listCalendar[0],1);
   }
 
   int pageTasks = 1;
@@ -327,8 +325,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               dateTitulo = DateTime.parse(listTaskModellocal[positionActual].createdAt).day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[positionActual].createdAt)
                   .month.toString()] + ' ' + DateTime.parse(listTaskModellocal[positionActual].createdAt).year.toString();
             }else{
-              dateTitulo = DateTime
-                  .parse(listTaskModellocal[positionActual].planningDate)
+              dateTitulo = DateTime.parse(listTaskModellocal[positionActual].planningDate)
                   .day.toString() + ' de ' + intsToMonths[DateTime.parse(listTaskModellocal[positionActual].planningDate).month.toString()] + ' ' + DateTime.parse(listTaskModellocal[positionActual].planningDate).year.toString();
             }
 
@@ -400,9 +397,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   por = 0.07;
                 }
 
-                if ((DateTime.now().day == DateSearch.day) &&
-                    (DateTime.now().month == DateSearch.month) &&
-                    (DateTime.now().year == DateSearch.year)) {
+                if ((DateTime.now().day == DateSearch.day) &&(DateTime.now().month == DateSearch.month) &&(DateTime.now().year == DateSearch.year)) {
                   dateTitulo = 'Hoy, ' + dateTitulo;
                 }
                 return Container(
@@ -465,39 +460,24 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
                       if (value) {
-                        if (this.mounted) {
-                          setState(() {
-                            listTaskModellocal[index].status = 'working';
-                          });
-                        }
                         var checkInTaskResponse = await checkOutTask(
                             listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
-                        if (checkInTaskResponse.statusCode != 200) {
-                          if (this.mounted) {
-                            setState(() {
-                              listTaskModellocal[index].status = 'done';
-                            });
-                          }
-                        }
+
+                        setState(() {
+                          //BLOCK LISTA
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+                         });
                       } else {
-                        if (this.mounted) {
-                          setState(() {
-                            listTaskModellocal[index].status = 'done';
-                          });
-                        }
                         var checkInTaskResponse = await checkInTask(
                             listTask.id.toString(), user.company, user.rememberToken,
                             _initialPosition.latitude.toString(),
                             _initialPosition.longitude.toString(), '0');
-                        if (checkInTaskResponse.statusCode != 200) {
-                          if (this.mounted) {
-                            setState(() {
-                              listTaskModellocal[index].status = 'working';
-                            });
-                          }
-                        }
+                        setState(() {
+                          //BLOCK LISTA
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+                        });
                       }
                     },
                   ),
@@ -523,7 +503,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () async {
-                          showToast('Tarea Eliminada');
                           deleteCustomer(listTask.id.toString(), index);
                         }
                     ),
@@ -563,7 +542,15 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
 
   deleteCustomer(String taskID, int index) async {
-    await deleteTask(taskID, user.company, user.rememberToken);
+    var res = await deleteTask(taskID, user.company, user.rememberToken);
+    if(res.statusCode == 200){
+      showToast('Tarea Eliminada');
+      //BLOCK LISTA
+      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks);
+      setState(() {});
+    }else{
+      showToast('Error Al Eliminar Tarea');
+    }
   }
 
   void _getUserLocation() async {

@@ -14,56 +14,64 @@ class BlocListTask {
   Stream<List<TaskModel>> get outListTaks => _tasksController.stream;
   Sink<List<TaskModel>> get inListTaks => _tasksController.sink;
 
+  String diaDesdeOld =   '';
+  String diaHastaOld = '';
+
 
   Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
 
-    UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
+    if(diaDesdeOld != diaDesde || diaHasta != diaHastaOld ){
 
-    TasksModel tasks = new TasksModel();
-    var getAllTasksResponse;
-    try{
-      DateTime dateNew = DateTime.parse('1990-05-05');
-      for(int countPage = 1; countPage <= pageTasks;countPage++){
-        getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: countPage.toString());
-        if(getAllTasksResponse.statusCode == 200){
-          tasks = getAllTasksResponse.body;
-          //if(tasks)
-          for(int i = 0; i < tasks.data.length; i++ ){
+      diaDesdeOld =   diaDesde;
+      diaHastaOld = diaHasta;
 
-            DateTime dateTask;
-            if(tasks.data[i].planningDate != null){
-              dateTask = DateTime.parse(tasks.data[i].planningDate);
-            }else{
-              dateTask = DateTime.parse(tasks.data[i].createdAt);
-            }
+      UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
-            int c = 0;
-            for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
-              if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
-                c++;
+      TasksModel tasks = new TasksModel();
+      var getAllTasksResponse;
+      try{
+        DateTime dateNew = DateTime.parse('1990-05-05');
+        for(int countPage = 1; countPage <= pageTasks;countPage++){
+          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: countPage.toString());
+          if(getAllTasksResponse.statusCode == 200){
+            tasks = getAllTasksResponse.body;
+            //if(tasks)
+            for(int i = 0; i < tasks.data.length; i++ ){
+
+              DateTime dateTask;
+              if(tasks.data[i].planningDate != null){
+                dateTask = DateTime.parse(tasks.data[i].planningDate);
+              }else{
+                dateTask = DateTime.parse(tasks.data[i].createdAt);
               }
-            }
-            if(c < 2){
-              if((tasks.data.length == 1)||
-                  ((dateNew.day != dateTask.day) ||
-                      (dateNew.month != dateTask.month) ||
-                      (dateNew.year != dateTask.year))){
+
+              int c = 0;
+              for(int countPasar = 0; countPasar < _listTaskModellocal.length; countPasar++){
+                if(_listTaskModellocal[countPasar].id == tasks.data[i].id){
+                  c++;
+                }
+              }
+              if(c < 2){
+                if((tasks.data.length == 1)||
+                    ((dateNew.day != dateTask.day) ||
+                        (dateNew.month != dateTask.month) ||
+                        (dateNew.year != dateTask.year))){
+                  _listTaskModellocal.add(tasks.data[i]);
+                  dateNew = dateTask;
+                }
                 _listTaskModellocal.add(tasks.data[i]);
-                dateNew = dateTask;
               }
-              _listTaskModellocal.add(tasks.data[i]);
             }
           }
         }
-      }
-    } catch(e) {}
+      } catch(e) {}
 
-    inListTaksTotal.add(tasks !=null ? tasks.total : 0);
-    inListTaks.add(_listTaskModellocal);
-    _tasksController.close();
-    _tasksTotalController.close();
+      inListTaksTotal.add(tasks !=null ? tasks.total : 0);
+      inListTaks.add(_listTaskModellocal);
+    }
   }
 
   var _tasksTotalController = StreamController<int>.broadcast();
@@ -73,7 +81,8 @@ class BlocListTask {
 
   @override
   void dispose() {
-
+    _tasksController.close();
+    _tasksTotalController.close();
   }
 
   BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
