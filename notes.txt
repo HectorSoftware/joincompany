@@ -1,1 +1,0 @@
-Las tareas estan siendo creadas con sus custom values, si yo busco los custom values asociados a la id deberian aparecer la tarea y sus custom values

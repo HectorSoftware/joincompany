@@ -49,7 +49,7 @@ class _FormTaskState extends State<FormTask> {
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
-  TimeOfDay _timeDT = new TimeOfDay.now();
+  TimeOfDay _timeDT = new TimeOfDay();
   DateTime _date = new DateTime.now();
   DateTime _dateDT = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -916,7 +916,6 @@ buildListTypeForm(){
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
-                saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                 return new Row(
                   children: <Widget>[
                     Column(
@@ -979,35 +978,6 @@ buildListTypeForm(){
                               ),
                             ],
                           ),
-                       /*   Container(
-                            width: MediaQuery.of(globalContext).size.width*0.50,
-                            height: 40,
-                            padding: EdgeInsets.only(
-                                top: 20,left: 20, right: 16, bottom: 4
-                            ),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(10)
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5
-                                  )
-                                ]
-                            ),
-                            child: TextField(
-                              onChanged: (value){
-                              },
-                              maxLines: 1,
-                              //controller: nameController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Comentario ',
-                              ),
-                            ),
-                          ),*/
                         ],
                       ),
                       Spacer(
@@ -1092,36 +1062,6 @@ buildListTypeForm(){
                             ],
                           ),
                         ),
-
-                    /*    Container(
-                          width: MediaQuery.of(globalContext).size.width*0.50,
-                          height: 40,
-                          padding: EdgeInsets.only(
-                              top: 20,left: 20, right: 16, bottom: 4
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5
-                                )
-                              ]
-                          ),
-                          child: TextField(
-                            onChanged: (value){
-                            },
-                            maxLines: 1,
-                            //controller: nameController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Comentario ',
-                            ),
-                          ),
-                        ),*/
                       ],
 
                     ),
@@ -1332,7 +1272,7 @@ buildListTypeForm(){
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
-      initialTime: _time,
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null && picked != _time){
       setState(() {
