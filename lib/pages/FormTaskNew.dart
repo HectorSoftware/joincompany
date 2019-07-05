@@ -48,8 +48,8 @@ class _FormTaskState extends State<FormTask> {
   SentryClient sentry;
   Image image;
   Image image2;
-  TimeOfDay _time = new TimeOfDay.now();
-  TimeOfDay _timeDT = new TimeOfDay();
+  TimeOfDay _time = new TimeOfDay();
+  TimeOfDay _timeDT = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateDT = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -654,38 +654,10 @@ buildListTypeForm(){
         ListView.builder(
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
+
               if(listFieldsModels[index].fieldType == null)
               {
                 return Center(child: Text('Sin datos'),);
-              }
-              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
-              {
-                return Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 70),
-                      child: Container(
-                          child: new Checkbox(
-                              value: _value1,
-                              onChanged: _value1Changed
-                          )
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: MediaQuery.of(context).size.width *0.5,
-                      height: MediaQuery.of(context).size.height *0.1,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
-                          : Text(''),
-                        ),
-
-                      ),
-                    ),
-                  ],
-                );
               }
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
@@ -798,57 +770,16 @@ buildListTypeForm(){
                   ),
                 );
               }
-              if(listFieldsModels[index].fieldType == 'Combo'){
-
-                List<String> dropdownMenuItems = List<String>();
-                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-                  dropdownMenuItems.add(v.name);
-                }
-                return Container(
-                  height: 50,
-                  margin: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5
-                        )
-                      ]
+              if(listFieldsModels[index].fieldType == 'Label'){
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(listFieldsModels[index].name,style: TextStyle(
+                    fontSize: 20,
                   ),
-                  child: new  Padding(
-                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.5,
-                      child: new DropdownButton<String>(
-                        isExpanded: true,
-                        underline: Container(),
-                        isDense: false,
-                        icon: Icon(Icons.arrow_drop_down),
-                        elevation: 10,
-                        value: dataInfo[listFieldsModels[index].id],
-                        hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
-
-                        onChanged: (newValue) {
-
-                          setState(() {
-                            //dropdownValue = newValue;
-                            dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
-                          });
-
-                        },
-                        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
                   ),
                 );
-              }
 
+              }
               if(listFieldsModels[index].fieldType == 'Date'){
                 return Row(
                   children: <Widget>[
@@ -878,41 +809,7 @@ buildListTypeForm(){
                     ),
                   ],
                 );
-              }
-              if(listFieldsModels[index].fieldType == 'DateTime'){
-                return Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 1,left: 16),
-                              child: Text(listFieldsModels[index].name),
-                            ),
-                          ],
-                        ),
 
-                      ],
-
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: RaisedButton(
-                        child: Text('${_dateDT.toString().substring(0,10)}' + ' ' +'${_timeDT.format(context) }'),
-                        onPressed: (){
-                          selectTimeDatetime(context);
-                          selectDateDateTime(context);
-                          var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
-                          saveData(dateCo.toString(),listFieldsModels[index].id.toString());
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              }
-              if(listFieldsModels[index].fieldType =='Table'){
-                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString(),);
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
@@ -944,91 +841,6 @@ buildListTypeForm(){
                     ),
                   ],
                 );
-              }
-              if(listFieldsModels[index].fieldType == 'Photo'){
-                Uint8List img;
-                String b64;
-                return  Container(
-
-                  child: Row(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
-                                child: RaisedButton(
-                                  onPressed: () async{
-                                    img = await photoAndImage();
-                                    if (img != null) {
-                                      setState(() {
-                                        b64 = base64String(img);
-                                        image2 = Image.memory(img);
-
-
-                                        //image2 = ima.copyResize(image, 120);
-                                        saveData(b64, listFieldsModels[index].id.toString());
-                                      });
-                                    }
-                                  },
-                                  child: Text(listFieldsModels[index].name),
-                                  color: PrimaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Spacer(
-
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width* 0.5,
-                        child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                  child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ?  Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)
-                                                                                                        :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
-                            )),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              if(listFieldsModels[index].fieldType == 'Image'){
-                return Row(
-                  children: <Widget>[
-
-                    Container(
-                      child:Center(
-                        child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
-                            color: PrimaryColor),
-                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
-                      ),
-                    ),
-                    Spacer(),
-                    Column(
-                      children: <Widget>[
-                        Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
-                      ],
-
-                    ),
-                  ],
-                );
-
-              }
-              if(listFieldsModels[index].fieldType == 'Label'){
-                return Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(listFieldsModels[index].name,style: TextStyle(
-                    fontSize: 20,
-                  ),
-                  ),
-                );
-
               }
               if(listFieldsModels[index].fieldType == 'CanvanSignature'){
                 String b64;
@@ -1123,7 +935,7 @@ buildListTypeForm(){
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                                 child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                                  child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                                    child:  dataInfo[listFieldsModels[index].id.toString()] != null ? Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,):Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),)),
                           )),
                     ),
 
@@ -1131,6 +943,203 @@ buildListTypeForm(){
                 );
 
               }
+
+              if(listFieldsModels[index].fieldType == 'DateTime'){
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1,left: 16),
+                              child: Text(listFieldsModels[index].name),
+                            ),
+                          ],
+                        ),
+
+                      ],
+
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: RaisedButton(
+                        child: Text('${_dateDT.toString().substring(0,10)}' + ' ' +'${_timeDT.format(context) }'),
+                        onPressed: (){
+                          selectTimeDatetime(context);
+                          selectDateDateTime(context);
+                          var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                          saveData(dateCo.toString(),listFieldsModels[index].id.toString());
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+
+              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
+              {
+                return Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 70),
+                      child: Container(
+                          child: new Checkbox(
+                              value: _value1,
+                              onChanged: _value1Changed
+                          )
+                      ),
+                    ),
+                    Spacer(),
+                    Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      height: MediaQuery.of(context).size.height *0.1,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 60, top: 10),
+                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+                          : Text(''),
+                        ),
+
+                      ),
+                    ),
+                  ],
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Combo'){
+
+                List<String> dropdownMenuItems = List<String>();
+                for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+                  dropdownMenuItems.add(v.name);
+                }
+                return Container(
+                  height: 50,
+                  margin: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5
+                        )
+                      ]
+                  ),
+                  child: new  Padding(
+                    padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width *0.5,
+                      child: new DropdownButton<String>(
+                        isExpanded: true,
+                        underline: Container(),
+                        isDense: false,
+                        icon: Icon(Icons.arrow_drop_down),
+                        elevation: 10,
+                        value: dataInfo[listFieldsModels[index].id],
+                        hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+
+                        onChanged: (newValue) {
+
+                          setState(() {
+                            //dropdownValue = newValue;
+                            dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                          });
+
+                        },
+                        items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                          return new DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+
+
+              if(listFieldsModels[index].fieldType =='Table'){
+                return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString(),);
+              }
+
+              if(listFieldsModels[index].fieldType == 'Photo'){
+                Uint8List img;
+                String b64;
+                return  Container(
+
+                  child: Row(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10,left: 5,bottom: 30),
+                                child: RaisedButton(
+                                  onPressed: () async{
+                                    img = await photoAndImage();
+                                    if (img != null) {
+                                      setState(() {
+                                        b64 = base64String(img);
+                                        image2 = Image.memory(img);
+
+
+                                        //image2 = ima.copyResize(image, 120);
+                                        saveData(b64, listFieldsModels[index].id.toString());
+                                      });
+                                    }
+                                  },
+                                  child: Text(listFieldsModels[index].name),
+                                  color: PrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Spacer(
+
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width* 0.5,
+                        child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
+                                      child:  dataInfo[listFieldsModels[index].id.toString()] != null ?  Image(image: imageFromBase64String(dataInfo[listFieldsModels[index].id.toString()]).image,)
+                                                                                                        :Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),)),
+                            )),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Image'){
+                return Row(
+                  children: <Widget>[
+
+                    Container(
+                      child:Center(
+                        child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
+                            color: PrimaryColor),
+                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+                      ),
+                    ),
+                    Spacer(),
+                    Column(
+                      children: <Widget>[
+                        Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+                      ],
+
+                    ),
+                  ],
+                );
+
+              }
+
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
               //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
