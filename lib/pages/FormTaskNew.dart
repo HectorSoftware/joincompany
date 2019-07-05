@@ -1238,7 +1238,6 @@ buildListTypeForm(){
                               if(column.toLowerCase().contains(value.toLowerCase())){
                                 searchList.add(column);
                                 setState(() {});
-                                print(column);
                               }
                             }
                           }

@@ -2721,7 +2721,7 @@ class DatabaseProvider {
       ''',
     );
 
-    print("Data length: " + data.length.toString());
+
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {
@@ -2796,8 +2796,8 @@ class DatabaseProvider {
       });
     }
 
-    print("List of tasks length: " + listOfTasks.length.toString());
-    
+
+
     return listOfTasks;
   }
 
