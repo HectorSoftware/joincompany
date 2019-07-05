@@ -14,7 +14,7 @@ class FormChannel {
 
   static Future _createFormsInLocal(String customer, String authorization) async {
 
-    var formsServerResponse = await getAllFormsFromServer(customer, authorization);
+    var formsServerResponse = await getAllFormsFromServer(customer, authorization, perPage: '10000');
     FormsModel formsServer = FormsModel.fromJson(formsServerResponse.body);
 
     Set idsFormsServer = new Set();
@@ -37,7 +37,7 @@ class FormChannel {
   }
 
   static Future _deleteFormsInLocal(String customer, String authorization) async {
-    dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization);
+    dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization, perPage: '10000');
 
     FormsModel formsFromServer = FormsModel.fromJson(jsonFormsFromServer.body);
 
@@ -85,7 +85,7 @@ class FormChannel {
   }
 
   static Future _updateFormsInLocal(String customer, String authorization) async {
-    dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization);
+    dynamic jsonFormsFromServer = await getAllFormsFromServer(customer, authorization, perPage: '10000');
     FormsModel formsFromServer = FormsModel.fromJson(jsonFormsFromServer.body);
 
     if(formsFromServer.data != null)

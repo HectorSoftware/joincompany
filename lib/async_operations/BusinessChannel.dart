@@ -25,7 +25,7 @@ class BusinessChannel {
     });
 
     // Create Server To Local
-    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization);
+    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization, perPage: '10000');
     BusinessesModel businessesServer = BusinessesModel.fromJson(businessesServerResponse.body);
 
     Set idsBusinessesServer = new Set();
@@ -58,7 +58,7 @@ class BusinessChannel {
     });
 
     // Delete Server To Local
-    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization);
+    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization, perPage: '10000');
     BusinessesModel businessesServer = BusinessesModel.fromJson(businessesServerResponse.body);
 
     Set idsBusinessesServer = new Set();
@@ -77,7 +77,7 @@ class BusinessChannel {
 
   static Future _updateBusinessesInBothLocalAndServer(String customer, String authorization) async {
     
-    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization);
+    var businessesServerResponse = await getAllBusinessesFromServer(customer, authorization, perPage: '10000');
     BusinessesModel businessesServer = BusinessesModel.fromJson(businessesServerResponse.body);
 
     await Future.forEach(businessesServer.data, (businessServer) async {

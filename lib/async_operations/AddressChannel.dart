@@ -25,7 +25,7 @@ class AddressChannel {
     });
 
     // Create Server To Local
-    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization);
+    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization, perPage: '10000');
     AddressesModel addressesServer = AddressesModel.fromJson(addressesServerResponse.body);
 
     Set idsAddressesServer = new Set();
@@ -61,7 +61,7 @@ class AddressChannel {
     });
 
     // Delete Server To Local
-    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization);
+    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization, perPage: '10000');
     AddressesModel addressesServer = AddressesModel.fromJson(addressesServerResponse.body);
 
     Set idsAddressesServer = new Set();
@@ -80,7 +80,7 @@ class AddressChannel {
 
   static Future _updateAddressesInBothLocalAndServer(String customer, String authorization) async {
     
-    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization);
+    var addressesServerResponse = await getAllAddressesFromServer(customer, authorization, perPage: '10000');
     AddressesModel addressesServer = AddressesModel.fromJson(addressesServerResponse.body);
 
     await Future.forEach(addressesServer.data, (addressServer) async {

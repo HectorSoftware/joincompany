@@ -26,7 +26,7 @@ class CustomerAddressesChannel {
     });
 
     // Create Server To Local
-    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization);
+    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization, perPage: '10000');
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     Map<String, int> customersAddressesServerIds = new Map<String, int>();
@@ -69,7 +69,7 @@ class CustomerAddressesChannel {
     });
 
     // Delete Server To Local
-    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization);
+    var customersWithAddressResponse = await getAllCustomersWithAddressFromServer(customer, authorization, perPage: '10000');
     CustomersWithAddressModel customersWithAddress = CustomersWithAddressModel.fromJson(customersWithAddressResponse.body);
 
     Set customersAddressesServer = new Set();

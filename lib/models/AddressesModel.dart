@@ -44,7 +44,7 @@ class AddressesModel {
     lastPageUrl: json["last_page_url"],
     nextPageUrl: json["next_page_url"],
     path: json["path"],
-    perPage: int.parse(json["per_page"].toString()),
+    perPage: (json["per_page"]!=null && json["per_page"]!='') ? int.parse(json["per_page"]) : null,
     prevPageUrl: json["prev_page_url"],
     to: json["to"],
     total: json["total"],

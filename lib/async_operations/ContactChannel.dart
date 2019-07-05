@@ -25,7 +25,7 @@ class ContactChannel {
     });
 
     // Create Server To Local
-    var contactsServerResponse = await getAllContactsFromServer(customer, authorization);
+    var contactsServerResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
     ContactsModel contactsServer = ContactsModel.fromJson(contactsServerResponse.body);
 
     Set idsContactsServer = new Set();
@@ -59,7 +59,7 @@ class ContactChannel {
     });
 
     // Delete Server To Local
-    var contactsServerResponse = await getAllContactsFromServer(customer, authorization);
+    var contactsServerResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
     ContactsModel contactsServer = ContactsModel.fromJson(contactsServerResponse.body);
 
     Set idsContactsServer = new Set();
@@ -78,7 +78,7 @@ class ContactChannel {
 
   static Future _updateContactsInBothLocalAndServer(String customer, String authorization) async {
     
-    var contactsServerResponse = await getAllContactsFromServer(customer, authorization);
+    var contactsServerResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
     ContactsModel contactsServer = ContactsModel.fromJson(contactsServerResponse.body);
 
     await Future.forEach(contactsServer.data, (contactServer) async {

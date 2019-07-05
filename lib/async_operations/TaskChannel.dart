@@ -1,4 +1,3 @@
-// TODO: Crear tambien hijos y actualizarlos de ser necesario
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/FormsModel.dart';
@@ -68,7 +67,7 @@ class TaskChannel {
   }
 
   static void _updateTaskInBothLocalAndServer(String customer, String authorization) async {
-    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
+    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization, perPage: '10000');
     TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
     
     if (tasksFromServer.data != null) {
@@ -97,7 +96,7 @@ class TaskChannel {
   }
 
   static void _deleteTaskInBothLocalAndServer(String customer, String authorization) async {
-    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization);
+    http.Response tasksFromServerRes = await getAllTasksFromServer(customer, authorization, perPage: '10000');
     TasksModel tasksFromServer = TasksModel.fromJson(tasksFromServerRes.body);
 
     List<int> taskIdsFromServer = tasksFromServer.listTasksIds();

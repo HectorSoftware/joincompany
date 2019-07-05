@@ -25,7 +25,7 @@ class CustomerChannel {
     });
 
     // Create Server To Local
-    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization, perPage: '10000');
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
@@ -61,7 +61,7 @@ class CustomerChannel {
     });
 
     // Delete Server To Local
-    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization, perPage: '10000');
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     Set idsCustomersServer = new Set();
@@ -80,7 +80,7 @@ class CustomerChannel {
 
   static Future _updateCustomersInBothLocalAndServer(String customer, String authorization) async {
     
-    var customersServerResponse = await getAllCustomersFromServer(customer, authorization);
+    var customersServerResponse = await getAllCustomersFromServer(customer, authorization, perPage: '10000');
     CustomersModel customersServer = CustomersModel.fromJson(customersServerResponse.body);
 
     await Future.forEach(customersServer.data, (customerServer) async {

@@ -26,7 +26,7 @@ class CustomerContactsChannel {
     });
 
     // Create Server To Local
-    var getAllContactsResponse = await getAllContactsFromServer(customer, authorization);
+    var getAllContactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
     ContactsModel contact = ContactsModel.fromJson(getAllContactsResponse.body);
 
     Map<String, int> customersContactsServerIds = new Map<String, int>();
@@ -68,7 +68,7 @@ class CustomerContactsChannel {
     });
 
     // Delete Server To Local
-    var contactsResponse = await getAllContactsFromServer(customer, authorization);
+    var contactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
     ContactsModel contacts = ContactsModel.fromJson(contactsResponse.body);
 
     Set customersContactsServer = new Set();
