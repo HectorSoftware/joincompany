@@ -4,7 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/async_operations/AddressChannel.dart';
 import 'package:joincompany/async_operations/BusinessChannel.dart';
+import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
+import 'package:joincompany/async_operations/CustomerChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
 import 'package:joincompany/blocs/blocBusiness.dart';
 import 'package:joincompany/main.dart';
@@ -79,6 +82,9 @@ class _BusinessListState extends State<BusinessList> {
 
   void syncBusines() async{
     setState(() {syncStatus = true;});
+    await AddressChannel.syncEverything();
+    await CustomerChannel.syncEverything();
+    await CustomerAddressesChannel.syncEverything();
     await BusinessChannel.syncEverything();
     setState(() {syncStatus = false;});
     Navigator.pop(context);
