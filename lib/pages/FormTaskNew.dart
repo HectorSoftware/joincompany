@@ -678,7 +678,7 @@ buildListTypeForm(){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].type}',style: TextStyle(fontSize: 20),)
+                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
                           : Text(''),
                         ),
 
@@ -1214,67 +1214,57 @@ buildListTypeForm(){
                   data['ComboSearch'] = TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]);
                 }
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Row(
-                children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Container(
-                        width: MediaQuery.of(context).size.width*0.5,
-                        height: 40,
-                        padding: EdgeInsets.only(
-                        top: 4,left: 16, right: 16, bottom: 4
-                        ),
-                decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(
-                Radius.circular(10)
-                ),
-                color: Colors.white,
-                boxShadow: [
-                BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5
-                )
-                ]
-                ),
-                child: TextField(
-                  controller: data['ComboSearch'],
-                    onChanged: (value){
-                      searchList.clear();
-                      saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
-                       if(seachKeyInData('Table')){
-                        for(String column in data['table'].keys){
-                          if(column.toLowerCase().contains(value.toLowerCase())){
-                            searchList.add(column);
-                            setState(() {});
-                            print(column);
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: MediaQuery.of(context).size.height * 0.04,
+                      margin: EdgeInsets.only(top: 20),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(10)
+                          ),
+                          color: Colors.white,
+
+                      ),
+                      child: TextField(
+                        controller: data['ComboSearch'],
+                        onChanged: (value){
+                          searchList.clear();
+                          saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                          if(seachKeyInData('Table')){
+                            for(String column in data['table'].keys){
+                              if(column.toLowerCase().contains(value.toLowerCase())){
+                                searchList.add(column);
+                                setState(() {});
+                                print(column);
+                              }
                             }
                           }
-                        }
-                      },
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: listFieldsModels[index].name,
-                  ),
-                ),
-                ),
-                ),
-                ],
-              ),
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: listFieldsModels[index].name,
+                        ),
+                      ),
+                    ),
                     Container(
-                      height: searchList.length * 20.0,
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: searchList.length * 25.0,
                       child: searchList.isNotEmpty ? ListView.builder(
                           itemCount: searchList.length,
                           itemBuilder: (BuildContext context, int inde){
-                            return ListTile(
-                              title: Text(searchList[inde]),
-                              onTap: (){
-                                data['ComboSearch'].text = searchList[inde];
-                                searchList.clear();
-                                saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
-                                setState(() {});
-                              },
+                            return Card(
+                              child: ListTile(
+                                title: Text(searchList[inde],style: TextStyle(fontSize: 15),),
+                                onTap: (){
+                                  data['ComboSearch'].text = searchList[inde];
+                                  searchList.clear();
+                                  saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                                  setState(() {});
+                                },
+                              ),
                             );
                           },
                       ):Container(),
