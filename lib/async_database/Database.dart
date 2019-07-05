@@ -1536,6 +1536,7 @@ class DatabaseProvider {
       });
     }
 
+    listOfFields.sort((a, b) => a.position.compareTo(b.position));
     return listOfFields;
   }
 
