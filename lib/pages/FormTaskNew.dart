@@ -941,7 +941,6 @@ buildListTypeForm(){
 
                   ],
                 );
-
               }
 
               if(listFieldsModels[index].fieldType == 'DateTime'){
@@ -976,7 +975,6 @@ buildListTypeForm(){
                   ],
                 );
               }
-
 
               if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
               {
@@ -1058,8 +1056,6 @@ buildListTypeForm(){
                 );
               }
 
-
-
               if(listFieldsModels[index].fieldType =='Table'){
                 return generatedTable(listFieldsModels[index].fieldOptions, listFieldsModels[index].id.toString(),);
               }
@@ -1137,18 +1133,29 @@ buildListTypeForm(){
                     ),
                   ],
                 );
-
               }
 
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
               //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
+
+                bool isSwitched = true;
                 return Row(
                   children: <Widget>[
                     Container(
                         width: MediaQuery.of(context).size.width*0.5,
                         child:Row(
                           children: <Widget>[
+                            Switch(
+                              value: isSwitched,
+                              onChanged: (value) {
+                                setState(() {
+                                  isSwitched = value;
+                                });
+                              },
+                              activeTrackColor: Colors.grey[500],
+                              activeColor: Colors.lightGreenAccent,
+                            ),
                           ],
                         )
                     ),
