@@ -602,13 +602,20 @@ class _FormTaskViewState extends State<FormTaskView> {
 
       List<FieldOptionModel> listOption = new List<FieldOptionModel>();
       FieldOptionModel model;
-      for(int y = 0; y < listRows.length ; y++){
-        int val = 0;
-        try{
-          val = int.parse(listRows[y]);
-        }catch(e){}
-        model = new FieldOptionModel(value: val,name: listColumns[y]);
-        listOption.add(model);
+      if(listRows.isNotEmpty){
+        for(int y = 0; y < listRows.length ; y++){
+          int val = 0;
+          try{
+            val = int.parse(listRows[y]);
+          }catch(e){}
+          model = new FieldOptionModel(value: val,name: listColumns[y]);
+          listOption.add(model);
+        }
+      }else{
+        for(int y = 0; y < listColumns.length-1; y++){
+          model = new FieldOptionModel(value: 0,name: listColumns[y]);
+          listOption.add(model);
+        }
       }
       return generatedTable(listOption, field.id.toString());
     }
@@ -644,7 +651,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       data["table"][dataTab.name] = new Map();
       data["table"][dataTab.name]["name"] = dataTab.name;
       data["table"][dataTab.name][dataTab.value.toString()] =new TextEditingController();
-      data["table"][dataTab.name][dataTab.value.toString()].text = dataTab.value.toString();
+      data["table"][dataTab.name][dataTab.value.toString()].text = dataTab.value == 0 ? '' : dataTab.value.toString();
     }
 
     Card card(TextEditingController t){

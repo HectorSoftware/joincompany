@@ -75,6 +75,7 @@ class _FormTaskState extends State<FormTask> {
   String defaultValue = 'NO';
   String valuesTable = '';
   TaskModel taskOne;
+  List<String> searchList = new List<String>();
 
   @override
   void initState(){
@@ -487,6 +488,15 @@ buildListTypeForm(){
     }
   }
 
+  bool seachKeyInData(String key){
+    for(var k in data.keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
   String savedDataTablet(){
     String dat="";
     var keys = data.keys;
@@ -636,6 +646,8 @@ buildListTypeForm(){
   Uint8List dataFromBase64String(String base64String) {
     return base64Decode(base64String);
   }
+
+
   Stack returnsStack(){
     return Stack(
       children: <Widget>[
@@ -1198,48 +1210,75 @@ buildListTypeForm(){
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
 
-                return Row(
+                if(!seachKeyInData('ComboSearch')){
+                  data['ComboSearch'] = TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]);
+                }
+                return Column(
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Container(
+                    Row(
+                children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
                         width: MediaQuery.of(context).size.width*0.5,
                         height: 40,
                         padding: EdgeInsets.only(
-                            top: 4,left: 16, right: 16, bottom: 4
+                        top: 4,left: 16, right: 16, bottom: 4
                         ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10)
-                            ),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5
-                              )
-                            ]
-                        ),
-                        child: TextField(
-                          controller: new TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]),
-                          onChanged: (value){
-                            saveData(value,listFieldsModels[index].id.toString());
+                decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                Radius.circular(10)
+                ),
+                color: Colors.white,
+                boxShadow: [
+                BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5
+                )
+                ]
+                ),
+                child: TextField(
+                  controller: data['ComboSearch'],
+                    onChanged: (value){
+                      searchList.clear();
+                      saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                       if(seachKeyInData('Table')){
+                        for(String column in data['table'].keys){
+                          if(column.toLowerCase().contains(value.toLowerCase())){
+                            searchList.add(column);
+                            setState(() {});
+                            print(column);
+                            }
+                          }
+                        }
+                      },
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: listFieldsModels[index].name,
+                  ),
+                ),
+                ),
+                ),
+                ],
+              ),
+                    Container(
+                      height: searchList.length * 20.0,
+                      child: searchList.isNotEmpty ? ListView.builder(
+                          itemCount: searchList.length,
+                          itemBuilder: (BuildContext context, int inde){
+                            return ListTile(
+                              title: Text(searchList[inde]),
+                              onTap: (){
+                                data['ComboSearch'].text = searchList[inde];
+                                searchList.clear();
+                                saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                                setState(() {});
+                              },
+                            );
                           },
-                          maxLines: 1,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: listFieldsModels[index].name,
-                          ),
-                        ),
-                      ),
+                      ):Container(),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.search),
-                      tooltip: 'Busqueda',
-                      iconSize: 20,
-                      onPressed: (){},
-                    ),
-
                   ],
                 );
               }
