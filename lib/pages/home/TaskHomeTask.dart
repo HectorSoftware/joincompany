@@ -168,7 +168,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     LastCircule();
                   }
                 }
-
               }));
         });
       }

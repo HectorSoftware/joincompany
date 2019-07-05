@@ -99,6 +99,8 @@ Future<ResponseModel> getAllTasks(String customer, String authorization, {String
     to: listOfTasks.length,
     total: listOfTasks.length,
   );
+  print("tasks.data length: " + tasks.data.length.toString());
+
   response.body = tasks;
   response.statusCode = 200;
 

@@ -222,10 +222,12 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     saveTask.customValuesMap = dataInfo;
                                     await  saveTaskApi();
+
                                     if(taskEnd == 201 || taskEnd == 200){
                                       showToast('Tarea Creada');
                                       Navigator.of(context).pop();
                                       Navigator.of(context).pop();
+                                      Navigator.pushReplacementNamed(context, '/vistap');
                                     }else
                                     if(taskEnd == 422  || taskEnd == 413){
                                       showDialog(
@@ -239,7 +241,6 @@ class _FormTaskState extends State<FormTask> {
                                                   child: const Text('Aceptar'),
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
-
                                                   },
                                                 ),
 

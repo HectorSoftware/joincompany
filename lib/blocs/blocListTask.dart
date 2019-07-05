@@ -5,6 +5,8 @@ import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/TaskService.dart';
 
+import 'blocCheckConnectivity.dart';
+
 
 class BlocListTask {
 
@@ -17,8 +19,14 @@ class BlocListTask {
   String diaDesdeOld =   '';
   String diaHastaOld = '';
 
-
   Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    String perpage = '20';
+    if(!await connectionStatus.checkConnection()){
+      perpage = null;
+    }
+
 
     String diaDesde =   desdef.year.toString()  + '-' + desdef.month.toString()  + '-' + desdef.day.toString() + ' 00:00:00';
     String diaHasta = hastaf.year.toString()  + '-' + hastaf.month.toString()  + '-' + hastaf.day.toString() + ' 23:59:59';
@@ -35,7 +43,7 @@ class BlocListTask {
       try{
         DateTime dateNew = DateTime.parse('1990-05-05');
         for(int countPage = 1; countPage <= pageTasks;countPage++){
-          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: '20',page: countPage.toString());
+          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
           if(getAllTasksResponse.statusCode == 200){
             tasks = getAllTasksResponse.body;
             //if(tasks)
