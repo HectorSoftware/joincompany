@@ -273,11 +273,13 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           var title;
           var address;
           var customerName;
-
+          var customerNameAndAddress = '';
+          
           if (listTaskModellocal[positionActual].customer == null) {
             customerName = voidFieldMessage;
           } else {
             customerName = listTaskModellocal[positionActual].customer.name;
+            customerNameAndAddress += customerName;
           }
 
           if (listTaskModellocal[positionActual].createdAt == null) {
@@ -303,13 +305,16 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             if (listTaskModellocal[positionActual].address.address == null) {
               address = voidFieldMessage;
             } else {
-              address = customerName + ',  ' +
-                  listTaskModellocal[positionActual].address.address;
+              address = listTaskModellocal[positionActual].address.address;
+
+              customerNameAndAddress += (customerNameAndAddress != '' ? ', ' : '') + address;  
             }
           }
+
           if(widget.business != null){
 
           }
+
           if (filterText == '') {
             bool res = false;
             if ((positionActual != listTaskModellocal.length - 1)) {
@@ -359,7 +364,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               child: Text(dateTitulo, style: TextStyle(
                   fontSize: 16, color: Colors.white)),
             ) :
-            listCard(title, address, date, listTaskModellocal[positionActual],
+            listCard(title, customerNameAndAddress, date, listTaskModellocal[positionActual],
                 positionActual);
           } else {
 
@@ -411,14 +416,14 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                         child: Text(dateTitulo, style: TextStyle(
                             fontSize: 16, color: Colors.white)),
                       ),
-                      listCard(title, address, date,
+                      listCard(title, customerNameAndAddress, date,
                           listTaskModellocal[positionActual], positionActual),
                     ],
                   ),
                 );
               } else {
                 return listCard(
-                    title, address, date, listTaskModellocal[positionActual],
+                    title, customerNameAndAddress, date, listTaskModellocal[positionActual],
                     positionActual);
               }
             } else {
@@ -516,16 +521,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                             if(listTask.addressId != null){idAddress = listTask.addressId.toString();}
                             if(listTask.address != null){nameAddress = listTask.address.address.toString();}
                             if(listTask.customer != null){customerName = listTask.customer.name.toString();}
-
-                            CustomerWithAddressModel custoWandress = new CustomerWithAddressModel();
-                            if(listTask.customerId != null){
-                              custoWandress = new CustomerWithAddressModel(
-                                id: int.parse(idTask),// taskOne.customerId,
-                                addressId: int.parse(idAddress), //taskOne.addressId,
-                                address: nameAddress,//taskOne.address.address,
-                                name: customerName,//taskOne.customer.name,
-                              );
-                            }
+                           
                             Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => FormTaskView(taskmodelres: listTask)));
                           }
                         }
