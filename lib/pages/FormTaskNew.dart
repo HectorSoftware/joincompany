@@ -49,7 +49,7 @@ class _FormTaskState extends State<FormTask> {
   Image image;
   Image image2;
   TimeOfDay _time = new TimeOfDay.now();
-  TimeOfDay _timeDT = new TimeOfDay();
+  TimeOfDay _timeDT = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateDT = new DateTime.now();
   DateTime _dateTask = new DateTime.now();
@@ -414,8 +414,7 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-
-buildListTypeForm(){
+  buildListTypeForm(){
   FormTypeBloc _bloc = new FormTypeBloc();
   return StreamBuilder<List<FormModel>>(
       stream: _bloc.outForm,
@@ -475,16 +474,31 @@ buildListTypeForm(){
     return false;
   }
 
+  bool checkKeyInTable(String key){
+    for(String k in data["table"].keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
   void initDataTable(List<FieldOptionModel> listOptions){
     if(!findKeys('table')){
       data["table"] = new Map();
 
       for(FieldOptionModel varV in listOptions)
       {
-        data["table"][varV.name] = new Map();
-        data["table"][varV.name]["name"] = varV.name;
-        data["table"][varV.name][varV.value.toString()] = new TextEditingController();
+        var split = varV.name.split('x');
+        if(!checkKeyInTable(split[0])){
+          data["table"][split[0]] = new Map();
+        }
+
+        data["table"][split[0]]["name"] = split[0];
+        data["table"][split[0]][split[1]] = new TextEditingController();
       }
+
+      print(data["table"]);
     }
   }
 
@@ -525,6 +539,7 @@ buildListTypeForm(){
     initDataTable(listOptions);
     valuesTable = savedDataTablet();
     saveData(valuesTable,id);
+
     Card card(TextEditingController t){
       return Card(
         child: TextField(
@@ -541,8 +556,9 @@ buildListTypeForm(){
     //COLUMNAS
     Container columna(Map column, bool colorcolum){
       List<Widget> listCard = new List<Widget>();
-      for(var key in column.keys){
+      for(String key in column.keys){
         if(key != 'name'){
+          var data = key.split('x');
           listCard.add(card(column[key]));
         }
       }
@@ -555,7 +571,7 @@ buildListTypeForm(){
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+              width: MediaQuery.of(context).size.width * 0.6,
               height: MediaQuery.of(context).size.height *(listCard.length*0.05),
               child: Card(
                 child: Center(
@@ -597,7 +613,7 @@ buildListTypeForm(){
       child: Container(
         margin: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.4,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: listColuma.length,
@@ -610,6 +626,7 @@ buildListTypeForm(){
     );
 
   }
+
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
       context: context,
@@ -619,6 +636,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<Uint8List> getImgNetWork(String netImage) async{
     return showDialog<Uint8List>(
       context: context,
@@ -628,6 +646,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<Uint8List> photoAndImage() async{
     return showDialog<Uint8List>(
       context: context,
@@ -637,16 +656,18 @@ buildListTypeForm(){
       },
     );
   }
+
   String base64String(Uint8List data) {
     return base64Encode(data);
   }
+
   Image imageFromBase64String(String base64String) {
     return Image.memory(base64Decode(base64String));
   }
+
   Uint8List dataFromBase64String(String base64String) {
     return base64Decode(base64String);
   }
-
 
   Stack returnsStack(){
     return Stack(
@@ -1220,7 +1241,6 @@ buildListTypeForm(){
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
 
-
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
@@ -1230,6 +1250,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1243,6 +1264,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDateTask(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1258,6 +1280,7 @@ buildListTypeForm(){
     }
 
   }
+
   Future<Null> selectTimeTask(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1269,6 +1292,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1280,6 +1304,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectTimeDatetime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1291,6 +1316,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDateDateTime(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1306,6 +1332,7 @@ buildListTypeForm(){
     }
 
   }
+
   Future<CustomerWithAddressModel> getDirections() async{
     return showDialog<CustomerWithAddressModel>(
       context: context,
@@ -1315,6 +1342,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<bool> lisC(FormModel form)async {
     //listFieldsModels.clear();
     List<FieldModel> listFieldsModelsCopia = List<FieldModel>();
@@ -1330,6 +1358,7 @@ buildListTypeForm(){
     listFieldsModels = listFieldsModelsCopia;
     return true;
   }
+
   pickerImage(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
@@ -1338,7 +1367,9 @@ buildListTypeForm(){
       });
     }
   }
+
   pickerPhoto(String name) async {}
+
   Widget buildView(){
     return  ListView.builder(
         itemBuilder: (BuildContext context, int index) {
@@ -1346,6 +1377,7 @@ buildListTypeForm(){
         }
     ) ;
   }
+
   getAll()async{
     FormsModel forms;
     FormsModel formType;
@@ -1362,9 +1394,11 @@ buildListTypeForm(){
     }
     return formType;
   }
+
   initFormsTypes() async {
     formType = await getAll();
   }
+
   getElements()async{
     userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
     token = userToken.rememberToken;
@@ -1372,6 +1406,7 @@ buildListTypeForm(){
     user = userToken.name;
     responsibleId = userToken.id;
   }
+
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
@@ -1404,7 +1439,8 @@ buildListTypeForm(){
           );
         });
     }
-   Future<bool> saveTaskApi() async{
+
+  Future<bool> saveTaskApi() async{
    var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201 || createTaskResponse.statusCode == 200){
      setState(() {
@@ -1423,6 +1459,7 @@ buildListTypeForm(){
    }
   return true;
   }
+
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
