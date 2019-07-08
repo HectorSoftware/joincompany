@@ -26,8 +26,6 @@ import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
 import 'package:joincompany/pages/ImageBackNetwork.dart';
 import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
 import 'package:joincompany/services/FormService.dart';
-import 'package:http/http.dart' as http;
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
@@ -475,15 +473,28 @@ buildListTypeForm(){
     return false;
   }
 
+  bool checkKeyInTable(String key){
+    for(String k in data["table"].keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
   void initDataTable(List<FieldOptionModel> listOptions){
     if(!findKeys('table')){
       data["table"] = new Map();
 
       for(FieldOptionModel varV in listOptions)
       {
-        data["table"][varV.name] = new Map();
-        data["table"][varV.name]["name"] = varV.name;
-        data["table"][varV.name][varV.value.toString()] = new TextEditingController();
+        var split = varV.name.split('x');
+        if(!checkKeyInTable(split[0])){
+          data["table"][split[0]] = new Map();
+        }
+
+        data["table"][split[0]]["name"] = split[0];
+        data["table"][split[0]][varV.name] = new TextEditingController();
       }
     }
   }
@@ -503,19 +514,13 @@ buildListTypeForm(){
     if(!keys.contains("table")){
       return dat;
     }else{
-      var titules = data["table"].keys;
-      for(String titule in titules){
-        dat = dat + titule + "*" ;
-      }
-      dat = dat + ';';
-      for(String titule in titules){
-        Map dataColumn = data["table"][titule];
-        for (var key in dataColumn.keys){
-          if(key != "name"){
-            dat = dat +  data["table"][titule][key].text;
+      for(String k in  data["table"].keys){
+        for(String Sk in data["table"][k].keys){
+          if(data["table"][k][Sk] is TextEditingController){
+            String value = data["table"][k][Sk].text != "" ? data["table"][k][Sk].text : " ";
+            dat = dat + "$Sk:$value;";
           }
         }
-        dat = dat + "*";
       }
     }
     return dat;
@@ -541,7 +546,7 @@ buildListTypeForm(){
     //COLUMNAS
     Container columna(Map column, bool colorcolum){
       List<Widget> listCard = new List<Widget>();
-      for(var key in column.keys){
+      for(String key in column.keys){
         if(key != 'name'){
           listCard.add(card(column[key]));
         }
@@ -555,7 +560,7 @@ buildListTypeForm(){
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+              width: MediaQuery.of(context).size.width * 0.6,
               height: MediaQuery.of(context).size.height *(listCard.length*0.05),
               child: Card(
                 child: Center(
@@ -597,7 +602,7 @@ buildListTypeForm(){
       child: Container(
         margin: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.4,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: listColuma.length,
@@ -610,6 +615,7 @@ buildListTypeForm(){
     );
 
   }
+
   Future<Uint8List> getImg() async{
     return showDialog<Uint8List>(
       context: context,
@@ -619,6 +625,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<Uint8List> getImgNetWork(String netImage) async{
     return showDialog<Uint8List>(
       context: context,
@@ -628,6 +635,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<Uint8List> photoAndImage() async{
     return showDialog<Uint8List>(
       context: context,
@@ -637,16 +645,18 @@ buildListTypeForm(){
       },
     );
   }
+
   String base64String(Uint8List data) {
     return base64Encode(data);
   }
+
   Image imageFromBase64String(String base64String) {
     return Image.memory(base64Decode(base64String));
   }
+
   Uint8List dataFromBase64String(String base64String) {
     return base64Decode(base64String);
   }
-
 
   Stack returnsStack(){
     return Stack(
@@ -1236,7 +1246,6 @@ buildListTypeForm(){
   }
   void _value1Changed(bool value) => setState(() => _value1 = value);
 
-
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
     if(resp != null) {
@@ -1246,6 +1255,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDate(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1259,6 +1269,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDateTask(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1274,6 +1285,7 @@ buildListTypeForm(){
     }
 
   }
+
   Future<Null> selectTimeTask(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1285,6 +1297,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1296,6 +1309,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectTimeDatetime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -1307,6 +1321,7 @@ buildListTypeForm(){
       });
     }
   }
+
   Future<Null> selectDateDateTime(BuildContext context )async{
     final DateTime picked = await showDatePicker(
         context: context,
@@ -1322,6 +1337,7 @@ buildListTypeForm(){
     }
 
   }
+
   Future<CustomerWithAddressModel> getDirections() async{
     return showDialog<CustomerWithAddressModel>(
       context: context,
@@ -1331,6 +1347,7 @@ buildListTypeForm(){
       },
     );
   }
+
   Future<bool> lisC(FormModel form)async {
     //listFieldsModels.clear();
     List<FieldModel> listFieldsModelsCopia = List<FieldModel>();
@@ -1346,6 +1363,7 @@ buildListTypeForm(){
     listFieldsModels = listFieldsModelsCopia;
     return true;
   }
+
   pickerImage(Method m) async {
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (img != null) {
@@ -1354,7 +1372,9 @@ buildListTypeForm(){
       });
     }
   }
+
   pickerPhoto(String name) async {}
+
   Widget buildView(){
     return  ListView.builder(
         itemBuilder: (BuildContext context, int index) {
@@ -1362,6 +1382,7 @@ buildListTypeForm(){
         }
     ) ;
   }
+
   getAll()async{
     FormsModel forms;
     FormsModel formType;
@@ -1378,9 +1399,11 @@ buildListTypeForm(){
     }
     return formType;
   }
+
   initFormsTypes() async {
     formType = await getAll();
   }
+
   getElements()async{
     userToken = await DatabaseProvider.db.RetrieveLastLoggedUser();
     token = userToken.rememberToken;
@@ -1388,6 +1411,7 @@ buildListTypeForm(){
     user = userToken.name;
     responsibleId = userToken.id;
   }
+
   void _showModalDateTimeAndDirections() {
     showModalBottomSheet<void>(
         context: context,
@@ -1420,7 +1444,8 @@ buildListTypeForm(){
           );
         });
     }
-   Future<bool> saveTaskApi() async{
+
+  Future<bool> saveTaskApi() async{
    var createTaskResponse = await createTask(saveTask, customer, token);
    if(createTaskResponse.statusCode == 201 || createTaskResponse.statusCode == 200){
      setState(() {
@@ -1439,6 +1464,7 @@ buildListTypeForm(){
    }
   return true;
   }
+
   void saveData(String dataController, String id) {
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
