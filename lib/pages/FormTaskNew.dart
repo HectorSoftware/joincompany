@@ -533,6 +533,7 @@ buildListTypeForm(){
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          keyboardType: TextInputType.number,
           onChanged: (value){
           },
           controller: t,
@@ -973,7 +974,7 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('${_dateDT.toString().substring(0,10)}' + ' ' +'${_timeDT.format(context) }'),
+                        child: Text('Sin Asignar'),
                         onPressed: (){
                           selectTimeDatetime(context);
                           selectDateDateTime(context);

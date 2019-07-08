@@ -577,43 +577,20 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType =='Table'){
-      List<String>  listColumns = new List<String>();
-      List<String>  listRows = new List<String>();
-      String value = dataInfo[field.id.toString()];
-      bool filas = false;
-      String aux = '';
-      String v = '';
-      for( int x = 0 ; x < value.length ; x++ ){
-          v = value[x];
-          if(v == '*' || v == ';'){
-            if(filas){
-              //columnas
-              if(aux.isNotEmpty){listRows.add(aux);}
-            }else{
-              //filas
-              listColumns.add(aux);
-            }
-            if(v == ';'){filas = true;}
-            aux = '';
-          }else{
-            aux = aux + v;
-          }
-      }
 
+      String value = dataInfo[field.id.toString()];
+      FieldOptionModel model = new FieldOptionModel();
       List<FieldOptionModel> listOption = new List<FieldOptionModel>();
-      FieldOptionModel model;
-      if(listRows.isNotEmpty){
-        for(int y = 0; y < listRows.length ; y++){
-          int val = 0;
+      var datos = value.split(';');
+
+      for(String v in datos){
+        if(v != '' && v != ' '){
+          var values = v.split(':');
+          int valueInt = 0;
           try{
-            val = int.parse(listRows[y]);
-          }catch(e){}
-          model = new FieldOptionModel(value: val,name: listColumns[y]);
-          listOption.add(model);
-        }
-      }else{
-        for(int y = 0; y < listColumns.length-1; y++){
-          model = new FieldOptionModel(value: 0,name: listColumns[y]);
+            valueInt = int.parse(values[1]);
+          }on Exception{}
+          model = new FieldOptionModel(value: valueInt,name: values[0]);
           listOption.add(model);
         }
       }
@@ -642,26 +619,55 @@ class _FormTaskViewState extends State<FormTaskView> {
     return base64Decode(base64String);
   }
   Map data = new Map();
-  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
 
-    data["table"] = new Map();
-
-    for(FieldOptionModel dataTab in listOptions)
-    {
-      data["table"][dataTab.name] = new Map();
-      data["table"][dataTab.name]["name"] = dataTab.name;
-      data["table"][dataTab.name][dataTab.value.toString()] =new TextEditingController();
-      data["table"][dataTab.name][dataTab.value.toString()].text = dataTab.value == 0 ? '' : dataTab.value.toString();
+  bool findKeys(String key){
+    for(var k in data.keys){
+      if(k == key){
+        return true;
+      }
     }
+    return false;
+  }
 
+  bool checkKeyInTable(String key){
+    for(String k in data["table"].keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void initDataTable(List<FieldOptionModel> listOptions){
+    if(!findKeys('table')){
+      data["table"] = new Map();
+
+      for(FieldOptionModel varV in listOptions)
+      {
+        var split = varV.name.split('x');
+        if(!checkKeyInTable(split[0])){
+          data["table"][split[0]] = new Map();
+        }
+
+        data["table"][split[0]]["name"] = split[0];
+        data["table"][split[0]][varV.name] = new TextEditingController();
+        data["table"][split[0]][varV.name].text = varV.value.toString();
+      }
+    }
+  }
+
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
+    initDataTable(listOptions);
     Card card(TextEditingController t){
       return Card(
         child: TextField(
           enabled: false,
+          onChanged: (value){
+          },
+          controller: t,
           decoration: InputDecoration(
             hintText: '',
           ),
-          controller: t,
         ),
       );
     }
@@ -669,7 +675,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     //COLUMNAS
     Container columna(Map column, bool colorcolum){
       List<Widget> listCard = new List<Widget>();
-      for(var key in column.keys){
+      for(String key in column.keys){
         if(key != 'name'){
           listCard.add(card(column[key]));
         }
@@ -683,7 +689,7 @@ class _FormTaskViewState extends State<FormTaskView> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+              width: MediaQuery.of(context).size.width * 0.6,
               height: MediaQuery.of(context).size.height *(listCard.length*0.05),
               child: Card(
                 child: Center(
@@ -725,7 +731,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       child: Container(
         margin: EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.4,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: listColuma.length,
@@ -736,6 +742,7 @@ class _FormTaskViewState extends State<FormTaskView> {
         ) ,
       ),
     );
+
   }
 
   Future checkDialog(String mensaje){
