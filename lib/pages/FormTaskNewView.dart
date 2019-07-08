@@ -471,14 +471,35 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'Boolean'){
-
-      String texto = 'Sin Asignar';
-
-      if(dataInfo[field.id.toString()] == '' ){
-        texto = 'Verdadero';
+      bool _value1 = false;
+      if(dataInfo[field.id.toString()] == 'true'){
+        _value1 = true;
       }
+      return Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 70),
+            child: Container(
+                child: new Checkbox(
+                    value: _value1
+                )
+            ),
+          ),
+          Spacer(),
+          Container(
+            width: MediaQuery.of(context).size.width *0.5,
+            height: MediaQuery.of(context).size.height *0.1,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 60, top: 10),
+                child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+                    : Text(''),
+              ),
 
-      return textDialogstyle((field.name + ' : ' + texto));
+            ),
+          ),
+        ],
+      );
     }
 
 
@@ -500,6 +521,30 @@ class _FormTaskViewState extends State<FormTaskView> {
             ],
           ),
         ],
+      );
+    }
+
+    if(listFieldsModels[index].fieldType == 'Button')
+    {
+      //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+      //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+      return Container(
+          margin: EdgeInsets.only(top: 30,bottom: 30),
+          width: MediaQuery.of(context).size.width*0.5,
+          child:Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: (){},
+                child: Text(listFieldsModels[index].name),
+              ),
+              Container(
+                child: dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text('Sin Asignar'),
+                margin: EdgeInsets.only(left: 30),
+              )
+            ],
+          )
       );
     }
 
@@ -550,7 +595,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
-    if(field.fieldType == 'Boolean'){
+    if(field.fieldType == 'boolean'){
       return Row(
         children: <Widget>[
           Padding(

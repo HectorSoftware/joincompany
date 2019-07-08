@@ -43,7 +43,7 @@ class BlocListTask {
       try{
         DateTime dateNew = DateTime.parse('1990-05-05');
         for(int countPage = 1; countPage <= pageTasks;countPage++){
-          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
+          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
           if(getAllTasksResponse.statusCode == 200){
             tasks = getAllTasksResponse.body;
             //if(tasks)
