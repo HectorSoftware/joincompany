@@ -495,10 +495,8 @@ class _FormTaskState extends State<FormTask> {
         }
 
         data["table"][split[0]]["name"] = split[0];
-        data["table"][split[0]][split[1]] = new TextEditingController();
+        data["table"][split[0]][varV.name] = new TextEditingController();
       }
-
-      print(data["table"]);
     }
   }
 
@@ -517,19 +515,13 @@ class _FormTaskState extends State<FormTask> {
     if(!keys.contains("table")){
       return dat;
     }else{
-      var titules = data["table"].keys;
-      for(String titule in titules){
-        dat = dat + titule + "*" ;
-      }
-      dat = dat + ';';
-      for(String titule in titules){
-        Map dataColumn = data["table"][titule];
-        for (var key in dataColumn.keys){
-          if(key != "name"){
-            dat = dat +  data["table"][titule][key].text;
+      for(String k in  data["table"].keys){
+        for(String Sk in data["table"][k].keys){
+          if(data["table"][k][Sk] is TextEditingController){
+            String value = data["table"][k][Sk].text != "" ? data["table"][k][Sk].text : " ";
+            dat = dat + "$Sk:$value;";
           }
         }
-        dat = dat + "*";
       }
     }
     return dat;
@@ -558,7 +550,6 @@ class _FormTaskState extends State<FormTask> {
       List<Widget> listCard = new List<Widget>();
       for(String key in column.keys){
         if(key != 'name'){
-          var data = key.split('x');
           listCard.add(card(column[key]));
         }
       }
