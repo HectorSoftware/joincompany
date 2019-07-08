@@ -1184,40 +1184,51 @@ buildListTypeForm(){
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width*0.5,
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      margin: EdgeInsets.only(top: 20),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(10)
-                          ),
-                          color: Colors.white,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.5,
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          margin: EdgeInsets.only(top: 30,bottom: 1),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
 
-                      ),
-                      child: TextField(
-                        controller: data['ComboSearch'],
-                        onChanged: (value){
-                          searchList.clear();
-                          saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
-                          if(seachKeyInData('Table')){
-                            for(String column in data['table'].keys){
-                              if(column.toLowerCase().contains(value.toLowerCase())){
-                                searchList.add(column);
-                                setState(() {});
+                          ),
+                          child: TextField(
+                            controller: data['ComboSearch'],
+                            onChanged: (value){
+                              searchList.clear();
+                              setState(() {});
+                              saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                              if(seachKeyInData('Table')){
+                                for(String column in data['table'].keys){
+                                  if(column.toLowerCase().contains(value.toLowerCase())){
+                                    searchList.add(column);
+                                    setState(() {});
+                                  }
+                                }
                               }
-                            }
-                          }
-                        },
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: listFieldsModels[index].name,
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: listFieldsModels[index].name,
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          margin: EdgeInsets.only(top: 30,bottom: 1),
+                          child: Icon(Icons.search)
+                        ),
+                      ],
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.3,
-                      height: searchList.length * 25.0,
+                      height: searchList.length * 60.0,
                       child: searchList.isNotEmpty ? ListView.builder(
                           itemCount: searchList.length,
                           itemBuilder: (BuildContext context, int inde){
