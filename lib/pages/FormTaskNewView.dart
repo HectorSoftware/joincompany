@@ -550,7 +550,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
-    if(field.fieldType == 'Button'|| field.fieldType == "button"){
+    if(field.fieldType == 'Boolean'){
       return Row(
         children: <Widget>[
           Padding(
@@ -590,8 +590,7 @@ class _FormTaskViewState extends State<FormTaskView> {
           try{
             valueInt = int.parse(values[1]);
           }on Exception{}
-          model = new FieldOptionModel(value: valueInt,name: values[0]);
-          listOption.add(model);
+          listOption.add(new FieldOptionModel(value: valueInt,name: values[0]));
         }
       }
       return generatedTable(listOption, field.id.toString());
@@ -639,7 +638,6 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   void initDataTable(List<FieldOptionModel> listOptions){
-    if(!findKeys('table')){
       data["table"] = new Map();
 
       for(FieldOptionModel varV in listOptions)
@@ -653,7 +651,6 @@ class _FormTaskViewState extends State<FormTaskView> {
         data["table"][split[0]][varV.name] = new TextEditingController();
         data["table"][split[0]][varV.name].text = varV.value.toString();
       }
-    }
   }
 
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
