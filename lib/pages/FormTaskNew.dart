@@ -42,7 +42,7 @@ class FormTask extends StatefulWidget {
 
 }
 class _FormTaskState extends State<FormTask> {
-
+  bool isSwitched = true;
   SentryClient sentry;
   Image image;
   Image image2;
@@ -552,41 +552,45 @@ buildListTypeForm(){
           listCard.add(card(column[key]));
         }
       }
-
-      return Container(
-        width: MediaQuery.of(context).size.width * 0.5,
-        height: MediaQuery.of(context).size.height *(listCard.length*0.1),
-        color: colorcolum ? Colors.blue[50] : Colors.grey[200],
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              height: MediaQuery.of(context).size.height *(listCard.length*0.05),
-              child: Card(
-                child: Center(
-                    child: Text(column["name"])
+      if(listOptions.isNotEmpty){
+        return Container(
+          width: MediaQuery.of(context).size.width * 0.5,
+          height: MediaQuery.of(context).size.height *(listCard.length*0.1),
+          color: colorcolum ? Colors.blue[50] : Colors.grey[200],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height *(listCard.length*0.05),
+                child: Card(
+                  child: Center(
+                      child: Text(column["name"])
+                  ),
                 ),
               ),
-            ),
 
-            Divider(
-              height: 20,
-              color: Colors.black,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height *(listCard.length*0.1),
-              child: ListView.builder(
-                itemCount: listCard.length,
-                itemBuilder: (context,index){
-                  return listCard[index];
-                },
+              Divider(
+                height: 20,
+                color: Colors.black,
               ),
-            )
-          ],
-        ),
-      );
+              Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height *(listCard.length*0.1),
+                child: ListView.builder(
+                  itemCount: listCard.length,
+                  itemBuilder: (context,index){
+                    return listCard[index];
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      }else{
+        return Container();
+      }
+
     }
 
     //LISTA DE COLUMNAS
@@ -986,8 +990,33 @@ buildListTypeForm(){
                   ],
                 );
               }
+              if(listFieldsModels[index].fieldType == 'Buttom')
+              {
+                //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+                saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+                return Row(
+                  children: <Widget>[
+                    Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        child:Row(
+                          children: <Widget>[
+//                            Checkbox(
+//                              value: isSwitched,
+//                              onChanged: (value) {
+//                                setState(() {
+//                                  isSwitched = value;
+//                                });
+//                                saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+//                              },
+//                            )
+                          ],
+                        )
+                    ),
+                  ],
 
-              if(listFieldsModels[index].fieldType == 'Button'||listFieldsModels[index].fieldType == "button")
+                );
+              }
+              if(listFieldsModels[index].fieldType == 'Boolean')
               {
                 return Row(
                   children: <Widget>[
@@ -1146,34 +1175,7 @@ buildListTypeForm(){
                 );
               }
 
-              if(listFieldsModels[index].fieldType == 'Boolean')
-              {
-              //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){}
 
-                bool isSwitched = true;
-                return Row(
-                  children: <Widget>[
-                    Container(
-                        width: MediaQuery.of(context).size.width*0.5,
-                        child:Row(
-                          children: <Widget>[
-                            Switch(
-                              value: isSwitched,
-                              onChanged: (value) {
-                                setState(() {
-                                  isSwitched = value;
-                                });
-                              },
-                              activeTrackColor: Colors.grey[500],
-                              activeColor: Colors.lightGreenAccent,
-                            ),
-                          ],
-                        )
-                    ),
-                  ],
-
-                );
-              }
               if(listFieldsModels[index].fieldType == 'ComboSearch')
               {
 
