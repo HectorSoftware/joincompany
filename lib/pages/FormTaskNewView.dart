@@ -384,7 +384,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             Expanded(child: Container(),),
             Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
             Expanded(child: dataInfo[field.id.toString()] != null ? Text('${dataInfo[field.id.toString()]}',style: TextStyle(fontSize: 20),)
-                : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
+                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
             Expanded(child: Container(),),
           ],
         ),

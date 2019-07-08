@@ -832,6 +832,7 @@ buildListTypeForm(){
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
+                //saveData('Sin Asignar', listFieldsModels[index].id.toString()) ;
                 return new Row(
                   children: <Widget>[
                     Column(
@@ -849,12 +850,11 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_time.format(context).toString()}') : Text('Sin Asignar'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
                         onPressed: (){
                           selectTime(context);
-                          setState(() {
-                            saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
-                          });
+                          saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                          setState(() {});
                         },
                       ),
                     ),
@@ -981,11 +981,12 @@ buildListTypeForm(){
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text('Sin Asignar'),
-                        onPressed: (){
-                          selectTimeDatetime(context);
-                          selectDateDateTime(context);
+                        onPressed: () async {
+                          await selectDateDateTime(context);
+                          await selectTimeDatetime(context);
                           var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
+                          setState(() {});
                         },
                       ),
                     ),
@@ -1337,10 +1338,9 @@ buildListTypeForm(){
       initialTime: _timeDT,
     );
     if (picked != null && picked != _timeDT){
-      setState(() {
-        _timeDT = picked;
-      });
+      _timeDT = picked;
     }
+    setState(() {});
   }
 
   Future<Null> selectDateDateTime(BuildContext context )async{
