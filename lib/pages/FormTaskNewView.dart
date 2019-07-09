@@ -557,7 +557,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             padding: const EdgeInsets.only(left: 70),
             child: Container(
                 child: new Checkbox(
-                    value: true, onChanged: (bool value) {},
+                    value:true, onChanged: (bool value) {},
                 )
             ),
           ),
@@ -568,7 +568,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.only(left: 60, top: 10),
-                child: Text('${field.name}',style: TextStyle(fontSize: 20),)
+                child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
               ),
             ),
           ),

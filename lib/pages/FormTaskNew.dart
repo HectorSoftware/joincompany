@@ -46,7 +46,7 @@ class _FormTaskState extends State<FormTask> {
   SentryClient sentry;
   Image image;
   Image image2;
-  TimeOfDay _time = new TimeOfDay();
+  TimeOfDay _time = new TimeOfDay(hour: 0, minute: 0);
   TimeOfDay _timeDT = new TimeOfDay.now();
   DateTime _date = new DateTime.now();
   DateTime _dateDT = new DateTime.now();
