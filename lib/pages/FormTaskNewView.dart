@@ -630,6 +630,7 @@ class _FormTaskViewState extends State<FormTaskView> {
 
       for(String v in datos){
         if(v != '' && v != ' '){
+          v = v.replaceAll("Item", "");
           var values = v.split(':');
           int valueInt = 0;
           try{
@@ -684,17 +685,16 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   void initDataTable(List<FieldOptionModel> listOptions){
       data["table"] = new Map();
-
       for(FieldOptionModel varV in listOptions)
       {
+        varV.name = varV.name.replaceAll("Item", "");
         var split = varV.name.split('x');
-        if(!checkKeyInTable(split[0])){
-          data["table"][split[0]] = new Map();
+        if(!checkKeyInTable(split[1])){
+          data["table"][split[1]] = new Map();
         }
 
-        data["table"][split[0]]["name"] = split[0];
-        data["table"][split[0]][varV.name] = new TextEditingController();
-        data["table"][split[0]][varV.name].text = varV.value.toString();
+        data["table"][split[1]]["name"] = split[1];
+        data["table"][split[1]][varV.name] = new TextEditingController();
       }
   }
 

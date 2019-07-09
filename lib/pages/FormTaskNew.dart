@@ -492,13 +492,14 @@ buildListTypeForm(){
 
       for(FieldOptionModel varV in listOptions)
       {
+        varV.name = varV.name.replaceAll("Item", "");
         var split = varV.name.split('x');
-        if(!checkKeyInTable(split[0])){
-          data["table"][split[0]] = new Map();
+        if(!checkKeyInTable(split[1])){
+          data["table"][split[1]] = new Map();
         }
 
-        data["table"][split[0]]["name"] = split[0];
-        data["table"][split[0]][varV.name] = new TextEditingController();
+        data["table"][split[1]]["name"] = split[1];
+        data["table"][split[1]][varV.name] = new TextEditingController();
       }
     }
   }
