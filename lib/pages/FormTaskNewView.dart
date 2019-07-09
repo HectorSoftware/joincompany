@@ -456,18 +456,12 @@ class _FormTaskViewState extends State<FormTaskView> {
         child: Row(
           children: <Widget>[
             Expanded(child: textDialogstyle(field.name + ' : ' + fecha),),
-            //textDialogstyle(fecha),
-            /*Expanded(child: Container(),),
-            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
-            Expanded(child: Text(fecha,style: TextStyle(fontSize: 20),),),
-            Expanded(child: Container(),),*/
           ],
         ),
       );
     }
 
     if(field.fieldType == 'Combo'){
-      //return textDialogstyle(dataInfo[field.id.toString()]);
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
