@@ -47,7 +47,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   BlocListTaskCalendar blocListTaskCalendarRes;
   BlocListTaskCalendarMap blocListTaskCalendarResMap;
   var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
-  var datePickedEnd = new DateTime.now();
+  var datePickedEnd = new DateTime.now().add(new Duration(days: 14));
   String nameUser = '';
   String emailUser = '';
   Icon _searchIcon = new Icon(Icons.search);

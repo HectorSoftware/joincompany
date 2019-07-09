@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
@@ -74,9 +76,11 @@ class _FormTaskState extends State<FormTask> {
   String valuesTable = '';
   TaskModel taskOne;
   List<String> searchList = new List<String>();
+  static LatLng _initialPosition;
 
   @override
   void initState(){
+    _getUserLocation();
     sentry = new SentryClient(dsn: 'https://3b62a478921e4919a71cdeebe4f8f2fc@sentry.io/1445102');
     directionClientIn = widget.directionClient;
     initFormsTypes();
@@ -828,6 +832,7 @@ buildListTypeForm(){
               }
               if(listFieldsModels[index].fieldType == 'Time')
               {
+                //saveData('Sin Asignar', listFieldsModels[index].id.toString()) ;
                 return new Row(
                   children: <Widget>[
                     Column(
@@ -845,12 +850,11 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_time.format(context).toString()}') : Text('Sin Asignar'),
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
                         onPressed: (){
                           selectTime(context);
-                          setState(() {
-                            saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
-                          });
+                          saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                          setState(() {});
                         },
                       ),
                     ),
@@ -971,53 +975,53 @@ buildListTypeForm(){
                             ),
                           ],
                         ),
-
                       ],
-
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: Text('Sin Asignar'),
-                        onPressed: (){
-                          selectTimeDatetime(context);
-                          selectDateDateTime(context);
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text('Sin Asignar'),
+                        onPressed: () async {
+                          await selectDateDateTime(context);
+                          await selectTimeDatetime(context);
                           var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
                           saveData(dateCo.toString(),listFieldsModels[index].id.toString());
+                          setState(() {});
                         },
                       ),
                     ),
                   ],
                 );
               }
-              if(listFieldsModels[index].fieldType == 'Buttom')
+              if(listFieldsModels[index].fieldType == 'Button')
               {
                 //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-                saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
-                return Row(
-                  children: <Widget>[
-                    Container(
-                        width: MediaQuery.of(context).size.width*0.5,
-                        child:Row(
-                          children: <Widget>[
-//                            Checkbox(
-//                              value: isSwitched,
-//                              onChanged: (value) {
-//                                setState(() {
-//                                  isSwitched = value;
-//                                });
-//                                saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
-//                              },
-//                            )
-                          ],
+                //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+                return Container(
+                  margin: EdgeInsets.only(top: 30,bottom: 30),
+                    width: MediaQuery.of(context).size.width*0.5,
+                    child:Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                          onPressed: (){
+                            saveData( '${_initialPosition.latitude} , ${_initialPosition.longitude}' ,listFieldsModels[index].id.toString());
+                            setState(() {});
+                          },
+                          child: Text(listFieldsModels[index].name),
+                        ),
+                        Container(
+                          child: dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text('Sin Asignar'),
+                          margin: EdgeInsets.only(left: 30),
                         )
-                    ),
-                  ],
-
+                      ],
+                    )
                 );
               }
               if(listFieldsModels[index].fieldType == 'Boolean')
               {
+                saveData(_value1.toString(),listFieldsModels[index].id.toString());
                 return Row(
                   children: <Widget>[
                     Padding(
@@ -1025,7 +1029,12 @@ buildListTypeForm(){
                       child: Container(
                           child: new Checkbox(
                               value: _value1,
-                              onChanged: _value1Changed
+                              onChanged: (value){
+                                setState(() {
+                                  _value1 = value;
+                                });
+                                saveData(value.toString(),listFieldsModels[index].id.toString());
+                              }
                           )
                       ),
                     ),
@@ -1186,40 +1195,51 @@ buildListTypeForm(){
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width*0.5,
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      margin: EdgeInsets.only(top: 20),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(10)
-                          ),
-                          color: Colors.white,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.5,
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          margin: EdgeInsets.only(top: 30,bottom: 1),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                              color: Colors.white,
 
-                      ),
-                      child: TextField(
-                        controller: data['ComboSearch'],
-                        onChanged: (value){
-                          searchList.clear();
-                          saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
-                          if(seachKeyInData('Table')){
-                            for(String column in data['table'].keys){
-                              if(column.toLowerCase().contains(value.toLowerCase())){
-                                searchList.add(column);
-                                setState(() {});
+                          ),
+                          child: TextField(
+                            controller: data['ComboSearch'],
+                            onChanged: (value){
+                              searchList.clear();
+                              setState(() {});
+                              saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                              if(seachKeyInData('Table')){
+                                for(String column in data['table'].keys){
+                                  if(column.toLowerCase().contains(value.toLowerCase())){
+                                    searchList.add(column);
+                                    setState(() {});
+                                  }
+                                }
                               }
-                            }
-                          }
-                        },
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: listFieldsModels[index].name,
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: listFieldsModels[index].name,
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          margin: EdgeInsets.only(top: 30,bottom: 1),
+                          child: Icon(Icons.search)
+                        ),
+                      ],
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.3,
-                      height: searchList.length * 25.0,
+                      height: searchList.length * 60.0,
                       child: searchList.isNotEmpty ? ListView.builder(
                           itemCount: searchList.length,
                           itemBuilder: (BuildContext context, int inde){
@@ -1247,7 +1267,6 @@ buildListTypeForm(){
       ],
     );
   }
-  void _value1Changed(bool value) => setState(() => _value1 = value);
 
   addDirection() async{
     CustomerWithAddressModel resp = await getDirections();
@@ -1319,10 +1338,9 @@ buildListTypeForm(){
       initialTime: _timeDT,
     );
     if (picked != null && picked != _timeDT){
-      setState(() {
-        _timeDT = picked;
-      });
+      _timeDT = picked;
     }
+    setState(() {});
   }
 
   Future<Null> selectDateDateTime(BuildContext context )async{
@@ -1472,5 +1490,14 @@ buildListTypeForm(){
     var value = dataController;
     dataInfo.putIfAbsent(id ,()=> value);
     dataInfo[id] = value;
+  }
+
+  Future _getUserLocation() async{
+    try{
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
+    }catch(e){}
   }
 }
