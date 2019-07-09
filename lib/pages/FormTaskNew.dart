@@ -1046,10 +1046,8 @@ buildListTypeForm(){
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 60, top: 10),
-                          child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
-                          : Text(''),
+                          child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),),
                         ),
-
                       ),
                     ),
                   ],
@@ -1192,6 +1190,7 @@ buildListTypeForm(){
                 if(!seachKeyInData('ComboSearch')){
                   data['ComboSearch'] = TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]);
                 }
+
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -1216,11 +1215,11 @@ buildListTypeForm(){
                             onChanged: (value){
                               searchList.clear();
                               setState(() {});
-                              saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
-                              if(seachKeyInData('Table')){
-                                for(String column in data['table'].keys){
-                                  if(column.toLowerCase().contains(value.toLowerCase())){
-                                    searchList.add(column);
+
+                              if(listFieldsModels[index].fieldOptions != null){
+                                for(FieldOptionModel values in listFieldsModels[index].fieldOptions){
+                                  if(values.name.toLowerCase().contains(value.toLowerCase()) && value.isNotEmpty){
+                                    searchList.add(values.name);
                                     setState(() {});
                                   }
                                 }

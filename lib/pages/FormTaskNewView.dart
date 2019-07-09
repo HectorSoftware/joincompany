@@ -455,7 +455,7 @@ class _FormTaskViewState extends State<FormTaskView> {
         padding: const EdgeInsets.only(top: 20,bottom: 20),
         child: Row(
           children: <Widget>[
-            Expanded(child: textDialogstyle(field.name + ' ' + fecha),),
+            Expanded(child: textDialogstyle(field.name + ' : ' + fecha),),
             //textDialogstyle(fecha),
             /*Expanded(child: Container(),),
             Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
@@ -467,7 +467,43 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'Combo'){
-      return textDialogstyle(dataInfo[field.id.toString()]);
+      //return textDialogstyle(dataInfo[field.id.toString()]);
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    margin: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5
+                          )
+                        ]
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10,left: 10),
+                      child: dataInfo[field.id.toString()].length != 0 ? Text(field.name.toString() +' : '+ dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),textAlign: TextAlign.center,)
+                                                                       : Text('${field.name.toString()} : Sin Asignar',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
+                    ),
+                  ),
+                ],
+              ),
+
+            ],
+
+          ),
+        ],
+      );
+
     }
 
     if(field.fieldType == 'Boolean'){
@@ -630,7 +666,6 @@ class _FormTaskViewState extends State<FormTaskView> {
 
       for(String v in datos){
         if(v != '' && v != ' '){
-          v = v.replaceAll("Item", "");
           var values = v.split(':');
           int valueInt = 0;
           try{
@@ -695,6 +730,7 @@ class _FormTaskViewState extends State<FormTaskView> {
 
         data["table"][split[1]]["name"] = split[1];
         data["table"][split[1]][varV.name] = new TextEditingController();
+        data["table"][split[1]][varV.name].text = varV.value.toString();
       }
   }
 
