@@ -22,6 +22,7 @@ String treatBodyRes(String body) {
 }
 
 Future<ResponseModel> createTask(TaskModel task, String customer, String authorization) async {
+
   SyncState syncState = SyncState.created;
 
   if (await connectionStatus.checkConnection()) {
