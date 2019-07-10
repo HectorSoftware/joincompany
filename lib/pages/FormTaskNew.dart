@@ -675,8 +675,7 @@ buildListTypeForm(){
             itemCount: listFieldsModels.length,
             itemBuilder: (BuildContext context, index){
 
-              if(listFieldsModels[index].fieldType == null)
-              {
+              if(listFieldsModels[index].fieldType == null){
                 return Center(child: Text('Sin datos'),);
               }
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
