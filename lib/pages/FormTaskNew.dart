@@ -819,10 +819,10 @@ buildListTypeForm(){
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
-                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${_date.toString().substring(0,10)}') : Text('Sin Asignar'),
-                        onPressed: (){selectDate(context);
-                        saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
-
+                        child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id.toString()]}') : Text('Sin Asignar'),
+                        onPressed: ()async {
+                            await selectDate(context);
+                            saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
                         },
                       ),
                     ),
@@ -851,8 +851,8 @@ buildListTypeForm(){
                       padding: const EdgeInsets.only(left: 10),
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
-                        onPressed: (){
-                          selectTime(context);
+                        onPressed: () async {
+                          await selectTime(context);
                           saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
                           setState(() {});
                         },
@@ -1168,8 +1168,9 @@ buildListTypeForm(){
                       child:Center(
                         child: listFieldsModels[index].name.length >20 ?  new Text(listFieldsModels[index].name.substring(0,11),style: TextStyle(
                             color: PrimaryColor),
-                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor),),
+                        ): Text(listFieldsModels[index].name,style: TextStyle(color: PrimaryColor,fontSize: 25),),
                       ),
+                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.13),
                     ),
                     Spacer(),
                     Column(
@@ -1225,6 +1226,7 @@ buildListTypeForm(){
                               }
                             },
                             decoration: InputDecoration(
+
                               border: InputBorder.none,
                               hintText: listFieldsModels[index].name,
                             ),
@@ -1329,6 +1331,7 @@ buildListTypeForm(){
         _time = picked;
       });
     }
+    setState(() {});
   }
 
   Future<Null> selectTimeDatetime(BuildContext context )async{

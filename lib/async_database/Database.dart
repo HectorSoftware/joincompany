@@ -2613,7 +2613,7 @@ class DatabaseProvider {
       task.customValuesMap = new Map<String, String>();
       // for each custom value, create an entry in the map
       task.customValues.forEach((customValue) {
-        task.customValuesMap[customValue.id.toString()] = customValue.value;
+        task.customValuesMap[customValue.fieldId.toString()] = customValue.value;
       });
     } else {
       isCustomValueComingFromServer = false;
