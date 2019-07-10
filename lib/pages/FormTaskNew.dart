@@ -422,6 +422,7 @@ buildListTypeForm(){
   return StreamBuilder<List<FormModel>>(
       stream: _bloc.outForm,
       initialData: <FormModel>[],
+      // ignore: missing_return
       builder: (context, snapshot) {
         if(snapshot != null){
           if (snapshot.data.isNotEmpty) {
@@ -673,11 +674,14 @@ buildListTypeForm(){
       children: <Widget>[
         ListView.builder(
             itemCount: listFieldsModels.length,
+            // ignore: missing_return
             itemBuilder: (BuildContext context, index){
+
 
               if(listFieldsModels[index].fieldType == null){
                 return Center(child: Text('Sin datos'),);
               }
+              // ignore: missing_return
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
                 return Padding(
@@ -715,6 +719,7 @@ buildListTypeForm(){
                   ),
                 );
               }
+              // ignore: missing_return
               if(listFieldsModels[index].fieldType == 'Text'){
                 //TEXT
                 return  Padding(
@@ -812,9 +817,7 @@ buildListTypeForm(){
                             ),
                           ],
                         ),
-
                       ],
-
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
@@ -1082,14 +1085,11 @@ buildListTypeForm(){
                         elevation: 10,
                         value: dataInfo[listFieldsModels[index].id],
                         hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
-
                         onChanged: (newValue) {
-
                           setState(() {
                             //dropdownValue = newValue;
                             dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
                           });
-
                         },
                         items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
                           return new DropdownMenuItem<String>(
@@ -1127,9 +1127,6 @@ buildListTypeForm(){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
-
-
-                                        //image2 = ima.copyResize(image, 120);
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }

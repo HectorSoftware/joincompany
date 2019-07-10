@@ -31,6 +31,9 @@ class _FormTaskViewState extends State<FormTaskView> {
   FormModel formGlobal;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   DateTime _date = new DateTime.now();
+  DateTime _dateDT = new DateTime.now();
+  TimeOfDay _time = new TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
   @override
   void initState(){
@@ -141,6 +144,9 @@ class _FormTaskViewState extends State<FormTaskView> {
       var varValue = '';
       if(list.field.fieldType == 'Photo' || list.field.fieldType == 'CanvanSignature' || list.field.fieldType == 'CanvanImage'){
         varValue = list.imageBase64;
+        if(varValue.isNotEmpty){
+          varValue = varValue.substring(searchComa(varValue));
+        }
       }
       if(list.field.fieldType == 'TextArea' ||
           list.field.fieldType == 'Text' ||
@@ -207,7 +213,7 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   widgetCrate(FieldModel field, int index,BuildContext context){
 
-    if(field.fieldType == 'TextArea' ||  field.fieldType == 'Textarea'||  field.fieldType == "TextArea") {
+    if(field.fieldType.toLowerCase() == 'textarea') {
       //TEXTAREA
       return Padding(
         padding: const EdgeInsets.all(15.0),
@@ -230,10 +236,9 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             controller: TextEditingController(text: (dataInfo[field.id.toString()])),
             onChanged: (value){
-              //saveData(value,listFieldsModels[index].id.toString());
+              saveData(value,listFieldsModels[index].id.toString());
             },
             maxLines: 4,
             //controller: nameController,
@@ -246,17 +251,35 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
     if(field.fieldType == 'Photo'){
+
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
+//        if(ruta.isNotEmpty){
+//          ruta = ruta.substring(searchComa(ruta));
+//        }
       }catch(e){}
+
+      Uint8List img;
+      String b64;
 
       return  Container(
         child: Row(
           children: <Widget>[
+            RaisedButton(
+              onPressed: () async{
+                img = await photoAndImage();
+                if (img != null) {
+                  setState(() {
+                    b64 = base64String(img);
+                    image2 = Image.memory(img);
+                    saveData(b64, field.id.toString());
+                  });
+                }
+              },
+              child: Text(listFieldsModels[index].name),
+              color: PrimaryColor,
+            ),
             Container(
               width: MediaQuery.of(context).size.width* 0.5,
               child: Center(
@@ -298,9 +321,8 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             onChanged: (value){
-              //saveData(value,listFieldsModels[index].id.toString());
+              saveData(value,field.id.toString());
             },
             maxLines: 1,
             controller: TextEditingController(text: (dataInfo[field.id.toString()])),
@@ -334,10 +356,9 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             controller: TextEditingController(text:'${dataInfo[field.id.toString()]}'),
             onChanged: (value){
-              //saveData(value,index.toString());
+              saveData(value,field.id.toString());
             },
             keyboardType: TextInputType.number,
             maxLines: 1,
@@ -359,46 +380,66 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     }
     if(field.fieldType == 'Date'){
-      DateTime fecha = DateTime.parse(_date.toString().substring(0,10));
-
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(child: Container(),),
-            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
-            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${fecha.day.toString() + '-' + fecha.month.toString() + '-' + fecha.year.toString()}',style: TextStyle(fontSize: 20),)
-                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
-            Expanded(child: Container(),),
-          ],
-        ),
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(field.name,style: TextStyle(fontSize: 20),)
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[field.id.toString()].isNotEmpty ? Text('${dataInfo[field.id.toString()]}') : Text('Sin Asignar'),
+              onPressed: ()async {
+                await selectDate(context);
+                saveData(_date.toString().substring(0,10),field.id.toString());
+              },
+            ),
+          ),
+        ],
       );
     }
+
     if(field.fieldType == 'Time'){
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: new Row(
-          children: <Widget>[
-            Expanded(child: Container(),),
-            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
-            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${dataInfo[field.id.toString()]}',style: TextStyle(fontSize: 20),)
-                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
-            Expanded(child: Container(),),
-          ],
-        ),
+      return new Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(listFieldsModels[index].name,style: TextStyle(fontSize: 20),),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[listFieldsModels[index].id.toString()].isNotEmpty ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
+              onPressed: () async {
+                await selectTime(context);
+                saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                setState(() {});
+              },
+            ),
+          ),
+        ],
       );
     }
 
     if(field.fieldType == 'CanvanImage'){
-      String ruta = '';
-      try{
-        ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
-      }catch(e){}
+      String ruta = dataInfo[field.id.toString()];
 
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -419,14 +460,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanSignature'){
-      String ruta = '';
-      try{
-        ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
-      }catch(e){}
-
+      String ruta = dataInfo[field.id.toString()];
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -447,55 +481,81 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'DateTime'){
-      String fecha = 'Sin Asignar';
-      if(dataInfo[field.id.toString()] != ''){
-        fecha = dataInfo[field.id.toString()];
-      }
-      return Padding(
-        padding: const EdgeInsets.only(top: 20,bottom: 20),
-        child: Row(
-          children: <Widget>[
-            Expanded(child: textDialogstyle(field.name + ' : ' + fecha),),
-          ],
-        ),
-      );
-    }
 
-    if(field.fieldType == 'Combo'){
       return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Column(
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Container(
-                    height: 40,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    margin: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10,left: 10),
-                      child: dataInfo[field.id.toString()].length != 0 ? Text(field.name.toString() +' : '+ dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),textAlign: TextAlign.center,)
-                                                                       : Text('${field.name.toString()} : Sin Asignar',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(listFieldsModels[index].name,style: TextStyle(fontSize: 20),),
                   ),
                 ],
               ),
-
             ],
-
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text('Sin Asignar'),
+              onPressed: () async {
+                await selectDateDateTime(context);
+                await selectTimeDatetime(context);
+                var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                saveData(dateCo.toString(),field.id.toString());
+                setState(() {});
+              },
+            ),
           ),
         ],
+      );
+    }
+
+    if(field.fieldType == 'Combo'){
+      List<String> dropdownMenuItems = List<String>();
+      for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+        dropdownMenuItems.add(v.name);
+      }
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.06,
+        margin: EdgeInsets.all(30.0),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: new  Padding(
+          padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+          child: Container(
+            child: new DropdownButton<String>(
+              isExpanded: true,
+              underline: Container(),
+              isDense: false,
+              icon: Icon(Icons.arrow_drop_down),
+              elevation: 10,
+              value: dataInfo[listFieldsModels[index].id],
+              hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+              onChanged: (newValue) {
+                setState(() {
+                  //dropdownValue = newValue;
+                  dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+                });
+              },
+              items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                return new DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
       );
 
     }
@@ -874,6 +934,59 @@ class _FormTaskViewState extends State<FormTaskView> {
       }
     }
     return pos;
+  }
+
+  Future<Null> selectDate(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _date){
+      setState(() {
+        _date = picked;
+      });
+    }
+  }
+  Future<Null> selectTime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (picked != null && picked != _time){
+      setState(() {
+        _time = picked;
+      });
+    }
+    setState(() {});
+  }
+
+  Future<Null> selectTimeDatetime(BuildContext context )async{
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeDT,
+    );
+    if (picked != null && picked != _timeDT){
+      _timeDT = picked;
+    }
+    setState(() {});
+  }
+
+  Future<Null> selectDateDateTime(BuildContext context )async{
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateDT,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _dateDT){
+      setState(() {
+        _dateDT = picked;
+      });
+
+    }
+
   }
 
 }
