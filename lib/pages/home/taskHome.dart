@@ -46,8 +46,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   BlocListTaskFilter blocListTaskResFilter;
   BlocListTaskCalendar blocListTaskCalendarRes;
   BlocListTaskCalendarMap blocListTaskCalendarResMap;
-  var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
-  var datePickedEnd = new DateTime.now().add(new Duration(days: 14));
+//  var datePickedInit = (new DateTime.now()).add(new Duration(days: -14));
+//  var datePickedEnd = new DateTime.now().add(new Duration(days: 14));
+  var datePickedInit = new DateTime.now();
+  var datePickedEnd = new DateTime.now();
   String nameUser = '';
   String emailUser = '';
   Icon _searchIcon = new Icon(Icons.search);
@@ -55,6 +57,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   final TextEditingController _filter = new TextEditingController();
   List<DateTime> _listCalendar = List<DateTime>();
   bool showSearch = true;
+  bool firsCalendar = false;
 
   @override
   void initState() {
@@ -359,7 +362,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
         context: context,
         initialFirstDate: datePickedInit,
-        initialLastDate: datePickedEnd,
+        initialLastDate: datePickedEnd ,
         firstDate: new DateTime(1990),
         lastDate: new DateTime(2030)
     );

@@ -19,7 +19,8 @@ class BlocListTask {
   String diaDesdeOld =   '';
   String diaHastaOld = '';
 
-  Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks) async {
+  Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) async {
+
 
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     String perpage = '20';
@@ -43,7 +44,12 @@ class BlocListTask {
       try{
         DateTime dateNew = DateTime.parse('1990-05-05');
         for(int countPage = 1; countPage <= pageTasks;countPage++){
-          getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
+          if(filter){
+            getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,beginDate: diaDesde,endDate: diaHasta,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
+          }else{
+            getAllTasksResponse = await getAllTasks(user.company,user.rememberToken,responsibleId: user.id.toString(), perPage: perpage,page: countPage.toString());
+          }
+
           if(getAllTasksResponse.statusCode == 200){
             tasks = getAllTasksResponse.body;
             //if(tasks)
@@ -93,8 +99,8 @@ class BlocListTask {
     _tasksTotalController.close();
   }
 
-  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks) {
-    getdatalist(hastaf,desdef,pageTasks);
+  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) {
+    getdatalist(hastaf,desdef,pageTasks,filter);
   }
 }
 
