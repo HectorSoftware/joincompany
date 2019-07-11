@@ -823,8 +823,11 @@ buildListTypeForm(){
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text('${dataInfo[listFieldsModels[index].id.toString()]}') : Text('Sin Asignar'),
                         onPressed: ()async {
-                            await selectDate(context);
-                            saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
+                            var cambio = await selectDate(context);
+                            if(cambio){
+                              saveData(_date.toString().substring(0,10),listFieldsModels[index].id.toString());
+                              setState(() {});
+                            }
                         },
                       ),
                     ),
@@ -854,9 +857,11 @@ buildListTypeForm(){
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
                         onPressed: () async {
-                          await selectTime(context);
-                          saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
-                          setState(() {});
+                          var cambio = await selectTime(context);
+                          if(cambio){
+                            saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                            setState(() {});
+                          }
                         },
                       ),
                     ),
@@ -984,10 +989,12 @@ buildListTypeForm(){
                       child: RaisedButton(
                         child: dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text('Sin Asignar'),
                         onPressed: () async {
-                          await selectDateDateTime(context);
-                          await selectTimeDatetime(context);
-                          var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
-                          saveData(dateCo.toString(),listFieldsModels[index].id.toString());
+                          var cambioF = await selectDateDateTime(context);
+                          var cambioH = await selectTimeDatetime(context);
+                          if(cambioF && cambioH){
+                            var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                            saveData(dateCo.toString(),listFieldsModels[index].id.toString());
+                          }
                           setState(() {});
                         },
                       ),
@@ -1271,86 +1278,92 @@ buildListTypeForm(){
     }
   }
 
-  Future<Null> selectDate(BuildContext context )async{
+  Future<bool> selectDate(BuildContext context )async{
+    bool cambio = false;
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _date){
-      setState(() {
+    if (picked != null){
         _date = picked;
-      });
+        cambio = true;
     }
+    return cambio;
   }
 
-  Future<Null> selectDateTask(BuildContext context )async{
+  Future<bool> selectDateTask(BuildContext context )async{
+    bool cambio = false;
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _dateTask,
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _dateTask){
+    if (picked != null){
       setState(() {
         _dateTask = picked;
       });
-
+      cambio = true;
     }
-
+    return cambio;
   }
 
-  Future<Null> selectTimeTask(BuildContext context )async{
+  Future<bool> selectTimeTask(BuildContext context )async{
+    bool cambio = false;
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: _timeTask,
     );
-    if (picked != null && picked != _timeTask){
+    if (picked != null){
       setState(() {
         _timeTask = picked;
       });
+      cambio = true;
     }
+    return cambio;
   }
 
-  Future<Null> selectTime(BuildContext context )async{
+  Future<bool> selectTime(BuildContext context )async{
+    bool cambio = false;
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null && picked != _time){
-      setState(() {
-        _time = picked;
-      });
+    if (picked != null){
+       _time = picked;
+       cambio = true;
     }
-    setState(() {});
+    return cambio;
   }
 
-  Future<Null> selectTimeDatetime(BuildContext context )async{
+  Future<bool> selectTimeDatetime(BuildContext context )async{
+    bool cambio = false;
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: _timeDT,
     );
-    if (picked != null && picked != _timeDT){
+    if (picked != null){
       _timeDT = picked;
+      cambio = true;
     }
-    setState(() {});
+    return cambio;
   }
 
-  Future<Null> selectDateDateTime(BuildContext context )async{
+  Future<bool> selectDateDateTime(BuildContext context )async{
+    bool cambio = false;
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _dateDT,
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _dateDT){
-      setState(() {
-        _dateDT = picked;
-      });
-
+    if (picked != null){
+       _dateDT = picked;
+      cambio = true;
     }
-
+    return cambio;
   }
 
   Future<CustomerWithAddressModel> getDirections() async{
@@ -1445,14 +1458,14 @@ buildListTypeForm(){
               new ListTile(
                 leading: new Icon(Icons.access_time),
                 title: new Text('Hora' + '    '),
-                onTap: () {
+                onTap: () async {
 
                   Navigator.pop(context);
-                  selectTimeTask(globalContext);
-                  selectDateTask(globalContext);
-                  setState(() {
-                    taskCU= true;
-                  });
+                  var date = await selectDateTask(globalContext);
+                  var time = await selectTimeTask(globalContext);
+                  if(date && time){
+                    setState(() {taskCU= true;});
+                  }
                 },
               ),
             ],
