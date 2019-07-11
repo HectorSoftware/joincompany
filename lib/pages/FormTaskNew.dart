@@ -534,8 +534,8 @@ buildListTypeForm(){
 
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
     initDataTable(listOptions);
-    valuesTable = savedDataTablet();
-    saveData(valuesTable,id);
+
+    saveData(savedDataTablet(),id);
     Card card(TextEditingController t){
       return Card(
         child: TextField(
@@ -596,7 +596,6 @@ buildListTypeForm(){
       }else{
         return Container();
       }
-
     }
 
     //LISTA DE COLUMNAS
@@ -998,8 +997,6 @@ buildListTypeForm(){
               }
               if(listFieldsModels[index].fieldType == 'Button')
               {
-                //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-                //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
                 return Container(
                   margin: EdgeInsets.only(top: 30,bottom: 30),
                     width: MediaQuery.of(context).size.width*0.5,
@@ -1022,8 +1019,7 @@ buildListTypeForm(){
                     )
                 );
               }
-              if(listFieldsModels[index].fieldType == 'Boolean')
-              {
+              if(listFieldsModels[index].fieldType == 'Boolean'){
                 saveData(_value1.toString(),listFieldsModels[index].id.toString());
                 return Row(
                   children: <Widget>[
@@ -1181,8 +1177,7 @@ buildListTypeForm(){
               }
 
 
-              if(listFieldsModels[index].fieldType == 'ComboSearch')
-              {
+              if(listFieldsModels[index].fieldType == 'ComboSearch'){
 
                 if(!seachKeyInData('ComboSearch')){
                   data['ComboSearch'] = TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]);

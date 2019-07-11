@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -28,6 +30,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   TaskModel taskOne;
   DateTime _dateTask = new DateTime.now();
   Map<String,String> dataInfo = Map<String,String>();
+  Map<String,String> dataInfoOld = Map<String,String>();
   FormModel formGlobal;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   DateTime _date = new DateTime.now();
@@ -35,9 +38,10 @@ class _FormTaskViewState extends State<FormTaskView> {
   TimeOfDay _time = new TimeOfDay(hour: 0, minute: 0);
   TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
+  List<String> searchList = new List<String>();
   @override
   void initState(){
-
+    _getUserLocation();
     _dateTask = DateTime.parse(fixStringDateIfBroken(widget.taskmodelres.planningDate));
     listWithTask();
     super.initState();
@@ -50,73 +54,77 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            child: Column(
-              children: <Widget>[
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Cliente :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(
-                        child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                            : Text('Sin Asignar'),
-                      ),
-                      Expanded(child: Container(),),
-                    ],
+    return WillPopScope(
+      onWillPop: saveTask,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),),
+
+        ),
+        body: ListView(
+          children: <Widget>[
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Cliente :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(
+                          child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
+                              : Text('Sin Asignar'),
+                        ),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Direccion :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(
-                        child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                                                                         : Text('Sin Asignar'),
-                      ),
-                      Expanded(child: Container(),),
-                    ],
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Direccion :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(
+                          child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
+                                                                           : Text('Sin Asignar'),
+                        ),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Fecha :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(child: Text(_dateTask.day.toString() + '-' +_dateTask.month.toString() + '-' +_dateTask.year.toString(),textAlign: TextAlign.left,)),
-                      Expanded(child: Container(),),
-                    ],
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Fecha :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(child: Text(_dateTask.day.toString() + '-' +_dateTask.month.toString() + '-' +_dateTask.year.toString(),textAlign: TextAlign.left,)),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: listFieldsModels.length != 0 ?
-                            listBuiderListView(context)
-                            : Center(
-                              child: Text('Cargando . . .'),
-                            ),
-          ),
-        ],
+            Container(
+              height: MediaQuery.of(context).size.height * 0.01,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: listFieldsModels.length != 0 ?
+                              listBuiderListView(context)
+                              : Center(
+                                child: Text('Cargando . . .'),
+                              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -162,10 +170,13 @@ class _FormTaskViewState extends State<FormTaskView> {
           list.field.fieldType == 'Time' ){
         varValue = list.value;
       }
-
-      //dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
       dataInfo[list.field.id.toString()] = varValue;
     }
+
+    for(var key in dataInfo.keys){
+      dataInfoOld[key] = dataInfo[key];
+    }
+
     await lisC(form);
   }
 
@@ -250,19 +261,14 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
-    if(field.fieldType == 'Photo'){
 
+    if(field.fieldType == 'Photo'){
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
-//        if(ruta.isNotEmpty){
-//          ruta = ruta.substring(searchComa(ruta));
-//        }
       }catch(e){}
-
       Uint8List img;
       String b64;
-
       return  Container(
         child: Row(
           children: <Widget>[
@@ -440,7 +446,6 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     if(field.fieldType == 'CanvanImage'){
       String ruta = dataInfo[field.id.toString()];
-
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -481,7 +486,6 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'DateTime'){
-
       return Row(
         children: <Widget>[
           Column(
@@ -565,13 +569,20 @@ class _FormTaskViewState extends State<FormTaskView> {
       if(dataInfo[field.id.toString()] == 'true'){
         _value1 = true;
       }
+      saveData(_value1.toString(),listFieldsModels[index].id.toString());
       return Row(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 70),
             child: Container(
                 child: new Checkbox(
-                    value: _value1
+                    value: _value1,
+                    onChanged: (value){
+                      setState(() {
+                        _value1 = value;
+                      });
+                      saveData(value.toString(),listFieldsModels[index].id.toString());
+                    }
                 )
             ),
           ),
@@ -582,10 +593,8 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.only(left: 60, top: 10),
-                child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
-                    : Text(''),
+                child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),),
               ),
-
             ),
           ),
         ],
@@ -614,10 +623,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
-    if(listFieldsModels[index].fieldType == 'Button')
-    {
-      //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-      //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+    if(listFieldsModels[index].fieldType == 'Button'){
       return Container(
           margin: EdgeInsets.only(top: 30,bottom: 30),
           width: MediaQuery.of(context).size.width*0.5,
@@ -626,7 +632,10 @@ class _FormTaskViewState extends State<FormTaskView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               RaisedButton(
-                onPressed: (){},
+                onPressed: (){
+                  saveData( '${_initialPosition.latitude} , ${_initialPosition.longitude}' ,listFieldsModels[index].id.toString());
+                  setState(() {});
+                },
                 child: Text(listFieldsModels[index].name),
               ),
               Container(
@@ -639,73 +648,75 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'ComboSearch'){
-      return Row(
+
+      if(!seachKeyInData('ComboSearch')){
+        data['ComboSearch'] = TextEditingController(text: dataInfo[field.id.toString()]);
+      }
+     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width*0.5,
-              height: 40,
-              padding: EdgeInsets.only(
-                  top: 4,left: 16, right: 16, bottom: 4
-              ),
-              decoration: BoxDecoration(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width*0.5,
+                height: MediaQuery.of(context).size.height * 0.06,
+                margin: EdgeInsets.only(top: 30,bottom: 1),
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(
                       Radius.circular(10)
                   ),
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 5
-                    )
-                  ]
-              ),
-              child: TextField(
-                controller: new TextEditingController(text: dataInfo[field.id.toString()]),
-                enabled: false,
-                maxLines: 1,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: field.name,
+
+                ),
+                child: TextField(
+                  controller: data['ComboSearch'],
+                  onChanged: (value){
+                    searchList.clear();
+                    setState(() {});
+
+                    if(listFieldsModels[index].fieldOptions != null){
+                      for(FieldOptionModel values in listFieldsModels[index].fieldOptions){
+                        if(values.name.toLowerCase().contains(value.toLowerCase()) && value.isNotEmpty){
+                          searchList.add(values.name);
+                          setState(() {});
+                        }
+                      }
+                    }
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: listFieldsModels[index].name,
+                  ),
                 ),
               ),
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            tooltip: 'Busqueda',
-            iconSize: 20,
-            onPressed: (){},
-          ),
-
-        ],
-      );
-    }
-
-    if(field.fieldType == 'boolean'){
-      return Row(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 70),
-            child: Container(
-                child: new Checkbox(
-                    value:true, onChanged: (bool value) {},
-                )
-            ),
-          ),
-          Spacer(),
-          Container(
-            width: MediaQuery.of(context).size.width *0.5,
-            height: MediaQuery.of(context).size.height *0.1,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 60, top: 10),
-                child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+              Container(
+                  margin: EdgeInsets.only(top: 30,bottom: 1),
+                  child: Icon(Icons.search)
               ),
-            ),
+            ],
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.3,
+            height: searchList.length * 60.0,
+            child: searchList.isNotEmpty ? ListView.builder(
+              itemCount: searchList.length,
+              itemBuilder: (BuildContext context, int inde){
+                return Card(
+                  child: ListTile(
+                    title: Text(searchList[inde],style: TextStyle(fontSize: 15),),
+                    onTap: (){
+                      data['ComboSearch'].text = searchList[inde];
+                      searchList.clear();
+                      saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                      setState(() {});
+                    },
+                  ),
+                );
+              },
+            ):Container(),
           ),
         ],
       );
@@ -731,7 +742,13 @@ class _FormTaskViewState extends State<FormTaskView> {
       return generatedTable(listOption, field.id.toString());
     }
 
-    return Text('Sin datos');
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+     mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Tabla Sin datos'),
+      ],
+    );
   }
 
   Future<Uint8List> photoAndImage() async{
@@ -742,25 +759,6 @@ class _FormTaskViewState extends State<FormTaskView> {
         return TomarImage();
       },
     );
-  }
-  String base64String(Uint8List data) {
-    return base64Encode(data);
-  }
-  Image imageFromBase64String(String base64String) {
-    return Image.memory(base64Decode(base64String));
-  }
-  Uint8List dataFromBase64String(String base64String) {
-    return base64Decode(base64String);
-  }
-  Map data = new Map();
-
-  bool findKeys(String key){
-    for(var k in data.keys){
-      if(k == key){
-        return true;
-      }
-    }
-    return false;
   }
 
   bool checkKeyInTable(String key){
@@ -788,13 +786,34 @@ class _FormTaskViewState extends State<FormTaskView> {
       }
   }
 
+  String savedDataTablet(){
+    String dat="";
+    var keys = data.keys;
+    if(!keys.contains("table")){
+      return dat;
+    }else{
+      for(String k in  data["table"].keys){
+        for(String Sk in data["table"][k].keys){
+          if(data["table"][k][Sk] is TextEditingController){
+            String value = data["table"][k][Sk].text != "" ? data["table"][k][Sk].text : " ";
+            dat = dat + "$Sk:$value;";
+          }
+        }
+      }
+    }
+    return dat;
+  }
+
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
     initDataTable(listOptions);
+
+    saveData(savedDataTablet(),id);
+
     Card card(TextEditingController t){
       return Card(
         child: TextField(
-          enabled: false,
           onChanged: (value){
+            saveData(savedDataTablet(),id);
           },
           controller: t,
           decoration: InputDecoration(
@@ -877,6 +896,29 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   }
 
+  String base64String(Uint8List data) {
+    return base64Encode(data);
+  }
+
+  Image imageFromBase64String(String base64String) {
+    return Image.memory(base64Decode(base64String));
+  }
+
+  Uint8List dataFromBase64String(String base64String) {
+    return base64Decode(base64String);
+  }
+
+  Map data = new Map();
+
+  bool findKeys(String key){
+    for(var k in data.keys){
+      if(k == key){
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future checkDialog(String mensaje){
     return showDialog(
         context: context,
@@ -949,6 +991,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       });
     }
   }
+
   Future<Null> selectTime(BuildContext context )async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -984,9 +1027,92 @@ class _FormTaskViewState extends State<FormTaskView> {
       setState(() {
         _dateDT = picked;
       });
-
     }
-
   }
 
+  static LatLng _initialPosition;
+  Future _getUserLocation() async{
+    try{
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
+    }catch(e){}
+  }
+
+  bool seachKeyInData(String key){
+    for(var k in data.keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> saveTask() async{
+    var res = await _asyncConfirmDialog();
+
+    if(res != null){
+      if(!res){
+        res = await updateTaskNew();
+      }
+    }
+
+    return res == null ? false : res;
+  }
+
+  // ignore: missing_return
+  Future<bool> updateTaskNew() async {
+    taskOne.customValuesMap = dataInfo;
+    taskOne.customValues = null;
+    setState(() {});
+    return await saveTaskApi();
+  }
+
+  Future<bool> saveTaskApi() async{
+    var createTaskResponse = await updateTask(taskOne.id.toString(), taskOne, customer, token);
+    if(createTaskResponse.statusCode == 200){
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> _asyncConfirmDialog() async {
+    if(taskOne != null){
+      bool change = false;
+      dataInfo.forEach((key,value) {
+        if(dataInfoOld[key] != value){
+          change = true;
+        }
+      });
+      if(change){
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('¿Guardar?'),
+              content: const Text(
+                  '¿Desea guardar estos datos?.'),
+              actions: <Widget>[
+                FlatButton(
+                  child: const Text('SALIR'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+                FlatButton(
+                  child: const Text('ACEPTAR'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                )
+              ],
+            );
+          },
+        );
+      }
+      return true;
+    }
+  }
 }

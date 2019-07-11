@@ -59,6 +59,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
     //BLOCK LISTA
     blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+    //blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,false);
 
     super.initState();
     SystemChrome.setPreferredOrientations([
@@ -72,6 +73,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     listCalender = widget.listCalendarRes;
     pageTasks = 1;
     setState(() {});
+
   }
 
   @override
@@ -541,7 +543,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     if(res.statusCode == 200){
       showToast('Tarea Eliminada');
       //BLOCK LISTA
-      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,true);
       setState(() {});
     }else{
       showToast('Error Al Eliminar Tarea');

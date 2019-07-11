@@ -22,7 +22,7 @@ class BlocListTask {
   Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) async {
 
     if(filter){
-      diaDesdeOld =   '';
+      diaDesdeOld = '';
       diaHastaOld = '';
     }
 
@@ -103,9 +103,7 @@ class BlocListTask {
     _tasksTotalController.close();
   }
 
-  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) {
+  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks,bool filter)  {
     getdatalist(hastaf,desdef,pageTasks,filter);
   }
 }
-
-//final blocTaskListTask = blocListTask();

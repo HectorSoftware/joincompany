@@ -2722,6 +2722,8 @@ class DatabaseProvider {
       ''',
     );
 
+    print(data.toList());
+
 
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
@@ -3500,7 +3502,8 @@ class DatabaseProvider {
 
     if (data.isNotEmpty) {
       await Future.forEach(data, (customValue) async {
-        FieldModel field = await ReadFieldById(customValue["field_id"]);
+        var fieldId = customValue["field_id"];
+        FieldModel field = await ReadFieldById(fieldId);
 
         listOfCustomValues.add(new CustomValueModel(
           id: customValue["id"],
@@ -3768,7 +3771,6 @@ class DatabaseProvider {
       id = ?,
       created_at = ?,
       updated_at = ?,
-      deleted_at = ?,
       form_id = ?,
       section_id = ?,
       field_id = ?,
