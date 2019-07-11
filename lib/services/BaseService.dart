@@ -4,6 +4,7 @@ import 'package:joincompany/main.dart';
 
 Future<http.Response> httpGet(String customer, String authorization, String resourcePath, { String id, Map<String, String> params, String extraPath }) async{
   try{
+
     var uri = Uri.https(hostApi, versionApi + resourcePath + (id!=null && id!='' ? '/$id' : '') + (extraPath!=null && extraPath!='' ? '$extraPath' : ''), params);
 
     final response = await http.get(uri,
