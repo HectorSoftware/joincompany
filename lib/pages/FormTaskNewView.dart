@@ -41,7 +41,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
   List<String> searchList = new List<String>();
-
+  bool _loading = false;
   @override
   void initState(){
     _getUserLocation();
@@ -1172,6 +1172,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       return true;
     }
   }
+
   Future<bool> selectDateTask(BuildContext context )async{
     bool cambio = false;
     final DateTime picked = await showDatePicker(

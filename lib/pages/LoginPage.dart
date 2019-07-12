@@ -528,7 +528,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   Future syncDialog(){
     return showDialog(
       context: context,
@@ -538,7 +537,6 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
 }
 
 class SyncApp extends StatefulWidget {

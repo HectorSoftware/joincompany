@@ -999,7 +999,7 @@ class DatabaseProvider {
       return null;
 
     if (responsible.supervisor != null)
-      CreateResponsible(responsible.supervisor, syncState);
+      await CreateResponsible(responsible.supervisor, syncState);
 
     return await db.rawInsert(
       '''
@@ -1390,10 +1390,10 @@ class DatabaseProvider {
       return null;
 
     String fieldLocalValue;
-    if (field.name == "Image") {
+    if (field.name == "Image" || field.name == "Image_canvan") {
       if (field.fieldDefaultValue != null) {
-        ImageRepository.handler.ManageImage(field.fieldDefaultValue);
-        fieldLocalValue = basename(field.fieldDefaultValue);
+        File image = await ImageRepository.handler.ManageImage(field.fieldDefaultValue);
+        fieldLocalValue = image.path;
       }
     }
 
@@ -1474,7 +1474,7 @@ class DatabaseProvider {
       fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
       fieldCollection: field["field_collection"],
       fieldRequired: field["field_required"] == 1 ? true: false,
-      image: await ImageRepository.handler.ManageImage(field["field_local_value"]),
+      imagePath: field["field_local_value"],
     );
   }
   
@@ -1549,7 +1549,7 @@ class DatabaseProvider {
           fieldCollection: field["field_collection"],
           fieldRequired: field["field_required"] == 1 ? true: false,
           fieldWidth: field["field_width"],
-          image: await ImageRepository.handler.ManageImage(field["field_local_value"]),
+          imagePath: field["field_local_value"],
         ));
       });
     }
@@ -1820,7 +1820,7 @@ class DatabaseProvider {
         field.fieldDefaultValue, field.fieldType, field.fieldPlaceholder,
         json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"), 
         field.fieldCollection, field.fieldRequired,
-        field.fieldWidth, basename(field.image.path)], ...paramsBySyncState[syncState]],
+        field.fieldWidth, field.imagePath], ...paramsBySyncState[syncState]],
       );
     } else
       return await CreateField(field, syncState);
@@ -1888,7 +1888,7 @@ class DatabaseProvider {
       return null;
 
     if (address.locality != null){
-      CreateLocality(address.locality, syncState);
+      await CreateLocality(address.locality, syncState);
     }
 
     address.id = await db.rawInsert(
@@ -2676,13 +2676,13 @@ class DatabaseProvider {
 
     // individual items
     if (task.form != null)
-      CreateForm(task.form, syncState);
+      await CreateForm(task.form, syncState);
     if (task.address != null)
-      CreateAddress(task.address, syncState);
+      await CreateAddress(task.address, syncState);
     if (task.customer != null)
-      CreateCustomer(task.customer, syncState);
+      await CreateCustomer(task.customer, syncState);
     if (task.responsible != null)
-      CreateResponsible(task.responsible, syncState);
+      await CreateResponsible(task.responsible, syncState);
 
     return task;
   }
