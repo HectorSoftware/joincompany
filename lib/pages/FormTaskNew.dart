@@ -596,6 +596,7 @@ buildListTypeForm(){
       }else{
         return Container();
       }
+
     }
 
     //LISTA DE COLUMNAS

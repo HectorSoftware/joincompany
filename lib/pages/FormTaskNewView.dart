@@ -40,6 +40,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
   List<String> searchList = new List<String>();
+
   @override
   void initState(){
     _getUserLocation();
@@ -161,9 +162,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   Future listWithTask() async {
-
     await getElements();
-
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
@@ -436,8 +435,11 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: RaisedButton(
               child: dataInfo[field.id.toString()].isNotEmpty ? Text('${dataInfo[field.id.toString()]}') : Text('Sin Asignar'),
               onPressed: ()async {
-                await selectDate(context);
-                saveData(_date.toString().substring(0,10),field.id.toString());
+                var c = await selectDate(context);
+                if(c){
+                  saveData(_date.toString().substring(0,10),field.id.toString());
+                  setState(() {});
+                }
               },
             ),
           ),
@@ -465,9 +467,11 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: RaisedButton(
               child: dataInfo[listFieldsModels[index].id.toString()].isNotEmpty ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
               onPressed: () async {
-                await selectTime(context);
-                saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
-                setState(() {});
+                var c = await selectTime(context);
+                if(c){
+                  saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                  setState(() {});
+                }
               },
             ),
           ),
@@ -534,13 +538,15 @@ class _FormTaskViewState extends State<FormTaskView> {
           Padding(
             padding: const EdgeInsets.only(left: 10),
             child: RaisedButton(
-              child: dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text('Sin Asignar'),
+              child: dataInfo[field.id.toString()] != ''  ? Text(dataInfo[field.id.toString()]): Text('Sin Asignar'),
               onPressed: () async {
-                await selectDateDateTime(context);
-                await selectTimeDatetime(context);
-                var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
-                saveData(dateCo.toString(),field.id.toString());
-                setState(() {});
+                var c1 = await selectDateDateTime(context);
+                var c2 = await selectTimeDatetime(context);
+                if(c1 && c2){
+                  var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                  saveData(dateCo.toString(),field.id.toString());
+                  setState(() {});
+                }
               },
             ),
           ),
@@ -574,12 +580,13 @@ class _FormTaskViewState extends State<FormTaskView> {
               isDense: false,
               icon: Icon(Icons.arrow_drop_down),
               elevation: 10,
-              value: dataInfo[listFieldsModels[index].id],
-              hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
+              value: dataInfo[field.id],
+              hint:  dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text(field.name),
               onChanged: (newValue) {
                 setState(() {
                   //dropdownValue = newValue;
-                  dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
+//                  dataInfo.putIfAbsent(field.id.toString() ,()=> newValue);
+                  saveData(newValue, field.id.toString() );
                 });
               },
               items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
@@ -1009,45 +1016,52 @@ class _FormTaskViewState extends State<FormTaskView> {
     return pos;
   }
 
-  Future<Null> selectDate(BuildContext context )async{
+  Future<bool> selectDate(BuildContext context )async{
+
+    bool cambio = false;
+
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _date){
-      setState(() {
-        _date = picked;
-      });
+    if (picked != null){
+      _date = picked;
+      cambio = true;
     }
+
+    return cambio;
   }
 
-  Future<Null> selectTime(BuildContext context )async{
+  Future<bool> selectTime(BuildContext context )async{
+    bool cambio = false;
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: _time,
     );
-    if (picked != null && picked != _time){
-      setState(() {
-        _time = picked;
-      });
+    if (picked != null){
+      cambio = true;
+      _time = picked;
     }
-    setState(() {});
+    return cambio;
   }
 
-  Future<Null> selectTimeDatetime(BuildContext context )async{
+  Future<bool> selectTimeDatetime(BuildContext context )async{
+    bool cambio = false;
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: _timeDT,
     );
-    if (picked != null && picked != _timeDT){
+    if (picked != null){
+      cambio = true;
       _timeDT = picked;
     }
-    setState(() {});
+    return cambio;
   }
 
-  Future<Null> selectDateDateTime(BuildContext context )async{
+  Future<bool> selectDateDateTime(BuildContext context )async{
+    bool cambio = false;
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _dateDT,
@@ -1055,10 +1069,10 @@ class _FormTaskViewState extends State<FormTaskView> {
         lastDate: new DateTime(2020)
     );
     if (picked != null && picked != _dateDT){
-      setState(() {
-        _dateDT = picked;
-      });
+      cambio = true;
+       _dateDT = picked;
     }
+    return cambio;
   }
 
   static LatLng _initialPosition;
@@ -1143,6 +1157,8 @@ class _FormTaskViewState extends State<FormTaskView> {
           },
         );
       }
+      return true;
+    }else{
       return true;
     }
   }
