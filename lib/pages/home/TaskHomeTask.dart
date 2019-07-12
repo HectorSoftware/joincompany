@@ -517,7 +517,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   ),
                   Container(
                     child: IconButton(
-                        icon: Icon(Icons.remove_red_eye,size: 20,),
+                        icon: Icon(Icons.border_color,size: 20,),
                         onPressed: () async {
                           if(listTask != null){
                             String idTask = '',idAddress ='',nameAddress='',customerName='';

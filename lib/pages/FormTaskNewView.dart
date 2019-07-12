@@ -1072,9 +1072,9 @@ class _FormTaskViewState extends State<FormTaskView> {
   Future<bool> saveTaskApi() async{
     var createTaskResponse = await updateTask(taskOne.id.toString(), taskOne, customer, token);
     if(createTaskResponse.statusCode == 200){
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 
   Future<bool> _asyncConfirmDialog() async {

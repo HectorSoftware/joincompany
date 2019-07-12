@@ -176,11 +176,10 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
 
   if (await connectionStatus.checkConnection()) {
     http.Response updateTaskFromServerResJSON = await updateTaskFromServer(id, taskObj, customer, authorization);
-
-
-
     if (updateTaskFromServerResJSON.statusCode == 200 || updateTaskFromServerResJSON.statusCode == 201) {
-      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
+      http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
+//      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
+      taskObj = TaskModel.fromJson(getTaskFromServerJSON.body);
       syncState = SyncState.synchronized;
     }
   }

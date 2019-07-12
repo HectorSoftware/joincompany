@@ -618,23 +618,25 @@ class DatabaseProvider {
   Future<int> UpdateForm(int formId, FormModel form, SyncState syncState) async {
     final db = await database;
 
-    await Future.forEach(form.sections, (section) async {
-      List<Map<String, dynamic>> data;
-      data = await db.rawQuery(
-      '''
-      SELECT id 
-      FROM "custom_fields" 
-      WHERE entity_id = ${section.entityId} 
-        AND UPPER(entity_type) = UPPER("Form")
-        AND UPPER(type) = UPPER("section") 
-      '''
-      );
+    if (form.sections!= null) {
+      await Future.forEach(form.sections, (section) async {
+        List<Map<String, dynamic>> data;
+        data = await db.rawQuery(
+            '''
+            SELECT id 
+            FROM "custom_fields" 
+            WHERE entity_id = ${section.entityId} 
+              AND UPPER(entity_type) = UPPER("Form")
+              AND UPPER(type) = UPPER("section") 
+            '''
+        );
 
-      if (data.isNotEmpty)
-        await UpdateSection(section.id, section, syncState);
-      else
-        await CreateSection(section, syncState);
-    });
+        if (data.isNotEmpty)
+          await UpdateSection(section.id, section, syncState);
+        else
+          await CreateSection(section, syncState);
+      });
+    }
 
     return await db.rawUpdate(
       '''
@@ -1199,17 +1201,20 @@ class DatabaseProvider {
   Future<int> UpdateResponsible(int responsibleId, ResponsibleModel responsible, SyncState syncState) async {
     final db = await database;
 
-    List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "responsibles" WHERE id = ${responsible.supervisor.id}
-      '''
-    );
+    if (responsible.supervisor != null ) {
+      List<Map<String, dynamic>> data;
+      data = await db.rawQuery(
+          '''
+          SELECT * FROM "responsibles" WHERE id = ${responsible.supervisor.id}
+          '''
+      );
 
-    if (data.isNotEmpty)
-      UpdateResponsible(responsible.supervisor.id, responsible.supervisor, syncState);
-    else
-      CreateResponsible(responsible.supervisor, syncState);
+      if (data.isNotEmpty)
+        await UpdateResponsible(responsible.supervisor.id, responsible.supervisor, syncState);
+      else
+        await CreateResponsible(responsible.supervisor, syncState);
+    }
+
 
     return await db.rawUpdate(
       '''
@@ -1699,7 +1704,7 @@ class DatabaseProvider {
 
   Future<int> UpdateSection(int id, SectionModel section, SyncState syncState) async {
     if (section.fields != null) {
-      await Future.forEach(section.fields, (field) => UpdateField(field.id, field, syncState));
+      await Future.forEach(section.fields, (field) async => await UpdateField(field.id, field, syncState));
     }
 
     final db = await database;
@@ -1751,7 +1756,7 @@ class DatabaseProvider {
         section.fieldWidth], ...paramsBySyncState[syncState]],
       );
     } else
-      return CreateSection(section, syncState);
+      return await CreateSection(section, syncState);
   }
 
   Future<int> UpdateField(int id, FieldModel field, SyncState syncState) async {
@@ -1764,7 +1769,7 @@ class DatabaseProvider {
     );
 
     if (data.isNotEmpty) {
-      return db.rawUpdate(
+      return await db.rawUpdate(
         '''
         UPDATE "custom_fields" SET
         id = ?,
@@ -1804,7 +1809,7 @@ class DatabaseProvider {
         field.fieldWidth], ...paramsBySyncState[syncState]],
       );
     } else
-      return CreateField(field, syncState); 
+      return await CreateField(field, syncState);
   }
 
   Future<int> DeleteSectionById(int id) async {
@@ -2112,9 +2117,9 @@ class DatabaseProvider {
 
     if (address.locality != null) {
       if (data.isNotEmpty)
-        UpdateLocality(address.locality.id, address.locality, syncState);
+        await UpdateLocality(address.locality.id, address.locality, syncState);
       else
-        CreateLocality(address.locality, syncState);
+        await CreateLocality(address.locality, syncState);
     }
 
     await db.rawUpdate(
@@ -3001,9 +3006,9 @@ class DatabaseProvider {
 
       customValue.taskId = taskId;
       if (data.isNotEmpty)
-        DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
+        await DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
       else
-        DatabaseProvider.db.CreateCustomValue(customValue, syncState);
+        await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
 
     // individual items
@@ -3012,33 +3017,33 @@ class DatabaseProvider {
     if (task.form != null) {
       data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
       if (data.isNotEmpty)
-        UpdateForm(task.form.id, task.form, syncState);
+        await UpdateForm(task.form.id, task.form, syncState);
       else
-        CreateForm(task.form, syncState);
+        await CreateForm(task.form, syncState);
     }
 
     if (task.address != null) {
       data = await db.rawQuery('SELECT * FROM "addresses" WHERE id = ${task.address.id}');
       if (data.isNotEmpty)
-        UpdateAddress(task.address.id, task.address, syncState);
+        await UpdateAddress(task.address.id, task.address, syncState);
       else
-        CreateAddress(task.address, syncState);
+        await CreateAddress(task.address, syncState);
     }
 
     if (task.customer != null) {
       data = await db.rawQuery('SELECT * FROM "customers" WHERE id = ${task.customer.id}');
       if (data.isNotEmpty)
-        UpdateCustomer(task.customer.id, task.customer, syncState);
+        await UpdateCustomer(task.customer.id, task.customer, syncState);
       else
-        CreateCustomer(task.customer, syncState);
+        await CreateCustomer(task.customer, syncState);
     }
 
     if (task.responsible != null) {
       data = await db.rawQuery('SELECT * FROM "responsibles" WHERE id = ${task.responsible.id}');
       if (data.isNotEmpty)
-        UpdateResponsible(task.responsible.id, task.responsible, syncState);
+        await UpdateResponsible(task.responsible.id, task.responsible, syncState);
       else
-        CreateResponsible(task.responsible, syncState);
+        await CreateResponsible(task.responsible, syncState);
     }
 
     await db.rawUpdate(
@@ -3708,7 +3713,7 @@ class DatabaseProvider {
     );
 
     if (data.isNotEmpty)
-      UpdateField(
+      await UpdateField(
         customValue.field.id,
         FieldModel(
           id: customValue.field.id,
@@ -3737,7 +3742,7 @@ class DatabaseProvider {
         syncState
       );
     else
-      CreateField(
+      await CreateField(
         FieldModel(
           id: customValue.field.id,
           createdAt: customValue.field.createdAt,
@@ -4637,7 +4642,7 @@ class DatabaseProvider {
     data = await db.rawQuery('SELECT * FROM "businesses" WHERE id = ${business.id}');
 
     if (data.isEmpty)
-      return CreateBusiness(business, syncState);
+      return await CreateBusiness(business, syncState);
     else {
       await db.rawUpdate(
       '''
@@ -4797,7 +4802,7 @@ class DatabaseProvider {
 
   Future<int> ChangeSyncStateBusiness(int id, SyncState syncState) async {
     final db = await database;
-    return db.rawUpdate(
+    return await db.rawUpdate(
       '''
       UPDATE "businesses" SET
       in_server = ?,
