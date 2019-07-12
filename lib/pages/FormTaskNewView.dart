@@ -28,6 +28,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   String token,customer, user;
   int responsibleId;
   TaskModel taskOne;
+  TaskModel taskOneOld = new TaskModel();
   DateTime _dateTask = new DateTime.now();
   TimeOfDay _timeTask = new TimeOfDay.now();
   Map<String,String> dataInfo = Map<String,String>();
@@ -56,12 +57,19 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: saveTask,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),),
-
+          leading:  IconButton(
+            icon: Icon(Icons.arrow_back,size: 25,),
+            onPressed: () async {
+              bool res = await saveTask();
+              if(res){
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, '/vistap');
+              }
+            },
+          ),
         ),
         body: ListView(
           children: <Widget>[
@@ -127,11 +135,13 @@ class _FormTaskViewState extends State<FormTaskView> {
                                   var date = await selectDateTask(context);
                                   var time = await selectTimeTask(context);
                                   if(date && time){
-                                    taskOne.planningDate = _dateTask.day.toString() + '-'
-                                        + _dateTask.month.toString() + '-'
-                                        + _dateTask.year.toString()+ ' '
-                                        + _timeTask.hour.toString() + ':'
-                                        + _timeTask.minute.toString();
+                                    String minute;
+                                    if(_timeTask.minute.toString().length < 2){
+                                      minute = '0'+ _timeTask.minute.toString();
+                                    }else{
+                                      minute = _timeTask.minute.toString();
+                                    }
+                                    taskOne.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
                                     setState(() {});
                                   }
                                 }),
@@ -157,8 +167,7 @@ class _FormTaskViewState extends State<FormTaskView> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Future listWithTask() async {
@@ -166,7 +175,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
-
+    taskOneOld = new TaskModel(addressId: taskOne.addressId,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
 
     //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
@@ -1096,13 +1105,11 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   Future<bool> saveTask() async{
     var res = await _asyncConfirmDialog();
-
     if(res != null){
       if(!res){
         res = await updateTaskNew();
       }
     }
-
     return res == null ? false : res;
   }
 
@@ -1130,6 +1137,9 @@ class _FormTaskViewState extends State<FormTaskView> {
           change = true;
         }
       });
+      if(taskOne.planningDate != taskOneOld.planningDate){
+        change = true;
+      }
       if(change){
         return showDialog<bool>(
           context: context,
