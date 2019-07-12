@@ -72,7 +72,7 @@ class TaskChannel {
     
     if (tasksFromServer.data != null) {
       await Future.forEach(tasksFromServer.data, (taskFromServerData) async {
-        dynamic taskFromServerRes = await getTaskFromServer(taskFromServerData.id, customer, authorization);
+        dynamic taskFromServerRes = await getTaskFromServer(taskFromServerData.id.toString(), customer, authorization);
         TaskModel taskFromServer = TaskModel.fromJson(taskFromServerRes.body);
         TaskModel taskFromLocal = await DatabaseProvider.db.ReadTaskById(taskFromServer.id);
 
@@ -132,6 +132,6 @@ class TaskChannel {
 
     await TaskChannel._createTasksInBothLocalAndServer(customer, authorization, id);
     await TaskChannel._deleteTaskInBothLocalAndServer(customer, authorization);
-    // await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
+    await TaskChannel._updateTaskInBothLocalAndServer(customer, authorization);
   }
 }

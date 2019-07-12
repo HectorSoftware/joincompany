@@ -189,7 +189,7 @@ class _FormTaskState extends State<FormTask> {
                                     saveTask.responsibleId = responsibleId;
                                     saveTask.name = formGlobal.name;
                                     saveTask.customerId = directionClientIn.id;
-                                    if(widget.toBusiness == true ){
+                                    if(widget.toBusiness){
                                       saveTask.businessId = widget.businessAs.id;
                                       saveTask.customerId = widget.businessAs.customerId;
                                     }
@@ -211,7 +211,7 @@ class _FormTaskState extends State<FormTask> {
                                       }
                                     }
                                     //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask == true){
+                                    if(widget.toListTask){
                                       if(widget.taskmodelres.addressId != null){
                                         saveTask.addressId = widget.taskmodelres.addressId;
                                       }
@@ -1269,16 +1269,6 @@ buildListTypeForm(){
     );
   }
 
-  addDirection() async{
-    CustomerWithAddressModel resp = await getDirections();
-    if(resp != null) {
-      setState(() {
-        directionClientIn = resp;
-
-      });
-    }
-  }
-
   Future<bool> selectDate(BuildContext context )async{
     bool cambio = false;
     final DateTime picked = await showDatePicker(
@@ -1365,6 +1355,16 @@ buildListTypeForm(){
       cambio = true;
     }
     return cambio;
+  }
+
+  addDirection() async{
+    CustomerWithAddressModel resp = await getDirections();
+    if(resp != null) {
+      setState(() {
+        directionClientIn = resp;
+
+      });
+    }
   }
 
   Future<CustomerWithAddressModel> getDirections() async{
