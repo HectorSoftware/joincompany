@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/FieldModel.dart';
@@ -28,13 +30,19 @@ class _FormTaskViewState extends State<FormTaskView> {
   TaskModel taskOne;
   DateTime _dateTask = new DateTime.now();
   Map<String,String> dataInfo = Map<String,String>();
+  Map<String,String> dataInfoOld = Map<String,String>();
   FormModel formGlobal;
   List<FieldModel> listFieldsModels = List<FieldModel>();
   DateTime _date = new DateTime.now();
+  DateTime _dateDT = new DateTime.now();
+  TimeOfDay _time = new TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
+  List<String> searchList = new List<String>();
+
   @override
   void initState(){
-
+    _getUserLocation();
     _dateTask = DateTime.parse(fixStringDateIfBroken(widget.taskmodelres.planningDate));
     listWithTask();
     super.initState();
@@ -47,81 +55,83 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            child: Column(
-              children: <Widget>[
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Cliente :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(
-                        child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                            : Text('Sin Asignar'),
-                      ),
-                      Expanded(child: Container(),),
-                    ],
+    return WillPopScope(
+      onWillPop: saveTask,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Detalle de Tarea ' + widget.taskmodelres.name.toString(), style: TextStyle(fontSize: 15),),
+
+        ),
+        body: ListView(
+          children: <Widget>[
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Cliente :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(
+                          child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
+                              : Text('Sin Asignar'),
+                        ),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Direccion :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(
-                        child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                                                                         : Text('Sin Asignar'),
-                      ),
-                      Expanded(child: Container(),),
-                    ],
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Direccion :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(
+                          child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
+                                                                           : Text('Sin Asignar'),
+                        ),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-                Card(
-                  color: Colors.grey[200],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text('Fecha :',style: TextStyle(fontSize: 20),),
-                      ),
-                      Expanded(child: Text(_dateTask.day.toString() + '-' +_dateTask.month.toString() + '-' +_dateTask.year.toString(),textAlign: TextAlign.left,)),
-                      Expanded(child: Container(),),
-                    ],
+                  Card(
+                    color: Colors.grey[200],
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text('Fecha :',style: TextStyle(fontSize: 20),),
+                        ),
+                        Expanded(child: Text(_dateTask.day.toString() + '-' +_dateTask.month.toString() + '-' +_dateTask.year.toString(),textAlign: TextAlign.left,)),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: listFieldsModels.length != 0 ?
-                            listBuiderListView(context)
-                            : Center(
-                              child: Text('Cargando . . .'),
-                            ),
-          ),
-        ],
+            Container(
+              height: MediaQuery.of(context).size.height * 0.01,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: listFieldsModels.length != 0 ?
+                              listBuiderListView(context)
+                              : Center(
+                                child: Text('Cargando . . .'),
+                              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future listWithTask() async {
-
     await getElements();
-
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
@@ -141,6 +151,9 @@ class _FormTaskViewState extends State<FormTaskView> {
       var varValue = '';
       if(list.field.fieldType == 'Photo' || list.field.fieldType == 'CanvanSignature' || list.field.fieldType == 'CanvanImage'){
         varValue = list.imageBase64;
+        if(varValue.isNotEmpty){
+          varValue = varValue.substring(searchComa(varValue));
+        }
       }
       if(list.field.fieldType == 'TextArea' ||
           list.field.fieldType == 'Text' ||
@@ -156,10 +169,13 @@ class _FormTaskViewState extends State<FormTaskView> {
           list.field.fieldType == 'Time' ){
         varValue = list.value;
       }
-
-      //dataInfo.putIfAbsent(list.field.id.toString() ,()=> varValue);
       dataInfo[list.field.id.toString()] = varValue;
     }
+
+    for(var key in dataInfo.keys){
+      dataInfoOld[key] = dataInfo[key];
+    }
+
     await lisC(form);
   }
 
@@ -207,7 +223,7 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   widgetCrate(FieldModel field, int index,BuildContext context){
 
-    if(field.fieldType == 'TextArea' ||  field.fieldType == 'Textarea'||  field.fieldType == "TextArea") {
+    if(field.fieldType.toLowerCase() == 'textarea') {
       //TEXTAREA
       return Padding(
         padding: const EdgeInsets.all(15.0),
@@ -230,10 +246,9 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             controller: TextEditingController(text: (dataInfo[field.id.toString()])),
             onChanged: (value){
-              //saveData(value,listFieldsModels[index].id.toString());
+              saveData(value,listFieldsModels[index].id.toString());
             },
             maxLines: 4,
             //controller: nameController,
@@ -245,18 +260,31 @@ class _FormTaskViewState extends State<FormTaskView> {
         ),
       );
     }
+
     if(field.fieldType == 'Photo'){
       String ruta = '';
       try{
         ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
       }catch(e){}
-
+      Uint8List img;
+      String b64;
       return  Container(
         child: Row(
           children: <Widget>[
+            RaisedButton(
+              onPressed: () async{
+                img = await photoAndImage();
+                if (img != null) {
+                  setState(() {
+                    b64 = base64String(img);
+                    image2 = Image.memory(img);
+                    saveData(b64, field.id.toString());
+                  });
+                }
+              },
+              child: Text(listFieldsModels[index].name),
+              color: PrimaryColor,
+            ),
             Container(
               width: MediaQuery.of(context).size.width* 0.5,
               child: Center(
@@ -298,9 +326,8 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             onChanged: (value){
-              //saveData(value,listFieldsModels[index].id.toString());
+              saveData(value,field.id.toString());
             },
             maxLines: 1,
             controller: TextEditingController(text: (dataInfo[field.id.toString()])),
@@ -334,10 +361,9 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
-            enabled: false,
             controller: TextEditingController(text:'${dataInfo[field.id.toString()]}'),
             onChanged: (value){
-              //saveData(value,index.toString());
+              saveData(value,field.id.toString());
             },
             keyboardType: TextInputType.number,
             maxLines: 1,
@@ -359,47 +385,71 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     }
     if(field.fieldType == 'Date'){
-      DateTime fecha = DateTime.parse(_date.toString().substring(0,10));
-
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(child: Container(),),
-            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
-            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${fecha.day.toString() + '-' + fecha.month.toString() + '-' + fecha.year.toString()}',style: TextStyle(fontSize: 20),)
-                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
-            Expanded(child: Container(),),
-          ],
-        ),
+      return Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(field.name,style: TextStyle(fontSize: 20),)
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[field.id.toString()].isNotEmpty ? Text('${dataInfo[field.id.toString()]}') : Text('Sin Asignar'),
+              onPressed: ()async {
+                var c = await selectDate(context);
+                if(c){
+                  saveData(_date.toString().substring(0,10),field.id.toString());
+                  setState(() {});
+                }
+              },
+            ),
+          ),
+        ],
       );
     }
+
     if(field.fieldType == 'Time'){
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: new Row(
-          children: <Widget>[
-            Expanded(child: Container(),),
-            Expanded(child: Text(field.name,style: TextStyle(fontSize: 20),)),
-            Expanded(child: dataInfo[field.id.toString()] != null ? Text('${dataInfo[field.id.toString()]}',style: TextStyle(fontSize: 20),)
-                                                                  : Text('Sin Asignar',style: TextStyle(fontSize: 20),),),
-            Expanded(child: Container(),),
-          ],
-        ),
+      return new Row(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(listFieldsModels[index].name,style: TextStyle(fontSize: 20),),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[listFieldsModels[index].id.toString()].isNotEmpty ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
+              onPressed: () async {
+                var c = await selectTime(context);
+                if(c){
+                  saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                  setState(() {});
+                }
+              },
+            ),
+          ),
+        ],
       );
     }
 
     if(field.fieldType == 'CanvanImage'){
-      String ruta = '';
-      try{
-        ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
-      }catch(e){}
-
+      String ruta = dataInfo[field.id.toString()];
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -419,14 +469,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanSignature'){
-      String ruta = '';
-      try{
-        ruta = dataInfo[field.id.toString()];
-        if(ruta.isNotEmpty){
-          ruta = ruta.substring(searchComa(ruta));
-        }
-      }catch(e){}
-
+      String ruta = dataInfo[field.id.toString()];
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -447,55 +490,83 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'DateTime'){
-      String fecha = 'Sin Asignar';
-      if(dataInfo[field.id.toString()] != ''){
-        fecha = dataInfo[field.id.toString()];
-      }
-      return Padding(
-        padding: const EdgeInsets.only(top: 20,bottom: 20),
-        child: Row(
-          children: <Widget>[
-            Expanded(child: textDialogstyle(field.name + ' : ' + fecha),),
-          ],
-        ),
-      );
-    }
-
-    if(field.fieldType == 'Combo'){
       return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Column(
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Container(
-                    height: 40,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    margin: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5
-                          )
-                        ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10,left: 10),
-                      child: dataInfo[field.id.toString()].length != 0 ? Text(field.name.toString() +' : '+ dataInfo[field.id.toString()],style: TextStyle(fontSize: 20),textAlign: TextAlign.center,)
-                                                                       : Text('${field.name.toString()} : Sin Asignar',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1,left: 16),
+                    child: Text(listFieldsModels[index].name,style: TextStyle(fontSize: 20),),
                   ),
                 ],
               ),
-
             ],
-
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: RaisedButton(
+              child: dataInfo[field.id.toString()] != ''  ? Text(dataInfo[field.id.toString()]): Text('Sin Asignar'),
+              onPressed: () async {
+                var c1 = await selectDateDateTime(context);
+                var c2 = await selectTimeDatetime(context);
+                if(c1 && c2){
+                  var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                  saveData(dateCo.toString(),field.id.toString());
+                  setState(() {});
+                }
+              },
+            ),
           ),
         ],
+      );
+    }
+
+    if(field.fieldType == 'Combo'){
+      List<String> dropdownMenuItems = List<String>();
+      for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
+        dropdownMenuItems.add(v.name);
+      }
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.06,
+        margin: EdgeInsets.all(30.0),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: new  Padding(
+          padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
+          child: Container(
+            child: new DropdownButton<String>(
+              isExpanded: true,
+              underline: Container(),
+              isDense: false,
+              icon: Icon(Icons.arrow_drop_down),
+              elevation: 10,
+              value: dataInfo[field.id],
+              hint:  dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text(field.name),
+              onChanged: (newValue) {
+                setState(() {
+                  //dropdownValue = newValue;
+//                  dataInfo.putIfAbsent(field.id.toString() ,()=> newValue);
+                  saveData(newValue, field.id.toString() );
+                });
+              },
+              items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                return new DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
       );
 
     }
@@ -505,13 +576,20 @@ class _FormTaskViewState extends State<FormTaskView> {
       if(dataInfo[field.id.toString()] == 'true'){
         _value1 = true;
       }
+      saveData(_value1.toString(),listFieldsModels[index].id.toString());
       return Row(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 70),
             child: Container(
                 child: new Checkbox(
-                    value: _value1
+                    value: _value1,
+                    onChanged: (value){
+                      setState(() {
+                        _value1 = value;
+                      });
+                      saveData(value.toString(),listFieldsModels[index].id.toString());
+                    }
                 )
             ),
           ),
@@ -522,10 +600,8 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.only(left: 60, top: 10),
-                child: _value1 == true ? Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
-                    : Text(''),
+                child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),),
               ),
-
             ),
           ),
         ],
@@ -554,10 +630,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       );
     }
 
-    if(listFieldsModels[index].fieldType == 'Button')
-    {
-      //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-      //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
+    if(listFieldsModels[index].fieldType == 'Button'){
       return Container(
           margin: EdgeInsets.only(top: 30,bottom: 30),
           width: MediaQuery.of(context).size.width*0.5,
@@ -566,7 +639,10 @@ class _FormTaskViewState extends State<FormTaskView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               RaisedButton(
-                onPressed: (){},
+                onPressed: (){
+                  saveData( '${_initialPosition.latitude} , ${_initialPosition.longitude}' ,listFieldsModels[index].id.toString());
+                  setState(() {});
+                },
                 child: Text(listFieldsModels[index].name),
               ),
               Container(
@@ -579,73 +655,75 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'ComboSearch'){
-      return Row(
+
+      if(!seachKeyInData('ComboSearch')){
+        data['ComboSearch'] = TextEditingController(text: dataInfo[field.id.toString()]);
+      }
+     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width*0.5,
-              height: 40,
-              padding: EdgeInsets.only(
-                  top: 4,left: 16, right: 16, bottom: 4
-              ),
-              decoration: BoxDecoration(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width*0.5,
+                height: MediaQuery.of(context).size.height * 0.06,
+                margin: EdgeInsets.only(top: 30,bottom: 1),
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(
                       Radius.circular(10)
                   ),
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 5
-                    )
-                  ]
-              ),
-              child: TextField(
-                controller: new TextEditingController(text: dataInfo[field.id.toString()]),
-                enabled: false,
-                maxLines: 1,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: field.name,
+
+                ),
+                child: TextField(
+                  controller: data['ComboSearch'],
+                  onChanged: (value){
+                    searchList.clear();
+                    setState(() {});
+
+                    if(listFieldsModels[index].fieldOptions != null){
+                      for(FieldOptionModel values in listFieldsModels[index].fieldOptions){
+                        if(values.name.toLowerCase().contains(value.toLowerCase()) && value.isNotEmpty){
+                          searchList.add(values.name);
+                          setState(() {});
+                        }
+                      }
+                    }
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: listFieldsModels[index].name,
+                  ),
                 ),
               ),
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            tooltip: 'Busqueda',
-            iconSize: 20,
-            onPressed: (){},
-          ),
-
-        ],
-      );
-    }
-
-    if(field.fieldType == 'boolean'){
-      return Row(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 70),
-            child: Container(
-                child: new Checkbox(
-                    value:true, onChanged: (bool value) {},
-                )
-            ),
-          ),
-          Spacer(),
-          Container(
-            width: MediaQuery.of(context).size.width *0.5,
-            height: MediaQuery.of(context).size.height *0.1,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 60, top: 10),
-                child: Text('${listFieldsModels[index].name}',style: TextStyle(fontSize: 20),)
+              Container(
+                  margin: EdgeInsets.only(top: 30,bottom: 1),
+                  child: Icon(Icons.search)
               ),
-            ),
+            ],
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.3,
+            height: searchList.length * 60.0,
+            child: searchList.isNotEmpty ? ListView.builder(
+              itemCount: searchList.length,
+              itemBuilder: (BuildContext context, int inde){
+                return Card(
+                  child: ListTile(
+                    title: Text(searchList[inde],style: TextStyle(fontSize: 15),),
+                    onTap: (){
+                      data['ComboSearch'].text = searchList[inde];
+                      searchList.clear();
+                      saveData(data['ComboSearch'].text,listFieldsModels[index].id.toString());
+                      setState(() {});
+                    },
+                  ),
+                );
+              },
+            ):Container(),
           ),
         ],
       );
@@ -671,7 +749,13 @@ class _FormTaskViewState extends State<FormTaskView> {
       return generatedTable(listOption, field.id.toString());
     }
 
-    return Text('Sin datos');
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+     mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Tabla Sin datos'),
+      ],
+    );
   }
 
   Future<Uint8List> photoAndImage() async{
@@ -682,25 +766,6 @@ class _FormTaskViewState extends State<FormTaskView> {
         return TomarImage();
       },
     );
-  }
-  String base64String(Uint8List data) {
-    return base64Encode(data);
-  }
-  Image imageFromBase64String(String base64String) {
-    return Image.memory(base64Decode(base64String));
-  }
-  Uint8List dataFromBase64String(String base64String) {
-    return base64Decode(base64String);
-  }
-  Map data = new Map();
-
-  bool findKeys(String key){
-    for(var k in data.keys){
-      if(k == key){
-        return true;
-      }
-    }
-    return false;
   }
 
   bool checkKeyInTable(String key){
@@ -728,13 +793,34 @@ class _FormTaskViewState extends State<FormTaskView> {
       }
   }
 
+  String savedDataTablet(){
+    String dat="";
+    var keys = data.keys;
+    if(!keys.contains("table")){
+      return dat;
+    }else{
+      for(String k in  data["table"].keys){
+        for(String Sk in data["table"][k].keys){
+          if(data["table"][k][Sk] is TextEditingController){
+            String value = data["table"][k][Sk].text != "" ? data["table"][k][Sk].text : " ";
+            dat = dat + "$Sk:$value;";
+          }
+        }
+      }
+    }
+    return dat;
+  }
+
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
     initDataTable(listOptions);
+
+    saveData(savedDataTablet(),id);
+
     Card card(TextEditingController t){
       return Card(
         child: TextField(
-          enabled: false,
           onChanged: (value){
+            saveData(savedDataTablet(),id);
           },
           controller: t,
           decoration: InputDecoration(
@@ -817,6 +903,29 @@ class _FormTaskViewState extends State<FormTaskView> {
 
   }
 
+  String base64String(Uint8List data) {
+    return base64Encode(data);
+  }
+
+  Image imageFromBase64String(String base64String) {
+    return Image.memory(base64Decode(base64String));
+  }
+
+  Uint8List dataFromBase64String(String base64String) {
+    return base64Decode(base64String);
+  }
+
+  Map data = new Map();
+
+  bool findKeys(String key){
+    for(var k in data.keys){
+      if(k == key){
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future checkDialog(String mensaje){
     return showDialog(
         context: context,
@@ -876,4 +985,150 @@ class _FormTaskViewState extends State<FormTaskView> {
     return pos;
   }
 
+  Future<bool> selectDate(BuildContext context )async{
+
+    bool cambio = false;
+
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null){
+      _date = picked;
+      cambio = true;
+    }
+
+    return cambio;
+  }
+
+  Future<bool> selectTime(BuildContext context )async{
+    bool cambio = false;
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (picked != null){
+      cambio = true;
+      _time = picked;
+    }
+    return cambio;
+  }
+
+  Future<bool> selectTimeDatetime(BuildContext context )async{
+    bool cambio = false;
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeDT,
+    );
+    if (picked != null){
+      cambio = true;
+      _timeDT = picked;
+    }
+    return cambio;
+  }
+
+  Future<bool> selectDateDateTime(BuildContext context )async{
+    bool cambio = false;
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateDT,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null && picked != _dateDT){
+      cambio = true;
+       _dateDT = picked;
+    }
+    return cambio;
+  }
+
+  static LatLng _initialPosition;
+  Future _getUserLocation() async{
+    try{
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
+    }catch(e){}
+  }
+
+  bool seachKeyInData(String key){
+    for(var k in data.keys){
+      if(k.toLowerCase() == key.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> saveTask() async{
+    var res = await _asyncConfirmDialog();
+
+    if(res != null){
+      if(!res){
+        res = await updateTaskNew();
+      }
+    }
+
+    return res == null ? false : res;
+  }
+
+  // ignore: missing_return
+  Future<bool> updateTaskNew() async {
+    taskOne.customValuesMap = dataInfo;
+    taskOne.customValues = null;
+    setState(() {});
+    return await saveTaskApi();
+  }
+
+  Future<bool> saveTaskApi() async{
+    var createTaskResponse = await updateTask(taskOne.id.toString(), taskOne, customer, token);
+    if(createTaskResponse.statusCode == 200){
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> _asyncConfirmDialog() async {
+    if(taskOne != null){
+      bool change = false;
+      dataInfo.forEach((key,value) {
+        if(dataInfoOld[key] != value){
+          change = true;
+        }
+      });
+      if(change){
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // user must tap button for close dialog!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('¿Guardar?'),
+              content: const Text(
+                  '¿Desea guardar estos datos?.'),
+              actions: <Widget>[
+                FlatButton(
+                  child: const Text('SALIR'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+                FlatButton(
+                  child: const Text('ACEPTAR'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                )
+              ],
+            );
+          },
+        );
+      }
+      return true;
+    }else{
+      return true;
+    }
+  }
 }

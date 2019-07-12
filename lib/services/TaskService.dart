@@ -177,7 +177,9 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
   if (await connectionStatus.checkConnection()) {
     http.Response updateTaskFromServerResJSON = await updateTaskFromServer(id, taskObj, customer, authorization);
     if (updateTaskFromServerResJSON.statusCode == 200 || updateTaskFromServerResJSON.statusCode == 201) {
-      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
+      http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
+//      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
+      taskObj = TaskModel.fromJson(getTaskFromServerJSON.body);
       syncState = SyncState.synchronized;
     }
   }
@@ -189,7 +191,35 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
 }
 
 Future<http.Response> updateTaskFromServer(String id, TaskModel taskObj, String customer, String authorization) async {
-  var bodyJson = taskObj.toJson();
+  taskObj.form = null;
+  taskObj.address = null;
+  taskObj.customer = null;
+  taskObj.responsible = null;
+  taskObj.customSections = null;
+
+  Map mapAux = Map();
+
+  for(var key in taskObj.customValuesMap.keys){
+    mapAux[key] = taskObj.customValuesMap[key];
+  }
+
+  mapAux.forEach( (key, value) {
+    if (value==null || value==""){
+      taskObj.customValuesMap.remove(key);
+    }
+  });
+
+  var taskMapAux = taskObj.toMap();
+  var taskMap = new Map<String, dynamic>();
+
+  taskMapAux.forEach((key, value) {
+    if (value != null) {
+      taskMap[key] = value;
+    }
+  });
+
+  var bodyJson = json.encode(taskMap);
+
   return await httpPut(id, bodyJson, customer, authorization, resourcePath);
 }
 

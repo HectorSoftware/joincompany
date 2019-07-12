@@ -47,6 +47,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   List<DateTime> listCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
   SentryClient sentry;
+  bool Sefiltro = false;
 
 
   @override
@@ -58,7 +59,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     actualizarusuario();
 
     //BLOCK LISTA
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+    //blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,false);
 
     super.initState();
     SystemChrome.setPreferredOrientations([
@@ -72,6 +74,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     listCalender = widget.listCalendarRes;
     pageTasks = 1;
     setState(() {});
+
   }
 
   @override
@@ -133,7 +136,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 listTaskModellocalbool.clear();
                 pageTasks = 1;
                 listCalendar = onData;
-                blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,true);
+                Sefiltro = true;
+                blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
               }));
 
         });
@@ -249,7 +253,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
     if (this.mounted) {
       setState(() {
         pageTasks = 1;
@@ -471,7 +475,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
                         setState(() {
                           //BLOCK LISTA
-                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
                          });
                       } else {
                         var checkInTaskResponse = await checkInTask(
@@ -480,7 +484,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                             _initialPosition.longitude.toString(), '0');
                         setState(() {
                           //BLOCK LISTA
-                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
                         });
                       }
                     },
@@ -513,7 +517,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   ),
                   Container(
                     child: IconButton(
-                        icon: Icon(Icons.remove_red_eye,size: 20,),
+                        icon: Icon(Icons.border_color,size: 20,),
                         onPressed: () async {
                           if(listTask != null){
                             String idTask = '',idAddress ='',nameAddress='',customerName='';
@@ -541,7 +545,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     if(res.statusCode == 200){
       showToast('Tarea Eliminada');
       //BLOCK LISTA
-      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,false);
+      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
       setState(() {});
     }else{
       showToast('Error Al Eliminar Tarea');

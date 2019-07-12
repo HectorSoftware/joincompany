@@ -422,6 +422,7 @@ buildListTypeForm(){
   return StreamBuilder<List<FormModel>>(
       stream: _bloc.outForm,
       initialData: <FormModel>[],
+      // ignore: missing_return
       builder: (context, snapshot) {
         if(snapshot != null){
           if (snapshot.data.isNotEmpty) {
@@ -533,8 +534,8 @@ buildListTypeForm(){
 
   Widget generatedTable(List<FieldOptionModel> listOptions, String id){
     initDataTable(listOptions);
-    valuesTable = savedDataTablet();
-    saveData(valuesTable,id);
+
+    saveData(savedDataTablet(),id);
     Card card(TextEditingController t){
       return Card(
         child: TextField(
@@ -673,11 +674,14 @@ buildListTypeForm(){
       children: <Widget>[
         ListView.builder(
             itemCount: listFieldsModels.length,
+            // ignore: missing_return
             itemBuilder: (BuildContext context, index){
+
 
               if(listFieldsModels[index].fieldType == null){
                 return Center(child: Text('Sin datos'),);
               }
+              // ignore: missing_return
               if(listFieldsModels[index].fieldType == 'TextArea' ||  listFieldsModels[index].fieldType == 'Textarea'||  listFieldsModels[index].fieldType == "TextArea"){
                 //TEXTAREA
                 return Padding(
@@ -715,6 +719,7 @@ buildListTypeForm(){
                   ),
                 );
               }
+              // ignore: missing_return
               if(listFieldsModels[index].fieldType == 'Text'){
                 //TEXT
                 return  Padding(
@@ -812,9 +817,7 @@ buildListTypeForm(){
                             ),
                           ],
                         ),
-
                       ],
-
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
@@ -1002,8 +1005,6 @@ buildListTypeForm(){
               }
               if(listFieldsModels[index].fieldType == 'Button')
               {
-                //  for(FieldOptionModel v in listFieldsModels[index].fieldOptions){
-                //saveData( isSwitched.toString() ,listFieldsModels[index].id.toString());
                 return Container(
                   margin: EdgeInsets.only(top: 30,bottom: 30),
                     width: MediaQuery.of(context).size.width*0.5,
@@ -1026,8 +1027,7 @@ buildListTypeForm(){
                     )
                 );
               }
-              if(listFieldsModels[index].fieldType == 'Boolean')
-              {
+              if(listFieldsModels[index].fieldType == 'Boolean'){
                 saveData(_value1.toString(),listFieldsModels[index].id.toString());
                 return Row(
                   children: <Widget>[
@@ -1089,14 +1089,11 @@ buildListTypeForm(){
                         elevation: 10,
                         value: dataInfo[listFieldsModels[index].id],
                         hint:  dataInfo[listFieldsModels[index].id.toString()] != null  ? Text(dataInfo[listFieldsModels[index].id.toString()]): Text(listFieldsModels[index].name),
-
                         onChanged: (newValue) {
-
                           setState(() {
                             //dropdownValue = newValue;
                             dataInfo.putIfAbsent(listFieldsModels[index].id.toString() ,()=> newValue);
                           });
-
                         },
                         items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
                           return new DropdownMenuItem<String>(
@@ -1134,9 +1131,6 @@ buildListTypeForm(){
                                       setState(() {
                                         b64 = base64String(img);
                                         image2 = Image.memory(img);
-
-
-                                        //image2 = ima.copyResize(image, 120);
                                         saveData(b64, listFieldsModels[index].id.toString());
                                       });
                                     }
@@ -1191,8 +1185,7 @@ buildListTypeForm(){
               }
 
 
-              if(listFieldsModels[index].fieldType == 'ComboSearch')
-              {
+              if(listFieldsModels[index].fieldType == 'ComboSearch'){
 
                 if(!seachKeyInData('ComboSearch')){
                   data['ComboSearch'] = TextEditingController(text: dataInfo[listFieldsModels[index].id.toString()]);
@@ -1294,7 +1287,7 @@ buildListTypeForm(){
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _date){
+    if (picked != null){
         _date = picked;
         cambio = true;
     }
@@ -1324,7 +1317,7 @@ buildListTypeForm(){
       context: context,
       initialTime: _timeTask,
     );
-    if (picked != null ){
+    if (picked != null){
       setState(() {
         _timeTask = picked;
       });
@@ -1339,7 +1332,7 @@ buildListTypeForm(){
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null && picked != _time){
+    if (picked != null){
        _time = picked;
        cambio = true;
     }
@@ -1352,7 +1345,7 @@ buildListTypeForm(){
       context: context,
       initialTime: _timeDT,
     );
-    if (picked != null && picked != _timeDT){
+    if (picked != null){
       _timeDT = picked;
       cambio = true;
     }
@@ -1367,7 +1360,7 @@ buildListTypeForm(){
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _dateDT){
+    if (picked != null){
        _dateDT = picked;
       cambio = true;
     }

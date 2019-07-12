@@ -50,6 +50,7 @@ Future<http.Response> httpPut(String id, String bodyJson, String customer, Strin
           'customer': customer,
           'Authorization': 'Bearer $authorization',
           'Content-Type' : 'application/json',
+          'Accept': 'application/json',
         },
         body: bodyJson
     );

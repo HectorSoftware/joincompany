@@ -21,6 +21,10 @@ class BlocListTask {
 
   Future getdatalist(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) async {
 
+    if(filter){
+      diaDesdeOld = '';
+      diaHastaOld = '';
+    }
 
     ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
     String perpage = '20';
@@ -99,9 +103,7 @@ class BlocListTask {
     _tasksTotalController.close();
   }
 
-  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks,bool filter) {
+  BlocListTask(DateTime hastaf,DateTime desdef,int pageTasks,bool filter)  {
     getdatalist(hastaf,desdef,pageTasks,filter);
   }
 }
-
-//final blocTaskListTask = blocListTask();
