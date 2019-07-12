@@ -1309,7 +1309,7 @@ buildListTypeForm(){
         firstDate: new DateTime(2000),
         lastDate: new DateTime(2020)
     );
-    if (picked != null && picked != _dateTask){
+    if (picked != null){
       setState(() {
         _dateTask = picked;
       });
@@ -1324,7 +1324,7 @@ buildListTypeForm(){
       context: context,
       initialTime: _timeTask,
     );
-    if (picked != null && picked != _timeTask){
+    if (picked != null ){
       setState(() {
         _timeTask = picked;
       });
