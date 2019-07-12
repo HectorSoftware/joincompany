@@ -29,6 +29,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   int responsibleId;
   TaskModel taskOne;
   DateTime _dateTask = new DateTime.now();
+  TimeOfDay _timeTask = new TimeOfDay.now();
   Map<String,String> dataInfo = Map<String,String>();
   Map<String,String> dataInfoOld = Map<String,String>();
   FormModel formGlobal;
@@ -77,7 +78,13 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                               : Text('Sin Asignar'),
                         ),
-                        Expanded(child: Container(),),
+                        Expanded(
+                          child: Container(
+                            child: IconButton(
+                                icon: Icon(Icons.border_color,color: Colors.grey,size: 0,),
+                                onPressed:null),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -92,7 +99,13 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                                                                            : Text('Sin Asignar'),
                         ),
-                        Expanded(child: Container(),),
+                        Expanded(
+                          child: Container(
+                            child: IconButton(
+                                icon: Icon(Icons.border_color,color: Colors.grey,size: 20,),
+                                onPressed: (){}),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -103,8 +116,26 @@ class _FormTaskViewState extends State<FormTaskView> {
                         Expanded(
                           child: Text('Fecha :',style: TextStyle(fontSize: 20),),
                         ),
-                        Expanded(child: Text(_dateTask.day.toString() + '-' +_dateTask.month.toString() + '-' +_dateTask.year.toString(),textAlign: TextAlign.left,)),
-                        Expanded(child: Container(),),
+                        Expanded(child: taskOne != null ? Text(taskOne.planningDate,textAlign: TextAlign.left,)
+                                                        : Text('Cargando')),
+                        Expanded(
+                          child: Container(
+                            child: IconButton(
+                                icon: Icon(Icons.border_color,color: Colors.grey,size: 20,),
+                                onPressed: () async {
+                                  var date = await selectDateTask(context);
+                                  var time = await selectTimeTask(context);
+                                  if(date && time){
+                                    taskOne.planningDate = _dateTask.day.toString() + '-'
+                                        + _dateTask.month.toString() + '-'
+                                        + _dateTask.year.toString()+ ' '
+                                        + _timeTask.hour.toString() + ':'
+                                        + _timeTask.minute.toString();
+                                    setState(() {});
+                                  }
+                                }),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -1114,5 +1145,36 @@ class _FormTaskViewState extends State<FormTaskView> {
       }
       return true;
     }
+  }
+  Future<bool> selectDateTask(BuildContext context )async{
+    bool cambio = false;
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _dateTask,
+        firstDate: new DateTime(2000),
+        lastDate: new DateTime(2020)
+    );
+    if (picked != null){
+      setState(() {
+        _dateTask = picked;
+      });
+      cambio = true;
+    }
+    return cambio;
+  }
+
+  Future<bool> selectTimeTask(BuildContext context )async{
+    bool cambio = false;
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _timeTask,
+    );
+    if (picked != null){
+      setState(() {
+        _timeTask = picked;
+      });
+      cambio = true;
+    }
+    return cambio;
   }
 }
