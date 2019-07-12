@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:joincompany/async_image_repository/ImageRepository.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/ContactModel.dart';
 import 'package:joincompany/models/CustomersModel.dart';
@@ -1375,6 +1376,7 @@ class DatabaseProvider {
     );
   }
 
+  // TODO: CHECK THIS
   Future<int> CreateField(FieldModel field, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
@@ -1386,6 +1388,14 @@ class DatabaseProvider {
 
     if (data.isNotEmpty) 
       return null;
+
+    String fieldLocalValue;
+    if (field.name == "Image") {
+      if (field.fieldDefaultValue != null) {
+        ImageRepository.handler.ManageImage(field.fieldDefaultValue);
+        fieldLocalValue = basename(field.fieldDefaultValue);
+      }
+    }
 
     return await db.rawInsert(
       '''
@@ -1412,6 +1422,7 @@ class DatabaseProvider {
         field_collection,
         field_required,
         field_width,
+        field_local_value,
         in_server,
         updated,
         deleted
@@ -1429,7 +1440,7 @@ class DatabaseProvider {
       field.fieldDefaultValue, field.fieldType,
       field.fieldPlaceholder, json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"),
       field.fieldCollection, field.fieldRequired,
-      field.fieldWidth], ...paramsBySyncState[syncState]],
+      field.fieldWidth, fieldLocalValue], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1463,6 +1474,7 @@ class DatabaseProvider {
       fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
       fieldCollection: field["field_collection"],
       fieldRequired: field["field_required"] == 1 ? true: false,
+      image: await ImageRepository.handler.ManageImage(field["field_local_value"]),
     );
   }
   
@@ -1513,7 +1525,7 @@ class DatabaseProvider {
 
     List<FieldModel> listOfFields = List<FieldModel>();
     if (data.isNotEmpty) {
-      await Future.forEach(data, (field) {
+      await Future.forEach(data, (field) async {
         listOfFields.add(new FieldModel(
           id: field["id"],
           createdAt: field["created_at"],
@@ -1537,6 +1549,7 @@ class DatabaseProvider {
           fieldCollection: field["field_collection"],
           fieldRequired: field["field_required"] == 1 ? true: false,
           fieldWidth: field["field_width"],
+          image: await ImageRepository.handler.ManageImage(field["field_local_value"]),
         ));
       });
     }
@@ -1794,6 +1807,7 @@ class DatabaseProvider {
         field_collection = ?,
         field_required = ?,
         field_width = ?,
+        field_local_value = ?
         in_server = ?,
         updated = ?,
         deleted = ?
@@ -1806,7 +1820,7 @@ class DatabaseProvider {
         field.fieldDefaultValue, field.fieldType, field.fieldPlaceholder,
         json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"), 
         field.fieldCollection, field.fieldRequired,
-        field.fieldWidth], ...paramsBySyncState[syncState]],
+        field.fieldWidth, basename(field.image.path)], ...paramsBySyncState[syncState]],
       );
     } else
       return await CreateField(field, syncState);
@@ -1829,6 +1843,16 @@ class DatabaseProvider {
 
   Future<int> DeleteFieldById(int id) async {
     final db = await database;
+
+    List<Map<String, dynamic>> data;
+    data = await db.rawQuery(
+      '''
+      SELECT "field_local_value" FROM "custom_fields" WHERE id = $id
+      '''
+    );
+
+    ImageRepository.handler.DeleteImage(data.first["field_local_value"]);
+
     await db.rawDelete(
     '''
     DELETE FROM "custom_fields" WHERE id = $id

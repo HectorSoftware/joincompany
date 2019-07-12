@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 class FieldModel {
   int id;
@@ -23,6 +24,7 @@ class FieldModel {
   String fieldCollection;
   bool fieldRequired;
   int fieldWidth;
+  File image;
 
   FieldModel({
     this.id,
@@ -47,6 +49,7 @@ class FieldModel {
     this.fieldCollection,
     this.fieldRequired,
     this.fieldWidth,
+    this.image,
   });
 
   factory FieldModel.fromJson(String str) => FieldModel.fromMap(json.decode(str));

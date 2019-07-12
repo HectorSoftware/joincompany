@@ -220,6 +220,7 @@ const Map<DatabaseTables, String> databaseInstructions = {
     "field_collection" TEXT,
     "field_required" BOOL,
     "field_width" INTEGER,
+    "field_local_value" TEXT,
     "in_server" BOOL,
     "updated" BOOL,
     "deleted" BOOL,
