@@ -7,11 +7,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:joincompany/Menu/ImageAndPhoto.dart';
 import 'package:joincompany/async_database/Database.dart';
+import 'package:joincompany/models/AddressModel.dart';
+import 'package:joincompany/models/CustomerModel.dart';
 import 'package:joincompany/models/FieldModel.dart';
 import 'package:joincompany/models/FormModel.dart';
 import 'package:joincompany/models/SectionModel.dart';
 import 'package:joincompany/models/TaskModel.dart';
 import 'package:joincompany/models/UserModel.dart';
+import 'package:joincompany/pages/BuscarRuta/searchAddressWithClient.dart';
+import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/main.dart';
@@ -41,12 +45,16 @@ class _FormTaskViewState extends State<FormTaskView> {
   TimeOfDay _timeDT = new TimeOfDay.now();
   Image image2;
   List<String> searchList = new List<String>();
+  CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
+  String adrressTask = 'Sin Asignar';
+
   bool _loading = false;
   @override
   void initState(){
     _getUserLocation();
     _dateTask = DateTime.parse(fixStringDateIfBroken(widget.taskmodelres.planningDate));
     listWithTask();
+
     super.initState();
   }
 
@@ -105,14 +113,39 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: Text('Direccion :',style: TextStyle(fontSize: 20),),
                         ),
                         Expanded(
-                          child: widget.taskmodelres.address != null ? Text('${widget.taskmodelres.address.address}}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
+                          child: adrressTask != '' ? Text('$adrressTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                                                                            : Text('Sin Asignar'),
                         ),
                         Expanded(
                           child: Container(
                             child: IconButton(
                                 icon: Icon(Icons.border_color,color: Colors.grey,size: 20,),
-                                onPressed: (){}),
+                                onPressed: () async {
+                                  CustomerWithAddressModel resp = await getDirections();
+                                  if(resp != null) {
+                                    directionClientIn = resp;
+                                    adrressTask = directionClientIn.address;
+
+                                    if( directionClientIn.googlePlaceId != null) {
+                                      if(directionClientIn.id == null) {
+                                        AddressModel auxAddressModel = new AddressModel(
+                                            address: directionClientIn.address ,
+                                            latitude: directionClientIn.latitude,
+                                            longitude: directionClientIn.longitude,
+                                            googlePlaceId: directionClientIn.googlePlaceId
+                                        );
+                                        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
+                                        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+                                          var directionAdd = responseCreateAddress.body;
+                                          taskOne.addressId = directionAdd.id;
+                                        }
+                                      } else {
+                                        taskOne.addressId = directionClientIn.addressId;
+                                      }
+                                    }
+                                    setState(() {});
+                                  }
+                                }),
                           ),
                         )
                       ],
@@ -176,6 +209,8 @@ class _FormTaskViewState extends State<FormTaskView> {
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
     taskOneOld = new TaskModel(addressId: taskOne.addressId,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
+
+    adrressTask = taskOne.address != null ? taskOne.address.address.toString() : 'Sin Asignar';
 
     //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
@@ -1104,6 +1139,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   }
 
   Future<bool> saveTask() async{
+
     var res = await _asyncConfirmDialog();
     if(res != null){
       if(!res){
@@ -1117,6 +1153,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   Future<bool> updateTaskNew() async {
     taskOne.customValuesMap = dataInfo;
     taskOne.customValues = null;
+
     setState(() {});
     return await saveTaskApi();
   }
@@ -1137,7 +1174,7 @@ class _FormTaskViewState extends State<FormTaskView> {
           change = true;
         }
       });
-      if(taskOne.planningDate != taskOneOld.planningDate){
+      if(taskOne.planningDate != taskOneOld.planningDate || taskOne.addressId != taskOneOld.addressId || taskOne.customerId != taskOneOld.customerId){
         change = true;
       }
       if(change){
@@ -1203,5 +1240,14 @@ class _FormTaskViewState extends State<FormTaskView> {
       cambio = true;
     }
     return cambio;
+  }
+  Future<CustomerWithAddressModel> getDirections() async{
+    return showDialog<CustomerWithAddressModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return SearchAddressWithClient();
+      },
+    );
   }
 }

@@ -7,26 +7,24 @@ class ImageRepository {
   ImageRepository._();
   static final ImageRepository handler = ImageRepository._();
 
-  // get the local path, so that I can work in that directory
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
-  // get a rawImage from the current directory
-  Future<File> _getRawImage(String file) async {
+  Future<File> _getRawImage(String fileName) async {
     final path = await _localPath;
-    return File('$path/$file');
+    return File('$path/$fileName');
   }
 
   Future<bool> ImageExists(String url) async {
     final fileName = basename(url);
-    return (await _getRawImage(fileName)).exists();
+    return await (await _getRawImage(fileName)).exists();
   }
 
   Future<bool> ImageDoesNotExist(String url) async {
     final fileName = basename(url);
-    return (await _getRawImage(fileName)).exists();
+    return !(await (await _getRawImage(fileName)).exists());
   }
 
   Future<File> RetrieveImageFromUrl(String url) async {
@@ -42,8 +40,8 @@ class ImageRepository {
 
   Future<File> ManageImage(String url) async {
     if (await ImageDoesNotExist(url))
-      return RetrieveImageFromUrl(url);
-    return await _getRawImage(url);
+      return await RetrieveImageFromUrl(url);
+    return await _getRawImage(basename(url));
   }
 
   Future<FileSystemEntity> DeleteImage(String url) async {

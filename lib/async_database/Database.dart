@@ -1428,7 +1428,7 @@ class DatabaseProvider {
         deleted
       )
       
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
 
       [...[field.id, field.createdAt, field.updatedAt == null ? DateTime.now().toString() : field.updatedAt,
@@ -1440,7 +1440,7 @@ class DatabaseProvider {
       field.fieldDefaultValue, field.fieldType,
       field.fieldPlaceholder, json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"),
       field.fieldCollection, field.fieldRequired,
-      field.fieldWidth, fieldLocalValue], ...paramsBySyncState[syncState]],
+      field.fieldWidth, fieldLocalValue == null ? null : fieldLocalValue], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1474,7 +1474,7 @@ class DatabaseProvider {
       fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
       fieldCollection: field["field_collection"],
       fieldRequired: field["field_required"] == 1 ? true: false,
-      imagePath: field["field_local_value"],
+      image: field["field_local_value"] == null ? null : (await ImageRepository.handler.ManageImage(field["field_local_value"])),
     );
   }
   
@@ -1549,7 +1549,7 @@ class DatabaseProvider {
           fieldCollection: field["field_collection"],
           fieldRequired: field["field_required"] == 1 ? true: false,
           fieldWidth: field["field_width"],
-          imagePath: field["field_local_value"],
+          image: field["field_local_value"] == null ? null : (await ImageRepository.handler.ManageImage(field["field_local_value"])),
         ));
       });
     }
@@ -1781,6 +1781,14 @@ class DatabaseProvider {
       '''
     );
 
+    String fieldLocalValue;
+    if (field.name == "Image" || field.name == "Image_canvan") {
+      if (field.fieldDefaultValue != null) {
+        File image = await ImageRepository.handler.ManageImage(field.fieldDefaultValue);
+        fieldLocalValue = image.path;
+      }
+    }
+
     if (data.isNotEmpty) {
       return await db.rawUpdate(
         '''
@@ -1807,7 +1815,7 @@ class DatabaseProvider {
         field_collection = ?,
         field_required = ?,
         field_width = ?,
-        field_local_value = ?
+        field_local_value = ?,
         in_server = ?,
         updated = ?,
         deleted = ?
@@ -1820,7 +1828,7 @@ class DatabaseProvider {
         field.fieldDefaultValue, field.fieldType, field.fieldPlaceholder,
         json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"), 
         field.fieldCollection, field.fieldRequired,
-        field.fieldWidth, field.imagePath], ...paramsBySyncState[syncState]],
+        field.fieldWidth, fieldLocalValue == null ? null : fieldLocalValue], ...paramsBySyncState[syncState]],
       );
     } else
       return await CreateField(field, syncState);
@@ -2133,18 +2141,21 @@ class DatabaseProvider {
   Future<AddressModel> UpdateAddress(int addressId, AddressModel address, SyncState syncState) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-      '''
-      SELECT * FROM "localities" WHERE id = ${address.locality.id}
-      '''
-    );
 
     if (address.locality != null) {
+
+      data = await db.rawQuery(
+          '''
+          SELECT * FROM "localities" WHERE id = ${address.locality.id}
+          '''
+      );
+
       if (data.isNotEmpty)
         await UpdateLocality(address.locality.id, address.locality, syncState);
       else
         await CreateLocality(address.locality, syncState);
     }
+
 
     await db.rawUpdate(
       '''
@@ -2751,9 +2762,6 @@ class DatabaseProvider {
       ''',
     );
 
-    print(data.toList());
-
-
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {
@@ -3019,24 +3027,60 @@ class DatabaseProvider {
 
   Future<TaskModel> UpdateTask(int taskId, TaskModel task, SyncState syncState) async {
     final db = await database;
+    List<Map<String, dynamic>> data;
 
+    if (task.customValuesMap == null)
+      task.customValuesMap = new Map<String, String>();
+    if (task.customValues == null)
+      task.customValues = new List<CustomValueModel>();
+
+    bool isCustomValueComingFromServer;
+    if (task.customValues.length > task.customValuesMap.length) {
+      isCustomValueComingFromServer = true;
+      task.customValuesMap = new Map<String, String>();
+      // for each custom value, create an entry in the map
+      task.customValues.forEach((customValue) {
+        task.customValuesMap[customValue.fieldId.toString()] = customValue.value;
+      });
+    } else {
+      isCustomValueComingFromServer = false;
+      task.updatedAt = DateTime.now().toString();
+      task.customValuesMap.forEach((key, value) {
+        task.customValues.add(new CustomValueModel(
+          fieldId: int.parse(key.toString()),
+          value: value,
+        ));
+      });
+    }
+
+    FormModel formForCustomValue = await DatabaseProvider.db.ReadFormById(task.formId);
     await Future.forEach(task.customValues, (customValue) async {
-      List<Map<String, dynamic>> data;
+      if (!isCustomValueComingFromServer) {
+        SectionModel foundSection = formForCustomValue.getSectionByFieldId(customValue.fieldId);
+        customValue.formId = task.formId;
+        customValue.sectionId = foundSection.id;
+        customValue.customizableType = "Task";
+        customValue.taskId = task.id;
+        customValue.customizableId = task.id;
+
+        FieldModel foundField = foundSection.findFieldById(customValue.fieldId);
+        if (foundField.fieldType == "Photo" || foundField.fieldType == "CanvanImage" || foundField.fieldType == "CanvanSignature") {
+          customValue.imageBase64 = "data:image/jpeg;base64," + customValue.value;
+          customValue.value = "/tmp/";
+        }
+      }
+
       data = await db.rawQuery(
         '''
-      SELECT * FROM "custom_values" WHERE id = ${customValue.id}
-      '''
+        SELECT * FROM "custom_values" WHERE id = ${customValue.id}
+        '''
       );
 
-      customValue.taskId = taskId;
       if (data.isNotEmpty)
         await DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
       else
         await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
-
-    // individual items
-    List<Map<String, dynamic>> data;
 
     if (task.form != null) {
       data = await db.rawQuery('SELECT * FROM "forms" WHERE id = ${task.form.id}');
@@ -5032,7 +5076,13 @@ String fixStringDateIfBroken(String stringDate) {
 Map<String, String> customValuesFromListToMap(List<CustomValueModel> listOfCustomValues) {
   Map<String, String> mapOfCustomValues = Map<String, String>();
   listOfCustomValues.forEach((customValue) {
-    mapOfCustomValues[customValue.id.toString()] = customValue.value;
+    if (customValue.field.fieldType == "Photo" || customValue.field.fieldType == "CanvanImage" || customValue.field.fieldType == "CanvanSignature") {
+      var posComa = customValue.imageBase64.indexOf(",");
+      mapOfCustomValues[customValue.fieldId.toString()] = customValue.imageBase64.substring(posComa+1);
+    } else {
+      mapOfCustomValues[customValue.fieldId.toString()] = customValue.value;
+    }
+
   });
   return mapOfCustomValues;
 }

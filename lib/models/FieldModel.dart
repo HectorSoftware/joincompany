@@ -24,7 +24,7 @@ class FieldModel {
   String fieldCollection;
   bool fieldRequired;
   int fieldWidth;
-  String imagePath;
+  File image;
 
   FieldModel({
     this.id,
@@ -49,7 +49,7 @@ class FieldModel {
     this.fieldCollection,
     this.fieldRequired,
     this.fieldWidth,
-    this.imagePath,
+    this.image,
   });
 
   factory FieldModel.fromJson(String str) => FieldModel.fromMap(json.decode(str));

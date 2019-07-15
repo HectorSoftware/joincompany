@@ -203,8 +203,6 @@ class _ContactViewState extends State<ContactView> {
       floatingActionButton: widget.statusPage == STATUS_PAGE.full ? FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
-          var img = "https://previews.123rf.com/images/pandavector/pandavector1612/pandavector161200463/69448631-icono-de-ri%C3%B1ones-humanos-en-el-estilo-de-contorno-aislado-en-el-fondo-blanco-%C3%B3rganos-humanos-ilustraci%C3%B3n-s%C3%ADmbol.jpg";
-          ImageRepository repo =ImageRepository.handler;
           if(widget.statusPage == STATUS_PAGE.view){
 //            Navigator.of(context).pop(contact);
           }
@@ -216,33 +214,30 @@ class _ContactViewState extends State<ContactView> {
 //                context,
 //                new MaterialPageRoute(
 //                    builder: (BuildContext context) => new AddContact(null)));
-            var file = await repo.ManageImage(img);
-            if (await repo.ImageExists(img)) {
-                print(file);
-                await _printfImg(file.path);
-            } else if (await repo.ImageDoesNotExist(img)) {
-                print("GTFO");
-            }
+            var url = "https://previews.123rf.com/images/pandavector/pandavector1612/pandavector161200463/69448631-icono-de-riñones-humanos-en-el-estilo-de-contorno-aislado-en-el-fondo-blanco-órganos-humanos-ilustración-símbol.jpg";
+            File file = await ImageRepository.handler.ManageImage(url);
+            await _ShowImg(file);
           }
         },
       ) : null,
     );
   }
 
-  Future _printfImg(String fpath) async {
+  Future<bool> _ShowImg(File file) async {
     return showDialog(
-          context: context,
-          barrierDismissible: true, // user must tap button for close dialog!
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Image'),
-              content: Container(
-                child: Image.file(File(fpath)),
-              )
-            );
-            },
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text('Img'),
+            content:Container(
+              child: Image.file(file),
+            )
+        );
+      },
     );
   }
+
 
   Widget contactCard(ContactModel contact) {
     return Card(
