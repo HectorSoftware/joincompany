@@ -1176,7 +1176,7 @@ buildListTypeForm(){
                     Spacer(),
                     Column(
                       children: <Widget>[
-                        Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+                        Image.file(listFieldsModels[index].image,height: MediaQuery.of(context).size.height*0.25,),
                       ],
 
                     ),

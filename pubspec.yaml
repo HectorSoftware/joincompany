@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  path: ^1.6.2
   #LISTAR
   loadmore: ^1.0.3
 

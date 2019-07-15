@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:joincompany/async_image_repository/ImageRepository.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
 import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
@@ -200,7 +202,7 @@ class _ContactViewState extends State<ContactView> {
       body: listViewContacts(),
       floatingActionButton: widget.statusPage == STATUS_PAGE.full ? FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {
+        onPressed: () async {
           if(widget.statusPage == STATUS_PAGE.view){
 //            Navigator.of(context).pop(contact);
           }
@@ -208,15 +210,34 @@ class _ContactViewState extends State<ContactView> {
 //            Navigator.of(context).pop(contact);
           }
           if(widget.statusPage == STATUS_PAGE.full){
-            Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (BuildContext context) => new AddContact(null)));
+//            Navigator.push(
+//                context,
+//                new MaterialPageRoute(
+//                    builder: (BuildContext context) => new AddContact(null)));
+            var url = "https://previews.123rf.com/images/pandavector/pandavector1612/pandavector161200463/69448631-icono-de-riñones-humanos-en-el-estilo-de-contorno-aislado-en-el-fondo-blanco-órganos-humanos-ilustración-símbol.jpg";
+            File file = await ImageRepository.handler.ManageImage(url);
+            await _ShowImg(file);
           }
         },
       ) : null,
     );
   }
+
+  Future<bool> _ShowImg(File file) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text('Img'),
+            content:Container(
+              child: Image.file(file),
+            )
+        );
+      },
+    );
+  }
+
 
   Widget contactCard(ContactModel contact) {
     return Card(
