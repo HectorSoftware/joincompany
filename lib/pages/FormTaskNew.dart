@@ -416,7 +416,6 @@ class _FormTaskState extends State<FormTask> {
     );
   }
 
-
 buildListTypeForm(){
   FormTypeBloc _bloc = new FormTypeBloc();
   return StreamBuilder<List<FormModel>>(
