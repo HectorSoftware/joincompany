@@ -19,6 +19,8 @@ import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
+import 'package:joincompany/pages/ImageBackNetwork.dart';
 
 class FormTaskView extends StatefulWidget {
   FormTaskView({this.taskmodelres});
@@ -47,6 +49,9 @@ class _FormTaskViewState extends State<FormTaskView> {
   List<String> searchList = new List<String>();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String adrressTask = 'Sin Asignar';
+  String customerTask = 'Sin Asignar';
+  Image image;
+
 
   @override
   void initState(){
@@ -91,8 +96,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: Text('Cliente :',style: TextStyle(fontSize: 20),),
                         ),
                         Expanded(
-                          child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                              : Text('Sin Asignar'),
+                          child: Text('$customerTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                         ),
                         Expanded(
                           child: Container(
@@ -112,8 +116,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: Text('Direccion :',style: TextStyle(fontSize: 20),),
                         ),
                         Expanded(
-                          child: adrressTask != '' ? Text('$adrressTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                                                                           : Text('Sin Asignar'),
+                          child: Text('$adrressTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                         ),
                         Expanded(
                           child: Container(
@@ -122,25 +125,17 @@ class _FormTaskViewState extends State<FormTaskView> {
                                 onPressed: () async {
                                   CustomerWithAddressModel resp = await getDirections();
                                   if(resp != null) {
+
+                                    taskOne.customerId = taskOne.addressId = taskOne.customer = taskOne.address = null;
+                                    adrressTask = customerTask = 'Sin Asignar';
+                                    setState(() {});
+
                                     directionClientIn = resp;
                                     adrressTask = directionClientIn.address;
 
-                                    if( directionClientIn.googlePlaceId != null) {
-                                      if(directionClientIn.id == null) {
-                                        AddressModel auxAddressModel = new AddressModel(
-                                            address: directionClientIn.address ,
-                                            latitude: directionClientIn.latitude,
-                                            longitude: directionClientIn.longitude,
-                                            googlePlaceId: directionClientIn.googlePlaceId
-                                        );
-                                        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
-                                        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                          var directionAdd = responseCreateAddress.body;
-                                          taskOne.addressId = directionAdd.id;
-                                        }
-                                      } else {
-                                        taskOne.addressId = directionClientIn.addressId;
-                                      }
+                                    if(directionClientIn.name != null){
+                                      customerTask = directionClientIn.name;
+                                      taskOne.customerId = directionClientIn.id;
                                     }
                                     setState(() {});
                                   }
@@ -210,6 +205,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     taskOneOld = new TaskModel(addressId: taskOne.addressId,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
 
     adrressTask = taskOne.address != null ? taskOne.address.address.toString() : 'Sin Asignar';
+    customerTask = taskOne.customer != null ? taskOne.customer.name.toString() : 'Sin Asignar';
 
     //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
@@ -217,8 +213,10 @@ class _FormTaskViewState extends State<FormTaskView> {
     formGlobal = form;
     for(var sectionform in form.sections){
       for(var fieldform in sectionform.fields){
-        dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
-        dataInfo[fieldform.id.toString()] = '';
+        if(fieldform.fieldType != 'Photo' && fieldform.fieldType != 'CanvanSignature' && fieldform.fieldType != 'CanvanImage'){
+          dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
+          dataInfo[fieldform.id.toString()] = '';
+        }
       }
     }
     for(var list in taskOne.customValues){
@@ -337,9 +335,9 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     if(field.fieldType == 'Photo'){
       String ruta = '';
-      try{
+      if(dataInfo[field.id.toString()] != null){
         ruta = dataInfo[field.id.toString()];
-      }catch(e){}
+      }
       Uint8List img;
       String b64;
       return  Container(
@@ -523,17 +521,38 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanImage'){
-      String ruta = dataInfo[field.id.toString()];
+      String ruta = '';
+      if(dataInfo[field.id.toString()] != null){
+        ruta = dataInfo[field.id.toString()];
+      }
+      String b64;
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            child: RaisedButton(
+              child: Text(field.name),
+              onPressed: () async {
+                var bytes = await getImgNetWork(field.fieldDefaultValue);
+                Image img = Image.memory(bytes);
+                if (img != null) {
+                  setState(() {
+                    b64 = base64String(bytes);
+                    dataInfo.putIfAbsent(field.id.toString(),()=> image.toString());
+                    image = img;
+                    saveData(b64.toString(), field.id.toString());
+                  });
+                }
+              },
+            ),
+          ),
+          Container(
             margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
             child: Container(
                 child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                    child:  dataInfo[field.id.toString()] != '' ? Image(image: imageFromBase64String(ruta).image,)
+                    child:  dataInfo[field.id.toString()] != null ? Image(image: imageFromBase64String(ruta).image,)
                                                                 : Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),
                     )
             ),
@@ -543,11 +562,30 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanSignature'){
-      String ruta = dataInfo[field.id.toString()];
+      String ruta = '';
+      if(dataInfo[field.id.toString()] != null){
+        ruta = dataInfo[field.id.toString()];
+      }
+      String b64;
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Container(
+            child: RaisedButton(
+              child: Text(field.name),
+              onPressed: () async {
+                var bytes = await getImg();
+                Image img = Image.memory(bytes);
+                if (img != null) {
+                  setState(() {
+                    b64 = base64String(bytes);
+                    saveData(b64.toString(), field.id.toString());
+                  });
+                }
+              },
+            ),
+          ),
           Container(
             margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
@@ -557,7 +595,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                       color: Colors.white,
                       child: SizedBox(height: 200,width: 250,
                                       child: ruta != '' ? Image(image: imageFromBase64String(ruta).image,height: 200,width:300 ,)
-                                                                                  : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+                                                        : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
           ),
         ],
       );
@@ -820,7 +858,12 @@ class _FormTaskViewState extends State<FormTaskView> {
           listOption.add(new FieldOptionModel(value: valueInt,name: values[0]));
         }
       }
-      return generatedTable(listOption, field.id.toString());
+      bool listoption = true;
+      if(datos.length == 1){
+        listOption = field.fieldOptions;
+        listoption = false;
+      }
+      return generatedTable(listOption, field.id.toString(),listoption);
     }
 
     return Row(
@@ -851,7 +894,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     return false;
   }
 
-  void initDataTable(List<FieldOptionModel> listOptions){
+  void initDataTable(List<FieldOptionModel> listOptions,listoption){
       data["table"] = new Map();
       for(FieldOptionModel varV in listOptions)
       {
@@ -863,7 +906,8 @@ class _FormTaskViewState extends State<FormTaskView> {
 
         data["table"][split[1]]["name"] = split[1];
         data["table"][split[1]][varV.name] = new TextEditingController();
-        data["table"][split[1]][varV.name].text = varV.value.toString();
+        if(listoption){ data["table"][split[1]][varV.name].text = varV.value.toString(); }
+
       }
   }
 
@@ -885,8 +929,8 @@ class _FormTaskViewState extends State<FormTaskView> {
     return dat;
   }
 
-  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
-    initDataTable(listOptions);
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id,bool listoption){
+    initDataTable(listOptions,listoption);
 
     saveData(savedDataTablet(),id);
 
@@ -1153,6 +1197,26 @@ class _FormTaskViewState extends State<FormTaskView> {
     taskOne.customValuesMap = dataInfo;
     taskOne.customValues = null;
 
+    if( directionClientIn.googlePlaceId != null) {
+      if(directionClientIn.id == null) {
+        AddressModel auxAddressModel = new AddressModel(
+            address: directionClientIn.address ,
+            latitude: directionClientIn.latitude,
+            longitude: directionClientIn.longitude,
+            googlePlaceId: directionClientIn.googlePlaceId
+        );
+        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
+        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+          var directionAdd = responseCreateAddress.body;
+          taskOne.addressId = directionAdd.id;
+        }else{
+          taskOne.addressId = directionClientIn.addressId;
+        }
+      } else {
+        taskOne.addressId = directionClientIn.addressId;
+      }
+    }
+
     setState(() {});
     return await saveTaskApi();
   }
@@ -1245,6 +1309,24 @@ class _FormTaskViewState extends State<FormTaskView> {
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return SearchAddressWithClient();
+      },
+    );
+  }
+  Future<Uint8List> getImg() async{
+    return showDialog<Uint8List>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PickerImg();
+      },
+    );
+  }
+  Future<Uint8List> getImgNetWork(String netImage) async{
+    return showDialog<Uint8List>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PickerImgNetwork(netImage: netImage,);
       },
     );
   }

@@ -176,7 +176,7 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
 
   if (await connectionStatus.checkConnection()) {
     http.Response updateTaskFromServerResJSON = await updateTaskFromServer(id, taskObj, customer, authorization);
-
+    var a = updateTaskFromServerResJSON.body;
     if (updateTaskFromServerResJSON.statusCode == 200 || updateTaskFromServerResJSON.statusCode == 201) {
       http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
 //      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
@@ -205,7 +205,7 @@ Future<http.Response> updateTaskFromServer(String id, TaskModel taskObj, String 
   }
 
   mapAux.forEach( (key, value) {
-    if (value==null || value==""){
+    if (value==null){
       taskObj.customValuesMap.remove(key);
     }
   });
