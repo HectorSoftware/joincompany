@@ -59,7 +59,6 @@ class TaskChannel {
         if (individualTaskFromServerRes == null)
           return;
 
-        var a = individualTaskFromServerRes.body;
         TaskModel individualTask = TaskModel.fromJson(individualTaskFromServerRes.body);
         if (individualTask != null)
           await DatabaseProvider.db.CreateTask(individualTask, SyncState.synchronized);
