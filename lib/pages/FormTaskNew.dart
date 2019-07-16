@@ -32,7 +32,7 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness,this.businessAs,this.taskmodelres,this.toListTask});
+  FormTask({this.directionClient,this.toBusiness = false,this.businessAs,this.taskmodelres,this.toListTask = false});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
   final BusinessModel businessAs;
@@ -77,6 +77,8 @@ class _FormTaskState extends State<FormTask> {
   TaskModel taskOne;
   List<String> searchList = new List<String>();
   static LatLng _initialPosition;
+  bool buttonAceptar = false;
+
 
   @override
   void initState(){
@@ -159,6 +161,7 @@ class _FormTaskState extends State<FormTask> {
             iconSize: 35,
             onPressed: ()=> showDialog(
                 context: context,
+                barrierDismissible: false,
                 builder: (BuildContext context) {
                   return
                     Container(
@@ -184,95 +187,102 @@ class _FormTaskState extends State<FormTask> {
                               FlatButton(
                                 child: const Text('ACEPTAR'),
                                 onPressed: () async {
-                                  if(dataInfo.isNotEmpty) {
-                                    saveTask.formId = formGlobal.id;
-                                    saveTask.responsibleId = responsibleId;
-                                    saveTask.name = formGlobal.name;
-                                    saveTask.customerId = directionClientIn.id;
-                                    if(widget.toBusiness){
-                                      saveTask.businessId = widget.businessAs.id;
-                                      saveTask.customerId = widget.businessAs.customerId;
-                                    }
-                                    if( directionClientIn.googlePlaceId != null) {
-                                      if(directionClientIn.id == null) {
-                                        AddressModel auxAddressModel = new AddressModel(
-                                            address: directionClientIn.address ,
-                                            latitude: directionClientIn.latitude,
-                                            longitude: directionClientIn.longitude,
-                                            googlePlaceId: directionClientIn.googlePlaceId
-                                        );
-                                        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
-                                        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                          var directionAdd = responseCreateAddress.body;
-                                          saveTask.addressId = directionAdd.id;
+                                  if(!buttonAceptar){
+                                    setState(() {
+                                      buttonAceptar = true;
+                                    });
+                                    if(dataInfo.isNotEmpty) {
+                                      saveTask.formId = formGlobal.id;
+                                      saveTask.responsibleId = responsibleId;
+                                      saveTask.name = formGlobal.name;
+                                      saveTask.customerId = directionClientIn.id;
+                                      if(widget.toBusiness){
+                                        saveTask.businessId = widget.businessAs.id;
+                                        saveTask.customerId = widget.businessAs.customerId;
+                                      }
+                                      if( directionClientIn.googlePlaceId != null) {
+                                        if(directionClientIn.id == null) {
+                                          AddressModel auxAddressModel = new AddressModel(
+                                              address: directionClientIn.address ,
+                                              latitude: directionClientIn.latitude,
+                                              longitude: directionClientIn.longitude,
+                                              googlePlaceId: directionClientIn.googlePlaceId
+                                          );
+                                          var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
+                                          if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+                                            var directionAdd = responseCreateAddress.body;
+                                            saveTask.addressId = directionAdd.id;
+                                          }
+                                        } else {
+                                          saveTask.addressId = directionClientIn.addressId;
                                         }
-                                      } else {
-                                        saveTask.addressId = directionClientIn.addressId;
                                       }
-                                    }
-                                    //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
-                                    if(widget.toListTask){
-                                      if(widget.taskmodelres.addressId != null){
-                                        saveTask.addressId = widget.taskmodelres.addressId;
+                                      //SI VIENE DE VER TAREA Y NO EXISTE CLIENTE PERO SI DIRECCION
+                                      if(widget.toListTask){
+                                        if(widget.taskmodelres.addressId != null){
+                                          saveTask.addressId = widget.taskmodelres.addressId;
+                                        }
                                       }
-                                    }
-                                    String minute;
-                                    if(_timeTask.minute.toString().length < 2){
-                                      minute = '0'+ _timeTask.minute.toString();
-                                    }else{
-                                      minute = _timeTask.minute.toString();
-                                    }
-                                    saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
-                                    saveTask.customValuesMap = dataInfo;
-                                    await  saveTaskApi();
+                                      String minute;
+                                      if(_timeTask.minute.toString().length < 2){
+                                        minute = '0'+ _timeTask.minute.toString();
+                                      }else{
+                                        minute = _timeTask.minute.toString();
+                                      }
+                                      saveTask.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
+                                      saveTask.customValuesMap = dataInfo;
+                                      await  saveTaskApi();
 
-                                    if(taskEnd == 201 || taskEnd == 200){
-                                      showToast('Tarea Creada');
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                      Navigator.pushReplacementNamed(context, '/vistap');
-                                    }else
-                                    if(taskEnd == 422  || taskEnd == 413){
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return   AlertDialog(
-                                              title: Text('Error al procesar la tarea por el Servidor'),
+                                      if(taskEnd == 201 || taskEnd == 200){
+                                        showToast('Tarea Creada');
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacementNamed(context, '/vistap');
+                                      }else
+                                      if(taskEnd == 422  || taskEnd == 413){
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return   AlertDialog(
+                                                title: Text('Error al procesar la tarea por el Servidor'),
                                                 content: Text('Calidad de imagen elevada. Considere enviar una imagen de menor calidad '),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child: const Text('Aceptar'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: const Text('Aceptar'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
 
-                                              ],
-                                            );
-                                          }
-                                      );
-                                    }else{
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return   AlertDialog(
-                                              title: Text('Ha ocurrido un error al crear la tarea'),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child: const Text('Aceptar'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
+                                                ],
+                                              );
+                                            }
+                                        );
+                                      }else{
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return   AlertDialog(
+                                                title: Text('Ha ocurrido un error al crear la tarea'),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: const Text('Aceptar'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
 
-                                                  },
-                                                ),
+                                                    },
+                                                  ),
 
-                                              ],
-                                            );
-                                          }
-                                      );
+                                                ],
+                                              );
+                                            }
+                                        );
+                                      }
                                     }
+                                    setState(() {
+                                      buttonAceptar = false;
+                                    });
                                   }
-
                                 },
                               )
                             ],
