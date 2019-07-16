@@ -511,7 +511,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () async {
-                          deleteCustomer(listTask.id.toString(), index);
+                          if(await dialogDelete()){
+                            deleteCustomer(listTask.id.toString(), index);
+                          }
                         }
                     ),
                   ),
@@ -593,5 +595,31 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       '11': 'Noviembre',
       '12': 'Diciembre',
     };
+
+    Future<bool> dialogDelete() async {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button for close dialog!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('¿Esta seguro que Desea Eliminar la tarea?'),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('Si'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              FlatButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
   }
 

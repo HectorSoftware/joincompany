@@ -965,7 +965,7 @@ buildListTypeForm(){
 
                     ),
                     Container(
-                      width: MediaQuery.of(context).size.width* 0.5,
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: Center(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),

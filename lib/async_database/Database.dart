@@ -2762,6 +2762,13 @@ class DatabaseProvider {
       ''',
     );
 
+    data.toList().forEach( (t) {
+      if (t["id"] == 181) {
+        print(t);
+      }
+
+    } );
+
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {
