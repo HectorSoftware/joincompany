@@ -19,6 +19,8 @@ import 'package:joincompany/services/AddressService.dart';
 import 'package:joincompany/services/FormService.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/main.dart';
+import 'package:joincompany/pages/canvasIMG/pickerImg.dart';
+import 'package:joincompany/pages/ImageBackNetwork.dart';
 
 class FormTaskView extends StatefulWidget {
   FormTaskView({this.taskmodelres});
@@ -47,8 +49,10 @@ class _FormTaskViewState extends State<FormTaskView> {
   List<String> searchList = new List<String>();
   CustomerWithAddressModel  directionClientIn= new  CustomerWithAddressModel();
   String adrressTask = 'Sin Asignar';
+  String customerTask = 'Sin Asignar';
+  Image image;
+  bool loanding = false;
 
-  bool _loading = false;
   @override
   void initState(){
     _getUserLocation();
@@ -71,11 +75,17 @@ class _FormTaskViewState extends State<FormTaskView> {
           leading:  IconButton(
             icon: Icon(Icons.arrow_back,size: 25,),
             onPressed: () async {
+              setState(() {
+                loanding = true;
+              });
               bool res = await saveTask();
               if(res){
                 Navigator.of(context).pop();
                 Navigator.pushReplacementNamed(context, '/vistap');
               }
+              setState(() {
+                loanding = false;
+              });
             },
           ),
         ),
@@ -92,8 +102,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: Text('Cliente :',style: TextStyle(fontSize: 20),),
                         ),
                         Expanded(
-                          child: widget.taskmodelres.customer != null ? Text('${widget.taskmodelres.customer.name}',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                              : Text('Sin Asignar'),
+                          child: Text('$customerTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                         ),
                         Expanded(
                           child: Container(
@@ -113,37 +122,30 @@ class _FormTaskViewState extends State<FormTaskView> {
                           child: Text('Direccion :',style: TextStyle(fontSize: 20),),
                         ),
                         Expanded(
-                          child: adrressTask != '' ? Text('$adrressTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
-                                                                           : Text('Sin Asignar'),
+                          child: Text('$adrressTask',style: TextStyle(fontSize: 15),textAlign: TextAlign.left,)
                         ),
                         Expanded(
                           child: Container(
                             child: IconButton(
                                 icon: Icon(Icons.border_color,color: Colors.grey,size: 20,),
                                 onPressed: () async {
-                                  CustomerWithAddressModel resp = await getDirections();
-                                  if(resp != null) {
-                                    directionClientIn = resp;
-                                    adrressTask = directionClientIn.address;
+                                  if(!loanding){
+                                    CustomerWithAddressModel resp = await getDirections();
+                                    if(resp != null) {
 
-                                    if( directionClientIn.googlePlaceId != null) {
-                                      if(directionClientIn.id == null) {
-                                        AddressModel auxAddressModel = new AddressModel(
-                                            address: directionClientIn.address ,
-                                            latitude: directionClientIn.latitude,
-                                            longitude: directionClientIn.longitude,
-                                            googlePlaceId: directionClientIn.googlePlaceId
-                                        );
-                                        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
-                                        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
-                                          var directionAdd = responseCreateAddress.body;
-                                          taskOne.addressId = directionAdd.id;
-                                        }
-                                      } else {
-                                        taskOne.addressId = directionClientIn.addressId;
+                                      taskOne.customerId = taskOne.addressId = taskOne.customer = taskOne.address = null;
+                                      adrressTask = customerTask = 'Sin Asignar';
+                                      setState(() {});
+
+                                      directionClientIn = resp;
+                                      adrressTask = directionClientIn.address;
+
+                                      if(directionClientIn.name != null){
+                                        customerTask = directionClientIn.name;
+                                        taskOne.customerId = directionClientIn.id;
                                       }
+                                      setState(() {});
                                     }
-                                    setState(() {});
                                   }
                                 }),
                           ),
@@ -165,17 +167,19 @@ class _FormTaskViewState extends State<FormTaskView> {
                             child: IconButton(
                                 icon: Icon(Icons.border_color,color: Colors.grey,size: 20,),
                                 onPressed: () async {
-                                  var date = await selectDateTask(context);
-                                  var time = await selectTimeTask(context);
-                                  if(date && time){
-                                    String minute;
-                                    if(_timeTask.minute.toString().length < 2){
-                                      minute = '0'+ _timeTask.minute.toString();
-                                    }else{
-                                      minute = _timeTask.minute.toString();
+                                  if(!loanding){
+                                    var date = await selectDateTask(context);
+                                    var time = await selectTimeTask(context);
+                                    if(date && time){
+                                      String minute;
+                                      if(_timeTask.minute.toString().length < 2){
+                                        minute = '0'+ _timeTask.minute.toString();
+                                      }else{
+                                        minute = _timeTask.minute.toString();
+                                      }
+                                      taskOne.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
+                                      setState(() {});
                                     }
-                                    taskOne.planningDate = _dateTask.toString().substring(0,10) + ' ' + _timeTask.hour.toString() +':'+ minute+':00';
-                                    setState(() {});
                                   }
                                 }),
                           ),
@@ -211,6 +215,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     taskOneOld = new TaskModel(addressId: taskOne.addressId,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
 
     adrressTask = taskOne.address != null ? taskOne.address.address.toString() : 'Sin Asignar';
+    customerTask = taskOne.customer != null ? taskOne.customer.name.toString() : 'Sin Asignar';
 
     //SOLICITAR FORMULARIOS
     var getFormResponse = await getForm(widget.taskmodelres.formId.toString(), customer, token);
@@ -218,8 +223,10 @@ class _FormTaskViewState extends State<FormTaskView> {
     formGlobal = form;
     for(var sectionform in form.sections){
       for(var fieldform in sectionform.fields){
-        dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
-        dataInfo[fieldform.id.toString()] = '';
+        if(fieldform.fieldType != 'Photo' && fieldform.fieldType != 'CanvanSignature' && fieldform.fieldType != 'CanvanImage'){
+          dataInfo.putIfAbsent(fieldform.id.toString() ,()=> '');
+          dataInfo[fieldform.id.toString()] = '';
+        }
       }
     }
     for(var list in taskOne.customValues){
@@ -321,6 +328,7 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
+            enabled: !loanding,
             controller: TextEditingController(text: (dataInfo[field.id.toString()])),
             onChanged: (value){
               saveData(value,listFieldsModels[index].id.toString());
@@ -338,9 +346,9 @@ class _FormTaskViewState extends State<FormTaskView> {
 
     if(field.fieldType == 'Photo'){
       String ruta = '';
-      try{
+      if(dataInfo[field.id.toString()] != null){
         ruta = dataInfo[field.id.toString()];
-      }catch(e){}
+      }
       Uint8List img;
       String b64;
       return  Container(
@@ -401,6 +409,7 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
+            enabled: !loanding,
             onChanged: (value){
               saveData(value,field.id.toString());
             },
@@ -436,6 +445,7 @@ class _FormTaskViewState extends State<FormTaskView> {
               ]
           ),
           child: TextField(
+            enabled: !loanding,
             controller: TextEditingController(text:'${dataInfo[field.id.toString()]}'),
             onChanged: (value){
               saveData(value,field.id.toString());
@@ -479,10 +489,12 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: RaisedButton(
               child: dataInfo[field.id.toString()].isNotEmpty ? Text('${dataInfo[field.id.toString()]}') : Text('Sin Asignar'),
               onPressed: ()async {
-                var c = await selectDate(context);
-                if(c){
-                  saveData(_date.toString().substring(0,10),field.id.toString());
-                  setState(() {});
+                if(!loanding){
+                  var c = await selectDate(context);
+                  if(c){
+                    saveData(_date.toString().substring(0,10),field.id.toString());
+                    setState(() {});
+                  }
                 }
               },
             ),
@@ -511,10 +523,12 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: RaisedButton(
               child: dataInfo[listFieldsModels[index].id.toString()].isNotEmpty ? Text(dataInfo[listFieldsModels[index].id.toString()]) : Text('Sin Asignar'),
               onPressed: () async {
-                var c = await selectTime(context);
-                if(c){
-                  saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
-                  setState(() {});
+                if(!loanding){
+                  var c = await selectTime(context);
+                  if(c){
+                    saveData(_time.format(context).toString(), listFieldsModels[index].id.toString()) ;
+                    setState(() {});
+                  }
                 }
               },
             ),
@@ -524,17 +538,40 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanImage'){
-      String ruta = dataInfo[field.id.toString()];
+      String ruta = '';
+      if(dataInfo[field.id.toString()] != null){
+        ruta = dataInfo[field.id.toString()];
+      }
+      String b64;
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            child: RaisedButton(
+              child: Text(field.name),
+              onPressed: () async {
+                if(!loanding){
+                  var bytes = await getImgNetWork(field.fieldDefaultValue);
+                  Image img = Image.memory(bytes);
+                  if (img != null) {
+                    setState(() {
+                      b64 = base64String(bytes);
+                      dataInfo.putIfAbsent(field.id.toString(),()=> image.toString());
+                      image = img;
+                      saveData(b64.toString(), field.id.toString());
+                    });
+                  }
+                }
+              },
+            ),
+          ),
+          Container(
             margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
             child: Container(
                 child: Card(color: Colors.white,child: SizedBox(height: 200,width: 300,
-                    child:  dataInfo[field.id.toString()] != '' ? Image(image: imageFromBase64String(ruta).image,)
+                    child:  dataInfo[field.id.toString()] != null ? Image(image: imageFromBase64String(ruta).image,)
                                                                 : Center(child: Text('Sin asignar',style: TextStyle( color: PrimaryColor),),)),
                     )
             ),
@@ -544,11 +581,32 @@ class _FormTaskViewState extends State<FormTaskView> {
     }
 
     if(field.fieldType == 'CanvanSignature'){
-      String ruta = dataInfo[field.id.toString()];
+      String ruta = '';
+      if(dataInfo[field.id.toString()] != null){
+        ruta = dataInfo[field.id.toString()];
+      }
+      String b64;
       return  Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Container(
+            child: RaisedButton(
+              child: Text(field.name),
+              onPressed: () async {
+                if(!loanding){
+                  var bytes = await getImg();
+                  Image img = Image.memory(bytes);
+                  if (img != null) {
+                    setState(() {
+                      b64 = base64String(bytes);
+                      saveData(b64.toString(), field.id.toString());
+                    });
+                  }
+                }
+              },
+            ),
+          ),
           Container(
             margin: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width* 0.5,
@@ -558,7 +616,7 @@ class _FormTaskViewState extends State<FormTaskView> {
                       color: Colors.white,
                       child: SizedBox(height: 200,width: 250,
                                       child: ruta != '' ? Image(image: imageFromBase64String(ruta).image,height: 200,width:300 ,)
-                                                                                  : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
+                                                        : Center(child: Text('Sin Asignar',style: TextStyle( color: PrimaryColor),),)),))),
           ),
         ],
       );
@@ -584,12 +642,14 @@ class _FormTaskViewState extends State<FormTaskView> {
             child: RaisedButton(
               child: dataInfo[field.id.toString()] != ''  ? Text(dataInfo[field.id.toString()]): Text('Sin Asignar'),
               onPressed: () async {
-                var c1 = await selectDateDateTime(context);
-                var c2 = await selectTimeDatetime(context);
-                if(c1 && c2){
-                  var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
-                  saveData(dateCo.toString(),field.id.toString());
-                  setState(() {});
+                if(!loanding){
+                  var c1 = await selectDateDateTime(context);
+                  var c2 = await selectTimeDatetime(context);
+                  if(c1 && c2){
+                    var dateCo = _dateDT.toString().substring(0,10) + ' ' +_timeDT.format(context).toString();
+                    saveData(dateCo.toString(),field.id.toString());
+                    setState(() {});
+                  }
                 }
               },
             ),
@@ -618,27 +678,28 @@ class _FormTaskViewState extends State<FormTaskView> {
         child: new  Padding(
           padding: const EdgeInsets.only(left: 20,right: 10,bottom: 10,top: 10),
           child: Container(
-            child: new DropdownButton<String>(
-              isExpanded: true,
-              underline: Container(),
-              isDense: false,
-              icon: Icon(Icons.arrow_drop_down),
-              elevation: 10,
-              value: dataInfo[field.id],
-              hint:  dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text(field.name),
-              onChanged: (newValue) {
-                setState(() {
-                  //dropdownValue = newValue;
-//                  dataInfo.putIfAbsent(field.id.toString() ,()=> newValue);
-                  saveData(newValue, field.id.toString() );
-                });
-              },
-              items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
-                return new DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            child: new IgnorePointer(
+              ignoring: loanding,
+              child: new DropdownButton<String>(
+                isExpanded: true,
+                underline: Container(),
+                isDense: false,
+                icon: Icon(Icons.arrow_drop_down),
+                elevation: 10,
+                value: dataInfo[field.id],
+                hint:  dataInfo[field.id.toString()] != null  ? Text(dataInfo[field.id.toString()]): Text(field.name),
+                onChanged: (newValue) {
+                  setState(() {
+                    saveData(newValue, field.id.toString() );
+                  });
+                },
+                items: dropdownMenuItems.map<DropdownMenuItem<String>>((String value) {
+                  return new DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ),
@@ -660,10 +721,12 @@ class _FormTaskViewState extends State<FormTaskView> {
                 child: new Checkbox(
                     value: _value1,
                     onChanged: (value){
-                      setState(() {
-                        _value1 = value;
-                      });
-                      saveData(value.toString(),listFieldsModels[index].id.toString());
+                      if(!loanding){
+                        setState(() {
+                          _value1 = value;
+                        });
+                        saveData(value.toString(),listFieldsModels[index].id.toString());
+                      }
                     }
                 )
             ),
@@ -715,8 +778,10 @@ class _FormTaskViewState extends State<FormTaskView> {
             children: <Widget>[
               RaisedButton(
                 onPressed: (){
-                  saveData( '${_initialPosition.latitude} , ${_initialPosition.longitude}' ,listFieldsModels[index].id.toString());
-                  setState(() {});
+                  if(!loanding){
+                    saveData( '${_initialPosition.latitude} , ${_initialPosition.longitude}' ,listFieldsModels[index].id.toString());
+                    setState(() {});
+                  }
                 },
                 child: Text(listFieldsModels[index].name),
               ),
@@ -754,6 +819,7 @@ class _FormTaskViewState extends State<FormTaskView> {
 
                 ),
                 child: TextField(
+                  enabled: !loanding,
                   controller: data['ComboSearch'],
                   onChanged: (value){
                     searchList.clear();
@@ -821,7 +887,12 @@ class _FormTaskViewState extends State<FormTaskView> {
           listOption.add(new FieldOptionModel(value: valueInt,name: values[0]));
         }
       }
-      return generatedTable(listOption, field.id.toString());
+      bool listoption = true;
+      if(datos.length == 1){
+        listOption = field.fieldOptions;
+        listoption = false;
+      }
+      return generatedTable(listOption, field.id.toString(),listoption);
     }
 
     return Row(
@@ -852,7 +923,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     return false;
   }
 
-  void initDataTable(List<FieldOptionModel> listOptions){
+  void initDataTable(List<FieldOptionModel> listOptions,listoption){
       data["table"] = new Map();
       for(FieldOptionModel varV in listOptions)
       {
@@ -864,7 +935,8 @@ class _FormTaskViewState extends State<FormTaskView> {
 
         data["table"][split[1]]["name"] = split[1];
         data["table"][split[1]][varV.name] = new TextEditingController();
-        data["table"][split[1]][varV.name].text = varV.value.toString();
+        if(listoption){ data["table"][split[1]][varV.name].text = varV.value.toString(); }
+
       }
   }
 
@@ -886,14 +958,15 @@ class _FormTaskViewState extends State<FormTaskView> {
     return dat;
   }
 
-  Widget generatedTable(List<FieldOptionModel> listOptions, String id){
-    initDataTable(listOptions);
+  Widget generatedTable(List<FieldOptionModel> listOptions, String id,bool listoption){
+    initDataTable(listOptions,listoption);
 
     saveData(savedDataTablet(),id);
 
     Card card(TextEditingController t){
       return Card(
         child: TextField(
+          enabled: !loanding,
           onChanged: (value){
             saveData(savedDataTablet(),id);
           },
@@ -1154,6 +1227,26 @@ class _FormTaskViewState extends State<FormTaskView> {
     taskOne.customValuesMap = dataInfo;
     taskOne.customValues = null;
 
+    if( directionClientIn.googlePlaceId != null) {
+      if(directionClientIn.id == null) {
+        AddressModel auxAddressModel = new AddressModel(
+            address: directionClientIn.address ,
+            latitude: directionClientIn.latitude,
+            longitude: directionClientIn.longitude,
+            googlePlaceId: directionClientIn.googlePlaceId
+        );
+        var responseCreateAddress = await createAddress(auxAddressModel,customer,token);
+        if(responseCreateAddress.statusCode == 200 || responseCreateAddress.statusCode == 201){
+          var directionAdd = responseCreateAddress.body;
+          taskOne.addressId = directionAdd.id;
+        }else{
+          taskOne.addressId = directionClientIn.addressId;
+        }
+      } else {
+        taskOne.addressId = directionClientIn.addressId;
+      }
+    }
+
     setState(() {});
     return await saveTaskApi();
   }
@@ -1247,6 +1340,24 @@ class _FormTaskViewState extends State<FormTaskView> {
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return SearchAddressWithClient();
+      },
+    );
+  }
+  Future<Uint8List> getImg() async{
+    return showDialog<Uint8List>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PickerImg();
+      },
+    );
+  }
+  Future<Uint8List> getImgNetWork(String netImage) async{
+    return showDialog<Uint8List>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PickerImgNetwork(netImage: netImage,);
       },
     );
   }
