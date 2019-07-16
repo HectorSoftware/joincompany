@@ -212,7 +212,12 @@ class _FormTaskViewState extends State<FormTaskView> {
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
-    taskOneOld = new TaskModel(addressId: taskOne.addressId,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
+    if(taskOne.addressId != null){
+      taskOneOld = new TaskModel(addressId: taskOne.addressId ,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
+    }else{
+      taskOneOld = new TaskModel(customerId: taskOne.customerId,planningDate: taskOne.planningDate);
+    }
+
 
     adrressTask = taskOne.address != null ? taskOne.address.address.toString() : 'Sin Asignar';
     customerTask = taskOne.customer != null ? taskOne.customer.name.toString() : 'Sin Asignar';

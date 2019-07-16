@@ -33,6 +33,7 @@ dependencies:
 
   #Manejo de errores
   sentry: any
+
   #PATRON BLoC
   rxdart: ^0.21.0
 
