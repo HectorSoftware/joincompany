@@ -32,7 +32,7 @@ import 'package:joincompany/services/TaskService.dart';
 
 class FormTask extends StatefulWidget {
 
-  FormTask({this.directionClient,this.toBusiness = false,this.businessAs,this.taskmodelres,this.toListTask = false});
+  FormTask({this.directionClient,this.toBusiness=false,this.businessAs,this.taskmodelres,this.toListTask=false});
   final CustomerWithAddressModel  directionClient;
   final bool toBusiness;
   final BusinessModel businessAs;
@@ -425,7 +425,6 @@ class _FormTaskState extends State<FormTask> {
       ),
     );
   }
-
 
 buildListTypeForm(){
   FormTypeBloc _bloc = new FormTypeBloc();
