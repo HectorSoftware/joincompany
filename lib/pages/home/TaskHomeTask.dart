@@ -200,6 +200,19 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       }
     } catch (e) {}
 
+    try {
+      if (this.mounted) {
+        setState(() {
+          // ignore: cancel_subscriptions
+          StreamSubscription streamSubscriptionRefresh = bloctasksFilter.outTaks.listen((newVal) => setState(() {
+            //BLOCK LISTA
+            blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+
+          }));
+        });
+      }
+    } catch (e) {}
+
     return ((listTaskModellocal.length != 0)) ?
 
     Container(

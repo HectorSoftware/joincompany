@@ -220,22 +220,6 @@ class _ContactViewState extends State<ContactView> {
     );
   }
 
-  Future<bool> _ShowImg(File file) async {
-    return showDialog(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-            title: Text('Img'),
-            content:Container(
-              child: Image.file(file),
-            )
-        );
-      },
-    );
-  }
-
-
   Widget contactCard(ContactModel contact) {
     return Card(
       child: ListTile(

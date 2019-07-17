@@ -59,6 +59,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
   bool showSearch = true;
   bool firsCalendar = false;
 
+  TaskHomeTask taskHometaskVar;
+
   @override
   void initState() {
     visible = true;
@@ -103,7 +105,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   void wrapperSync()async{
     await syncDialogAll();
+
+    _listCalendar = new List<DateTime>();
+    _listCalendar.add(DateTime.now());_listCalendar.add(DateTime.now());
+    datePickedInit = DateTime.now();
+    datePickedEnd = DateTime.now();
+    blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
+    blocListTaskResFilter.refreshList();
+
     syncStatus = false;
+    setState(() {});
   }
 
   Future syncDialogAll(){
@@ -192,11 +203,19 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
           ),
           IconButton(
             icon: Icon(Icons.update),
-            onPressed:(){
+            onPressed:() async {
               if(isOnline && !syncStatus){
                 syncStatus = true;
                 syncTask();
-                syncDialog();
+                await syncDialog();
+
+                _listCalendar = new List<DateTime>();
+                _listCalendar.add(DateTime.now());_listCalendar.add(DateTime.now());
+                datePickedInit = DateTime.now();
+                datePickedEnd = DateTime.now();
+                blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
+                blocListTaskResFilter.refreshList();
+
               }else{
                 errorDialog();
               }
@@ -247,13 +266,16 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     if(_controller.index == 1){
       showSearch = false;
     }
+    if(widget.business == null ){
+      taskHometaskVar = new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,);
+    }else{
+      taskHometaskVar =  new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,business: widget.business,);
+    }
 
 
     return TabBarView(
       children: <Widget>[
-        widget.business == null ?
-        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,) :
-        new TaskHomeTask(blocListTaskFilterReswidget: blocListTaskResFilter,blocListTaskCalendarReswidget: blocListTaskCalendarRes,listCalendarRes: _listCalendar,business: widget.business,),
+        taskHometaskVar,
         widget.business == null ?
         new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap, dateActualRes: _date,):
         new TaskHomeMap(blocListTaskCalendarResMapwidget: blocListTaskCalendarResMap, dateActualRes: _date, business: widget.business,),
@@ -370,7 +392,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
       bool updateVarDataTime = false;
       if(picked.length == 1){
         if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
-          updateVarDataTime = true; datePickedInit = datePickedEnd = picked[0];
+          updateVarDataTime = true;
+          datePickedInit = datePickedEnd = picked[0];
         }
       }else{
         if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
