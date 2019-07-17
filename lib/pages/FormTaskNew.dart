@@ -941,14 +941,16 @@ buildListTypeForm(){
                                   onPressed: () async{
                                     //File img = await ImagePicker.pickImage(source: ImageSource.camera);
                                     var bytes = await getImgNetWork(listFieldsModels[index].fieldDefaultValue);
-                                    Image img = Image.memory(bytes);
-                                    if (img != null) {
-                                      setState(() {
-                                        b64 = base64String(bytes);
-                                        dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
-                                        image = img;
-                                        saveData(b64.toString(), listFieldsModels[index].id.toString());
-                                      });
+                                    if(bytes!=null){
+                                      Image img = Image.memory(bytes);
+                                      if (img != null) {
+                                        setState(() {
+                                          b64 = base64String(bytes);
+                                          dataInfo.putIfAbsent( listFieldsModels[index].id.toString(),()=> image.toString());
+                                          image = img;
+                                          saveData(b64.toString(), listFieldsModels[index].id.toString());
+                                        });
+                                      }
                                     }
                                   },
                                   child:listFieldsModels[index].name.length > 15 ? Text(listFieldsModels[index].name.substring(0,15) + '...') :  Text(listFieldsModels[index].name),

@@ -912,18 +912,18 @@ class DatabaseProvider {
       '''
       UPDATE "localities" SET
       id = ?,
-      created_at,
-      updated_at,
-      deleted_at,
-      created_by_id,
-      updated_by_id,
-      deleted_by_id,
-      collection,
-      name,
-      value,
-      in_server,
-      updated,
-      deleted
+      created_at = ?,
+      updated_at = ?,
+      deleted_at = ?,
+      created_by_id = ?,
+      updated_by_id = ?,
+      deleted_by_id = ?,
+      collection = ?,
+      name = ?,
+      value = ?,
+      in_server = ?,
+      updated = ?,
+      deleted = ?
       WHERE id = ${localityId}
       ''',
       [...[locality.id, locality.createdAt, locality.updatedAt == null ? DateTime.now().toString() : locality.updatedAt, locality.deletedAt,
@@ -2762,13 +2762,6 @@ class DatabaseProvider {
       ''',
     );
 
-    data.toList().forEach( (t) {
-      if (t["id"] == 181) {
-        print(t);
-      }
-
-    } );
-
     List<TaskModel> listOfTasks = new List<TaskModel>();
     if (data.isNotEmpty) {
       await Future.forEach(data, (taskRetrieved) async {
@@ -3079,12 +3072,12 @@ class DatabaseProvider {
 
       data = await db.rawQuery(
         '''
-        SELECT * FROM "custom_values" WHERE id = ${customValue.id}
+        SELECT * FROM "custom_values" WHERE customizable_id = ${task.id} AND field_id = ${customValue.fieldId}
         '''
       );
 
       if (data.isNotEmpty)
-        await DatabaseProvider.db.UpdateCustomValue(customValue.id, customValue, syncState);
+        await DatabaseProvider.db.UpdateCustomValue(data.first["id"], customValue, syncState);
       else
         await DatabaseProvider.db.CreateCustomValue(customValue, syncState);
     });
@@ -3167,7 +3160,7 @@ class DatabaseProvider {
 
   Future<int> DeleteTaskById(int id) async {
     final db = await database;
-    await db.rawDelete('DELETE FROM "custom_values" WHERE task_id = $id');
+    await db.rawDelete('DELETE FROM "custom_values" WHERE customizable_id = $id');
     var output = await db.rawDelete('DELETE FROM "tasks" WHERE id = $id');
     return output;
   }
@@ -3576,7 +3569,7 @@ class DatabaseProvider {
     final db = await database;
     List<Map<String, dynamic>> data;
 
-    data = await db.rawQuery('SELECT * FROM "custom_values" WHERE task_id = $id');
+    data = await db.rawQuery('SELECT * FROM "custom_values" WHERE customizable_id = $id');
 
     List<CustomValueModel> listOfCustomValues = List<CustomValueModel>();
 
@@ -3607,7 +3600,7 @@ class DatabaseProvider {
   Future<List<int>> ListCustomValueIdsByTask(int id) async {
     final db = await database;
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery('SELECT id FROM "custom_values" WHERE task_id = $id');
+    data = await db.rawQuery('SELECT id FROM "custom_values" WHERE customizable_id = $id');
 
     List<int> listOfCustomValueIds = List<int>();
     if (data.isNotEmpty) {
@@ -3781,69 +3774,6 @@ class DatabaseProvider {
     final db = await database;
 
     List<Map<String, dynamic>> data;
-    data = await db.rawQuery(
-        '''
-      SELECT * FROM "custom_fields" WHERE id = ${customValue.field.id}
-      '''
-    );
-
-    if (data.isNotEmpty)
-      await UpdateField(
-        customValue.field.id,
-        FieldModel(
-          id: customValue.field.id,
-          createdAt: customValue.field.createdAt,
-          entityId: customValue.field.entityId,
-          sectionId: customValue.field.sectionId,
-          name: customValue.field.name,
-          deletedById: customValue.field.deletedById,
-          updatedById: customValue.field.updatedById,
-          createdById: customValue.field.createdById,
-          deletedAt: customValue.field.deletedAt,
-          code: customValue.field.code,
-          entityType: customValue.field.entityType,
-          fieldCollection: customValue.field.fieldCollection,
-          fieldDefaultValue: customValue.field.fieldDefaultValue,
-          fieldOptions: customValue.field.fieldOptions,
-          fieldPlaceholder: customValue.field.fieldPlaceholder,
-          fieldRequired: customValue.field.fieldRequired,
-          fieldType: customValue.field.fieldType,
-          fieldWidth: customValue.field.fieldWidth,
-          position: customValue.field.position,
-          subtitle: customValue.field.subtitle,
-          type: customValue.field.type,
-          updatedAt: customValue.field.updatedAt,
-        ),
-        syncState
-      );
-    else
-      await CreateField(
-        FieldModel(
-          id: customValue.field.id,
-          createdAt: customValue.field.createdAt,
-          entityId: customValue.field.entityId,
-          sectionId: customValue.field.sectionId,
-          name: customValue.field.name,
-          deletedById: customValue.field.deletedById,
-          updatedById: customValue.field.updatedById,
-          createdById: customValue.field.createdById,
-          deletedAt: customValue.field.deletedAt,
-          code: customValue.field.code,
-          entityType: customValue.field.entityType,
-          fieldCollection: customValue.field.fieldCollection,
-          fieldDefaultValue: customValue.field.fieldDefaultValue,
-          fieldOptions: customValue.field.fieldOptions,
-          fieldPlaceholder: customValue.field.fieldPlaceholder,
-          fieldRequired: customValue.field.fieldRequired,
-          fieldType: customValue.field.fieldType,
-          fieldWidth: customValue.field.fieldWidth,
-          position: customValue.field.position,
-          subtitle: customValue.field.subtitle,
-          type: customValue.field.type,
-          updatedAt: customValue.field.updatedAt
-        ),
-        syncState
-      );
 
     return await db.rawUpdate(
       '''
@@ -3862,9 +3792,9 @@ class DatabaseProvider {
       in_server = ?,
       updated = ?,
       deleted = ? 
-      WHERE id = ${customValueId}
+      WHERE customizable_id = ${customValue.customizableId} AND field_id = ${customValue.fieldId}
       ''',
-      [...[customValue.id, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt, customValue.formId,
+      [...[customValue.id != null ? customValue.id : customValueId, customValue.createdAt, customValue.updatedAt == null ? DateTime.now().toString() : customValue.updatedAt, customValue.formId,
     customValue.sectionId, customValue.fieldId,
     customValue.customizableType, customValue.customizableId,
     customValue.value, customValue.imageBase64, customValue.taskId], ...paramsBySyncState[syncState]],
