@@ -169,7 +169,7 @@ class _FormBusinessState extends State<FormBusiness> {
         headerController.text = widget.dataBusiness.stage;
         businessId = widget.dataBusiness.id;
         saveBusiness.date = widget.dataBusiness.date.toString();
-        dateG = widget.dataBusiness.date != null ?  widget.dataBusiness.date.toString().substring(0,10) : "" ;
+        dateG = widget.dataBusiness.date != null ?  widget.dataBusiness.date != "null" ? widget.dataBusiness.date.toString().substring(0,10) : "" : "" ;
         _dateBool =true;
         if(widget.dataBusiness.stage != null) {
             dropdownValueMenuHeader = widget.dataBusiness.stage;
