@@ -213,6 +213,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
+
     if(taskOne.addressId != null){
       taskOneOld = new TaskModel(addressId: taskOne.addressId ,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
     }else{
@@ -767,7 +768,8 @@ class _FormTaskViewState extends State<FormTaskView> {
           ),
           Column(
             children: <Widget>[
-              Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+              //Image.network(listFieldsModels[index].fieldDefaultValue,height: MediaQuery.of(context).size.height*0.25,),
+              Image.file(listFieldsModels[index].image,height: MediaQuery.of(context).size.height*0.25,)
             ],
           ),
         ],
