@@ -1,14 +1,9 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/BusinessModel.dart';
 import 'package:joincompany/models/BusinessesModel.dart';
-import 'package:joincompany/models/ContactModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/BusinessService.dart';
-
-
 
 class BusinessBloc{
 

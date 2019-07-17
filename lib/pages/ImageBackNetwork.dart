@@ -5,21 +5,21 @@ import 'package:joincompany/pages/canvasIMG/canvasImg.dart';
 
 class PickerImgNetwork extends StatefulWidget {
   PickerImgNetwork({this.netImage});
-  final String netImage;
+  final File netImage;
   @override
   _PickerImgNetworkState createState() => _PickerImgNetworkState();
 }
 
 class _PickerImgNetworkState extends State<PickerImgNetwork> {
 
-
   File img;
   Image  imgSave;
+
   @override
   Widget build(BuildContext context) {
-    imgSave =  Image.network(widget.netImage);
+    imgSave =  Image.file(widget.netImage);
     return AlertDialog(
-      title: Text('Imagen desde Servidor'),
+      title: Text('Imagen del Servidor'),
       content: Container(
         height: MediaQuery.of(context).size.height*0.40,
         child: Column(

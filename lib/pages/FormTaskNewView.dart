@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -557,7 +558,7 @@ class _FormTaskViewState extends State<FormTaskView> {
               child: Text(field.name),
               onPressed: () async {
                 if(!loanding){
-                  var bytes = await getImgNetWork(field.fieldDefaultValue);
+                  var bytes = await getImgNetWork(field.image);
                   Image img = Image.memory(bytes);
                   if (img != null) {
                     setState(() {
@@ -1357,7 +1358,7 @@ class _FormTaskViewState extends State<FormTaskView> {
       },
     );
   }
-  Future<Uint8List> getImgNetWork(String netImage) async{
+  Future<Uint8List> getImgNetWork(File netImage) async{
     return showDialog<Uint8List>(
       context: context,
       barrierDismissible: true,
