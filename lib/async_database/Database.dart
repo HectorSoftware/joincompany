@@ -2446,6 +2446,7 @@ class DatabaseProvider {
 
   Future<CustomerModel> UpdateCustomer(int customerId, CustomerModel customer, SyncState syncState) async {
     final db = await database;
+    db.execute("PRAGMA foreign_keys=ON;");
     await db.rawUpdate(
       '''
       UPDATE "customers" SET
@@ -2458,18 +2459,16 @@ class DatabaseProvider {
       deleted_by_id = ?,
       name = ?,
       code = ?,
-      details = ?,
-      in_server = ?,
-      updated = ?,
-      deleted = ?
+      details = ? 
+      ${syncState == SyncState.updated ? '' : ', in_server = ?, updated = ?, deleted = ? '}
       WHERE id = ${customerId}
       ''',
       [...[customer.id, customer.createdAt, customer.updatedAt == null ? DateTime.now().toString() : customer.updatedAt, customer.deletedAt,
     customer.createdById, customer.updatedById, customer.deletedById,
     customer.name, customer.code, customer.details],
-    ...paramsBySyncState[syncState]],
+    ...(syncState == SyncState.updated ? [] : paramsBySyncState[syncState])],
     );
-
+    db.execute("PRAGMA foreign_keys=OFF;");
     return customer;
   }
 
@@ -3139,10 +3138,8 @@ class DatabaseProvider {
       checkout_latitude = ?,
       checkout_longitude = ?,
       checkout_distance = ?,
-      status = ?,
-      in_server = ?,
-      updated = ?,
-      deleted = ?
+      status = ? 
+      ${syncState == SyncState.updated ? '' : ', in_server = ?, updated = ?, deleted = ? '}
       WHERE id = ${taskId}
       ''',
         [...[task.id, task.createdAt, task.updatedAt == null ? DateTime.now().toString() : task.updatedAt, task.deletedAt, task.createdById,
@@ -3152,7 +3149,7 @@ class DatabaseProvider {
     task.checkinDate, task.checkinLatitude, task.checkinLongitude,
     task.checkinDistance, task.checkoutDate, task.checkoutLatitude,
     task.checkoutLongitude, task.checkoutDistance, task.status],
-    ...paramsBySyncState[syncState]],
+    ...(syncState == SyncState.updated ? [] : paramsBySyncState[syncState])],
     );
 
     return task;
@@ -3170,18 +3167,16 @@ class DatabaseProvider {
     await db.rawUpdate(
       '''
       UPDATE "tasks" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      ${syncState == SyncState.updated ? '' : 'in_server = ?, updated = ?, deleted = ?, '}
       status = "done",
       checkout_longitude = ${longitude},
       checkout_latitude = ${latitude},
       checkout_distance = ${distance}
-      ${date != null ? ", checkout_date = ?" : ""}
+      ${date != null ? ", checkout_date = $date" : ""}
       
       WHERE id = $id
       ''',
-      paramsBySyncState[syncState],
+      (syncState == SyncState.updated ? [] : paramsBySyncState[syncState]),
     );
 
     return await ReadTaskById(id);
@@ -3192,18 +3187,16 @@ class DatabaseProvider {
     await db.rawUpdate(
       '''
       UPDATE "tasks" SET
-      in_server = ?,
-      updated = ?,
-      deleted = ?,
+      ${syncState == SyncState.updated ? '' : 'in_server = ?, updated = ?, deleted = ?, '}
       status = "working",
       checkin_longitude = ${longitude},
       checkin_latitude = ${latitude},
       checkin_distance = ${distance}
-      ${date != null ? ", checkin_date = ?" : ""}
+      ${date != null ? ", checkin_date = $date" : ""}
       
       WHERE id = $id
       ''',
-      paramsBySyncState[syncState],
+      (syncState == SyncState.updated ? [] : paramsBySyncState[syncState]),
     );
 
     return await ReadTaskById(id);
@@ -4341,6 +4334,7 @@ class DatabaseProvider {
 
   Future<ContactModel> UpdateContact (int id, ContactModel contact, SyncState syncState) async {
     final db = await database;
+    db.execute("PRAGMA foreign_keys=ON;");
     List<Map<String, dynamic>> data;
     data = await db.rawQuery('SELECT * FROM "contacts" WHERE id = $id');
 
@@ -4361,18 +4355,17 @@ class DatabaseProvider {
         code = ?,
         phone = ?,
         email = ?,
-        details = ?,
-        in_server = ?,
-        updated = ?,
-        deleted = ?
+        details = ?
+        ${syncState == SyncState.updated ? '' : ', in_server = ?, updated = ?, deleted = ? '}
         WHERE id = $id
         ''',
         [...[contact.id, contact.createdAt, contact.updatedAt,
         contact.deletedAt, contact.createdById, contact.updatedById,
         contact.deletedById, contact.name, contact.code, contact.phone,
-        contact.email, contact.details], ...paramsBySyncState[syncState]],
+        contact.email, contact.details], ...(syncState == SyncState.updated ? [] : paramsBySyncState[syncState])],
       );
     }
+    db.execute("PRAGMA foreign_keys=OFF;");
 
     return contact;
       
@@ -4643,6 +4636,7 @@ class DatabaseProvider {
 
   Future<BusinessModel> UpdateBusiness(int businessId, BusinessModel business, SyncState syncState) async {
     final db = await database;
+    db.execute("PRAGMA foreign_keys=ON;");
     List<Map<String, dynamic>> data;
     data = await db.rawQuery('SELECT * FROM "businesses" WHERE id = ${business.id}');
 
@@ -4663,18 +4657,17 @@ class DatabaseProvider {
         name = ?,
         stage = ?,
         date = ?,
-        amount = ?,
-        in_server = ?,
-        updated = ?,
-        deleted = ?
+        amount = ? 
+        ${syncState == SyncState.updated ? '' : ', in_server = ?, updated = ?, deleted = ? '}
       WHERE id = $businessId
       ''', 
       [...[business.id, business.createdAt, business.updatedAt == null ? DateTime.now().toString() : business.updatedAt, 
       business.deletedAt, business.createdById, business.updatedById, business.deletedById,
       business.customerId, business.name, business.stage, business.date,
-      business.amount, ...paramsBySyncState[syncState]]],
+      business.amount, ...(syncState == SyncState.updated ? [] : paramsBySyncState[syncState])]],
       );
     }
+    db.execute("PRAGMA foreign_keys=OFF;");
 
     return business;
   }
