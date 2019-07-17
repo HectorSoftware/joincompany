@@ -1392,8 +1392,8 @@ class DatabaseProvider {
     String fieldLocalValue;
     if (field.name == "Image" || field.name == "Image_canvan") {
       if (field.fieldDefaultValue != null) {
-        File image = await ImageRepository.handler.ManageImage(field.fieldDefaultValue);
-        fieldLocalValue = image.path;
+        fieldLocalValue = basename(field.fieldDefaultValue);
+        await ImageRepository.handler.DownloadImage(fieldLocalValue, field.fieldDefaultValue);
       }
     }
 
@@ -1440,7 +1440,7 @@ class DatabaseProvider {
       field.fieldDefaultValue, field.fieldType,
       field.fieldPlaceholder, json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"),
       field.fieldCollection, field.fieldRequired,
-      field.fieldWidth, fieldLocalValue == null ? null : fieldLocalValue], ...paramsBySyncState[syncState]],
+      field.fieldWidth, fieldLocalValue], ...paramsBySyncState[syncState]],
     );
   }
 
@@ -1452,7 +1452,7 @@ class DatabaseProvider {
     if (data.isEmpty) return null;
 
     Map<String, dynamic> field = data.first;
-    return new FieldModel(
+    var output = new FieldModel(
       id: field["id"],
       createdAt: field["created_at"],
       updatedAt: field["updated_at"],
@@ -1474,8 +1474,14 @@ class DatabaseProvider {
       fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
       fieldCollection: field["field_collection"],
       fieldRequired: field["field_required"] == 1 ? true: false,
-      image: field["field_local_value"] == null ? null : (await ImageRepository.handler.ManageImage(field["field_local_value"])),
+      image: field["field_local_value"] == null ? null : (await ImageRepository.handler.RetrieveImage(field["field_local_value"])),
     );
+
+    if (field["field_local_value"] != null) {
+      print(field["field_local_value"].toString() + "\n" + field["id"].toString() + "\n");
+    }
+
+    return output;
   }
   
   Future<SectionModel> ReadSectionById(int id) async {
@@ -1549,8 +1555,12 @@ class DatabaseProvider {
           fieldCollection: field["field_collection"],
           fieldRequired: field["field_required"] == 1 ? true: false,
           fieldWidth: field["field_width"],
-          image: field["field_local_value"] == null ? null : (await ImageRepository.handler.ManageImage(field["field_local_value"])),
+          image: field["field_local_value"] == null ? null : (await ImageRepository.handler.RetrieveImage(field["field_local_value"])),
         ));
+
+        if (field["field_local_value"] != null) {
+          print(field["field_local_value"].toString() + "\n" + field["id"].toString() + "\n");
+        }
       });
     }
 
@@ -1781,15 +1791,15 @@ class DatabaseProvider {
       '''
     );
 
-    String fieldLocalValue;
-    if (field.name == "Image" || field.name == "Image_canvan") {
-      if (field.fieldDefaultValue != null) {
-        File image = await ImageRepository.handler.ManageImage(field.fieldDefaultValue);
-        fieldLocalValue = image.path;
-      }
-    }
-
     if (data.isNotEmpty) {
+      if (field.name == "Image" || field.name == "Image_canvan") {
+        if (field.fieldDefaultValue != null) {
+          if (field.fieldDefaultValue != data.first["field_default_value"]) {
+            await ImageRepository.handler.DownloadImage(data.first["field_local_value"], field.fieldDefaultValue);
+          }
+        }
+      }
+
       return await db.rawUpdate(
         '''
         UPDATE "custom_fields" SET
@@ -1815,7 +1825,6 @@ class DatabaseProvider {
         field_collection = ?,
         field_required = ?,
         field_width = ?,
-        field_local_value = ?,
         in_server = ?,
         updated = ?,
         deleted = ?
@@ -1828,7 +1837,7 @@ class DatabaseProvider {
         field.fieldDefaultValue, field.fieldType, field.fieldPlaceholder,
         json.encode(field.fieldOptions).replaceAll("\\", "").replaceAll("\"{", "{").replaceAll("}\"", "}"), 
         field.fieldCollection, field.fieldRequired,
-        field.fieldWidth, fieldLocalValue == null ? null : fieldLocalValue], ...paramsBySyncState[syncState]],
+        field.fieldWidth], ...paramsBySyncState[syncState]],
       );
     } else
       return await CreateField(field, syncState);
