@@ -321,6 +321,8 @@ class _FormTaskState extends State<FormTask> {
                                 image = null;
                                 taskCU = false;
                                 image2= null;
+                                data = new Map();
+                                _value1 = false;
                                 listFieldsModels.clear();
                               });
                               Navigator.pop(context);
@@ -452,6 +454,8 @@ buildListTypeForm(){
                         dataInfo = new Map();
                         taskCU = false;
                         image2 = null;
+                        data = new Map();
+                        _value1 = false;
                       });
                       Navigator.pop(context);
 
@@ -1041,6 +1045,7 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType == 'Boolean'){
+                bool st = _value1;
                 saveData(_value1.toString(),listFieldsModels[index].id.toString());
                 return Row(
                   children: <Widget>[

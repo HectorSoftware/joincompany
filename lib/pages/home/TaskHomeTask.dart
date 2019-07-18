@@ -616,16 +616,16 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         barrierDismissible: false, // user must tap button for close dialog!
         builder: (BuildContext context) {
           return AlertDialog(
-            content: const Text('¿Esta seguro que Desea Eliminar la tarea?'),
+            content: const Text('¿Eliminar tarea?'),
             actions: <Widget>[
               FlatButton(
-                child: const Text('Si'),
+                child: const Text('SI'),
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },
               ),
               FlatButton(
-                child: const Text('No'),
+                child: const Text('NO'),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
