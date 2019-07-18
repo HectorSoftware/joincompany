@@ -52,7 +52,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   String adrressTask = 'Sin Asignar';
   String customerTask = 'Sin Asignar';
   Image image;
-  bool loanding = false;
+  bool loanding = true;
 
   @override
   void initState(){
@@ -362,13 +362,15 @@ class _FormTaskViewState extends State<FormTaskView> {
           children: <Widget>[
             RaisedButton(
               onPressed: () async{
-                img = await photoAndImage();
-                if (img != null) {
-                  setState(() {
-                    b64 = base64String(img);
-                    image2 = Image.memory(img);
-                    saveData(b64, field.id.toString());
-                  });
+                if(!loanding){
+                  img = await photoAndImage();
+                  if (img != null) {
+                    setState(() {
+                      b64 = base64String(img);
+                      image2 = Image.memory(img);
+                      saveData(b64, field.id.toString());
+                    });
+                  }
                 }
               },
               child: Text(listFieldsModels[index].name),

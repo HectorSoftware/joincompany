@@ -260,18 +260,24 @@ class _ClientState extends State<Client> {
                       child: ListTile(
                         title: Text(name, style: TextStyle(fontSize: 14),),
                         subtitle: Text(direction, style: TextStyle(fontSize: 12),),
+                        trailing:  IconButton(icon: Icon(Icons.border_color,size: 20,),onPressed: (){
+                          if(statusPage == STATUS_PAGE_CLIENT.full){
+                            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => FormTask(directionClient: snapshot.data[index],taskmodelres: null,toListTask:false,)));
+                          }
+                        },),
                         onTap: (){
-                          setState(() {
-                            textFilter='';
-                          });
+                          textFilter='';
                           _filter.clear();
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  new  FormClient(snapshot.data[index])
-                              )
-                          );
+                          setState(() {});
+                          if(statusPage == STATUS_PAGE_CLIENT.select){
+                            CustomerModel c = CustomerModel();
+                            c.id = snapshot.data[index].id;
+                            c.name = snapshot.data[index].name;
+                            Navigator.of(context).pop(c);
+                          }
+                          if(statusPage == STATUS_PAGE_CLIENT.full){
+                            Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) => new  FormClient(snapshot.data[index])));
+                          }
                         },
                       ),
                     );
