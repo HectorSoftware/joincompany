@@ -52,7 +52,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   String adrressTask = 'Sin Asignar';
   String customerTask = 'Sin Asignar';
   Image image;
-  bool loanding = false;
+  bool loanding = false; //FALSE (EDITAR) TRUE (VISTA)
 
   @override
   void initState(){

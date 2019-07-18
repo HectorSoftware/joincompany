@@ -206,6 +206,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           // ignore: cancel_subscriptions
           StreamSubscription streamSubscriptionRefresh = bloctasksFilter.outTaks.listen((newVal) => setState(() {
             //BLOCK LISTA
+            Sefiltro = false;
             blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
 
           }));

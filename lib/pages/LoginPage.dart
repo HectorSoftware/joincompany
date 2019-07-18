@@ -65,7 +65,6 @@ class _LoginPageState extends State<LoginPage> {
   final nameController = TextEditingController(text : 'cbarrios@factochile.cl');
   final passwordController = TextEditingController(text: '123');
 
-
 //  final nameController = TextEditingController();
 //  final companyController = TextEditingController();
 //  final passwordController = TextEditingController();
