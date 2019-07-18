@@ -49,7 +49,7 @@ packages:
       name: connectivity
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.3+2"
+    version: "0.4.3+5"
   convert:
     dependency: transitive
     description:
@@ -112,7 +112,7 @@ packages:
       name: extended_image_library
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.2"
+    version: "0.1.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -187,14 +187,14 @@ packages:
       name: google_maps
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.3.3"
+    version: "3.4.1"
   google_maps_flutter:
     dependency: "direct main"
     description:
       name: google_maps_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.16"
+    version: "0.5.19+2"
   google_maps_webservice:
     dependency: "direct main"
     description:
@@ -222,7 +222,7 @@ packages:
       name: http_client_helper
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.9"
+    version: "0.2.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -250,7 +250,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.0+9"
+    version: "0.6.0+17"
   image_picker_saver:
     dependency: "direct main"
     description:
@@ -320,7 +320,7 @@ packages:
       name: location_permissions
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   matcher:
     dependency: transitive
     description:
@@ -390,7 +390,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.2"
   pedantic:
     dependency: transitive
     description:
@@ -493,7 +493,7 @@ packages:
       name: sqflite
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.5"
+    version: "1.1.6+1"
   stack_trace:
     dependency: transitive
     description:
@@ -521,7 +521,7 @@ packages:
       name: synchronized
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -563,7 +563,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.3"
+    version: "5.1.0"
   usage:
     dependency: transitive
     description:
@@ -591,7 +591,7 @@ packages:
       name: watcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.7+10"
+    version: "0.9.7+12"
   web_socket_channel:
     dependency: transitive
     description:

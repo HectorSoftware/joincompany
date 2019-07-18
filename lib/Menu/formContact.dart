@@ -441,6 +441,10 @@ class _AddContactState extends State<AddContact> {
                       }
                   );
                 }
+              }else{
+                showToast('Contacto Actualizado.');
+                setState(() {loading = false;});
+                return true;
               }
             }
           }else{

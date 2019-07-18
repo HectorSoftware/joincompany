@@ -52,7 +52,7 @@ class _FormTaskViewState extends State<FormTaskView> {
   String adrressTask = 'Sin Asignar';
   String customerTask = 'Sin Asignar';
   Image image;
-  bool loanding = false;
+  bool loanding = false; //FALSE (EDITAR) TRUE (VISTA)
 
   @override
   void initState(){
@@ -213,7 +213,6 @@ class _FormTaskViewState extends State<FormTaskView> {
     //SOLICITAR TAREA CON DETALLES
     var responseTaskone = await getTask(widget.taskmodelres.id.toString(),customer, token);
     taskOne = responseTaskone.body;
-
     if(taskOne.addressId != null){
       taskOneOld = new TaskModel(addressId: taskOne.addressId ,customerId: taskOne.customerId,planningDate: taskOne.planningDate);
     }else{
@@ -363,13 +362,15 @@ class _FormTaskViewState extends State<FormTaskView> {
           children: <Widget>[
             RaisedButton(
               onPressed: () async{
-                img = await photoAndImage();
-                if (img != null) {
-                  setState(() {
-                    b64 = base64String(img);
-                    image2 = Image.memory(img);
-                    saveData(b64, field.id.toString());
-                  });
+                if(!loanding){
+                  img = await photoAndImage();
+                  if (img != null) {
+                    setState(() {
+                      b64 = base64String(img);
+                      image2 = Image.memory(img);
+                      saveData(b64, field.id.toString());
+                    });
+                  }
                 }
               },
               child: Text(listFieldsModels[index].name),

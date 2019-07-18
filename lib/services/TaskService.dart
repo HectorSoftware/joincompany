@@ -152,18 +152,8 @@ Future<http.Response> getAllTasksFromServer(String customer, String authorizatio
 
 Future<ResponseModel> getTask(String id, String customer, String authorization) async {
   ResponseModel response = new ResponseModel();
-  if (await connectionStatus.checkConnection()) {
-    http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
-    if (getTaskFromServerJSON.statusCode == 200 || getTaskFromServerJSON.statusCode == 201) {
-      TaskModel taskFromServer = TaskModel.fromJson(getTaskFromServerJSON.body);
-      response.body = taskFromServer;
-    }
-    response.statusCode = getTaskFromServerJSON.statusCode;
-  } else {
-    response.body = await DatabaseProvider.db.ReadTaskById(int.parse(id));
-    response.statusCode = 200;
-  }
-
+  response.body = await DatabaseProvider.db.ReadTaskById(int.parse(id));
+  response.statusCode = 200;
   return response;
 }
 
@@ -176,11 +166,8 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
 
   if (await connectionStatus.checkConnection()) {
     http.Response updateTaskFromServerResJSON = await updateTaskFromServer(id, taskObj, customer, authorization);
-    var a = updateTaskFromServerResJSON.body;
     if (updateTaskFromServerResJSON.statusCode == 200 || updateTaskFromServerResJSON.statusCode == 201) {
-      http.Response getTaskFromServerJSON = await getTaskFromServer(id, customer, authorization);
-//      taskObj = TaskModel.fromJson(updateTaskFromServerResJSON.body);
-      taskObj = TaskModel.fromJson(getTaskFromServerJSON.body);
+      taskObj = TaskModel.fromJson(treatBodyRes(updateTaskFromServerResJSON.body));
       syncState = SyncState.synchronized;
     }
   }
@@ -192,6 +179,8 @@ Future<ResponseModel> updateTask(String id, TaskModel taskObj, String customer, 
 }
 
 Future<http.Response> updateTaskFromServer(String id, TaskModel taskObj, String customer, String authorization) async {
+  String resourcePath = '/tasks2_/update/$id';
+
   taskObj.form = null;
   taskObj.address = null;
   taskObj.customer = null;
@@ -221,7 +210,7 @@ Future<http.Response> updateTaskFromServer(String id, TaskModel taskObj, String 
 
   var bodyJson = json.encode(taskMap);
 
-  return await httpPut(id, bodyJson, customer, authorization, resourcePath);
+  return await httpPost(bodyJson, customer, authorization, resourcePath);
 }
 
 Future<ResponseModel> deleteTask(String id, String customer, String authorization) async {

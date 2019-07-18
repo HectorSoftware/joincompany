@@ -640,13 +640,15 @@ class _FormBusinessState extends State<FormBusiness> {
                                                             child: FlatButton(
                                                               child: const Text('CONTINUAR'),
                                                               onPressed: ()async {
-                                                                Navigator.of(context).pop();
                                                                 var t = await createTaskBusiness(null);
                                                                 if (t != null){
                                                                   setState(() {
                                                                     task.add(t);
                                                                   });
                                                                 }
+                                                                Navigator.of(context).pop();
+                                                                Navigator.of(context).pop();
+                                                                Navigator.pushReplacementNamed(context, '/vistap');
                                                               },
                                                             ),
                                                           ),
@@ -744,12 +746,13 @@ class _FormBusinessState extends State<FormBusiness> {
                                         });
                                       }
                                       Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.pushReplacementNamed(context, '/vistap');
                                     },
                                   ),
                                 );
                               },
                             ): Center(child: Text('Cliente sin direcciones'),),
-
                           ),
                         ],
                       )

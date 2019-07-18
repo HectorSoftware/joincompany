@@ -206,6 +206,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           // ignore: cancel_subscriptions
           StreamSubscription streamSubscriptionRefresh = bloctasksFilter.outTaks.listen((newVal) => setState(() {
             //BLOCK LISTA
+            Sefiltro = false;
             blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
 
           }));
@@ -524,7 +525,9 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     child: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () async {
-                          deleteCustomer(listTask.id.toString(), index);
+                          if(await dialogDelete()){
+                            deleteCustomer(listTask.id.toString(), index);
+                          }
                         }
                     ),
                   ),
@@ -606,5 +609,31 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       '11': 'Noviembre',
       '12': 'Diciembre',
     };
+
+    Future<bool> dialogDelete() async {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button for close dialog!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('¿Eliminar tarea?'),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('SI'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              FlatButton(
+                child: const Text('NO'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
   }
 

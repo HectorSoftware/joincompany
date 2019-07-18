@@ -59,7 +59,6 @@ class TaskChannel {
         if (individualTaskFromServerRes == null)
           return;
 
-        var a = individualTaskFromServerRes.body;
         TaskModel individualTask = TaskModel.fromJson(individualTaskFromServerRes.body);
         if (individualTask != null)
           await DatabaseProvider.db.CreateTask(individualTask, SyncState.synchronized);
@@ -85,7 +84,7 @@ class TaskChannel {
           if (diffInMilliseconds > 0) {
             var updateTaskInServerRes = await updateTaskFromServer(taskFromLocal.id.toString(), taskFromLocal, customer, authorization);
             if (updateTaskInServerRes.statusCode == 200) {
-              TaskModel updatedTaskFromServer = TaskModel.fromJson(updateTaskInServerRes.body);
+              TaskModel updatedTaskFromServer = TaskModel.fromJson(treatBodyRes(updateTaskInServerRes.body));
               await DatabaseProvider.db.UpdateTask(updatedTaskFromServer.id, updatedTaskFromServer, SyncState.synchronized);
             }
           } else if ( diffInMilliseconds < 0) {
