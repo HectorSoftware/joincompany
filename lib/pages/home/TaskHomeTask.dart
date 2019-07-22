@@ -217,7 +217,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       }
     } catch (e) {}
 
-    return ((listTaskModellocal.length != 0)) ?
+    return listTaskModellocal.length != 0 ?
 
     Container(
       child: RefreshIndicator(
@@ -394,13 +394,14 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 contResult++;
               }
             }
-            bool res = true;
-            if(contResult >= 2 && listSearchDouble.contains(listTaskModellocal[positionActual].id.toString())){
-              res = false;
-            }else{
-              listSearchDouble.add(listTaskModellocal[positionActual].id.toString());
-            }
 
+
+            bool res = true;
+            if ((positionActual != listTaskModellocal.length - 1)) {
+              if (listTaskModellocal[positionActual].id == listTaskModellocal[positionActual + 1].id) {
+                res = false;
+              }
+            }
 
 
             if ((ls.createState().checkSearchInText(title, filterText) ||
