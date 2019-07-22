@@ -435,8 +435,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
 
   String textFilter = '';
   void _searchPressed() {
-    if (this.mounted){
-      setState((){
+
         if (this._searchIcon.icon == Icons.search) {
           this._searchIcon = new Icon(Icons.close);
           this._appBarTitle = Container(
@@ -450,10 +449,8 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
               ),
               onChanged: (value){
                 if (this.mounted){
-                  setState((){
                     textFilter = value.toString();
                     blocListTaskResFilter.inTaksFilter.add(textFilter);
-                  });
                 }
               },
             ),
@@ -461,10 +458,10 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         } else {
           this._searchIcon = new Icon(Icons.search);
           this._appBarTitle = new Text('Join');
+          blocListTaskResFilter.inTaksFilter.add('');
           _filter.clear();
         }
-      });
-    }
+        setState(() {});
   }
 
   extraerUser() async {

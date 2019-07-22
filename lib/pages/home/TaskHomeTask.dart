@@ -48,6 +48,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
   SentryClient sentry;
   bool Sefiltro = false;
+  List<String> listSearchDouble = new List<String>();
 
 
   @override
@@ -133,6 +134,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               .outTaksCalendar.listen((onData) =>
               setState(() {
                 listTaskModellocal.clear();
+                listSearchDouble.clear();
                 listTaskModellocalbool.clear();
                 pageTasks = 1;
                 listCalendar = onData;
@@ -155,6 +157,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               setState(() {
                 if(widget.business != null){
                   listTaskModellocal.clear();
+                  listSearchDouble.clear();
                   for(var data in onDataList){
                     if(data.businessId == widget.business.id){
                       listTaskModellocal.add(data);
@@ -273,6 +276,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
         pageTasks = 1;
         listCalendar;
         listTaskModellocal.clear();
+        listSearchDouble.clear();
       });
     }
   }
@@ -336,8 +340,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
           if (filterText == '') {
             bool res = false;
             if ((positionActual != listTaskModellocal.length - 1)) {
-              if (listTaskModellocal[positionActual].id ==
-                  listTaskModellocal[positionActual + 1].id) {
+              if (listTaskModellocal[positionActual].id == listTaskModellocal[positionActual + 1].id) {
                 res = true;
               }
             }
@@ -382,14 +385,27 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
               child: Text(dateTitulo, style: TextStyle(
                   fontSize: 16, color: Colors.white)),
             ) :
-            listCard(title, customerNameAndAddress, date, listTaskModellocal[positionActual],
-                positionActual);
+            listCard(title, customerNameAndAddress, date, listTaskModellocal[positionActual],positionActual);
           } else {
 
+            int contResult = 0;
+            for(int contresultint = 0; contresultint < listTaskModellocal.length ; contresultint++){
+              if(listTaskModellocal[positionActual].id == listTaskModellocal[contresultint].id){
+                contResult++;
+              }
+            }
+            bool res = true;
+            if(contResult >= 2 && listSearchDouble.contains(listTaskModellocal[positionActual].id.toString())){
+              res = false;
+            }else{
+              listSearchDouble.add(listTaskModellocal[positionActual].id.toString());
+            }
 
-            if (ls.createState().checkSearchInText(title, filterText) ||
+
+
+            if ((ls.createState().checkSearchInText(title, filterText) ||
                 ls.createState().checkSearchInText(address, filterText) ||
-                ls.createState().checkSearchInText(customerName, filterText)) {
+                ls.createState().checkSearchInText(customerName, filterText)) && res) {
 
               DateTime DateSearch;
               if(listTaskModellocal[positionActual].planningDate == null){
@@ -413,9 +429,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
                 var padding = 16.0;
                 double por = 0.1;
-                if (MediaQuery
-                    .of(context)
-                    .orientation == Orientation.portrait) {
+                if (MediaQuery.of(context).orientation == Orientation.portrait) {
                   por = 0.07;
                 }
 
@@ -434,15 +448,12 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                         child: Text(dateTitulo, style: TextStyle(
                             fontSize: 16, color: Colors.white)),
                       ),
-                      listCard(title, customerNameAndAddress, date,
-                          listTaskModellocal[positionActual], positionActual),
+                      listCard(title, customerNameAndAddress, date,listTaskModellocal[positionActual], positionActual),
                     ],
                   ),
                 );
               } else {
-                return listCard(
-                    title, customerNameAndAddress, date, listTaskModellocal[positionActual],
-                    positionActual);
+                return listCard(title, customerNameAndAddress, date, listTaskModellocal[positionActual],positionActual);
               }
             } else {
               return Container();
@@ -482,20 +493,14 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
                       if (value) {
-                        var checkInTaskResponse = await checkOutTask(
-                            listTask.id.toString(), user.company, user.rememberToken,
-                            _initialPosition.latitude.toString(),
-                            _initialPosition.longitude.toString(), '0');
+                        var checkInTaskResponse = await checkOutTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(), '0');
 
                         setState(() {
                           //BLOCK LISTA
                           blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
                          });
                       } else {
-                        var checkInTaskResponse = await checkInTask(
-                            listTask.id.toString(), user.company, user.rememberToken,
-                            _initialPosition.latitude.toString(),
-                            _initialPosition.longitude.toString(), '0');
+                        var checkInTaskResponse = await checkInTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(), '0');
                         setState(() {
                           //BLOCK LISTA
                           blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
