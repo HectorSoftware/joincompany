@@ -316,6 +316,7 @@ class _FormBusinessState extends State<FormBusiness> {
                                 }else{
                                   showDialog(
                                       context: context,
+                                      // ignore: missing_return
                                       builder: (BuildContext context) {
                                         if(saveBusiness.customerId ==null){
                                           return   AlertDialog(
@@ -326,13 +327,12 @@ class _FormBusinessState extends State<FormBusiness> {
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                   Navigator.of(context).pop();
-
                                                 },
                                               ),
-
                                             ],
                                           );
-                                        }else if(saveBusinessEnd == false && bodyError == 'Negocio ya existe'){
+                                        }else
+                                          if(saveBusinessEnd == false && bodyError == 'Negocio ya existe'){
                                           return   AlertDialog(
                                             title: Text('El Negocio ya existe.'),
                                             actions: <Widget>[
@@ -341,10 +341,8 @@ class _FormBusinessState extends State<FormBusiness> {
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                   Navigator.of(context).pop();
-
                                                 },
                                               ),
-
                                             ],
                                           );
                                         }
@@ -357,15 +355,11 @@ class _FormBusinessState extends State<FormBusiness> {
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                   Navigator.of(context).pop();
-
                                                 },
                                               ),
-
                                             ],
                                           );
-
                                         }
-
                                       }
                                   );
                                 }

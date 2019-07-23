@@ -281,7 +281,7 @@ class _BusinessListState extends State<BusinessList> {
                                     subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
                                         color: Colors.black)): Text('', style: TextStyle(
                                         color: Colors.black)),
-                                    trailing:snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                                    trailing: snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)) : Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
                                         Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
@@ -305,7 +305,7 @@ class _BusinessListState extends State<BusinessList> {
                                     subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
                                         color: Colors.black)): Text('', style: TextStyle(
                                         color: Colors.black)),
-                                    trailing:snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                    trailing: snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)) : Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
                                         Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
@@ -341,7 +341,7 @@ class _BusinessListState extends State<BusinessList> {
                                     subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
                                         color: Colors.black)): Text('', style: TextStyle(
                                         color: Colors.black)),
-                                    trailing:snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                    trailing: snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)) : Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
                                         Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
@@ -365,7 +365,7 @@ class _BusinessListState extends State<BusinessList> {
                                     subtitle: snapshot.data[index].stage != null? Text(snapshot.data[index].stage.toString(), style: TextStyle(
                                         color: Colors.black)): Text('', style: TextStyle(
                                         color: Colors.black)),
-                                    trailing:snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)): Text('Sin Fecha asignada'),
+                    trailing: snapshot.data[index].date != null && snapshot.data[index].date != "null" && snapshot.data[index].date != "" ? Text(snapshot.data[index].date.toString().substring(0,10)) : Text('Sin Fecha asignada'),
                                     onTap: (){
                                       if(widget.st == STATUS_PAGE.full){
                                         Navigator.push(context,new MaterialPageRoute(builder: (BuildContext context) =>FormBusiness(dataBusiness: snapshot.data[index],edit: true,)));
