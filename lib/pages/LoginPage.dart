@@ -578,14 +578,14 @@ class _SyncAppState extends State<SyncApp> {
 
     return AlertDialog(
         title: title,
-        content:SizedBox(
+        content:WillPopScope(child: SizedBox(
           height: 100.0,
           width: 100.0,
           child: Center(
             child: CircularProgressIndicator(),
           ),
-        )
-    );;
+        ), onWillPop: ()async{return false;})
+    );
   }
 }
 

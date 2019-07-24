@@ -216,7 +216,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
                 blocListTaskResFilter.refreshList();
 
-              }else{
+              } else {
                 errorDialog();
               }
             },
@@ -259,6 +259,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     blocListTaskResFilter = new BlocListTaskFilter(_filter);
     blocListTaskCalendarResMap = new BlocListTaskCalendarMap();
     blocListTaskCalendarRes = new BlocListTaskCalendar();
+
+    _listCalendar = new List<DateTime>();
+    _listCalendar.add(DateTime.now());_listCalendar.add(DateTime.now());
+    datePickedInit = DateTime.now();
+    datePickedEnd = DateTime.now();
+    blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
 
     if(_controller.index == 0){
       showSearch = true;
@@ -389,21 +395,21 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         lastDate: new DateTime(2030)
     );
     if(picked != null){
-      bool updateVarDataTime = false;
+      //bool updateVarDataTime = false;
       if(picked.length == 1){
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
-          updateVarDataTime = true;
+        //if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
+          //updateVarDataTime = true;
           datePickedInit = datePickedEnd = picked[0];
-        }
+        //}
       }else{
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
-          updateVarDataTime = true;
+        //if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
+          //updateVarDataTime = true;
           datePickedInit = picked[0];
           datePickedEnd = picked[1];
-        }
+        //}
       }
 
-      if(updateVarDataTime){
+      //if(updateVarDataTime){
         _listCalendar = new List<DateTime>();
         _listCalendar.add(picked[0]);
         if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
@@ -411,7 +417,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         setState(() {
           datePickedInit; datePickedEnd;
         });
-      }
+      //}
     }
   }
 

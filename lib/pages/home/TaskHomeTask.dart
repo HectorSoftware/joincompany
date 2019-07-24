@@ -44,7 +44,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   BlocListTaskFilter bloctasksFilter;
   BlocListTaskCalendar blocListTaskCalendarRes;
   BlocListTask blocList;
-  List<DateTime> listCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
   SentryClient sentry;
   bool Sefiltro = false;
@@ -61,8 +60,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
     //BLOCK LISTA
     blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
-    //blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,false);
-
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -72,7 +69,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   actualizarusuario() async{
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
-    listCalender = widget.listCalendarRes;
     pageTasks = 1;
     setState(() {});
 
