@@ -235,6 +235,7 @@ class _FormBusinessState extends State<FormBusiness> {
     UserModel user = await DatabaseProvider.db.RetrieveLastLoggedUser();
 
     var getAllContactsResponse = await getAllContacts(user.company, user.rememberToken);
+    // ignore: unused_local_variable
     ContactsModel contacts = getAllContactsResponse.body;
     if(widget.client == null){
       var getAllCustomersResponse = await getAllCustomers(user.company, user.rememberToken, excludeDeleted: true);

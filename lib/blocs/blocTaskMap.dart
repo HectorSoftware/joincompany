@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_database/Database.dart';
-import 'package:joincompany/main.dart';
 import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/Marker.dart';
 import 'package:joincompany/models/TasksModel.dart';

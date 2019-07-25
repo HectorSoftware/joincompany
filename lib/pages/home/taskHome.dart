@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:joincompany/Menu/configCli.dart';
-import 'package:joincompany/Menu/contactView.dart';
 import 'package:joincompany/async_database/Database.dart';
-import 'package:joincompany/Sqlite/database_helper.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/async_operations/TaskChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
@@ -17,7 +15,6 @@ import 'package:joincompany/models/WidgetsList.dart';
 import 'package:joincompany/pages/home/TaskHomeMap.dart';
 import 'package:joincompany/pages/home/TaskHomeTask.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
-import 'package:joincompany/services/UserService.dart';
 import 'package:flutter/services.dart';
 
 import '../LoginPage.dart';
@@ -216,7 +213,7 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
                 blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
                 blocListTaskResFilter.refreshList();
 
-              }else{
+              } else {
                 errorDialog();
               }
             },
@@ -259,6 +256,12 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
     blocListTaskResFilter = new BlocListTaskFilter(_filter);
     blocListTaskCalendarResMap = new BlocListTaskCalendarMap();
     blocListTaskCalendarRes = new BlocListTaskCalendar();
+
+    _listCalendar = new List<DateTime>();
+    _listCalendar.add(DateTime.now());_listCalendar.add(DateTime.now());
+    datePickedInit = DateTime.now();
+    datePickedEnd = DateTime.now();
+    blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
 
     if(_controller.index == 0){
       showSearch = true;
@@ -389,29 +392,27 @@ class _MyTaskPageState extends State<TaskHomePage> with SingleTickerProviderStat
         lastDate: new DateTime(2030)
     );
     if(picked != null){
-      bool updateVarDataTime = false;
+      //bool updateVarDataTime = false;
       if(picked.length == 1){
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
-          updateVarDataTime = true;
+        //if((datePickedInit != picked[0])||(datePickedEnd != picked[0])){
+          //updateVarDataTime = true;
           datePickedInit = datePickedEnd = picked[0];
-        }
+        //}
       }else{
-        if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
-          updateVarDataTime = true;
+        //if((datePickedInit != picked[0])||(datePickedEnd != picked[1])){
+          //updateVarDataTime = true;
           datePickedInit = picked[0];
           datePickedEnd = picked[1];
-        }
+        //}
       }
 
-      if(updateVarDataTime){
+      //if(updateVarDataTime){
         _listCalendar = new List<DateTime>();
         _listCalendar.add(picked[0]);
         if(picked.length == 2){_listCalendar.add(picked[1]);}else{_listCalendar.add(picked[0]);}
         blocListTaskCalendarRes.inTaksCalendar.add(_listCalendar);
-        setState(() {
-          datePickedInit; datePickedEnd;
-        });
-      }
+        setState(() {});
+      //}
     }
   }
 

@@ -1045,6 +1045,7 @@ buildListTypeForm(){
                 );
               }
               if(listFieldsModels[index].fieldType == 'Boolean'){
+                // ignore: unused_local_variable
                 bool st = _value1;
                 saveData(_value1.toString(),listFieldsModels[index].id.toString());
                 return Row(
@@ -1425,7 +1426,7 @@ buildListTypeForm(){
   Widget buildView(){
     return  ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-
+          return Container();
         }
     ) ;
   }

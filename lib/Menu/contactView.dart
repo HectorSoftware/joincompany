@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:joincompany/async_image_repository/ImageRepository.dart';
 import 'package:joincompany/async_operations/AddressChannel.dart';
 import 'package:joincompany/async_operations/ContactChannel.dart';
 import 'package:joincompany/async_operations/CustomerAddressesChannel.dart';
@@ -231,6 +228,7 @@ class _ContactViewState extends State<ContactView> {
             IconButton(
                 icon: Icon(Icons.call),
                 onPressed:(){
+                  // ignore: unnecessary_statements
                   widget.statusPage == STATUS_PAGE.full ? _launchCall('tel:${contact.phone}') : null;
                 }
             ),

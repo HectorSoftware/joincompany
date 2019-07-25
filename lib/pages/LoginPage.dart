@@ -16,36 +16,17 @@ import 'package:joincompany/async_operations/CustomerContactsChannel.dart';
 import 'package:joincompany/async_operations/FormChannel.dart';
 import 'package:joincompany/async_operations/TaskChannel.dart';
 import 'package:joincompany/blocs/blocCheckConnectivity.dart';
-import 'package:flutter/services.dart';
 import 'package:joincompany/blocs/BlocValidators.dart';
 import 'package:joincompany/main.dart';
-import 'package:joincompany/models/AddressModel.dart';
-import 'package:joincompany/models/AddressesModel.dart';
 import 'package:joincompany/models/AuthModel.dart';
-import 'package:joincompany/models/BusinessesModel.dart';
-import 'package:joincompany/models/ContactsModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
-import 'package:joincompany/models/FormModel.dart';
-import 'package:joincompany/models/FormsModel.dart';
-import 'package:joincompany/models/ResponseModel.dart';
-import 'package:joincompany/models/TaskModel.dart';
-import 'package:joincompany/models/TasksModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/AuthService.dart';
-import 'package:joincompany/services/BusinessService.dart';
-import 'package:joincompany/services/ContactService.dart';
-import 'package:joincompany/services/CustomerService.dart';
-import 'package:joincompany/services/FormService.dart';
-import 'package:joincompany/services/TaskService.dart';
 import 'package:joincompany/services/UserService.dart';
-
-//import 'package:joincompany/models/ValidatorSms.dart';
-
 
 
 class LoginPage extends StatefulWidget {
 
+  // ignore: non_constant_identifier_names
   LoginPage({this.AgregarUserwidget,this.companyEstablewidget,this.TextViewVisiblewidget});
   final bool TextViewVisiblewidget;
   final bool AgregarUserwidget;
@@ -585,7 +566,7 @@ class _SyncAppState extends State<SyncApp> {
             child: CircularProgressIndicator(),
           ),
         ), onWillPop: ()async{return false;})
-    );;
+    );
   }
 }
 

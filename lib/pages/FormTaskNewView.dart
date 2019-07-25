@@ -882,6 +882,7 @@ class _FormTaskViewState extends State<FormTaskView> {
     if(field.fieldType =='Table'){
 
       String value = dataInfo[field.id.toString()];
+      // ignore: unused_local_variable
       FieldOptionModel model = new FieldOptionModel();
       List<FieldOptionModel> listOption = new List<FieldOptionModel>();
       var datos = value.split(';');

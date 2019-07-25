@@ -10,6 +10,7 @@ class CustomersBloc{
   List<CustomerWithAddressModel> _listCustomersWithAddress = new List<CustomerWithAddressModel>();
 
   final _customerscontroller = StreamController<List<CustomerWithAddressModel>>();
+  // ignore: unused_element
   Sink<List<CustomerWithAddressModel>> get _inCustomers => _customerscontroller.sink;
   Stream<List<CustomerWithAddressModel>> get outCustomers => _customerscontroller.stream;
 

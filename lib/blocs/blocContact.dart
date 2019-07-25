@@ -11,6 +11,7 @@ class ContactBloc{
   List<ContactModel> _listContacts = new List<ContactModel>();
 
   final _contactcontroller = StreamController<List<ContactModel>>();
+  // ignore: unused_element
   Sink<List<ContactModel>> get _inContact => _contactcontroller.sink;
   Stream<List<ContactModel>> get outContact => _contactcontroller.stream;
 

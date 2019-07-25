@@ -2,96 +2,120 @@ import 'dart:convert';
 
 import 'package:joincompany/async_database/Database.dart';
 import 'package:joincompany/models/ContactsModel.dart';
-import 'package:joincompany/models/CustomerModel.dart';
-import 'package:joincompany/models/CustomersModel.dart';
 import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/services/ContactService.dart';
 import 'package:joincompany/services/CustomerService.dart';
+import '../main.dart';
 
 class CustomerContactsChannel {
   
   CustomerContactsChannel();
   
   static Future _relateCustomerContactsInBothLocalAndServer(String customer, String authorization) async {
+    try{
+      // Create Local To Server
+      List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.created);
 
-    // Create Local To Server    
-    List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.created);
-    
-    await Future.forEach(customerContactsLocal, (customerContactLocal) async {
-      var relateCustomerContactResponseServer = await relateCustomerContactFromServer(customerContactLocal["customer_id"].toString(), customerContactLocal["contact_id"].toString(), customer, authorization);
-      if (relateCustomerContactResponseServer.statusCode==200) {
-        Map<String, dynamic> jsonResponse = json.decode(relateCustomerContactResponseServer.body);
-        await DatabaseProvider.db.UpdateCustomerContact(customerContactLocal["id"], null, null, null, customerContactLocal["customer_id"], customerContactLocal["contact_id"], SyncState.synchronized);
-      }
-    });
+      await Future.forEach(customerContactsLocal, (customerContactLocal) async {
+        var relateCustomerContactResponseServer = await relateCustomerContactFromServer(customerContactLocal["customer_id"].toString(), customerContactLocal["contact_id"].toString(), customer, authorization);
+        if (relateCustomerContactResponseServer.statusCode==200) {
+          // ignore: unused_local_variable
+          Map<String, dynamic> jsonResponse = json.decode(relateCustomerContactResponseServer.body);
+          await DatabaseProvider.db.UpdateCustomerContact(customerContactLocal["id"], null, null, null, customerContactLocal["customer_id"], customerContactLocal["contact_id"], SyncState.synchronized);
+        }
+      });
 
-    // Create Server To Local
-    var getAllContactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
-    ContactsModel contact = ContactsModel.fromJson(getAllContactsResponse.body);
+      // Create Server To Local
+      var getAllContactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
+      ContactsModel contact = ContactsModel.fromJson(getAllContactsResponse.body);
 
-    Map<String, int> customersContactsServerIds = new Map<String, int>();
+      Map<String, int> customersContactsServerIds = new Map<String, int>();
 
-    Set customersContactsServer = new Set();
-    await Future.forEach(contact.data, (contact) async {
-      if (contact.customerId != null && contact.id != null){
-        String customerContactIds = "${contact.customerId}-${contact.id}";
-        customersContactsServerIds[customerContactIds] = contact.id;
-        customersContactsServer.add(customerContactIds);
-      }
-    });
+      Set customersContactsServer = new Set();
+      await Future.forEach(contact.data, (contact) async {
+        if (contact.customerId != null && contact.id != null){
+          String customerContactIds = "${contact.customerId}-${contact.id}";
+          customersContactsServerIds[customerContactIds] = contact.id;
+          customersContactsServer.add(customerContactIds);
+        }
+      });
 
-    Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
-    Set customersContactsToCreate = customersContactsServer.difference(customersContactsLocal);
+      Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
+      Set customersContactsToCreate = customersContactsServer.difference(customersContactsLocal);
 
-    await Future.forEach(customersContactsToCreate, (customerContactToCreate) async {
-      if (customersContactsToCreate.contains("null")){
-        return;
-      }
-      var customerContactIds = customerContactToCreate.split("-");
-    	int customerId = int.parse(customerContactIds[0]);
-    	int contactId = int.parse(customerContactIds[1]);
-      // Cambiar el SyncState Local
-      await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, customerId, contactId, SyncState.synchronized);
-    });
+      await Future.forEach(customersContactsToCreate, (customerContactToCreate) async {
+        if (customersContactsToCreate.contains("null")){
+          return;
+        }
+        var customerContactIds = customerContactToCreate.split("-");
+        int customerId = int.parse(customerContactIds[0]);
+        int contactId = int.parse(customerContactIds[1]);
+        // Cambiar el SyncState Local
+        await DatabaseProvider.db.CreateCustomerContact(null, null, null, null, customerId, contactId, SyncState.synchronized);
+      });
+    }catch(error, stackTrace) {
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      return;
+    }
+
   }
 
   static Future _unrelateCustomerContactsInBothLocalAndServer(String customer, String authorization) async {
+    try{
+      //Delete Local To Server
+      List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
 
-    //Delete Local To Server
-    List<Map> customerContactsLocal = await DatabaseProvider.db.ReadCustomerContactsBySyncState(SyncState.deleted);
+      await Future.forEach(customerContactsLocal, (customerContactLocal) async {
+        var unrelateCustomerContactResponseServer = await unrelateCustomerContactFromServer(customerContactLocal["customer_id"].toString(), customerContactLocal["contact_id"].toString(), customer, authorization);
+        if (unrelateCustomerContactResponseServer.statusCode==200) {
+          await DatabaseProvider.db.DeleteCustomerContactById(customerContactLocal["customer_id"], customerContactLocal["contact_id"]);
+        }
+      });
 
-    await Future.forEach(customerContactsLocal, (customerContactLocal) async {
-      var unrelateCustomerContactResponseServer = await unrelateCustomerContactFromServer(customerContactLocal["customer_id"].toString(), customerContactLocal["contact_id"].toString(), customer, authorization);
-      if (unrelateCustomerContactResponseServer.statusCode==200) {
-        await DatabaseProvider.db.DeleteCustomerContactById(customerContactLocal["customer_id"], customerContactLocal["contact_id"]);
-      }
-    });
+      // Delete Server To Local
+      var contactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
+      ContactsModel contacts = ContactsModel.fromJson(contactsResponse.body);
 
-    // Delete Server To Local
-    var contactsResponse = await getAllContactsFromServer(customer, authorization, perPage: '10000');
-    ContactsModel contacts = ContactsModel.fromJson(contactsResponse.body);
+      Set customersContactsServer = new Set();
+      await Future.forEach(contacts.data, (contact) async {
+        // Set server = new Set.from([ "419-345", "419-346" ]);
+        customersContactsServer.add("${contact.customerId}-${contact.id}");
+      });
 
-    Set customersContactsServer = new Set();
-    await Future.forEach(contacts.data, (contact) async {
-  	  // Set server = new Set.from([ "419-345", "419-346" ]);
-      customersContactsServer.add("${contact.customerId}-${contact.id}");
-    });
+      Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
 
-    Set customersContactsLocal = new Set.from( await DatabaseProvider.db.RetrieveAllCustomerContactRelations() ); //método de albert
-    
-    Set customersContactsToDelete = customersContactsLocal.difference(customersContactsServer);
+      Set customersContactsToDelete = customersContactsLocal.difference(customersContactsServer);
 
-    await Future.forEach(customersContactsToDelete, (customerContactToDelete) async {
-      if (customerContactToDelete.contains("null")){
-        return;
-      }
+      await Future.forEach(customersContactsToDelete, (customerContactToDelete) async {
+        if (customerContactToDelete.contains("null")){
+          return;
+        }
 
-      var customerContactIds = customerContactToDelete.split("-");
-    	int customerId = int.parse(customerContactIds[0]);
-    	int contactId = int.parse(customerContactIds[1]);
-      // sobrecargar método para eliminar con los parámetros customerId, contactId
-      await DatabaseProvider.db.DeleteCustomerContactById(customerId, contactId);
-    });
+        var customerContactIds = customerContactToDelete.split("-");
+        int customerId = int.parse(customerContactIds[0]);
+        int contactId = int.parse(customerContactIds[1]);
+        // sobrecargar método para eliminar con los parámetros customerId, contactId
+        await DatabaseProvider.db.DeleteCustomerContactById(customerId, contactId);
+      });
+    }catch(error, stackTrace) {
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      return;
+    }
+
   }
 
   static Future syncEverything() async {

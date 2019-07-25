@@ -96,8 +96,6 @@ class BlocListTask {
   Stream<int> get outListTaksTotal => _tasksTotalController.stream;
   Sink<int> get inListTaksTotal => _tasksTotalController.sink;
 
-
-  @override
   void dispose() {
     _tasksController.close();
     _tasksTotalController.close();

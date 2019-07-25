@@ -16,7 +16,6 @@ import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/pages/FormTaskNewView.dart';
 import 'package:joincompany/services/TaskService.dart';
 import 'package:loadmore/loadmore.dart';
-import 'package:sentry/sentry.dart';
 
 
 import '../../main.dart';
@@ -44,10 +43,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
   BlocListTaskFilter bloctasksFilter;
   BlocListTaskCalendar blocListTaskCalendarRes;
   BlocListTask blocList;
-  List<DateTime> listCalender = new List<DateTime>();
   CustomerWithAddressModel directionClient = CustomerWithAddressModel();
-  SentryClient sentry;
-  bool Sefiltro = false;
+  bool sefiltro = false;
   List<String> listSearchDouble = new List<String>();
 
 
@@ -60,9 +57,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     actualizarusuario();
 
     //BLOCK LISTA
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
-    //blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,false);
-
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -72,7 +67,6 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   actualizarusuario() async{
     user = await DatabaseProvider.db.RetrieveLastLoggedUser();
-    listCalender = widget.listCalendarRes;
     pageTasks = 1;
     setState(() {});
 
@@ -129,7 +123,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     try {
       if (this.mounted){
         setState(() {
-          // ignore: cancel_subscriptions
+          // ignore: cancel_subscriptions, unused_local_variable
           StreamSubscription streamSubscriptionCalendar = blocListTaskCalendarRes
               .outTaksCalendar.listen((onData) =>
               setState(() {
@@ -138,8 +132,8 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 listTaskModellocalbool.clear();
                 pageTasks = 1;
                 listCalendar = onData;
-                Sefiltro = true;
-                blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+                sefiltro = true;
+                blocList.getdatalist(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
               }));
 
         });
@@ -152,7 +146,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     try {
       if (this.mounted) {
         setState(() {
-          // ignore: cancel_subscriptions
+          // ignore: cancel_subscriptions, unused_local_variable
           StreamSubscription streamSubscriptionList = blocList.outListTaks.listen((onDataList) =>
               setState(() {
                 if(widget.business != null){
@@ -182,7 +176,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     try {
       if (this.mounted) {
         setState(() {
-          // ignore: cancel_subscriptions
+          // ignore: cancel_subscriptions, unused_local_variable
           StreamSubscription streamSubscriptionListToal = blocList.outListTaksTotal.listen((onDataListTotal) => setState(() {
             taskTotals = onDataListTotal;
           }));
@@ -195,7 +189,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     try {
       if (this.mounted) {
         setState(() {
-          // ignore: cancel_subscriptions
+          // ignore: cancel_subscriptions, unused_local_variable
           StreamSubscription streamSubscriptionFilter = bloctasksFilter.outTaksFilter.listen((newVal) => setState(() {
             filterText = newVal;
           }));
@@ -206,11 +200,11 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     try {
       if (this.mounted) {
         setState(() {
-          // ignore: cancel_subscriptions
+          // ignore: cancel_subscriptions, unused_local_variable
           StreamSubscription streamSubscriptionRefresh = bloctasksFilter.outTaks.listen((newVal) => setState(() {
             //BLOCK LISTA
-            Sefiltro = false;
-            blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+            sefiltro = false;
+            blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
 
           }));
         });
@@ -270,11 +264,10 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
 
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
-    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+    blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
     if (this.mounted) {
       setState(() {
         pageTasks = 1;
-        listCalendar;
         listTaskModellocal.clear();
         listSearchDouble.clear();
       });
@@ -388,6 +381,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             listCard(title, customerNameAndAddress, date, listTaskModellocal[positionActual],positionActual);
           } else {
 
+            // ignore: unused_local_variable
             int contResult = 0;
             for(int contresultint = 0; contresultint < listTaskModellocal.length ; contresultint++){
               if(listTaskModellocal[positionActual].id == listTaskModellocal[contresultint].id){
@@ -408,17 +402,17 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                 ls.createState().checkSearchInText(address, filterText) ||
                 ls.createState().checkSearchInText(customerName, filterText)) && res) {
 
-              DateTime DateSearch;
+              DateTime dateSearch;
               if(listTaskModellocal[positionActual].planningDate == null){
-                DateSearch = DateTime.parse(listTaskModellocal[positionActual].createdAt);
+                dateSearch = DateTime.parse(listTaskModellocal[positionActual].createdAt);
               }else{
-                DateSearch = DateTime.parse(listTaskModellocal[positionActual].planningDate);
+                dateSearch = DateTime.parse(listTaskModellocal[positionActual].planningDate);
               }
 
 
-              if ((DateTime.parse(dateTask).day != DateSearch.day) ||
-                  (DateTime.parse(dateTask).month != DateSearch.month) ||
-                  (DateTime.parse(dateTask).year != DateSearch.year)) {
+              if ((DateTime.parse(dateTask).day != dateSearch.day) ||
+                  (DateTime.parse(dateTask).month != dateSearch.month) ||
+                  (DateTime.parse(dateTask).year != dateSearch.year)) {
 
                 if(listTaskModellocal[positionActual].planningDate == null){
                   dateTask = listTaskModellocal[positionActual].createdAt;
@@ -426,7 +420,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   dateTask = listTaskModellocal[positionActual].planningDate;
                 }
 
-                String dateTitulo = DateSearch.day.toString() + ' de ' + intsToMonths[DateSearch.month.toString()] + ' ' + DateSearch.year.toString();
+                String dateTitulo = dateSearch.day.toString() + ' de ' + intsToMonths[dateSearch.month.toString()] + ' ' + dateSearch.year.toString();
 
                 var padding = 16.0;
                 double por = 0.1;
@@ -434,7 +428,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                   por = 0.07;
                 }
 
-                if ((DateTime.now().day == DateSearch.day) &&(DateTime.now().month == DateSearch.month) &&(DateTime.now().year == DateSearch.year)) {
+                if ((DateTime.now().day == dateSearch.day) &&(DateTime.now().month == dateSearch.month) &&(DateTime.now().year == dateSearch.year)) {
                   dateTitulo = 'Hoy, ' + dateTitulo;
                 }
                 return Container(
@@ -494,17 +488,19 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                     value: listTaskModellocal[index].status.contains('done'),
                     onChanged: (bool value) async {
                       if (value) {
+                        // ignore: unused_local_variable
                         var checkInTaskResponse = await checkOutTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(), '0');
 
                         setState(() {
                           //BLOCK LISTA
-                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
                          });
                       } else {
+                        // ignore: unused_local_variable
                         var checkInTaskResponse = await checkInTask(listTask.id.toString(), user.company, user.rememberToken,_initialPosition.latitude.toString(),_initialPosition.longitude.toString(), '0');
                         setState(() {
                           //BLOCK LISTA
-                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+                          blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
                         });
                       }
                     },
@@ -542,6 +538,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
                         icon: Icon(Icons.border_color,size: 20,),
                         onPressed: () async {
                           if(listTask != null){
+                            // ignore: unused_local_variable
                             String idTask = '',idAddress ='',nameAddress='',customerName='';
                             if(listTask.customerId != null){idTask = listTask.customerId.toString();}
                             if(listTask.addressId != null){idAddress = listTask.addressId.toString();}
@@ -567,7 +564,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
     if(res.statusCode == 200){
       showToast('Tarea Eliminada');
       //BLOCK LISTA
-      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,Sefiltro);
+      blocList = new BlocListTask(listCalendar[1], listCalendar[0], pageTasks,sefiltro);
       setState(() {});
     }else{
       showToast('Error Al Eliminar Tarea');
@@ -585,6 +582,7 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
       try {
         Position position = await Geolocator().getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high);
+        // ignore: unused_local_variable
         List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
             position.latitude, position.longitude);
         if (this.mounted) {
@@ -592,8 +590,12 @@ class _MytaskPageTaskState extends State<TaskHomeTask> {
             _initialPosition = LatLng(position.latitude, position.longitude);
           });
         }
-      } catch (error, stackTrace) {
-        await sentry.captureException(
+      }catch(error, stackTrace) {
+        await sentryA.captureException(
+          exception: error,
+          stackTrace: stackTrace,
+        );
+        await sentryH.captureException(
           exception: error,
           stackTrace: stackTrace,
         );

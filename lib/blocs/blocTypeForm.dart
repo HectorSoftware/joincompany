@@ -11,6 +11,7 @@ class FormTypeBloc{
   List<FormModel> _listforms = new List<FormModel>();
 
   final _formTypeBloccontroller = StreamController<List<FormModel>>();
+  // ignore: unused_element
   Sink<List<FormModel>> get _inContact => _formTypeBloccontroller.sink;
   Stream<List<FormModel>> get outForm => _formTypeBloccontroller.stream;
 
@@ -32,7 +33,6 @@ class FormTypeBloc{
     }
   }
 
-  @override
   void dispose() {
     _formTypeBloccontroller.close();
   }

@@ -143,9 +143,6 @@ class _ConfigCliState extends State<ConfigCli> {
         obscureText: (t == type.PASSWORD) || t == (type.PASSWORD1) ? true:false,
         maxLines: maxLines,
         textInputAction: TextInputAction.next,
-        validator: (value){
-
-        },
         onSaved: (value){
           setDataForm(value, t);
         },

@@ -1393,7 +1393,7 @@ class DatabaseProvider {
     if (field.name == "Image" || field.name == "Image_canvan" || field.name == "Image canvan") {
       if (field.fieldDefaultValue != null) {
         fieldLocalValue = basename(field.fieldDefaultValue);
-        await ImageRepository.handler.DownloadImage(fieldLocalValue, field.fieldDefaultValue);
+        await ImageRepository.handler.downloadImage(fieldLocalValue, field.fieldDefaultValue);
       }
     }
 
@@ -1474,7 +1474,7 @@ class DatabaseProvider {
       fieldOptions: field["field_options"] != "null" ? new List<FieldOptionModel>.from(json.decode(field["field_options"]).map((x) => new FieldOptionModel(value: x["value"], name: x["name"]))) : new List<FieldOptionModel>(),
       fieldCollection: field["field_collection"],
       fieldRequired: field["field_required"] == 1 ? true: false,
-      image: field["field_local_value"] == null ? null : (await ImageRepository.handler.RetrieveImage(field["field_local_value"])),
+      image: field["field_local_value"] == null ? null : (await ImageRepository.handler.retrieveImage(field["field_local_value"])),
     );
     return output;
   }
@@ -1550,7 +1550,7 @@ class DatabaseProvider {
           fieldCollection: field["field_collection"],
           fieldRequired: field["field_required"] == 1 ? true: false,
           fieldWidth: field["field_width"],
-          image: field["field_local_value"] == null ? null : (await ImageRepository.handler.RetrieveImage(field["field_local_value"])),
+          image: field["field_local_value"] == null ? null : (await ImageRepository.handler.retrieveImage(field["field_local_value"])),
         ));
       });
     }
@@ -1786,7 +1786,7 @@ class DatabaseProvider {
       if (field.name == "Image" || field.name == "Image_canvan") {
         if (field.fieldDefaultValue != null) {
           if (field.fieldDefaultValue != data.first["field_default_value"]) {
-            await ImageRepository.handler.DownloadImage(data.first["field_local_value"], field.fieldDefaultValue);
+            await ImageRepository.handler.downloadImage(data.first["field_local_value"], field.fieldDefaultValue);
           }
         }
       }
@@ -1859,7 +1859,7 @@ class DatabaseProvider {
       '''
     );
 
-    ImageRepository.handler.DeleteImage(data.first["field_local_value"]);
+    ImageRepository.handler.deleteImage(data.first["field_local_value"]);
 
     await db.rawDelete(
     '''

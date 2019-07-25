@@ -11,6 +11,7 @@ class BusinessBloc{
   List<BusinessModel> _listbusisness = new List<BusinessModel>();
 
   final _businessBloccontroller = StreamController<List<BusinessModel>>();
+  // ignore: unused_element
   Sink<List<BusinessModel>> get _inContact => _businessBloccontroller.sink;
   Stream<List<BusinessModel>> get outBusiness => _businessBloccontroller.stream;
 

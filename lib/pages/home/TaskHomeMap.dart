@@ -14,7 +14,6 @@ import 'package:joincompany/models/UserModel.dart';
 import 'package:joincompany/pages/FormTaskNew.dart';
 import 'package:joincompany/services/CustomerService.dart';
 import 'package:joincompany/services/TaskService.dart';
-import 'package:sentry/sentry.dart';
 
 import 'package:flutter/services.dart';
 class TaskHomeMap extends StatefulWidget {
@@ -39,10 +38,9 @@ enum markersId {
 }
 
 class _MytaskPageMapState extends State<TaskHomeMap> {
-  SentryClient sentry;
-
   GoogleMapController mapController;
   static LatLng _initialPosition;
+  // ignore: unused_field
   LatLng _lastPosition = _initialPosition;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
@@ -153,7 +151,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
         _initialPosition = LatLng(position.latitude, position.longitude);
       });
     }catch(error, stackTrace) {
-      await sentry.captureException(
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
         exception: error,
         stackTrace: stackTrace,
       );
@@ -241,7 +243,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
 
       }
     }catch(error, stackTrace) {
-      await sentry.captureException(
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
         exception: error,
         stackTrace: stackTrace,
       );
@@ -311,7 +317,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       }
     setState(() => _markers);
     }catch(error, stackTrace) {
-      await sentry.captureException(
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
         exception: error,
         stackTrace: stackTrace,
       );
@@ -332,7 +342,11 @@ class _MytaskPageMapState extends State<TaskHomeMap> {
       );
       setState(() {});
     }catch(error, stackTrace) {
-      await sentry.captureException(
+      await sentryA.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      await sentryH.captureException(
         exception: error,
         stackTrace: stackTrace,
       );
